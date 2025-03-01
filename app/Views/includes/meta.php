@@ -7,6 +7,7 @@
 <meta name="description" content="">
 <meta name="author" content="Aleelo Workspace">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
 <link rel="icon" href="<?php echo get_favicon_url(); ?>" />
 
 <title>
