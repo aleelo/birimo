@@ -37,18 +37,7 @@
             ));
             ?>
         </div>
-        <div class="form-group">
-            <?php
-            echo form_password(array(
-                "id" => "password",
-                "name" => "password",
-                "class" => "form-control p10",
-                "placeholder" => app_lang('password'),
-                "data-rule-required" => true,
-                "data-msg-required" => app_lang("field_required")
-            ));
-            ?>
-        </div>
+       
         <input type="hidden" name="redirect" value="<?php
         if (isset($redirect)) {
             echo $redirect;

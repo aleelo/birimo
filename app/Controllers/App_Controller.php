@@ -13,6 +13,7 @@ use CodeIgniter\Controller;
 
 class App_Controller extends Controller {
 
+    public $db;
     protected $template;
     public $session;
     public $form_validation;
@@ -123,6 +124,8 @@ class App_Controller extends Controller {
         if ($landing_page && $this->_is_current_url_same_as_base_url()) {
             app_redirect($landing_page);
         }
+        $this->db = db_connect('default');
+
     }
 
     private function _is_current_url_same_as_base_url() {

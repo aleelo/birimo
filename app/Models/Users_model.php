@@ -36,6 +36,40 @@ class Users_model extends Crud_model {
             }
         }
     }
+    function authenticateAAD($email) {
+
+        $this->db_builder->select("id,user_type,client_id,password");
+        $result = $this->db_builder->getWhere(array('email' => $email, 'status' => 'active', 'deleted' => 0, 'disable_login' => 0));
+
+        $result_count = count($result->getResult());
+        if (!$result_count) {
+            return false;
+        }else{
+            
+            $user_info = $result->getRow();
+            return $this->aad_login($user_info);
+        }
+
+      
+    }
+
+    private function aad_login($user_info) {
+
+        if ($this->_client_can_login($user_info) !== false) {
+            $session = \Config\Services::session();
+            $session->set('user_id', $user_info->id);
+
+            try {
+                app_hooks()->do_action('app_hook_after_signin');
+            } catch (\Exception $ex) {
+                log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
+            }
+
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     private function verify_password($user_info, $password) {
         //there has two password encryption method for legacy (md5) compatibility

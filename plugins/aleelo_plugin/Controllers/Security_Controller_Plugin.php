@@ -10,7 +10,7 @@ class Security_Controller_Plugin extends Security_Controller {
 
     public $Screen_size_model;
     public $Items_list_model;
-    public   $db;
+    public $db;
     public $Expenses_model;
     public $Company_model;
     public $Projects_model;
