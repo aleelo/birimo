@@ -177,7 +177,7 @@ class Security_Controller_Plugin extends Security_Controller {
         $user_id = $this->login_user->id;
         $job_info = $this->db->query("SELECT t.company_id from rise_team_member_job_info t left join rise_users u on u.id=t.user_id where t.user_id = $user_id")->getRow();
         
-        return $job_info?->department_id;
+        return $job_info?->company_id;
     }
 
 
