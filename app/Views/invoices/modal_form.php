@@ -53,24 +53,24 @@
                 </div>
             </div>
 
-            <?php if (count($companies_dropdown) > 1) { ?>
+            <!-- </?php if (count($companies_dropdown) > 1) { ?>
                 <div class="form-group">
                     <div class="row">
-                        <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
+                        <label for="company_id" class=" col-md-3"></?php echo app_lang('company'); ?></label>
                         <div class="col-md-9">
-                            <?php
-                            echo form_input(array(
-                                "id" => "company_id",
-                                "name" => "company_id",
-                                "value" => $model_info->company_id,
-                                "class" => "form-control",
-                                "placeholder" => app_lang('company')
-                            ));
+                            </?php
+                            // echo form_input(array(
+                            //     "id" => "company_id",
+                            //     "name" => "company_id",
+                            //     "value" => $model_info->company_id,
+                            //     "class" => "form-control",
+                            //     "placeholder" => app_lang('company')
+                            // ));
                             ?>
                         </div>
                     </div>
                 </div>
-            <?php } ?>
+            </?php } ?> -->
 
             <?php if ($client_id && !$project_id) { ?>
                 <input type="hidden" name="invoice_client_id" value="<?php echo $client_id; ?>" />
