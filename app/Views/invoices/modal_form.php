@@ -307,7 +307,7 @@
         $("#invoice-form .tax-select2").select2();
 
         $("#invoice_labels").select2({multiple: true, data: <?php echo json_encode($label_suggestions); ?>});
-        $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
+       // $("#company_id").select2({data: </?php// echo json_encode($companies_dropdown); ?>});
 
         setDatePicker("#invoice_bill_date, #invoice_due_date");
 
