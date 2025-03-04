@@ -24,7 +24,39 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
             $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
     return $sidebar_menu;
 });
+$routes = service('routes');
 
+ $routes->group('', ['namespace' => 'aleelo_plugin\Controllers'], function($routes) {
+    $routes->get('team_member', 'Team_member::index');
+    $routes->get('team_member/(:any)', 'Team_member::$1');
+    $routes->post('team_member/(:any)', 'Team_member::$1');
+
+    $routes->get('team_members', 'Team_member::index');
+    $routes->get('team_members/(:any)', 'Team_member::$1');
+    $routes->post('team_members/(:any)', 'Team_member::$1');
+
+    $routes->get('clients', 'Client::index');
+    $routes->get('clients/(:any)', 'Client::$1');
+    $routes->post('clients/(:any)', 'Client::$1');
+
+    $routes->get('clientss', 'Client::index');
+    $routes->get('clientss/(:any)', 'Client::$1');
+    $routes->post('clientss/(:any)', 'Client::$1');
+
+    $routes->get('expenses', 'expense::index');
+    $routes->get('expenses/(:any)', 'expense::$1');
+    $routes->post('expenses/(:any)', 'expense::$1');
+
+    $routes->get('projects', 'Project::index');
+    $routes->get('projects/(:any)', 'Project::$1');
+    $routes->post('projects/(:any)', 'Project::$1');
+
+    $routes->get('signin', 'signinn::index');
+    $routes->get('signin/(:any)', 'signinn::$1');
+    $routes->post('signin/(:any)', 'signinn::$1');
+    
+
+ });
 //add admin setting menu item
 app_hooks()->add_filter('app_filter_admin_settings_menu', function ($settings_menu) {
     $settings_menu["plugins"][] = array("name" => "demo", "url" => "demo_settings");

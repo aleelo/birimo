@@ -44,12 +44,10 @@
             ],
             columns: [
             {title: "<?php echo app_lang("id") ?>", "class": "text-center w50 desktop", order_by: "id"},
-            {title: "<?php echo app_lang("name") ?>", "class": "all", order_by: "company_name"},
-            {title: "<?php echo app_lang("primary_contact") ?>", order_by: "primary_contact"},
+            {title: "<?php echo app_lang("clients") ?>", "class": "all", order_by: "company_name"},
+            {title: "<?php echo app_lang("company  ") ?>", "class": "all", order_by: "company_id"},
             {title: "<?php echo app_lang("phone") ?>", order_by: "phone"},
             {title: "<?php echo app_lang("client_groups") ?>", order_by: "client_groups"},
-            {title: "<?php echo app_lang("labels") ?>"},
-            {title: "<?php echo app_lang("projects") ?>"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("total_invoiced") ?>", "class":"text-right"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("payment_received") ?>", "class":"text-right"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("due") ?>", "class":"text-right"}

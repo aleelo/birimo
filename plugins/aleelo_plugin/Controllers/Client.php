@@ -292,13 +292,10 @@ class Client extends Security_Controller_Plugin {
 
         $row_data = array(
             $data->id,
-            $data->companies,
             anchor(get_uri("client/view/" . $data->id), $data->company_name),
-            $data->primary_contact ? $primary_contact : "",
+            $data->companies,
             $data->phone,
             $group_list,
-            $client_labels,
-            to_decimal_format($data->total_projects),
             to_currency($data->invoice_value, $data->currency_symbol),
             to_currency($data->payment_received, $data->currency_symbol),
             to_currency($due, $data->currency_symbol)
