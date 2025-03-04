@@ -16,6 +16,7 @@ class Security_Controller_Plugin extends Security_Controller {
     public $Projects_model;
     public $Project_status_model;
     public $Clients_model;
+    public $Users_models;
 
 //     public$Collective_revenue_report_model;
     // use App_Controller;
@@ -32,8 +33,11 @@ class Security_Controller_Plugin extends Security_Controller {
         $this->Project_status_model = new \aleelo_plugin\Models\Project_status_model();
         $this->Projects_model = new \aleelo_plugin\Models\Projects_model();
          $this->Clients_model= new \aleelo_plugin\Models\Clients_model();
+         $this->Users_models= new \aleelo_plugin\Models\Users_models();
+
+
         // $this->Collective_revenue_report_model = new \emof_plugin\Models\Collective_revenue_report_model();
-// $login_user_id = $this->Users_model->login_user_id();
+// $login_user_id = $this->Users_models->login_user_id();
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();
 
@@ -50,7 +54,7 @@ class Security_Controller_Plugin extends Security_Controller {
         // ));
 
         // //initialize login users required information
-        // $this->login_user = $this->Users_model->get_access_info($login_user_id);
+        // $this->login_user = $this->Users_models->get_access_info($login_user_id);
 
         // //initialize login users access permissions
         // if ($this->login_user && $this->login_user->permissions) {

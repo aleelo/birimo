@@ -42,7 +42,7 @@ class Expense extends Security_Controller_Plugin {
 
     //get team members dropdown
     private function _get_team_members_dropdown() {
-        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "user_type" => "staff"), 0, 0, "first_name")->getResult();
+        $team_members = $this->Users_models->get_all_where(array("deleted" => 0, "user_type" => "staff"), 0, 0, "first_name")->getResult();
 
         $members_dropdown = array(array("id" => "", "text" => "- " . app_lang("member") . " -"));
         foreach ($team_members as $team_member) {
@@ -86,7 +86,7 @@ class Expense extends Security_Controller_Plugin {
         $model_info = $this->Expenses_model->get_one($this->request->getPost('id'));
         $view_data['categories_dropdown'] = $this->Expense_categories_model->get_dropdown_list(array("title"));
 
-        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "user_type" => "staff"))->getResult();
+        $team_members = $this->Users_models->get_all_where(array("deleted" => 0, "user_type" => "staff"))->getResult();
         $members_dropdown = array();
 
         foreach ($team_members as $team_member) {
@@ -854,7 +854,7 @@ class Expense extends Security_Controller_Plugin {
             return false;
         }
 
-        $existing_user = $this->Users_model->get_user_from_full_name($user);
+        $existing_user = $this->Users_models->get_user_from_full_name($user);
         if ($existing_user) {
             return $existing_user->id;
         } else {
