@@ -2765,4 +2765,17 @@ $lang["year_or_month_based_on"] = "Year/month based on";
 $lang["none"] = "None";
 $lang["trigger_manually"] = "Trigger Manually";
 
+
+
+
+$lang["can_view_own_company_project"] = "can view own company project";
+$lang["can_view_own_company_members"] = "can view own company members";
+$lang["own_company_invoice"] = "own company invoice";
+$lang["own_company"] = "own company";
+$lang["own_expenses"] = "ownexpenses";
+
+$lang["own_company"] = "own company";
+$lang["own_tasks"] = "own tasks";
+$lang["can_access_tasks"] = "can access tasks";
+
 return $lang;

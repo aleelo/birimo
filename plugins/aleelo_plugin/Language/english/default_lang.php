@@ -3251,4 +3251,42 @@ $lang["estimate_lock_state_description"] = "Once you enable the lock state, the 
 $lang["proposal_lock_state_description"] = "Once you enable the lock state, the accepted proposals can’t be edited.";
 $lang["contract_lock_state_description"] = "Once you enable the lock state, the accepted contracts can't be edited.";
 
+
+/////    company  //////
+
+$lang["add_Screen_size"] = "add screen size";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+$lang["aaaaaaaaa"] = "aaaaaaa";
+
+
+
+
 return $lang;
