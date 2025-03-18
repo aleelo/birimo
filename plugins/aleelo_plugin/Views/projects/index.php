@@ -47,7 +47,11 @@
                 }
             ],
             filterDropdown: [
-                {name: "department_id", class: "w200", options: <?php echo $departments_dropdown; ?>},
+                <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
+ { ?>
+            {name: "can_view_all_project", class: "w200 ", options: <?php echo $company; ?>},
+
+            <?php  }  ?>
                 {name: "project_label", class: "w200", options: <?php echo $project_labels_dropdown; ?>}, 
                 <?php echo $custom_field_filters; ?>],
             rangeDatepicker: [{startDate: {name: "start_date_from", value: ""}, endDate: {name: "start_date_to", value: ""}, showClearButton: true, label: "<?php echo app_lang('start_date'); ?>", ranges: ['this_month', 'last_month', 'this_year', 'last_year', 'next_7_days', 'next_month']}],

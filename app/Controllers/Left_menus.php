@@ -38,7 +38,7 @@ class Left_menus extends Security_Controller {
         $view_data["available_items"] = $this->left_menu->get_available_items($type);
         $view_data["sortable_items"] = $this->left_menu->get_sortable_items($type);
         $view_data["preview"] = $this->left_menu->rander_left_menu(true, $type);
-
+        
         if ($type == "user") {
             return $this->template->view("left_menu/user_left_menu", $view_data);
         } else {

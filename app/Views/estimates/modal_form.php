@@ -51,24 +51,24 @@
                 </div>
             </div>
         </div>
-        <?php if (count($companies_dropdown) > 1) { ?>
-            <div class="form-group">
+        <?php // if (count($companies_dropdown) > 1) { ?>
+            <!-- <div class="form-group">
                 <div class="row">
-                    <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
+                    <label for="company_id" class=" col-md-3"><?php //echo app_lang('company'); ?></label>
                     <div class="col-md-9">
                         <?php
-                        echo form_input(array(
-                            "id" => "company_id",
-                            "name" => "company_id",
-                            "value" => $model_info->company_id,
-                            "class" => "form-control",
-                            "placeholder" => app_lang('company')
-                        ));
+                        // echo form_input(array(
+                        //     "id" => "company_id",
+                        //     "name" => "company_id",
+                        //     "value" => $model_info->company_id,
+                        //     "class" => "form-control",
+                        //     "placeholder" => app_lang('company')
+                        // ));
                         ?>
                     </div>
                 </div>
-            </div>
-        <?php } ?>
+            </div> -->
+        <?php //} ?>
         <?php if ($client_id) { ?>
             <input type="hidden" name="estimate_client_id" value="<?php echo $client_id; ?>" />
         <?php } else { ?>
@@ -215,7 +215,7 @@
         $("#estimate-form .tax-select2").select2();
         $("#estimate_client_id").select2();
 
-        $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
+    //    $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
 
         setDatePicker("#estimate_date, #valid_until");
 

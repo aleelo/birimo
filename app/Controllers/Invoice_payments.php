@@ -18,9 +18,12 @@ class Invoice_payments extends Security_Controller {
     function index() {
         if ($this->login_user->user_type === "staff") {
             $view_data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
+            // print_r($view_data['payment_method_dropdown']);die;
             $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown();
             $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("payments");
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
+            $view_data['company'] = $this->_get_company();
+
             return $this->template->rander("invoices/payment_received", $view_data);
         } else {
             if (!($this->can_client_access("invoice") && $this->can_client_access("payment", false))) {
@@ -171,6 +174,8 @@ class Invoice_payments extends Security_Controller {
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
         $payment_method_id = $this->request->getPost('payment_method_id');
+        $ss= $this->request->getPost("can_view_all_invoice");
+
         $options = array(
             "start_date" => $start_date,
             "end_date" => $end_date,
@@ -178,13 +183,18 @@ class Invoice_payments extends Security_Controller {
             "payment_method_id" => $payment_method_id,
             "currency" => $this->request->getPost("currency"),
             "project_id" => $this->request->getPost("project_id"),
+            "company_id_department" => $this->can_view_own_department_invoice(),
+            "company_id" => $this->can_view_own_company_invoice(),
+            "can_view_all_invoice" =>$ss,
         );
 
         $list_data = $this->Invoice_payments_model->get_details($options)->getResult();
+        
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_payment_row($data);
         }
+        
         echo json_encode(array("data" => $result));
     }
 

@@ -7,6 +7,7 @@ use App\Controllers\Security_Controller;
 class Security_Controller_Plugin extends Security_Controller {
 
    public $Assigning_items_model;
+   public $login_user;
 
     public $Screen_size_model;
     public $Items_list_model;
@@ -17,8 +18,12 @@ class Security_Controller_Plugin extends Security_Controller {
     public $Project_status_model;
     public $Clients_model;
 
-//     public$Collective_revenue_report_model;
+    public$University_names_model;
     // use App_Controller;
+    public$Field_of_study_model;
+    public$Users_models;
+    public$Tasks_model;
+
 
     public function __construct($redirect = true) {
         parent::__construct();
@@ -32,8 +37,13 @@ class Security_Controller_Plugin extends Security_Controller {
         $this->Project_status_model = new \aleelo_plugin\Models\Project_status_model();
         $this->Projects_model = new \aleelo_plugin\Models\Projects_model();
          $this->Clients_model= new \aleelo_plugin\Models\Clients_model();
-        // $this->Collective_revenue_report_model = new \emof_plugin\Models\Collective_revenue_report_model();
-// $login_user_id = $this->Users_model->login_user_id();
+        $this->University_names_model = new \aleelo_plugin\Models\University_names_model();
+// $login_user_id = $this->Users_model->login_user_id();      
+  $this->Field_of_study_model = new \aleelo_plugin\Models\Field_of_study_model();
+  $this->Users_models = new \aleelo_plugin\Models\Users_models();
+  $this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
+
+
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();
 
@@ -65,7 +75,16 @@ class Security_Controller_Plugin extends Security_Controller {
        
     }
 
-
+    protected function can_edit_profile() {
+        if ($this->login_user->user_type === "staff" && !$this->login_user->is_admin && get_array_value($this->login_user->permissions, "cant_edit_profile") == "1") {
+            return true;
+        }
+    }
+    protected function can_edit_team_member() {
+        if ($this->login_user->user_type === "staff" && !$this->login_user->is_admin && get_array_value($this->login_user->permissions, "can_edit_team_member") == "1") {
+            return true;
+        }
+    }
     public function get_bank_name_dropdown() {
         
         $bane_names = $this->db->query("SELECT id, bank_name FROM rise_bank_names WHERE deleted=0")->getResult();
@@ -82,7 +101,22 @@ class Security_Controller_Plugin extends Security_Controller {
         return $temp_array;
     }
 
-
+    protected function can_view_own_project() {
+        if (
+            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
+            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->department != 0
+        ) {
+            return $this->login_user->department;
+        }
+        return null;
+    }
+    protected function can_view_own_company_project() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_project") === "1") {
+            return $this->login_user->company_id; 
+        }
+        return null; 
+    }
     public function get_merchant_types_dropdown() {
         
         $merchant_types = $this->db->query("SELECT mt.id, mt.merchant_type FROM rise_merchant_types mt WHERE mt.deleted=0")->getResult();
@@ -174,8 +208,8 @@ class Security_Controller_Plugin extends Security_Controller {
     }
 
     public function get_user_department_id(){
-        $user_id = $this->login_user->id;
-        $job_info = $this->db->query("SELECT t.company_id from rise_team_member_job_info t left join rise_users u on u.id=t.user_id where t.user_id = $user_id")->getRow();
+        $user_id = $this->login_user->company_id;
+        $job_info = $this->db->query("SELECT t.company_id from rise_expenses t left join rise_users u on u.id=t.user_id where t.company_id = $user_id")->getRow();
         
         return $job_info?->company_id;
     }

@@ -13,7 +13,40 @@
     <div id="left-menu-language-dropdown" class="d-block d-sm-none dropdown float-end">
     </div>
 
-    <a class="sidebar-brand brand-logo" href="<?php echo $dashboard_link; ?>"><img class="dashboard-image" src="<?php echo get_logo_url(); ?>" /></a>
+    <?php
+$db = db_connect();
+$user_id = $login_user->id;
+$logo_url = get_logo_url(); 
+
+if ($user_id) {
+    $builder = $db->table('rise_users');
+    $department = $builder->select('company_id, department')
+                          ->where('id', $user_id)
+                          ->get()
+                          ->getRow();
+
+    if ($department) {
+        if ((get_array_value($login_user->permissions, "company") === "all")) {
+            $department_id = isset($department->department) ? $department->department : $department->company_id;
+        } else {
+            $department_id = isset($department->company_id) ? $department->company_id : null;
+        }
+
+        if ($department_id == 1) {
+            $logo_url = get_logo_urlpixel();
+        } elseif ($department_id == 2) {
+            $logo_url = get_logo_urlsolution();
+        } else {
+            $logo_url = get_logo_urlpixel();
+        }
+    }
+}
+?>
+
+<a class="sidebar-brand brand-logo" href="<?php echo $dashboard_link; ?>">
+    <img class="dashboard-image" src="<?php echo $logo_url; ?>" />
+</a>
+<?php  ?>
     <a class="sidebar-brand brand-logo-mini" href="<?php echo $dashboard_link; ?>"><img class="dashboard-image" src="<?php echo get_favicon_url(); ?>" /></a>
 
     <div class="sidebar-scroll">

@@ -17,6 +17,7 @@ class Expense_model extends Crud_model {
         $users_table = $this->db->prefixTable('users');
         $taxes_table = $this->db->prefixTable('taxes');
         $clients_table = $this->db->prefixTable('clients');
+        $company_table =$this->db->prefixTable('company');
 
         $where = "";
         $id = $this->_get_clean_value($options, "id");
@@ -39,12 +40,26 @@ class Expense_model extends Crud_model {
             $where .= " AND $expenses_table.project_id=$project_id";
             // print_r($project_id);die;
         }
-
-        $user_id = $this->_get_clean_value($options, "user_id");
+      
+        $company_id_company = $this->_get_clean_value($options, "company_id_company");
+        if ($company_id_company) {
+            $where .= " AND cm.id=$company_id_company";
+            // print_r($project_id);die;
+        }
+            $company = $this->_get_clean_value($options, "company_id");
+            if ($company) {
+                $where .= " AND cm.id=$company";
+                // print_r($project_id);die;
+            }
+            
+         $user_id = $this->_get_clean_value($options, "user_id");
         if ($user_id) {
             $where .= " AND $expenses_table.user_id=$user_id";
         }
-
+        $created_by_user = $this->_get_clean_value($options, "created_by_user");
+        if ($created_by_user) {
+            $where .= " AND $expenses_table.created_by=$created_by_user";
+        }
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
             $where .= " AND $expenses_table.client_id=$client_id";
@@ -69,7 +84,8 @@ class Expense_model extends Crud_model {
                  $clients_table.company_name AS linked_client_name,
                  $projects_table.title AS project_title,
                  tax_table.percentage AS tax_percentage,
-                 tax_table2.percentage AS tax_percentage2
+                 tax_table2.percentage AS tax_percentage2,
+                 cm.id AS company_name
                  $select_custom_fields
         FROM $expenses_table
         LEFT JOIN $expense_categories_table ON $expense_categories_table.id= $expenses_table.category_id
@@ -77,6 +93,7 @@ class Expense_model extends Crud_model {
         LEFT JOIN $projects_table ON $projects_table.id= $expenses_table.project_id
         LEFT JOIN $users_table ON $users_table.id= $expenses_table.user_id
         LEFT JOIN $users_table as u ON u.id= $expenses_table.created_by
+        LEFT JOIN $company_table as cm ON cm.id= $expenses_table.company_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $expenses_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $expenses_table.tax_id2
             $join_custom_fields

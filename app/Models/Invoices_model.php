@@ -50,6 +50,21 @@ class Invoices_model extends Crud_model {
             $where .= " AND $invoices_table.project_id=$project_id";
         }
 
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND dp.id=$company_id";
+        }
+        
+        $company_id_department = $this->_get_clean_value($options, "company_id_department");
+        if ($company_id_department) {
+            $where .= " AND dp.id=$company_id_department";
+        }
+
+         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        if ($can_view_all_invoice) {
+            $where .= " AND dp.id=$can_view_all_invoice";
+        }
+
         $order_id = $this->_get_clean_value($options, "order_id");
         if ($order_id) {
             $where .= " AND $invoices_table.order_id=$order_id";
@@ -139,7 +154,7 @@ class Invoices_model extends Crud_model {
         $join_custom_fieds = get_array_value($custom_field_query_info, "join_string");
         $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
 
-        $sql = "SELECT $invoices_table.*, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title AS project_title, credit_note_table.id AS credit_note_id, credit_note_table.display_id AS credit_note_display_id, main_invoice_table.display_id AS main_invoice_display_id, recurring_invoice_table.display_id AS recurring_invoice_display_id,
+        $sql = "SELECT $invoices_table.*, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title AS project_title,credit_note_table.id AS credit_note_id, credit_note_table.display_id AS credit_note_display_id, main_invoice_table.display_id AS main_invoice_display_id, recurring_invoice_table.display_id AS recurring_invoice_display_id,
            $invoices_table.invoice_total AS invoice_value, IFNULL(payments_table.payment_received,0) AS payment_received, tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2, tax_table3.percentage AS tax_percentage3, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS cancelled_by_user, $select_labels_data_query $select_custom_fieds
         FROM $invoices_table
         LEFT JOIN (
@@ -160,6 +175,8 @@ class Invoices_model extends Crud_model {
         LEFT JOIN $clients_table ON $clients_table.id= $invoices_table.client_id
         LEFT JOIN $projects_table ON $projects_table.id= $invoices_table.project_id
         LEFT JOIN $users_table ON $users_table.id= $invoices_table.cancelled_by
+        LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $invoices_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $invoices_table.tax_id2
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table3 ON tax_table3.id = $invoices_table.tax_id3

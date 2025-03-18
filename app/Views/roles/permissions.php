@@ -25,6 +25,14 @@
                             ?>
                             <label for="can_manage_all_projects"><?php echo app_lang("can_manage_all_projects"); ?></label>
                         </div>
+
+                        <div>
+                            <?php
+                            echo form_checkbox("can_view_own_company_project", "1", $can_view_own_company_project ? true : false, "id='can_view_own_company_project' class='manage_project_section form-check-input'");
+                            ?>
+                            <label for="can_view_own_company_project"><?php echo app_lang("can_view_own_company_project"); ?></label>
+                        </div>
+
                         <div id="individual_project_permission_area" class="<?php echo $can_manage_all_projects ? "hide" : ""; ?>">
                             <div>
                                 <?php
@@ -208,11 +216,16 @@
                     <div id="individual_team_members_permission_area" class="<?php echo $hide_team_members_list ? "hide" : ""; ?>">
                         <div>
                             <?php
+                            echo form_checkbox("can_view_own_company_members", "1", $can_view_own_company_members ? true : false, "id='can_view_own_company_members' class='form-check-input'");
+                            ?>
+                            <label for="can_view_own_company_members"><?php echo app_lang("can_view_own_company_members"); ?></label>
+                        </div>
+                        <div>
+                            <?php
                             echo form_checkbox("can_view_team_members_contact_info", "1", $can_view_team_members_contact_info ? true : false, "id='can_view_team_members_contact_info' class='form-check-input'");
                             ?>
                             <label for="can_view_team_members_contact_info"><?php echo app_lang("can_view_team_members_contact_info"); ?></label>
                         </div>
-
                         <div>
                             <?php
                             echo form_checkbox("can_view_team_members_social_links", "1", $can_view_team_members_social_links ? true : false, "id='can_view_team_members_social_links' class='form-check-input'");
@@ -274,6 +287,8 @@
                     </div>
 
                 </li>
+              
+                    
                 <?php if (get_setting("module_message")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
@@ -520,6 +535,17 @@
                         <div>
                             <?php
                             echo form_radio(array(
+                                "id" => "invoice_own_invoice",
+                                "name" => "invoice_permission",
+                                "value" => "own_invoice",
+                                "class" => "form-check-input",
+                            ), $invoice, ($invoice === "own_invoice") ? true : false);
+                            ?>
+                            <label for="invoice_own_invoice"><?php echo app_lang("own_company_invoice"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
                                 "id" => "invoice_yes",
                                 "name" => "invoice_permission",
                                 "value" => "all",
@@ -666,6 +692,28 @@
                         <div>
                             <?php
                             echo form_radio(array(
+                                "id" => "expense_own_company",
+                                "name" => "expense_permission",
+                                "value" => "own_company",
+                                "class" => "form-check-input",
+                            ), $expense, ($expense === "own_company") ? true : false);
+                            ?>
+                            <label for="expense_own_company"><?php echo app_lang("own_company"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "expense_own_expenses",
+                                "name" => "expense_permission",
+                                "value" => "own_expenses",
+                                "class" => "form-check-input",
+                            ), $expense, ($expense === "own_expenses") ? true : false);
+                            ?>
+                            <label for="expense_own_expenses"><?php echo app_lang("own_expenses"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
                                 "id" => "expense_yes",
                                 "name" => "expense_permission",
                                 "value" => "all",
@@ -676,6 +724,57 @@
                         </div>
                     </li>
                 <?php } ?>
+                <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_access_tasks"); ?></h5>
+                        <div>
+                            <?php
+                            if (is_null($task)) {
+                                $task = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "task_no",
+                                "name" => "task_permission",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $task, ($task === "") ? true : false);
+                            ?>
+                            <label for="task_no"><?php echo app_lang("no"); ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "task_own_company",
+                                "name" => "task_permission",
+                                "value" => "own_company",
+                                "class" => "form-check-input",
+                            ), $task, ($task === "own_company") ? true : false);
+                            ?>
+                            <label for="task_own_company"><?php echo app_lang("own_company"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "task_own_tasks",
+                                "name" => "task_permission",
+                                "value" => "own_tasks",
+                                "class" => "form-check-input",
+                            ), $task, ($task === "own_tasks") ? true : false);
+                            ?>
+                            <label for="task_own_tasks"><?php echo app_lang("own_tasks"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "task_yes",
+                                "name" => "task_permission",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $task, ($task === "all") ? true : false);
+                            ?>
+                            <label for="task_yes"><?php echo app_lang("yes"); ?></label>
+                        </div>
+                    </li>
 
                 <li>
                     <span data-feather="key" class="icon-14 ml-20"></span>
@@ -785,6 +884,42 @@
                         </div>
                     </li>
                 <?php } ?>
+
+
+
+
+
+                <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_switch_company"); ?></h5>
+                        <div>
+                            <?php
+                            if (is_null($company)) {
+                                $company = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "switch_company_no",
+                                "name" => "switch_company",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $company, ($company === "") ? true : false);
+                            ?>
+                            <label for="switch_company_no"><?php echo app_lang("no"); ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "switch_company_yes",
+                                "name" => "switch_company",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $company, ($company === "yes") ? true : false);
+                            ?>
+                            <label for="switch_company_yes"><?php echo app_lang("yes_can_switch_company"); ?></label>
+                        </div>
+                      
+                    </li>
+
                 <?php if (get_setting("module_ticket")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
@@ -1187,6 +1322,13 @@
                 $("#individual_team_members_permission_area").addClass("hide");
             } else {
                 $("#individual_team_members_permission_area").removeClass("hide");
+            }
+        });
+        $("#hide_expenses_list").click(function() {
+            if ($(this).is(":checked")) {
+                $("#individual_expenses_permission_area").addClass("hide");
+            } else {
+                $("#individual_expenses_permission_area").removeClass("hide");
             }
         });
 

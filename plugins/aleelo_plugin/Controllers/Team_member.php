@@ -97,7 +97,7 @@ class Team_member extends Security_Controller_Plugin {
         }
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
-
+        $view_data["company"] = $this->_get_company();
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("team_members", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("team_members", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -126,7 +126,7 @@ class Team_member extends Security_Controller_Plugin {
             "id" => $id,
         );
 
-        $view_data['model_info'] = $this->Users_model->get_details($options)->getRow();
+        $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", 0, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
@@ -139,7 +139,7 @@ class Team_member extends Security_Controller_Plugin {
         $this->access_only_admin_or_member_creator();
 
         //check duplicate email address, if found then show an error message
-        if ($this->Users_model->is_email_exists($this->request->getPost('email'))) {
+        if ($this->Users_models->is_email_exists($this->request->getPost('email'))) {
             echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
             exit();
         }
@@ -187,7 +187,7 @@ class Team_member extends Security_Controller_Plugin {
 
 
         //add a new team member
-        $user_id = $this->Users_model->ci_save($user_data);
+        $user_id = $this->Users_models->ci_save($user_data);
         if ($user_id) {
             //user added, now add the job info for the user
             $job_data = array(
@@ -196,7 +196,7 @@ class Team_member extends Security_Controller_Plugin {
                 "salary_term" => $this->request->getPost('salary_term'),
                 "date_of_hire" => $this->request->getPost('date_of_hire')
             );
-            $this->Users_model->save_job_info($job_data);
+            $this->Users_models->save_job_info($job_data);
 
             save_custom_fields("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -228,7 +228,132 @@ class Team_member extends Security_Controller_Plugin {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
+    function education_info($user_id)
+    {
+        // validate_numeric_value($user_id);
+        // $this->update_only_allowed_members($user_id);
 
+        $view_data['departments'] = $this->Team_model->get_departments_for_select();
+
+        $view_data['education_levels'] = [
+            '' => ' -- Choose Education Level -- ',
+            'Primary' => 'Primary',
+            'Secondary' => 'Secondary',
+            'Diploma' => 'Diploma',
+            'Bachelor' => 'Bachelor',
+            'Bachelor & Master' => 'Bachelor & Master',
+            '2 Bachelors' => '2 Bachelors',
+            '2 Bachelors & Master' => '2 Bachelors & Master',
+            '2 Bachelors & 2 Masters' => '2 Bachelors & 2 Masters',
+            'Doctor' => 'Doctor',
+            'Other/Skill' => 'Other/Skill'
+        ];
+        // print_r($view_data['education_levels']);die();
+        $view_data['sections'] = ['' => 'Choose Department Section', '1' => 'ICT & Cyber Security', '2' => 'Other'];
+        $view_data['education_fields'] = $this->db->query("select id,name from rise_education_industry where deleted=0")->getResult();
+        $view_data['field_of_study'] = array("" => " -- Choose Field of Study -- ") + $this->Field_of_study_model->get_dropdown_list(array("name"), "id");
+        $view_data['university_names'] = array("" => " -- Choose University Name -- ") + $this->University_names_model->get_dropdown_list(array("university_name"), "id");
+
+        // $options = array("id" => $user_id);
+        // $user_info = $this->Users_models->get_details($options)->getRow();
+
+        $view_data['user_id'] = $user_id;
+        $view_data['education_info'] = $this->Users_models->get_education_info($user_id);
+
+        $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+        $view_data['can_edit_profile']  = !$this->can_edit_profile();
+
+        return $this->template->view("aleelo_plugin\Views/team_members/education_info", $view_data);
+    }
+
+
+    //save general information of a team member
+    function save_education_info($user_id)
+    {
+
+
+        $user_id = $this->request->getPost('user_id');
+
+
+        $education_data = array(
+            "user_id" => $user_id,
+            "education_level" => $this->request->getPost('education_level'),
+            "primary_school_name" => $this->request->getPost('primary_school_name'),
+            "primary_graduation_date" => $this->request->getPost('primary_graduation_date'),
+            "secondary_school_name" => $this->request->getPost('secondary_school_name'),
+            "secondary_graduation_date" => $this->request->getPost('secondary_graduation_date'),
+            "university_name_diploma" => $this->request->getPost('university_name_diploma'),
+            "field_of_study_diploma" => $this->request->getPost('field_of_study_diploma'),
+            "graduation_date_diploma" => $this->request->getPost('graduation_date_diploma'),
+            "university_name_foculty_1" => $this->request->getPost('university_name_foculty_1'),
+            "field_of_study_foculty_1" => $this->request->getPost('field_of_study_foculty_1'),
+            "graduation_date_foculty_1" => $this->request->getPost('graduation_date_foculty_1'),
+            "university_name_foculty_2" => $this->request->getPost('university_name_foculty_2'),
+            "field_of_study_foculty_2" => $this->request->getPost('field_of_study_foculty_2'),
+            "graduation_date_foculty_2" => $this->request->getPost('graduation_date_foculty_2'),
+            "university_name_master_1" => $this->request->getPost('university_name_master_1'),
+            "field_of_study_master_1" => $this->request->getPost('field_of_study_master_1'),
+            "graduation_date_master_1" => $this->request->getPost('graduation_date_master_1'),
+            "university_name_master_2" => $this->request->getPost('university_name_master_2'),
+            "field_of_study_master_2" => $this->request->getPost('field_of_study_master_2'),
+            "graduation_date_master_2" => $this->request->getPost('graduation_date_master_2'),
+            "university_name_phd" => $this->request->getPost('university_name_phd'),
+            "field_of_study_phd" => $this->request->getPost('field_of_study_phd'),
+            "graduation_date_phd" => $this->request->getPost('graduation_date_phd'),
+            "other_skills" => $this->request->getPost('other_skills'),
+            "graduation_date_other_skills" => $this->request->getPost('graduation_date_other_skills'),
+        );
+
+
+
+        // if ($user_id) {
+        //     $user_j0b_info = $this->Users_models->get_details(['id'=>$user_id])->getRow();
+        //     // print_r($user_j0b_info);die;
+        //     $timeline_file_path = get_setting("signature_file_path");
+        //     $new_files = update_saved_files($timeline_file_path, $user_j0b_info->signature, $new_files);
+        // }
+
+        //     $job_data["signature"] = serialize($new_files);
+
+
+        // $this->Users_models->ci_save($user_data, $user_id);
+
+        if ($this->Users_models->save_education_info($education_data)) {
+            echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+
+        // education
+
+        // validate_numeric_value($user_id);
+        // $this->update_only_allowed_members($user_id);
+
+
+        // $user_data = array(
+
+        //     "education_level" => $this->request->getPost('education_level'),
+        //     "education_field" => $this->request->getPost('education_field'),
+        //     "faculty" => $this->request->getPost('faculty'),
+        //     "faculty2" => $this->request->getPost('faculty2'),
+        //     "education_school" => $this->request->getPost('education_school'),
+        //     "bachelor_degree" => $this->request->getPost('bachelor_degree'),
+        //     "master_degree" => $this->request->getPost('master_degree'),
+
+        // );
+
+        // $user_data = clean_data($user_data);
+
+        // $user_info_updated = $this->Users_models->ci_save($user_data, $user_id);
+
+        // save_custom_fields("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type);
+
+        // if ($user_info_updated) {
+        //     echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
+        // } else {
+        //     echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        // }
+    }
     /* open invitation modal */
 
     function invitation_modal() {
@@ -317,10 +442,14 @@ class Team_member extends Security_Controller_Plugin {
             "status" => $this->request->getPost("status"),
             "user_type" => "staff",
             "custom_fields" => $custom_fields,
-            "custom_field_filter" => $this->prepare_custom_field_filter_values("team_members", $this->login_user->is_admin, $this->login_user->user_type)
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("team_members", $this->login_user->is_admin, $this->login_user->user_type),
+            "own_company_members" => $this->can_view_own_company_members(),
+            "can_view_own_members" => $this->can_view_own_members(),
+            "can_view_all_members"=>$this->request->getPost("can_view_all_members"),
+
         );
 
-        $list_data = $this->Users_model->get_details($options)->getResult();
+        $list_data = $this->Users_models->get_details($options)->getResult();
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data, $custom_fields);
@@ -337,7 +466,7 @@ class Team_member extends Security_Controller_Plugin {
             "custom_fields" => $custom_fields
         );
 
-        $data = $this->Users_model->get_details($options)->getRow();
+        $data = $this->Users_models->get_details($options)->getRow();
         return $this->_make_row($data, $custom_fields);
     }
 
@@ -383,12 +512,12 @@ class Team_member extends Security_Controller_Plugin {
 
         $id = $this->request->getPost('id');
 
-        $user_info = $this->Users_model->get_one($id);
+        $user_info = $this->Users_models->get_one($id);
         if (!$this->_can_delete_team_member($user_info)) {
             app_redirect("forbidden");
         }
 
-        if ($this->Users_model->delete($id)) {
+        if ($this->Users_models->delete($id)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_deleted')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
@@ -409,7 +538,7 @@ class Team_member extends Security_Controller_Plugin {
 
             //we have an id. view the team_member's profie
             $options = array("id" => $id, "user_type" => "staff");
-            $user_info = $this->Users_model->get_details($options)->getRow();
+            $user_info = $this->Users_models->get_details($options)->getRow();
             if ($user_info) {
 
                 //check which tabs are viewable for current logged in user
@@ -514,7 +643,7 @@ class Team_member extends Security_Controller_Plugin {
             }
 
             //we don't have any specific id to view. show the list of team_member
-            $view_data['team_members'] = $this->Users_model->get_details(array("user_type" => "staff", "status" => "active"))->getResult();
+            $view_data['team_members'] = $this->Users_models->get_details(array("user_type" => "staff", "status" => "active"))->getResult();
             return $this->template->rander("aleelo_plugin\Views/team_members/profile_card", $view_data);
         }
     }
@@ -528,10 +657,10 @@ class Team_member extends Security_Controller_Plugin {
         }
 
         $options = array("id" => $user_id);
-        $user_info = $this->Users_model->get_details($options)->getRow();
+        $user_info = $this->Users_models->get_details($options)->getRow();
 
         $view_data['user_id'] = $user_id;
-        $view_data['job_info'] = $this->Users_model->get_job_info($user_id);
+        $view_data['job_info'] = $this->Users_models->get_job_info($user_id);
         $view_data['job_info']->job_title = $user_info->job_title;
 
         $view_data['can_manage_team_members_job_information'] = $this->has_job_info_manage_permission();
@@ -567,8 +696,8 @@ class Team_member extends Security_Controller_Plugin {
             "job_title" => $this->request->getPost('job_title')
         );
 
-        $this->Users_model->ci_save($user_data, $user_id);
-        if ($this->Users_model->save_job_info($job_data)) {
+        $this->Users_models->ci_save($user_data, $user_id);
+        if ($this->Users_models->save_job_info($job_data)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
@@ -580,7 +709,7 @@ class Team_member extends Security_Controller_Plugin {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
 
-        $view_data['user_info'] = $this->Users_model->get_one($user_id);
+        $view_data['user_info'] = $this->Users_models->get_one($user_id);
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
         return $this->template->view("aleelo_plugin\Views/team_members/general_info", $view_data);
@@ -611,7 +740,7 @@ class Team_member extends Security_Controller_Plugin {
 
         $user_data = clean_data($user_data);
 
-        $user_info_updated = $this->Users_model->ci_save($user_data, $user_id);
+        $user_info_updated = $this->Users_models->ci_save($user_data, $user_id);
 
         save_custom_fields("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -671,7 +800,7 @@ class Team_member extends Security_Controller_Plugin {
         validate_numeric_value($user_id);
         $this->can_access_user_settings($user_id);
 
-        $view_data['user_info'] = $this->Users_model->get_one($user_id);
+        $view_data['user_info'] = $this->Users_models->get_one($user_id);
         if ($view_data['user_info']->is_admin) {
             $view_data['user_info']->role_id = "admin";
         }
@@ -683,7 +812,7 @@ class Team_member extends Security_Controller_Plugin {
 
     //show my preference settings of a team member
     function my_preferences() {
-        $view_data["user_info"] = $this->Users_model->get_one($this->login_user->id);
+        $view_data["user_info"] = $this->Users_models->get_one($this->login_user->id);
 
         //language dropdown
         $view_data['language_dropdown'] = array();
@@ -726,7 +855,7 @@ class Team_member extends Security_Controller_Plugin {
 
         $user_data = clean_data($user_data);
 
-        $this->Users_model->ci_save($user_data, $this->login_user->id);
+        $this->Users_models->ci_save($user_data, $this->login_user->id);
 
         try {
             app_hooks()->do_action("app_hook_team_members_my_preferences_save_data");
@@ -743,7 +872,7 @@ class Team_member extends Security_Controller_Plugin {
             $language = clean_data($language);
             $data["language"] = strtolower($language);
 
-            $this->Users_model->ci_save($data, $this->login_user->id);
+            $this->Users_models->ci_save($data, $this->login_user->id);
         }
     }
 
@@ -752,7 +881,7 @@ class Team_member extends Security_Controller_Plugin {
         validate_numeric_value($user_id);
         $this->can_access_user_settings($user_id);
 
-        if ($this->Users_model->is_email_exists($this->request->getPost('email'), $user_id)) {
+        if ($this->Users_models->is_email_exists($this->request->getPost('email'), $user_id)) {
             echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
             exit();
         }
@@ -762,7 +891,7 @@ class Team_member extends Security_Controller_Plugin {
         );
 
         $role = $this->request->getPost('role');
-        $user_info = $this->Users_model->get_one($user_id);
+        $user_info = $this->Users_models->get_one($user_id);
 
         if (!$this->is_own_id($user_id) && ($this->login_user->is_admin || (!$user_info->is_admin && $this->has_role_manage_permission() && !$this->is_admin_role($role)))) {
             //only admin user/eligible user has permission to update team member's role
@@ -789,7 +918,7 @@ class Team_member extends Security_Controller_Plugin {
             $account_data['password'] = password_hash($this->request->getPost("password"), PASSWORD_DEFAULT);
         }
 
-        if ($this->Users_model->ci_save($account_data, $user_id)) {
+        if ($this->Users_models->ci_save($account_data, $user_id)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
@@ -800,7 +929,7 @@ class Team_member extends Security_Controller_Plugin {
     function save_profile_image($user_id = 0) {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
-        $user_info = $this->Users_model->get_one($user_id);
+        $user_info = $this->Users_models->get_one($user_id);
 
         //process the the file which has uploaded by dropzone
         $profile_image = str_replace("~", ":", $this->request->getPost("profile_image"));
@@ -813,7 +942,7 @@ class Team_member extends Security_Controller_Plugin {
 
             $image_data = array("image" => $profile_image);
 
-            $this->Users_model->ci_save($image_data, $user_id);
+            $this->Users_models->ci_save($image_data, $user_id);
             echo json_encode(array("success" => true, 'message' => app_lang('profile_image_changed')));
         }
 
@@ -836,7 +965,7 @@ class Team_member extends Security_Controller_Plugin {
                 }
 
                 $image_data = array("image" => $profile_image);
-                $this->Users_model->ci_save($image_data, $user_id);
+                $this->Users_models->ci_save($image_data, $user_id);
                 echo json_encode(array("success" => true, 'message' => app_lang('profile_image_changed'), "reload_page" => true));
             }
         }
@@ -1172,7 +1301,7 @@ class Team_member extends Security_Controller_Plugin {
             array("name" => "job_title", "required" => true, "required_message" => app_lang("import_team_member_error_job_title_field_required")),
             array("name" => "email", "required" => true, "required_message" => app_lang("import_team_member_error_email_field_required"), "custom_validation" => function ($value, $row_data) {
                 //checking duplicate email
-                if ($this->Users_model->is_email_exists($value)) {
+                if ($this->Users_models->is_email_exists($value)) {
                     return array("error" => app_lang("duplicate_email"));
                 }
             }),
@@ -1217,7 +1346,7 @@ class Team_member extends Security_Controller_Plugin {
         $team_member_data["created_at"] = $now;
 
         //save team member data
-        $saved_id = $this->Users_model->ci_save($team_member_data);
+        $saved_id = $this->Users_models->ci_save($team_member_data);
         if (!$saved_id) {
             return false;
         }

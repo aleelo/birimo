@@ -10,22 +10,42 @@ class Expense extends Security_Controller_Plugin {
         parent::__construct();
 
         $this->init_permission_checker("expense");
-
-        $this->access_only_allowed_members();
+      
     }
 
     //load the expenses list view
     function index() {
-       // $this->check_module_availability("module_expense");
-
+       $this->check_module_availability("module_expense");
+       if ($this->login_user->is_admin || $this->login_user->user_type === "staff"  && get_array_value($this->login_user->permissions, "expense") == "all" ) {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
-
+        $view_data['login_user'] = $this->login_user;
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
+        $view_data['company'] = $this->_get_company();
+                  
+        $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
+        $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
+        $view_data['user'] = $this->login_user->id;
+        $view_data['company_id'] = $this->login_user->company_id;
+
+        return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
+    } elseif ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "expense") == "own_expenses"|| get_array_value($this->login_user->permissions, "expense") == "own_company") {
+       
+        $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
+        $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
+        $view_data['login_user'] = $this->login_user;
+        $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
+                $view_data['company'] = $this->_get_company();
+                $view_data['user'] = $this->login_user->id;
+
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
 
-        return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
+        return $this->template->rander("aleelo_plugin\Views\items_list/expenses/index", $view_data);
+    }
+    else{
+        app_redirect("forbidden");
+    }
     }
 
     //get categories dropdown
@@ -77,16 +97,18 @@ class Expense extends Security_Controller_Plugin {
     //load the add/edit expense form
     function modal_form() {
         $this->validate_submitted_data(array(
-            "id" => "numeric"
+            "id" => "numeric",
         ));
+        $department=$this->login_user->company_id;
 
         $client_id = $this->request->getPost('client_id');
         $project_id = $this->request->getPost('project_id');
 
         $model_info = $this->Expenses_model->get_one($this->request->getPost('id'));
         $view_data['categories_dropdown'] = $this->Expense_categories_model->get_dropdown_list(array("title"));
+        $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
 
-        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "user_type" => "staff"))->getResult();
+        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "user_type" => "staff","company_id"=>$department))->getResult();
         $members_dropdown = array();
 
         foreach ($team_members as $team_member) {
@@ -107,12 +129,15 @@ class Expense extends Security_Controller_Plugin {
 
         $view_data['can_access_expenses'] = $this->can_access_expenses();
         $view_data['can_access_clients'] = $this->can_access_clients();
-
-        $view_data['departments'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
-
+        $department= $this->login_user->company_id;
+        $view_data['departments'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id",array("id"=>$department),);
         //clone invoice
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
+        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
+        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all"));
+            $view_data['company_id'] = $this->login_user->company_id;
+
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("expenses", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
         return $this->template->view('aleelo_plugin\Views/expenses/modal_form', $view_data);
@@ -124,7 +149,9 @@ class Expense extends Security_Controller_Plugin {
             "id" => "numeric",
             "expense_date" => "required",
             "category_id" => "required",
-            "amount" => "required"
+            "amount" => "required",
+            "company_id" =>"required"
+
         ));
 
         $id = $this->request->getPost('id');
@@ -147,7 +174,7 @@ class Expense extends Security_Controller_Plugin {
             "title" => $this->request->getPost('title'),
             "description" => $this->request->getPost('description'),
             "category_id" => $this->request->getPost('category_id'),
-            "company_id" => $this->request->getPost('department_id'),
+            "company_id" => $this->request->getPost('company_id'),
             "amount" => unformat_currency($this->request->getPost('amount')),
             "client_id" => $this->request->getPost('expense_client_id') ? $this->request->getPost('expense_client_id') : 0,
             "project_id" => $this->request->getPost('expense_project_id'),
@@ -249,18 +276,21 @@ class Expense extends Security_Controller_Plugin {
         $category_id = $this->request->getPost('category_id');
         $project_id = $this->request->getPost('project_id');
         $user_id = $this->request->getPost('user_id');
-
-        // print_r($project_id);die;
+        $company_id_company= $this->request->getPost('company_id_company');
+       $company= $this->login_user->department;
+    
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $options = array("start_date" => $start_date, "end_date" => $end_date, "category_id" => $category_id, "project_id" => $project_id, "user_id" => $user_id, "custom_fields" => $custom_fields, "recurring" => $recurring, "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type));
+        $options = array("start_date" => $start_date, "end_date" => $end_date, "category_id" => $category_id, "project_id" => $project_id,"company_id_company"=>$company_id_company, "user_id" => $user_id,"company_id" =>$company, "custom_fields" => $custom_fields, "recurring" => $recurring, "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type));
         $list_data = $this->Expenses_model->get_details($options)->getResult();
 
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data, $custom_fields);
+            
         }
+        
         echo json_encode(array("data" => $result));
     }
 
@@ -269,6 +299,7 @@ class Expense extends Security_Controller_Plugin {
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array("id" => $id, "custom_fields" => $custom_fields);
         $data = $this->Expenses_model->get_details($options)->getRow();
+        
         return $this->_make_row($data, $custom_fields);
     }
 
@@ -278,7 +309,8 @@ class Expense extends Security_Controller_Plugin {
     private function _make_row($data, $custom_fields) {
 
         $meta_info = $this->_prepare_expense_info($data);
-
+        
+       
         $description = $data->description;
         if ($data->linked_client_name) {
             if ($description) {
@@ -362,6 +394,7 @@ class Expense extends Security_Controller_Plugin {
         $row_data = array(
             $data->expense_date,
             modal_anchor(get_uri("expense/expense_details"), format_to_date($data->expense_date, false), array("title" => app_lang("expense_details"), "data-post-id" => $data->id, "data-modal-lg" => "1")),
+            $data->company_name,
             $data->created_by,
             $data->title,
             $description,
@@ -381,7 +414,7 @@ class Expense extends Security_Controller_Plugin {
 
         $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expense/delete"), "data-action" => "delete-confirmation"));
-
+            
         return $row_data;
     }
 
@@ -577,18 +610,21 @@ class Expense extends Security_Controller_Plugin {
 
     /* list of expense of a specific client, prepared for datatable  */
 
-    function expense_list_data_of_client($client_id) {
-        $this->access_only_team_members();
-        validate_numeric_value($client_id);
-
+    function expense_list_data_of_client($user) {
+        validate_numeric_value($user);
+    
+        
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
-
+    
         $options = array(
-            "client_id" => $client_id,
+            "company_id_company" => $this->login_user->company_id, 
             "custom_fields" => $custom_fields,
-            "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type)
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type),
+            "created_by_user"=>$this->show_own_expenses_only_user_id(),
         );
-
+    
+        
+       
         $list_data = $this->Expenses_model->get_details($options)->getResult();
         $result = array();
         foreach ($list_data as $data) {
@@ -596,7 +632,6 @@ class Expense extends Security_Controller_Plugin {
         }
         echo json_encode(array("data" => $result));
     }
-
     function expense_details() {
         $this->validate_submitted_data(array(
             "id" => "required|numeric"

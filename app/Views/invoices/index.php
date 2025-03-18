@@ -71,8 +71,17 @@
             filterDropdown: [
             {name: "type", class: "w150", options: <?php echo $types_dropdown; ?>},
             {name: "status", class: "w150", options: invoice_statuses_dropdown}
+           
+           
+           <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
+ { ?>
+           , {name: "can_view_all_invoice", class: "w200 ", options: <?php echo $company; ?>}
+
+            <?php  }  ?>
+
             <?php if ($currencies_dropdown) { ?>
-                , {name: "currency", class: "w150", options: <?php echo $currencies_dropdown; ?>}
+                , {name: "currency", class: "w150 hidden-filter", options: <?php echo $currencies_dropdown; ?>}
+                
             <?php } ?>
             , <?php echo $custom_field_filters; ?>
             ],
@@ -100,6 +109,7 @@
             {column: 10, dataType: 'currency', conversionRate: <?php echo $conversion_rate; ?>}
             ]
     });
+    $(".hidden-filter").hide(); // 
 
 });
 </script>

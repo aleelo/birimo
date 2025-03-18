@@ -64,11 +64,16 @@ class Roles extends Security_Controller {
             $view_data['subscription'] = get_array_value($permissions, "subscription");
             $view_data['estimate'] = get_array_value($permissions, "estimate");
             $view_data['contract'] = get_array_value($permissions, "contract");
+            $view_data['department']= get_array_value($permissions, "department");
             $view_data['proposal'] = get_array_value($permissions, "proposal");
             $view_data['expense'] = get_array_value($permissions, "expense");
+            $view_data['task'] = get_array_value($permissions, "task");
             $view_data['order'] = get_array_value($permissions, "order");
             $view_data['client'] = get_array_value($permissions, "client");
             $view_data['lead'] = get_array_value($permissions, "lead");
+            $view_data['company'] = get_array_value($permissions, "company");
+
+
 
             $view_data['ticket'] = get_array_value($permissions, "ticket");
             $view_data['ticket_specific'] = get_array_value($permissions, "ticket_specific");
@@ -79,6 +84,8 @@ class Roles extends Security_Controller {
 
             $view_data['do_not_show_projects'] = get_array_value($permissions, "do_not_show_projects");
             $view_data['can_manage_all_projects'] = get_array_value($permissions, "can_manage_all_projects");
+            $view_data['can_view_own_company_project'] = get_array_value($permissions, "can_view_own_company_project");
+
             $view_data['can_create_projects'] = get_array_value($permissions, "can_create_projects");
             $view_data['can_edit_projects'] = get_array_value($permissions, "can_edit_projects");
             $view_data['can_edit_only_own_created_projects'] = get_array_value($permissions, "can_edit_only_own_created_projects");
@@ -111,12 +118,14 @@ class Roles extends Security_Controller {
             $view_data['disable_event_sharing'] = get_array_value($permissions, "disable_event_sharing");
 
             $view_data['hide_team_members_list'] = get_array_value($permissions, "hide_team_members_list");
+                        $view_data['can_view_own_company_members'] = get_array_value($permissions, "can_view_own_company_members");
+
 
             $view_data['can_delete_leave_application'] = get_array_value($permissions, "can_delete_leave_application");
 
             $view_data['message_permission'] = get_array_value($permissions, "message_permission");
             $view_data['message_permission_specific'] = get_array_value($permissions, "message_permission_specific");
-
+           
             $view_data['job_info_manage_permission'] = get_array_value($permissions, "job_info_manage_permission");
 
             $view_data['can_manage_all_kinds_of_settings'] = get_array_value($permissions, "can_manage_all_kinds_of_settings");
@@ -191,11 +200,14 @@ class Roles extends Security_Controller {
         $subscription = $this->request->getPost('subscription_permission');
         $estimate = $this->request->getPost('estimate_permission');
         $contract = $this->request->getPost('contract_permission');
+        $department = $this->request->getPost('department_permission');
         $proposal = $this->request->getPost('proposal_permission');
-        $expense = $this->request->getPost('expense_permission');
-        $order = $this->request->getPost('order_permission');
+        $order = $this->request->getPost('order_permission');       
+         $expense = $this->request->getPost('expense_permission');
+         $task = $this->request->getPost('task_permission');
         $client = $this->request->getPost('client_permission');
         $lead = $this->request->getPost('lead_permission');
+        $company = $this->request->getPost('switch_company');
 
         $ticket = $this->request->getPost('ticket_permission');
 
@@ -212,6 +224,8 @@ class Roles extends Security_Controller {
 
         $do_not_show_projects = $this->request->getPost('do_not_show_projects');
         $can_manage_all_projects = $this->request->getPost('can_manage_all_projects');
+                $can_view_own_company_project = $this->request->getPost('can_view_own_company_project');
+
         $can_create_projects = $this->request->getPost('can_create_projects');
         $can_edit_projects = $this->request->getPost('can_edit_projects');
         $can_edit_only_own_created_projects = $this->request->getPost('can_edit_only_own_created_projects');
@@ -251,6 +265,7 @@ class Roles extends Security_Controller {
         $disable_event_sharing = $this->request->getPost('disable_event_sharing');
 
         $hide_team_members_list = $this->request->getPost('hide_team_members_list');
+        $can_view_own_company_members = $this->request->getPost('can_view_own_company_members');
 
         $can_delete_leave_application = $this->request->getPost('can_delete_leave_application');
 
@@ -281,6 +296,7 @@ class Roles extends Security_Controller {
             $message_permission = "specific";
             $message_permission_specific = $this->request->getPost("message_permission_specific");
         }
+     
 
         $job_info_manage_permission = $this->request->getPost('job_info_manage_permission');
 
@@ -311,18 +327,23 @@ class Roles extends Security_Controller {
             "subscription" => $subscription,
             "estimate" => $estimate,
             "contract" => $contract,
+            "department"=>$department,
             "proposal" => $proposal,
+            "task" =>$task,
             "expense" => $expense,
             "order" => $order,
             "client" => $client,
             "client_specific" => $client_specific,
             "lead" => $lead,
+            "company"=>$company,
             "ticket" => $ticket,
             "ticket_specific" => $ticket_specific,
             "announcement" => $announcement,
             "help_and_knowledge_base" => $help_and_knowledge_base,
             "do_not_show_projects" => $do_not_show_projects,
             "can_manage_all_projects" => $can_manage_all_projects,
+                        "can_view_own_company_project" => $can_view_own_company_project,
+
             "can_create_projects" => $can_create_projects,
             "can_edit_projects" => $can_edit_projects,
             "can_edit_only_own_created_projects" => $can_edit_only_own_created_projects,
@@ -346,10 +367,14 @@ class Roles extends Security_Controller {
             "timesheet_manage_permission" => $timesheet_manage_permission,
             "timesheet_manage_permission_specific" => $timesheet_manage_permission_specific,
             "disable_event_sharing" => $disable_event_sharing,
-            "hide_team_members_list" => $hide_team_members_list,
+                        "hide_team_members_list" => $hide_team_members_list,
+            "can_view_own_company_members" => $can_view_own_company_members,
+
             "can_delete_leave_application" => $can_delete_leave_application,
             "message_permission" => $message_permission,
             "message_permission_specific" => $message_permission_specific,
+          
+            
             "job_info_manage_permission" => $job_info_manage_permission,
             "can_manage_all_kinds_of_settings" => $can_manage_all_kinds_of_settings,
             "can_manage_user_role_and_permissions" => $can_manage_user_role_and_permissions,

@@ -28,6 +28,7 @@ class Estimates extends Security_Controller {
 
         if ($this->login_user->user_type === "staff") {
             $this->access_only_allowed_members();
+            $view_data['company'] = $this->_get_company();
 
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
             return $this->template->rander("estimates/index", $view_data);
@@ -386,7 +387,10 @@ class Estimates extends Security_Controller {
             "end_date" => $this->request->getPost("end_date"),
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
-            "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type)
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type),
+            "company_id_department" => $this->can_view_own_department_invoice(),
+            "company_id" => $this->can_view_own_company_invoice(),
+            "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
         );
 
         $list_data = $this->Estimates_model->get_details($options)->getResult();

@@ -46,8 +46,16 @@
             filterDropdown: [
             {name: "category_id", class: "w200", options: <?php echo $categories_dropdown; ?>},
             {name: "user_id", class: "w200", options: <?php echo $members_dropdown; ?>}
+            <?php if ($login_user->department== "0") 
+ { ?>
+           , {name: "company_id_company", class: "w200 ", options: <?php echo $company; ?>}
+
+            <?php  } else{ ?>
+                , {name: "company_id", class: "w200 hidden-filter ", options: <?php echo $company; ?>, value: "<?php echo $login_user->department; ?>"}
+
+          <?php  } ?>
 <?php if ($projects_dropdown) { ?>
-                , {name: "project_id", class: "w200", options: <?php echo $projects_dropdown; ?>}
+               , {name: "project_id", class: "w200", options: <?php echo $projects_dropdown; ?>}
 <?php } ?>
             ,<?php echo $custom_field_filters; ?>
             ],
@@ -56,6 +64,7 @@
             columns: [
             {visible: false, searchable: false},
             {title: '<?php echo app_lang("date") ?>', "iDataSort": 0, "class": "all"},
+            {title: '<?php echo app_lang("company") ?>'},
             {title: '<?php echo "Created by" ?>'},
             {title: '<?php echo app_lang("title") ?>', "class": "all"},
             {title: '<?php echo app_lang("description") ?>'},
@@ -67,10 +76,12 @@
             ],
             printColumns: combineCustomFieldsColumns([1, 2, 3, 4, 6, 7, 8, 9], '<?php echo $custom_field_headers; ?>'),
             xlsColumns: combineCustomFieldsColumns([1, 2, 3, 4, 6, 7, 8, 9], '<?php echo $custom_field_headers; ?>'),
-            summation: [{column: 6, dataType: 'currency'}]
+            summation: [{column: 7, dataType: 'currency'}]
     });
     };
     $(document).ready(function () {
     loadExpensesTable("#monthly-expense-table", "monthly");
+    $(".hidden-filter").hide(); // 
+
     });
 </script>

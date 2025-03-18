@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class Company extends Security_Controller {
 
-    private $Company_model;
+    public $Company_model;
 
     function __construct() {
         parent::__construct();

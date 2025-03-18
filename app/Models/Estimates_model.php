@@ -29,6 +29,20 @@ class Estimates_model extends Crud_model {
             $where .= " AND $estimates_table.client_id=$client_id";
         }
 
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND dp.id=$company_id";
+        }
+        
+        $company_id_department = $this->_get_clean_value($options, "company_id_department");
+        if ($company_id_department) {
+            $where .= " AND dp.id=$company_id_department";
+        }
+
+         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        if ($can_view_all_invoice) {
+            $where .= " AND dp.id=$can_view_all_invoice";
+        }
         $start_date = $this->_get_clean_value($options, "start_date");
         $end_date = $this->_get_clean_value($options, "end_date");
         if ($start_date && $end_date) {
@@ -85,6 +99,8 @@ class Estimates_model extends Crud_model {
         FROM $estimates_table
         LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id
         LEFT JOIN $projects_table ON $projects_table.id= $estimates_table.project_id
+            LEFT JOIN rise_clients as cn ON cn.id = $estimates_table.client_id 
+        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
         LEFT JOIN $users_table ON $users_table.id= $estimates_table.accepted_by
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $estimates_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $estimates_table.tax_id2 

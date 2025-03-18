@@ -59,7 +59,7 @@
                         <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
                         <div class="col-md-9">
                             <?php
-                            echo form_input(array(
+                            echo form_hidden(array(
                                 "id" => "company_id",
                                 "name" => "company_id",
                                 "value" => $model_info->company_id,

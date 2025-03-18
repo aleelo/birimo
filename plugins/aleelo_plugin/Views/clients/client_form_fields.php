@@ -1,6 +1,7 @@
 <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
 <input type="hidden" name="view" value="<?php echo isset($view) ? $view : ""; ?>" />
 
+<?php if ($has_all_permission){ ?>
 
 <div class="form-group">
 <div class="row">
@@ -16,6 +17,9 @@
                 </div>
 </div>
             </div>
+            <?php } else{ ?>
+                <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
+                <?php } ?>
 
 
 <div class="form-group">

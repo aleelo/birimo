@@ -18,6 +18,13 @@
         $("#invoice-payment-table").appTable({
             source: '<?php echo_uri("invoice_payments/payment_list_data/" . $invoice_id) ?>',
             order: [[0, "asc"]],
+            filterDropdown:[
+                <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
+ { ?>
+           , {name: "can_view_all_invoice", class: "w200 ", options: <?php echo $company; ?>}
+
+            <?php  }  ?>
+            ],
             columns: [
                 {targets: [0], visible: false, searchable: false},
                 {visible: false, searchable: false},

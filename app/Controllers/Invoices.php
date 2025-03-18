@@ -22,6 +22,7 @@ class Invoices extends Security_Controller {
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
         $view_data["can_edit_invoices"] = $this->can_edit_invoices();
+        $view_data['company'] = $this->_get_company();
 
         $type_suggestions = array(
             array("id" => "", "text" => "- " . app_lang('type') . " -"),
@@ -132,12 +133,30 @@ class Invoices extends Security_Controller {
         if ($model_info->client_id) {
             $project_client_id = $model_info->client_id;
         }
-
         $view_data['model_info'] = $model_info;
 
         //make the drodown lists
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
-        $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
+        if(get_array_value($this->login_user->permissions, "company") === "all"){
+        $department = $this->login_user->department;
+    }
+    else{
+        $department = $this->login_user->company_id;
+
+    }
+        $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0,"company_id"=>$department));
+// if (get_array_value($this->login_user->permissions, "company")) {
+//     if($departments = $this->Companyy_model->get_access_info($this->login_user->id)){
+//         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0, "company_id" => $departments));
+// }
+// else{
+//     $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
+// }
+
+// } else {
+//     $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0, "company_id" => $department));
+// }
+    
         $projects = $this->Projects_model->get_dropdown_list(array("title"), "id", array("client_id" => $project_client_id, "project_type" => "client_project"));
         $suggestion = array(array("id" => "", "text" => "-"));
         foreach ($projects as $key => $value) {
@@ -148,7 +167,6 @@ class Invoices extends Security_Controller {
         $view_data['client_id'] = $client_id;
         $view_data['project_id'] = $project_id;
 
-        //prepare label suggestions
         $view_data['label_suggestions'] = $this->make_labels_dropdown("invoice", $model_info->labels);
 
         //clone invoice
@@ -222,7 +240,9 @@ class Invoices extends Security_Controller {
         ));
 
         $client_id = $this->request->getPost('invoice_client_id');
-
+        $client_info = $this->Clients_model->get_one($client_id);
+        $company_id = $client_info->company_id;
+        
         $target_path = get_setting("timeline_file_path");
         $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "invoice");
         $new_files = unserialize($files_data);
@@ -240,7 +260,7 @@ class Invoices extends Security_Controller {
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "tax_id3" => $this->request->getPost('tax_id3') ? $this->request->getPost('tax_id3') : 0,
-            "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
+            "company_id" => $company_id,
             "note" => $this->request->getPost('invoice_note'),
             "labels" => $this->request->getPost('labels'),
             "estimate_id" => $estimate_id ? $estimate_id : 0
@@ -483,6 +503,7 @@ class Invoices extends Security_Controller {
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
+
         $options = array(
             "type" => $this->request->getPost("type"),
             "status" => $this->request->getPost("status"),
@@ -490,7 +511,11 @@ class Invoices extends Security_Controller {
             "end_date" => $this->request->getPost("end_date"),
             "currency" => $this->request->getPost("currency"),
             "custom_fields" => $custom_fields,
-            "custom_field_filter" => $this->prepare_custom_field_filter_values("invoices", $this->login_user->is_admin, $this->login_user->user_type)
+            "company_id" => $this->can_view_own_company_invoice(),
+            "cadn_view_all_invoice" =>$this->request->getPost("can_view_all_invoice"),
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("invoices", $this->login_user->is_admin, $this->login_user->user_type),
+           "company_id_department" => $this->can_view_own_department_invoice(),
+            "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
         );
 
         $list_data = $this->Invoices_model->get_details($options)->getResult();

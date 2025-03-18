@@ -47,7 +47,16 @@ class Security_Controller extends App_Controller {
             $this->login_user->permissions = array();
         }
     }
+     function _get_company() {
+        $categories = $this->Company_model->get_all_where(array("deleted" => 0), 0, 0, "name")->getResult();
 
+        $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("company") . " -"));
+        foreach ($categories as $category) {
+            $categories_dropdown[] = array("id" => $category->id, "text" => $category->name);
+        }
+
+        return json_encode($categories_dropdown);
+    }
     //initialize the login user's permissions with readable format
     protected function init_permission_checker($module) {
         $info = $this->get_access_info($module);
@@ -115,7 +124,17 @@ class Security_Controller extends App_Controller {
             app_redirect("forbidden");
         }
     }
-
+    protected function access_only_solution() {
+        if (!$this->login_user->is_admin && $this->login_user->department != 2) {
+            app_redirect("forbidden");
+        }
+    }
+    protected function access_only_pixel() {
+        if (!$this->login_user->is_admin && $this->login_user->department != 2) {
+            app_redirect("forbidden");
+        }
+    }
+        
     //only allowed to access for admin users or has admin privileges 
     protected function access_only_admin_or_settings_admin() {
         if (!($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_manage_all_kinds_of_settings"))) {
@@ -135,11 +154,26 @@ class Security_Controller extends App_Controller {
             return true;  //can access if it's clients module and user has a pertial access
         } else if ($this->module_group === "estimate" && $this->access_type === "own") {
             return true; //can access if it's estimates module and user has a pertial access
+        } else if ($this->module_group === "expense" && ($this->access_type === "own" || $this->access_type === "own_company")) {
+            return true; //can access if it's expenses module and user has a pertial access
         } else {
             app_redirect("forbidden");
         }
     }
+    protected function access_only_allowed_members_for_expenses() {
+        if ($this->login_user->user_type === "staff") {
+            return get_array_value($this->login_user->permissions, "expense") == "all" ? $this->login_user->id : false;
+        }
 
+        else{
+            app_redirect("forbidden");
+        }
+        }
+        protected function show_own_expenses_only_user_id() {
+            if ($this->login_user->user_type === "staff") {
+                return get_array_value($this->login_user->permissions, "expense") == "own_expenses" ? $this->login_user->id : false;
+    }
+    }
     //access only allowed team members or client contacts 
     protected function access_only_allowed_members_or_client_contact($client_id) {
 
@@ -203,13 +237,27 @@ class Security_Controller extends App_Controller {
 
     //check who has permission to view team members list
     protected function can_view_team_members_list() {
+        // Admin can always view the team members list
+        if ($this->login_user->is_admin) {
+            return true;
+        }
+    
         if ($this->login_user->user_type == "staff") {
             if (get_array_value($this->login_user->permissions, "hide_team_members_list") == "1") {
                 return false;
-            } else {
-                return true; //all members can see team members except the selected roles
+            }
+    
+            if (get_array_value($this->login_user->permissions, "can_view_team_members") == "1") {
+                return true;
+            }
+    
+            $user_company_id = $this->login_user->company_id;
+            if ($user_company_id) {
+                $team_members = $this->Users_model->get_details(["company_id" => $user_company_id]);
+                return $team_members;
             }
         }
+    
         return false;
     }
 
@@ -571,7 +619,7 @@ class Security_Controller extends App_Controller {
 
     protected function can_view_invoices($client_id = 0) {
         if ($this->login_user->user_type == "staff") {
-            if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all" || get_array_value($this->login_user->permissions, "invoice") === "read_only") {
+            if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all"|| get_array_value($this->login_user->permissions, "invoice") === "own_invoice"  || get_array_value($this->login_user->permissions, "invoice") === "read_only") {
                 return true;
             }
         } else {
@@ -582,11 +630,86 @@ class Security_Controller extends App_Controller {
     }
 
     protected function can_edit_invoices() {
-        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all")) {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all"|| get_array_value($this->login_user->permissions, "invoice") === "own_invoice")) {
             return true;
         }
     }
-
+    protected function can_view_own_company() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "expense") === "all"|| get_array_value($this->login_user->permissions, "expense") === "own_company")) {
+            return true;
+        }
+    }
+    protected function can_view_own_expenses() {
+        if ($this->login_user->user_type == "staff" && (get_array_value($this->login_user->permissions, "expense") === "own_expenses")) {
+            return true;
+        }
+    }
+    protected function can_view_own_company_invoice() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
+            return $this->login_user->company_id; 
+        }
+        return null; 
+    }
+  protected function can_view_own_company_members() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_members") === "1") {
+            return $this->login_user->company_id; 
+        }
+        return null; 
+    }
+    protected function can_view_own_department_invoice() {
+        if (
+            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
+            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->department != 0
+        ) {
+            return $this->login_user->department;
+        }
+        return null;
+    }
+    protected function can_view_own_members() {
+        if (
+            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
+            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->department != 0
+        ) {
+            return $this->login_user->department;
+        }
+        return null;
+    }
+    protected function can_view_all_tasks() {
+        if (
+            ($this->login_user->user_type == "staff" ) &&
+            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->department != 0
+        ) {
+            return $this->login_user->department;
+        }
+        return null;
+    }
+    protected function can_view_own_company_tasks() {
+        if (
+            ($this->login_user->user_type == "staff" ) &&
+            get_array_value($this->login_user->permissions, "task") === "own_company"
+        ) {
+            return $this->login_user->company_id;
+        }
+        return null;
+    }
+    protected function can_view_own_tasks() {
+        if (
+            ($this->login_user->user_type == "staff" ) &&
+            get_array_value($this->login_user->permissions, "task") === "own_tasks"
+        ) {
+            return $this->login_user->id;
+        }
+        return null;
+    }
+    
+    protected function can_view_all_invoice() {
+        if ($this->login_user->user_type == "staff" && (get_array_value($this->login_user->permissions, "invoice") === "all")) {
+            return true;
+        }
+    }
     protected function can_access_expenses() {
         $permissions = $this->login_user->permissions;
         if ($this->login_user->is_admin || get_array_value($permissions, "expense")) {

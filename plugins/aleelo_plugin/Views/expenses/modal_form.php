@@ -8,23 +8,31 @@
                 <input type="hidden" name="is_clone" value="1" />
             <?php } ?>
 
-            <div class="form-group">
-                <div class="row">
-                    <label for="department_id" class=" col-md-3"><?php echo 'Company'; ?></label>
-                    <div class=" col-md-9">
-                    <?php 
-                    echo form_dropdown(array( 
-                            'id'=> "department_id",
-                            'name'=> "department_id",
-                            'class' => "form-control select2",
-                            'placeholder' => 'Company',
-                            'autocomplete'=> "off",
-                            'data-rule-required' => true,
-                            'data-msg-required' =>   app_lang('field_required')
-                        ),$departments,[$model_info->company_id]); ?>
-                    </div>
-                </div>
-            </div> 
+        
+<?php if ($has_all_permission){ ?>
+    <div class="form-group">
+        <div class="row">
+            <label for="company_id" class="col-md-3"><?php echo 'Company'; ?></label>
+            <div class="col-md-9">
+                <?php 
+                echo form_dropdown(array( 
+                        'id'=> "company_id",
+                        'name'=> "company_id",
+                        'class' => "form-control select2",
+                        'placeholder' => 'Company',
+                        "value" => $model_info->company_id,
+                        'autocomplete'=> "off",
+                        'data-rule-required' => true,
+                        'data-msg-required' => app_lang('field_required')
+                    ), $company, [$model_info->company_id]); 
+                ?>
+            </div>
+        </div>
+    </div>
+<?php } else{ ?>
+    <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
+    <?php } ?>
+
 
             <div class=" form-group">
                 <div class="row">

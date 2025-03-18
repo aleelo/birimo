@@ -6,6 +6,7 @@
         <input type="hidden" name="order_id" value="<?php echo $model_info->order_id; ?>" />
 
         <!----------------------------------------- Company ------------------------------------>
+        <?php if ($has_all_permission){ ?>
 
         <div class="form-group">
             <div class="row">
@@ -24,6 +25,10 @@
                 </div>
             </div>
         </div> 
+        <?php } else{ ?>
+            <input type="hidden" name="department_id" value="<?php echo $login_user->company_id; ?>">
+            <?php } ?>
+
 
         <!----------------------------------------- Title ------------------------------------>
 

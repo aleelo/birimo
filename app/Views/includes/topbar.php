@@ -29,9 +29,13 @@
                 //get the array of hidden topbar menus
                 $hidden_topbar_menus = explode(",", get_setting("user_" . $user . "_hidden_topbar_menus"));
 
+                
                 if (!in_array("to_do", $hidden_topbar_menus)) {
                     echo view("todo/topbar_icon");
                 }
+
+
+
                 if (!in_array("favorite_projects", $hidden_topbar_menus) && !(get_setting("disable_access_favorite_project_option_for_clients") && $login_user->user_type == "client") && !($login_user->user_type == "staff" && get_array_value($login_user->permissions, "do_not_show_projects"))) {
                     echo view("projects/star/topbar_icon");
                 }
@@ -143,7 +147,11 @@
                             </div>
                         </li>
                     <?php } ?>
-
+<?php
+                 if (get_array_value($login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
+                    echo view("todo/company_topbar_icon");
+                }
+                ?>
                     <li class="nav-item dropdown">
                         <a id="user-dropdown" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                             <span class="avatar-xs avatar me-1">
@@ -183,7 +191,6 @@
 </nav>
 
 <script type="text/javascript">
-    //close navbar collapse panel on clicking outside of the panel
     $(document).click(function(e) {
         if (!$(e.target).is('#navbar') && isMobile()) {
             $('#navbar').collapse('hide');

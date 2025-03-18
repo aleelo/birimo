@@ -194,7 +194,6 @@ class Project extends Security_Controller_Plugin {
     }
 
     function all_projects($status_id = 0) {
-        $this->access_only_allowed_members();
         validate_numeric_value($status_id);
         $view_data['project_labels_dropdown'] = json_encode($this->make_labels_dropdown("project", "", true));
 
@@ -208,9 +207,10 @@ class Project extends Security_Controller_Plugin {
         $view_data['departments_dropdown'] = $this->get_departments_for_table_emp();
         // $view_data['departments_dropdown'] = array("" => " -- All Companies -- ") + $this->Departments_model->get_dropdown_list(array("nameSo"), "id");
 
-        if ($this->login_user->user_type === "staff") {
+        if ($this->login_user->is_admin || $this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "do_not_show_projects") !== "1") {
             $view_data["can_edit_projects"] = $this->can_edit_projects();
             $view_data["can_delete_projects"] = $this->can_delete_projects();
+            $view_data["company"] = $this->_get_company();
 
             return $this->template->rander("aleelo_plugin\Views/projects/index", $view_data);
         } else {
@@ -261,7 +261,9 @@ class Project extends Security_Controller_Plugin {
         $view_data['departments'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
         $view_data['screen_sizes'] = array("" => " -- choose screen size -- ") + $this->Screen_size_model->get_dropdown_list(array("screen_size"), "id");
         // $view_data['departments_dropdown'] = array("" => " -- All Companies -- ") + $this->Departments_model->get_dropdown_list(array("nameSo"), "id");
-
+        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
+        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all"));
+         
         $view_data['hide_clients_dropdown'] = false;
 
         if (!$this->login_user->is_admin && !get_array_value($this->login_user->permissions, "client") && !get_array_value($this->login_user->permissions, "client_specific")) {
@@ -324,11 +326,10 @@ class Project extends Security_Controller_Plugin {
             "description" => $this->request->getPost('description'),
             "client_id" => ($project_type === "internal_project") ? 0 : $this->request->getPost('client_id'),
             "start_date" => $this->request->getPost('start_date'),
-            "company_id" => $this->request->getPost('company_id'),
+            "company_id" => $this->request->getPost('department_id'),
             "supervisor_id" => $this->request->getPost('supervisor_id'),
             "screen_size_id" => $this->request->getPost('screen_size_id'),
             "project_date" => $this->request->getPost('project_date'),
-            "screen_size_id" => $this->request->getPost('screen_size_id'),
             "location" => $this->request->getPost('location'),
             "deadline" => $this->request->getPost('deadline'),
             "project_type" => $project_type,
@@ -629,7 +630,7 @@ class Project extends Security_Controller_Plugin {
                 $checklist_data = array(
                     "title" => $list->title,
                     "task_id" => $task_ids[$list->task_id],
-                    "is_checked" => 0
+                    "is_checked" => 0,
                 );
 
                 $this->Checklist_items_model->ci_save($checklist_data);
@@ -764,7 +765,11 @@ class Project extends Security_Controller_Plugin {
             "start_date_to" => $this->request->getPost("start_date_to"),
             "deadline" => $this->request->getPost('deadline'),
             'department_id' => $this->request->getPost("department_id"),
-            "custom_field_filter" => $this->prepare_custom_field_filter_values("projects", $this->login_user->is_admin, $this->login_user->user_type)
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("projects", $this->login_user->is_admin, $this->login_user->user_type),
+            "can_view_all_project"=>$this->request->getpost("can_view_all_project"),
+            "can_view_own_company_project" => $this->can_view_own_company_project(),
+            "can_view_own_project" => $this->can_view_own_project(),
+       
         );
 
         //only admin/ the user has permission to manage all projects, can see all projects, other team mebers can see only their own projects.

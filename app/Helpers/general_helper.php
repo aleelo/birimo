@@ -1345,9 +1345,6 @@ if (!function_exists("clean_data")) {
         return $data;
     }
 }
-
-
-//return site logo
 if (!function_exists("get_logo_url")) {
 
     function get_logo_url() {
@@ -1355,7 +1352,20 @@ if (!function_exists("get_logo_url")) {
     }
 }
 
-//get logo from setting
+//return site logo
+if (!function_exists("get_logo_urlsolution")) {
+
+    function get_logo_urlsolution() {
+        return get_file_from_setting("site_logo1");
+    }
+}
+if (!function_exists("get_logo_urlpixel")) {
+
+    function get_logo_urlpixel() {
+        return get_file_from_setting("site_logo");
+    }
+}
+
 if (!function_exists("get_file_from_setting")) {
 
     function get_file_from_setting($setting_name = "", $only_file_path_with_slash = false, $file_path = "") {

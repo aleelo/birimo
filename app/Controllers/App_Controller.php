@@ -17,6 +17,7 @@ class App_Controller extends Controller {
     protected $template;
     public $session;
     public $form_validation;
+    public $Companyy_model;
     public $parser;
     //creation of dynamic property is deprecated in php 8.2
     public $Settings_model;
@@ -70,6 +71,7 @@ class App_Controller extends Controller {
     public $Lead_source_model;
     public $Order_items_model;
     public $Orders_model;
+    public $Company_model;
     public $Order_status_model;
     public $Labels_model;
     public $Verification_model;
@@ -150,6 +152,7 @@ class App_Controller extends Controller {
             'Leave_applications_model',
             'Events_model',
             'Announcements_model',
+            'Company_model',
             'Messages_model',
             'Clients_model',
             'Projects_model',
@@ -160,6 +163,7 @@ class App_Controller extends Controller {
             'Activity_logs_model',
             'Project_files_model',
             'Notes_model',
+            'Companyy_model',
             'Project_members_model',
             'Ticket_types_model',
             'Tickets_model',

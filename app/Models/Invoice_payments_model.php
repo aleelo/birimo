@@ -39,6 +39,21 @@ class Invoice_payments_model extends Crud_model {
             $where .= " AND $invoices_table.client_id=$client_id";
         }
 
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND dp.id=$company_id";
+        }
+        
+        $company_id_department = $this->_get_clean_value($options, "company_id_department");
+        if ($company_id_department) {
+            $where .= " AND dp.id=$company_id_department";
+        }
+
+         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        if ($can_view_all_invoice) {
+            $where .= " AND dp.id=$can_view_all_invoice";
+        }
+
         $project_id = $this->_get_clean_value($options, "project_id");
         if ($project_id) {
             $where .= " AND $invoices_table.project_id=$project_id";
@@ -48,6 +63,7 @@ class Invoice_payments_model extends Crud_model {
         if ($payment_method_id) {
             $where .= " AND $invoice_payments_table.payment_method_id=$payment_method_id";
         }
+        // print_r($payment_method_id);die;
 
         $start_date = $this->_get_clean_value($options, "start_date");
         $end_date = $this->_get_clean_value($options, "end_date");
@@ -62,8 +78,11 @@ class Invoice_payments_model extends Crud_model {
 
         $sql = "SELECT $invoice_payments_table.*, $invoices_table.client_id, $invoices_table.display_id, (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id limit 1) AS currency_symbol, $payment_methods_table.title AS payment_method_title
         FROM $invoice_payments_table
+
         LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
         LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
+             LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
         WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }

@@ -49,5 +49,22 @@ class Team_model extends Crud_model {
         WHERE $team_table.deleted=0 $where";
         return $this->db->query($sql);
     }
+    
+    function get_departments_for_select(){
+        // $depts = $this->db->table('departments')->select('id,nameEn')->get();
+        $depts = $this->db->query('select id,name from rise_company');
+
+        if(!$depts){
+            return [];
+        }else{
+            $depts = $depts->getResult();
+            $data = array();
+            foreach($depts as $d){
+                $data[$d->id] = $d->name;
+            }
+
+            return $data;
+        }
+    }
 
 }

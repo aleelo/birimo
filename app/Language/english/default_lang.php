@@ -36,6 +36,7 @@ $lang["end_time"] = "End time";
 $lang["deadline"] = "Deadline";
 $lang["added"] = "Added";
 $lang["created_date"] = "Created date";
+
 $lang["created"] = "Created";
 $lang["created_by"] = "Created by";
 $lang["updated"] = "Updated";
@@ -2156,6 +2157,10 @@ $lang["import_date_error_message"] = "Date format is invalid.";
 
 $lang["event_label"] = "Event label";
 
+$lang["undo"] = "Undo";
+$lang["can_switch_company"] = "can switch company?";
+$lang["yes_can_switch_company"] = "yes can switch company";
+$lang["undo"] = "Undo";
 $lang["undo"] = "Undo";
 
 $lang["clone_expense"] = "Clone expense";

@@ -31,7 +31,14 @@
             order: [[0, "desc"]],
             smartFilterIdentity: "estimates_list", //a to z and _ only. should be unique to avoid conflicts
             rangeRadioButtons: [{name: "range_radio_button", selectedOption: 'monthly', options: ['monthly', 'yearly', 'custom', 'dynamic'], dynamicRanges:['this_month', 'last_month', 'next_month', 'this_year', 'last_year']}],
-            filterDropdown: [{name: "status", class: "w150", options: <?php echo view("estimates/estimate_statuses_dropdown"); ?>}, <?php echo $custom_field_filters; ?>],
+            filterDropdown: [{name: "status", class: "w150", options: <?php echo view("estimates/estimate_statuses_dropdown"); ?>}, <?php echo $custom_field_filters; ?>
+                
+           <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
+ { ?>
+            {name: "can_view_all_invoice", class: "w200 ", options: <?php echo $company; ?>}
+
+            <?php  }  ?>
+            ],
             columns: [
                 {title: "<?php echo app_lang("estimate") ?> ", "class": idColumnClass + "all"},
                 {title: "<?php echo app_lang("client") ?>", "class": "all"},

@@ -10,7 +10,10 @@ class Users_models extends Crud_model {
         $this->table = 'users';
         parent::__construct($this->table);
     }
-
+    function get_education_info($user_id) {
+        parent::use_table("team_education_info");
+        return parent::get_one_where(array("user_id" => $user_id));
+    }
     function authenticate($email, $password) {
 
         $email = $this->_get_clean_value(array("email" => $email), "email");
@@ -141,7 +144,20 @@ class Users_models extends Crud_model {
         $exclude_user_id = $this->_get_clean_value($options, "exclude_user_id");
         $first_name = $this->_get_clean_value($options, "first_name");
         $last_name = $this->_get_clean_value($options, "last_name");
+        $own_company_members = $this->_get_clean_value($options, "own_company_members");
+        $can_view_own_members = $this->_get_clean_value($options, "can_view_own_members");
+       $can_view_all_members = $this->_get_clean_value($options, "can_view_all_members");
 
+
+        if ($own_company_members) {
+            $where .= " AND $users_table.company_id=$own_company_members";
+        }
+        if ($can_view_own_members) {
+            $where .= " AND $users_table.company_id=$can_view_own_members";
+        }
+         if ($can_view_all_members) {
+            $where .= " AND $users_table.company_id=$can_view_all_members";
+        }
         if ($id) {
             $where .= " AND $users_table.id=$id";
         }

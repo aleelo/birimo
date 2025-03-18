@@ -47,6 +47,21 @@ class Projects_model extends Crud_model {
             $where .= " AND (FIND_IN_SET($projects_table.status_id, '$status_ids')) ";
         }
 
+        $can_view_all_project = $this->_get_clean_value($options, "can_view_all_project");
+        if ($can_view_all_project) {
+            $where .= " AND $projects_table.company_id=$can_view_all_project";
+        }
+        
+        $can_view_own_company_project = $this->_get_clean_value($options, "can_view_own_company_project");
+        if ($can_view_own_company_project) {
+            $where .= " AND $projects_table.company_id=$can_view_own_company_project";
+        }
+
+         $can_view_own_project = $this->_get_clean_value($options, "can_view_own_project");
+        if ($can_view_own_project) {
+            $where .= " AND $projects_table.company_id=$can_view_own_project";
+        }
+
 
         $project_label = $this->_get_clean_value($options, "project_label");
         if ($project_label) {
