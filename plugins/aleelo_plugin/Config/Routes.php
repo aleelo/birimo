@@ -62,3 +62,7 @@ $routes->post('Screen_size/(:any)', 'Screen_size::$1', ['namespace' => 'aleelo_p
 $routes->get('estimates', 'estimates::index', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+
+$routes->get('tasks', 'Tasks::index', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('tasks/(:any)', 'Tasks::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->post('tasks/(:any)', 'Tasks::$1', ['namespace' => 'aleelo_plugin\Controllers']);

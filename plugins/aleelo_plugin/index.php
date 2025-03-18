@@ -55,9 +55,9 @@ $routes = service('routes');
     $routes->get('signin/(:any)', 'Signinn::$1');
     $routes->post('signin/(:any)', 'Signinn::$1');
     
-    $routes->get('tasks', 'tasks::index');
-    $routes->get('tasks/(:any)', 'tasks::$1');
-    $routes->post('tasks/(:any)', 'tasks::$1');
+    $routes->get('tasks', 'Tasks::index');
+    $routes->get('tasks/(:any)', 'Tasks::$1');
+    $routes->post('tasks/(:any)', 'Tasks::$1');
 
       $routes->get('estimates', 'estimates::index');
     $routes->get('estimates/(:any)', 'estimates::$1');
