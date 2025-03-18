@@ -23,6 +23,7 @@ class Security_Controller_Plugin extends Security_Controller {
     public$Users_models;
     public$Tasks_model;
 
+    public$Estimates_model;
 
     public function __construct($redirect = true) {
         parent::__construct();
@@ -40,6 +41,8 @@ $this->University_names_model = new \aleelo_plugin\Models\University_names_model
 $this->Field_of_study_model = new \aleelo_plugin\Models\Field_of_study_model();
 $this->Users_models = new \aleelo_plugin\Models\Users_models();
 $this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
+$this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
+
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();
 

@@ -58,6 +58,22 @@ $routes = service('routes');
     $routes->get('tasks', 'tasks::index');
     $routes->get('tasks/(:any)', 'tasks::$1');
     $routes->post('tasks/(:any)', 'tasks::$1');
+
+      $routes->get('estimates', 'estimates::index');
+    $routes->get('estimates/(:any)', 'estimates::$1');
+    $routes->post('estimates/(:any)', 'estimates::$1');
+
+    $routes->get('invoice_payments', 'Invoice_payments::index');
+    $routes->get('invoice_payments/(:any)', 'Invoice_payments::$1');
+    $routes->post('invoice_payments/(:any)', 'Invoice_payments::$1');
+
+    $routes->get('invoice_payments', 'invoices::index');
+    $routes->get('invoice_payments/(:any)', 'invoices::$1');
+    $routes->post('invoice_payments/(:any)', 'invoices::$1');
+
+    $routes->get('invoices', 'invoices::index');
+    $routes->get('invoices/(:any)', 'invoices::$1');
+    $routes->post('invoices/(:any)', 'invoices::$1');
     
  });
 //add admin setting menu item

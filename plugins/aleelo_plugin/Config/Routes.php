@@ -58,3 +58,7 @@ $routes->post('clients/(:any)', 'Client::$1', ['namespace' => 'aleelo_plugin\Con
 $routes->get('Screen_size', 'Screen_size::index', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('Screen_size/(:any)', 'Screen_size::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('Screen_size/(:any)', 'Screen_size::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+
+$routes->get('estimates', 'estimates::index', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->post('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
