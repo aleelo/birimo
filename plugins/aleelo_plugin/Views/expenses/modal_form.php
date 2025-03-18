@@ -9,8 +9,8 @@
             <?php } ?>
 
         
-<?php if ($has_all_permission){ ?>
-    <div class="form-group">
+      <?php if ($has_all_permission){ ?>
+     <div class="form-group">
         <div class="row">
             <label for="company_id" class="col-md-3"><?php echo 'Company'; ?></label>
             <div class="col-md-9">
@@ -28,10 +28,10 @@
                 ?>
             </div>
         </div>
-    </div>
-<?php } else{ ?>
-    <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
-    <?php } ?>
+     </div>
+            <?php } else{ ?>
+              <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
+            <?php } ?>
 
 
             <div class=" form-group">
@@ -175,7 +175,8 @@
                         ?>
                 </div>
             </div>
-        <?php } ?>
+            </div>
+           <?php } ?>
 
             <!-- <div class="form-group">
                 <div class="row">
@@ -186,8 +187,8 @@
                         ?>
                     </div>
                 </div>
-            </div> -->
-<!-- 
+            </div> --> 
+            <!-- 
             <div class="form-group">
                 <div class="row">
                     <label for="tax_id" class=" col-md-3"><?php// echo app_lang('second_tax'); ?></label>
