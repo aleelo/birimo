@@ -4095,7 +4095,7 @@ class Tasks extends Security_Controller_Plugin {
         }
     }
 
-    private function _get_task_statuses_dropdown($project_id = 0) {
+    public function _get_task_statuses_dropdown($project_id = 0) {
         $exclude_status_ids = $this->get_removed_task_status_ids($project_id);
         $task_status_options = array("exclude_status_ids" => $exclude_status_ids);
         if (!$project_id) {
