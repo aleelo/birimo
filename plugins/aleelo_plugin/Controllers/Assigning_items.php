@@ -724,7 +724,7 @@ class Assigning_items extends Security_Controller_Plugin {
     function contact_profile($contact_id = 0, $tab = "") {
         $this->access_only_allowed_members_or_contact_personally($contact_id);
 
-        $view_data['user_info'] = $this->Users_model->get_one($contact_id);
+        $view_data['user_info'] = $this->Users_models->get_one($contact_id);
         $this->_validate_client_view_access($view_data['user_info']->client_id);
         $view_data['client_info'] = $this->Clients_model->get_one($view_data['user_info']->client_id);
         $view_data['tab'] = clean_data($tab);
@@ -742,7 +742,7 @@ class Assigning_items extends Security_Controller_Plugin {
     //show account settings of a user
     function account_settings($contact_id) {
         $this->access_only_allowed_members_or_contact_personally($contact_id);
-        $view_data['user_info'] = $this->Users_model->get_one($contact_id);
+        $view_data['user_info'] = $this->Users_models->get_one($contact_id);
         $view_data['can_edit_clients'] = $this->can_edit_clients();
         $this->_validate_client_view_access($view_data['user_info']->client_id);
         return $this->template->view("users/account_settings", $view_data);
@@ -750,7 +750,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
     //show my preference settings of a team member
     function my_preferences() {
-        $view_data["user_info"] = $this->Users_model->get_one($this->login_user->id);
+        $view_data["user_info"] = $this->Users_models->get_one($this->login_user->id);
 
         //language dropdown
         $view_data['language_dropdown'] = array();
@@ -794,7 +794,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
         $user_data = clean_data($user_data);
 
-        $this->Users_model->ci_save($user_data, $this->login_user->id);
+        $this->Users_models->ci_save($user_data, $this->login_user->id);
 
         try {
             app_hooks()->do_action("app_hook_clients_my_preferences_save_data");
@@ -811,7 +811,7 @@ class Assigning_items extends Security_Controller_Plugin {
             $language = clean_data($language);
             $data["language"] = strtolower($language);
 
-            $this->Users_model->ci_save($data, $this->login_user->id);
+            $this->Users_models->ci_save($data, $this->login_user->id);
         }
     }
 
@@ -841,7 +841,7 @@ class Assigning_items extends Security_Controller_Plugin {
     function add_new_contact_modal_form() {
         $this->_validate_client_manage_access();
 
-        $view_data['model_info'] = $this->Users_model->get_one(0);
+        $view_data['model_info'] = $this->Users_models->get_one(0);
         $view_data['model_info']->Deparment_id = $this->request->getPost('Deparment_id');
 
         $view_data['add_type'] = $this->request->getPost('add_type');
@@ -858,7 +858,7 @@ class Assigning_items extends Security_Controller_Plugin {
         if ($contact_id) {
             $this->access_only_allowed_members_or_contact_personally($contact_id);
 
-            $view_data['model_info'] = $this->Users_model->get_one($contact_id);
+            $view_data['model_info'] = $this->Users_models->get_one($contact_id);
             $this->_validate_client_view_access($view_data['model_info']->client_id);
             $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("client_contacts", $contact_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
@@ -883,12 +883,12 @@ class Assigning_items extends Security_Controller_Plugin {
             $view_data['Merchant_types_dropdown'] = $this->get_merchant_types_dropdown();
 
             $view_data['Merchant_types_dropdown_js'] = $this->get_merchant_types_dropdown_js();
-            $view_data['secretary'] = array("" => " -- Choose Secretary -- ") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id");
+            $view_data['secretary'] = array("" => " -- Choose Secretary -- ") + $this->Users_models->get_dropdown_list(array("first_name", "last_name"), "id");
 
 
             $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("clients", $Deparment_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
-            $view_data['department_heads'] = array("" => " -- Choose Department Head -- ") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id");
+            $view_data['department_heads'] = array("" => " -- Choose Department Head -- ") + $this->Users_models->get_dropdown_list(array("first_name", "last_name"), "id");
 
 
             $view_data['label_column'] = "col-md-2";
@@ -915,7 +915,7 @@ class Assigning_items extends Security_Controller_Plugin {
         if ($contact_id) {
             $this->access_only_allowed_members_or_contact_personally($contact_id);
 
-            $contact_info = $this->Users_model->get_one($contact_id);
+            $contact_info = $this->Users_models->get_one($contact_id);
             $this->_validate_client_view_access($contact_info->client_id);
 
             $view_data['user_id'] = clean_data($contact_id);
@@ -968,7 +968,7 @@ class Assigning_items extends Security_Controller_Plugin {
             $user_data["login_type"] = 'normal_login';
 
             //validate duplicate email address
-            if ($this->Users_model->is_email_exists($user_data["email"], 0, $Deparment_id)) {
+            if ($this->Users_models->is_email_exists($user_data["email"], 0, $Deparment_id)) {
                 echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
                 exit();
             }
@@ -989,7 +989,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
         $user_data = clean_data($user_data);
 
-        $save_id = $this->Users_model->ci_save($user_data, $contact_id);
+        $save_id = $this->Users_models->ci_save($user_data, $contact_id);
         if ($save_id) {
 
             save_custom_fields("client_contacts", $save_id, $this->login_user->is_admin, $this->login_user->user_type);
@@ -997,7 +997,7 @@ class Assigning_items extends Security_Controller_Plugin {
             //has changed the existing primary contact? updete previous primary contact and set is_primary_contact=0
             if ($is_primary_contact) {
                 $user_data = array("is_primary_contact" => 0);
-                $this->Users_model->ci_save($user_data, $primary_contact);
+                $this->Users_models->ci_save($user_data, $primary_contact);
             }
 
             //send login details to user only for first time. when creating  a new contact
@@ -1030,7 +1030,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
         $this->access_only_allowed_members_or_contact_personally($contact_id);
 
-        $contact_info = $this->Users_model->get_one($contact_id);
+        $contact_info = $this->Users_models->get_one($contact_id);
         $this->_validate_client_manage_access($contact_info->client_id);
 
         $id = 0;
@@ -1067,7 +1067,7 @@ class Assigning_items extends Security_Controller_Plugin {
     function save_account_settings($user_id) {
         $this->access_only_allowed_members_or_contact_personally($user_id);
 
-        $contact_info = $this->Users_model->get_one($user_id);
+        $contact_info = $this->Users_models->get_one($user_id);
         $this->_validate_client_manage_access($contact_info->client_id);
 
         $this->validate_submitted_data(array(
@@ -1077,7 +1077,7 @@ class Assigning_items extends Security_Controller_Plugin {
         $email = $this->request->getPost('email');
         $password = $this->request->getPost("password");
 
-        if ($this->Users_model->is_email_exists($email, $user_id, $contact_info->client_id)) {
+        if ($this->Users_models->is_email_exists($email, $user_id, $contact_info->client_id)) {
             echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
             exit();
         }
@@ -1089,7 +1089,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
         //don't reset password if user doesn't entered any password
         if ($password) {
-            $this->Users_model->update_password($email, password_hash($password, PASSWORD_DEFAULT));
+            $this->Users_models->update_password($email, password_hash($password, PASSWORD_DEFAULT));
         }
 
         //only admin can disable other users login permission
@@ -1098,13 +1098,13 @@ class Assigning_items extends Security_Controller_Plugin {
         }
 
 
-        if ($this->Users_model->ci_save($account_data, $user_id)) {
+        if ($this->Users_models->ci_save($account_data, $user_id)) {
 
             //resend new password to client contact
             if ($this->request->getPost('email_login_details')) {
                 $email_template = $this->Email_templates_model->get_final_template("login_info", true);
 
-                $user_language = $this->Users_model->get_one($user_id)->language;
+                $user_language = $this->Users_models->get_one($user_id)->language;
                 $parser_data["SIGNATURE"] = get_array_value($email_template, "signature_$user_language") ? get_array_value($email_template, "signature_$user_language") : get_array_value($email_template, "signature_default");
                 $parser_data["USER_FIRST_NAME"] = $this->request->getPost('first_name');
                 $parser_data["USER_LAST_NAME"] = $this->request->getPost('last_name');
@@ -1130,7 +1130,7 @@ class Assigning_items extends Security_Controller_Plugin {
     //save profile image of a contact
     function save_profile_image($user_id = 0) {
         $this->access_only_allowed_members_or_contact_personally($user_id);
-        $user_info = $this->Users_model->get_one($user_id);
+        $user_info = $this->Users_models->get_one($user_id);
         $this->_validate_client_manage_access($user_info->client_id);
 
         //process the the file which has uploaded by dropzone
@@ -1143,7 +1143,7 @@ class Assigning_items extends Security_Controller_Plugin {
             delete_app_files(get_setting("profile_image_path"), array(@unserialize($user_info->image)));
 
             $image_data = array("image" => $profile_image);
-            $this->Users_model->ci_save($image_data, $user_id);
+            $this->Users_models->ci_save($image_data, $user_id);
             echo json_encode(array("success" => true, 'message' => app_lang('profile_image_changed')));
         }
 
@@ -1166,7 +1166,7 @@ class Assigning_items extends Security_Controller_Plugin {
                 }
 
                 $image_data = array("image" => $profile_image);
-                $this->Users_model->ci_save($image_data, $user_id);
+                $this->Users_models->ci_save($image_data, $user_id);
                 echo json_encode(array("success" => true, 'message' => app_lang('profile_image_changed'), "reload_page" => true));
             }
         }
@@ -1185,17 +1185,17 @@ class Assigning_items extends Security_Controller_Plugin {
 
         $id = $this->request->getPost('id');
 
-        $contact_info = $this->Users_model->get_one($id);
+        $contact_info = $this->Users_models->get_one($id);
         $this->_validate_client_manage_access($contact_info->client_id);
 
         if ($this->request->getPost('undo')) {
-            if ($this->Users_model->delete($id, true)) {
+            if ($this->Users_models->delete($id, true)) {
                 echo json_encode(array("success" => true, "data" => $this->_contact_row_data($id), "message" => app_lang('record_undone')));
             } else {
                 echo json_encode(array("success" => false, app_lang('error_occurred')));
             }
         } else {
-            if ($this->Users_model->delete($id)) {
+            if ($this->Users_models->delete($id)) {
                 echo json_encode(array("success" => true, 'message' => app_lang('record_deleted')));
             } else {
                 echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
@@ -1223,7 +1223,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
         $all_options = append_server_side_filtering_commmon_params($options);
 
-        $result = $this->Users_model->get_details($all_options);
+        $result = $this->Users_models->get_details($all_options);
 
         //by this, we can handel the server side or client side from the app table prams.
         if (get_array_value($all_options, "server_side")) {
@@ -1257,7 +1257,7 @@ class Assigning_items extends Security_Controller_Plugin {
             "user_type" => "client",
             "custom_fields" => $custom_fields
         );
-        $data = $this->Users_model->get_details($options)->getRow();
+        $data = $this->Users_models->get_details($options)->getRow();
         return $this->_make_contact_row($data, $custom_fields);
     }
 
@@ -1524,7 +1524,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
             //add client id to contact data
             $client_contact_data["client_id"] = $client_save_id;
-            $this->Users_model->ci_save($client_contact_data);
+            $this->Users_models->ci_save($client_contact_data);
         }
 
         delete_file_from_directory($temp_file_path . $file_name); //delete temp file
@@ -1804,7 +1804,7 @@ class Assigning_items extends Security_Controller_Plugin {
 
             if ($header_value == "contact_email") {
                 if ($data) {
-                    if ($this->Users_model->is_email_exists($data)) {
+                    if ($this->Users_models->is_email_exists($data)) {
                         return app_lang("duplicate_email");
                     }
                 } else {
@@ -1830,13 +1830,13 @@ class Assigning_items extends Security_Controller_Plugin {
     }
 
     function gdpr() {
-        $view_data["user_info"] = $this->Users_model->get_one($this->login_user->id);
+        $view_data["user_info"] = $this->Users_models->get_one($this->login_user->id);
         return $this->template->view("aleelo_plugin\Views/assigning_items/contacts/gdpr", $view_data);
     }
 
     function export_my_data() {
         if (get_setting("enable_gdpr") && get_setting("allow_clients_to_export_their_data")) {
-            $user_info = $this->Users_model->get_one($this->login_user->id);
+            $user_info = $this->Users_models->get_one($this->login_user->id);
 
             $txt_file_name = $user_info->first_name . " " . $user_info->last_name . ".txt";
 
@@ -1919,9 +1919,9 @@ class Assigning_items extends Security_Controller_Plugin {
 
             $user_id = $this->login_user->id;
             $data = array("requested_account_removal" => 1);
-            $this->Users_model->ci_save($data, $user_id);
+            $this->Users_models->ci_save($data, $user_id);
 
-            $client_id = $this->Users_model->get_one($user_id)->client_id;
+            $client_id = $this->Users_models->get_one($user_id)->client_id;
             log_notification("client_contact_requested_account_removal", array("client_id" => $client_id), $user_id);
 
             $this->session->setFlashdata("success_message", app_lang("estimate_submission_message"));
@@ -2032,7 +2032,7 @@ class Assigning_items extends Security_Controller_Plugin {
             'user_type' => 'client'
         );
 
-        $user_info = $this->Users_model->get_one_where($options);
+        $user_info = $this->Users_models->get_one_where($options);
         if (!$user_info->id) {
             show_404();
         }

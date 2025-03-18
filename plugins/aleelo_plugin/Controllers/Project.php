@@ -236,7 +236,7 @@ class Project extends Security_Controller_Plugin {
             }
         }
 
-        $view_data['employees'] = array("" => " -- Choose Supervisor -- ") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id");
+        $view_data['employees'] = array("" => " -- Choose Supervisor -- ") + $this->Users_models->get_dropdown_list(array("first_name", "last_name"), "id");
 
         $view_data["client_id"] = $client_id;
         $view_data['model_info'] = $this->Projects_model->get_one($project_id);
@@ -2059,7 +2059,7 @@ class Project extends Security_Controller_Plugin {
             $where["where_in"] = array("id" => $members);
         }
 
-        $users = $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id", $where);
+        $users = $this->Users_models->get_dropdown_list(array("first_name", "last_name"), "id", $where);
 
         $members_dropdown = array(array("id" => "", "text" => "- " . app_lang("member") . " -"));
         foreach ($users as $id => $name) {

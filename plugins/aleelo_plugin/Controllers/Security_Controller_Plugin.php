@@ -37,13 +37,10 @@ class Security_Controller_Plugin extends Security_Controller {
         $this->Project_status_model = new \aleelo_plugin\Models\Project_status_model();
         $this->Projects_model = new \aleelo_plugin\Models\Projects_model();
          $this->Clients_model= new \aleelo_plugin\Models\Clients_model();
-        $this->University_names_model = new \aleelo_plugin\Models\University_names_model();
-// $login_user_id = $this->Users_model->login_user_id();      
-  $this->Field_of_study_model = new \aleelo_plugin\Models\Field_of_study_model();
-  $this->Users_models = new \aleelo_plugin\Models\Users_models();
-  $this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
-
-
+$this->University_names_model = new \aleelo_plugin\Models\University_names_model();
+$this->Field_of_study_model = new \aleelo_plugin\Models\Field_of_study_model();
+$this->Users_models = new \aleelo_plugin\Models\Users_models();
+$this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();
 
@@ -60,7 +57,7 @@ class Security_Controller_Plugin extends Security_Controller {
         // ));
 
         // //initialize login users required information
-        // $this->login_user = $this->Users_model->get_access_info($login_user_id);
+        // $this->login_user = $this->Users_models->get_access_info($login_user_id);
 
         // //initialize login users access permissions
         // if ($this->login_user && $this->login_user->permissions) {
