@@ -7,7 +7,6 @@ use App\Controllers\Security_Controller;
 class Security_Controller_Plugin extends Security_Controller {
 
    public $Assigning_items_model;
-   public $login_user;
 
     public $Screen_size_model;
     public $Items_list_model;
