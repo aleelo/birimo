@@ -167,33 +167,34 @@ $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
             }
         }
     }
-
-    function get_departments_for_table_emp(){
-        // $depts = $this->db->table('departments')->select('id,nameEn')->get();
+    public function get_departments_for_table_emp() {
         $dept_id = $this->get_user_department_id();
         $role = $this->get_user_role();
-
-        if($role == 'admin' || $role == 'Administrator' || $role == 'HRM'){
+    
+        if ($role == 'admin' || $role == 'Administrator' || $role == 'HRM') {
             $dept_id = '%';
         }
-
-        $depts = $this->db->query("select id,name from rise_company where id like '$dept_id'");
-        $data[] = array('id' => '', 'text' => 'All Companies');
-
-        if(!$depts){
-            return [];
-        }else{
-            $depts = $depts->getResult();
-            foreach($depts as $d){
-                $data[] = array('id' => $d->id, 'text' => $d->name
-            );
-            }
-
-            return json_encode($data);
+    
+        if (!$dept_id) {
+            return json_encode([['id' => '', 'text' => 'All Companies']]);
         }
-
-
+    
+        $query = "SELECT id, name FROM rise_company WHERE id LIKE ?";
+        $depts = $this->db->query($query, [$dept_id]);
+    
+        if (!$depts) {
+            return json_encode([['id' => '', 'text' => 'All Companies']]);
+        }
+    
+        $data[] = ['id' => '', 'text' => 'All Companies'];
+    
+        foreach ($depts->getResult() as $d) {
+            $data[] = ['id' => $d->id, 'text' => $d->name];
+        }
+    
+        return json_encode($data);
     }
+    
 
     public function get_user_role() {
         $user = $this->login_user;
@@ -206,12 +207,22 @@ $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
         return $role->title;
     }
 
-    public function get_user_department_id(){
-        $user_id = $this->login_user->company_id;
-        $job_info = $this->db->query("SELECT t.company_id from rise_expenses t left join rise_users u on u.id=t.user_id where t.company_id = $user_id")->getRow();
+    public function get_user_department_id() {
+        $user_id = $this->login_user->company_id ?? null; 
+    
+        if (!$user_id) {
+            return null; 
+        }
+    
+        $query = "SELECT t.company_id FROM rise_expenses t 
+                  LEFT JOIN rise_users u ON u.id = t.user_id 
+                  WHERE t.company_id = ?";
         
+        $job_info = $this->db->query($query, [$user_id])->getRow();
+    
         return $job_info?->company_id;
     }
+    
 
 
 }

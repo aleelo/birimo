@@ -43,9 +43,9 @@ $routes = service('routes');
     $routes->get('clientss/(:any)', 'Client::$1');
     $routes->post('clientss/(:any)', 'Client::$1');
 
-    $routes->get('expenses', 'expense::index');
-    $routes->get('expenses/(:any)', 'expense::$1');
-    $routes->post('expenses/(:any)', 'expense::$1');
+    $routes->get('expenses', 'Expense::index');
+    $routes->get('expenses/(:any)', 'Expense::$1');
+    $routes->post('expenses/(:any)', 'Expense::$1');
 
     $routes->get('projects', 'Project::index');
     $routes->get('projects/(:any)', 'Project::$1');
@@ -67,13 +67,13 @@ $routes = service('routes');
     $routes->get('invoice_payments/(:any)', 'Invoice_payments::$1');
     $routes->post('invoice_payments/(:any)', 'Invoice_payments::$1');
 
-    $routes->get('invoice_payments', 'invoices::index');
-    $routes->get('invoice_payments/(:any)', 'invoices::$1');
-    $routes->post('invoice_payments/(:any)', 'invoices::$1');
+    $routes->get('invoice_payments', 'Invoices::index');
+    $routes->get('invoice_payments/(:any)', 'Invoices::$1');
+    $routes->post('invoice_payments/(:any)', 'Invoices::$1');
 
-    $routes->get('invoices', 'invoices::index');
-    $routes->get('invoices/(:any)', 'invoices::$1');
-    $routes->post('invoices/(:any)', 'invoices::$1');
+    $routes->get('invoices', 'Invoices::index');
+    $routes->get('invoices/(:any)', 'Invoices::$1');
+    $routes->post('invoices/(:any)', 'Invoices::$1');
     
  });
 //add admin setting menu item

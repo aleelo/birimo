@@ -366,7 +366,7 @@ class Users_models extends Crud_model {
             $user_id = 0;
         }
 
-        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,
+        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,$users_table.company_id,$users_table.department,
             $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id, $users_table.enable_web_notification,
             $users_table.is_primary_contact, $users_table.sticky_note, $users_table.language, $users_table.client_permissions,
             $roles_table.title as role_title, $roles_table.permissions,
