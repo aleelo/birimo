@@ -318,7 +318,7 @@
     </div>
 
     <div class="modal-footer">
-        <button class="btn btn-default upload-file-button float-start btn-sm round me-auto" type="button" style="color:#7988a2"><i data-feather="camera" class="icon-14"></i> <?php echo app_lang("upload_file"); ?></button>
+    <?php echo view("includes/upload_button"); ?>
         <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
         <button type="submit" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
     </div>
