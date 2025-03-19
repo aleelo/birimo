@@ -111,7 +111,7 @@ class Left_menu {
 
             if (get_setting("module_estimate") && ($this->ci->login_user->is_admin || $access_estimate)) {
 
-                $prospects_submenu["estimates"] = array("name" => "quotation", "url" => "estimates", "class" => "file");
+                $prospects_submenu["estimates"] = array("name" => "Quotation", "url" => "estimates", "class" => "file");
 
                 if (get_setting("module_estimate_request")) {
                     $prospects_submenu["estimate_requests"] = array("name" => "estimate_requests", "url" => "estimate_requests", "class" => "file");

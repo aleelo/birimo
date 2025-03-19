@@ -61,9 +61,9 @@ $routes = service('routes');
     $routes->get('tasks/(:any)', 'Tasks::$1');
     $routes->post('tasks/(:any)', 'Tasks::$1');
 
-      $routes->get('estimates', 'estimates::index');
-    $routes->get('estimates/(:any)', 'estimates::$1');
-    $routes->post('estimates/(:any)', 'estimates::$1');
+      $routes->get('estimates', 'Estimates::index');
+    $routes->get('estimates/(:any)', 'Estimates::$1');
+    $routes->post('estimates/(:any)', 'Estimates::$1');
 
     $routes->get('invoice_payments', 'Invoice_payments::index');
     $routes->get('invoice_payments/(:any)', 'Invoice_payments::$1');
