@@ -15,6 +15,8 @@ defined('PLUGINPATH') or exit('No direct script access allowed');
 app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
    
     $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);
+    $sidebar_menu["Sales_and_crm"] = array("name" => "Sales_and_crm", "url" => "", "class" => "layers","position" => 4,);
+
             $sidebar_menu["items_list"] = array("name" => "items_list", "url" => "items_list", "class" => "layers","position" => 6,);
             $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
             $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
