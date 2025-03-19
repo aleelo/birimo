@@ -158,6 +158,8 @@
                     </div>
                 </div>
             </div>
+            <?php } else{ ?>
+              <input type="hidden" name="expense_user_id" value="<?php echo $login_user->id; ?>">
             <?php } ?>
 
             <?php if ($model_info->id) { ?>
@@ -182,7 +184,7 @@
 
             <!-- <div class="form-group">
                 <div class="row">
-                    <label for="tax_id" class=" col-md-3"><?php// echo app_lang('tax'); ?></label>
+                    <label for="tax_id" class=" col-md-3"><?php // echo app_lang('tax'); ?></label>
                     <div class="col-md-9">
                         <?php
                        // echo form_dropdown("tax_id", $taxes_dropdown, array($model_info->tax_id), "class='select2'");
@@ -193,7 +195,7 @@
             <!-- 
             <div class="form-group">
                 <div class="row">
-                    <label for="tax_id" class=" col-md-3"><?php// echo app_lang('second_tax'); ?></label>
+                    <label for="tax_id" class=" col-md-3"><?php // echo app_lang('second_tax'); ?></label>
                     <div class="col-md-9">
                         <?php
                        // echo form_dropdown("tax_id2", $taxes_dropdown, array($model_info->tax_id2), "class='select2'");
@@ -204,7 +206,7 @@
 
             <!-- <div class="form-group">
                 <div class="row">
-                    <label for="expense_recurring" class=" col-md-3"><?php// echo app_lang('recurring'); ?>  <span class="help" data-bs-toggle="tooltip" title="<?php echo app_lang('cron_job_required'); ?>"><i data-feather="help-circle" class="icon-16"></i></span></label>
+                    <label for="expense_recurring" class=" col-md-3"><?php // echo app_lang('recurring'); ?>  <span class="help" data-bs-toggle="tooltip" title="<?php echo app_lang('cron_job_required'); ?>"><i data-feather="help-circle" class="icon-16"></i></span></label>
                     <div class=" col-md-9">
                         <?php
                        // echo form_checkbox("recurring", "1", $model_info->recurring ? true : false, "id='expense_recurring' class='form-check-input'");
@@ -317,13 +319,15 @@
 
         </div>
     </div>
-    </div>
 
     <div class="modal-footer">
-    <?php echo view("includes/upload_button"); ?>
+    <button class="btn btn-default upload-file-button float-start btn-sm round me-auto" type="button" style="color:#7988a2"><i data-feather="camera" class="icon-14"></i> <?php echo app_lang("upload_file"); ?></button>
+
         <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
         <button type="submit" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
     </div>
+    </div>
+
 
 <?php echo form_close(); ?>
 

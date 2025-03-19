@@ -58,7 +58,7 @@ class Expense_model extends Crud_model {
         }
         $created_by_user = $this->_get_clean_value($options, "created_by_user");
         if ($created_by_user) {
-            $where .= " AND $expenses_table.created_by=$created_by_user";
+            $where .= " AND $expenses_table.user_id=$created_by_user";
         }
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
