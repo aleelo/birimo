@@ -148,7 +148,7 @@
                         </li>
                     <?php } ?>
 <?php
-                 if (get_array_value($login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
+                 if (get_array_value($this->login_user->is_admin || $login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
                     echo view("todo/company_topbar_icon");
                 }
                 ?>
