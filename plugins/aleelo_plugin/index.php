@@ -13,17 +13,12 @@ defined('PLUGINPATH') or exit('No direct script access allowed');
 
 //add menu item to left menu
 app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
-    $permissions = $login_user->permissions;
-
-    $access_estimate = get_array_value($permissions, "invoice");
-
+   
     $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);
     $sidebar_menu["Sales_and_crm"] = array("name" => "Sales_and_crm", "url" => "", "class" => "layers","position" => 4,);
-    if (get_setting("module_estimate") && ($this->ci->login_user->is_admin || $access_estimate)) {
 
             $sidebar_menu["items_list"] = array("name" => "items_list", "url" => "items_list", "class" => "layers","position" => 6,);
-           
-     } $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
+            $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
             $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
             $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
