@@ -14,18 +14,7 @@ defined('PLUGINPATH') or exit('No direct script access allowed');
 //add menu item to left menu
 app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
    
-    $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);
-    $sidebar_menu["Sales_and_crm"] = array("name" => "Sales_and_crm", "url" => "", "class" => "layers","position" => 4,);
-
-            $sidebar_menu["items_list"] = array("name" => "items_list", "url" => "items_list", "class" => "layers","position" => 6,);
-            $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
-            $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
-            $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
-            $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
-            $sidebar_menu["client"] = array("name" => "client", "url" => "client", "class" => "briefcase","position" => 11,);
-                     $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
-
-            $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
+  
     return $sidebar_menu;
 });
 $routes = service('routes');

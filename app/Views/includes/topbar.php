@@ -148,9 +148,10 @@
                         </li>
                     <?php } ?>
 <?php
-                 if (get_array_value($login_user->is_admin || $login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
-                    echo view("todo/company_topbar_icon");
-                }
+              if (($login_user->is_admin || get_array_value($login_user->permissions, "company") === "all") && !in_array("to_do", $hidden_topbar_menus)) {
+                echo view("todo/company_topbar_icon");
+            }
+            
                 ?>
                     <li class="nav-item dropdown">
                         <a id="user-dropdown" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">

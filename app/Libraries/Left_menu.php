@@ -27,9 +27,12 @@ class Left_menu {
             $permissions = $this->ci->login_user->permissions;
 
             $access_expense = get_array_value($permissions, "expense");
+
             $access_invoice = get_array_value($permissions, "invoice");
             $access_ticket = get_array_value($permissions, "ticket");
             $access_client = get_array_value($permissions, "client");
+            $access_item = get_array_value($permissions, "items");
+
             $access_lead = get_array_value($permissions, "lead");
             $access_timecard = get_array_value($permissions, "attendance");
             $access_leave = get_array_value($permissions, "leave");
@@ -37,7 +40,8 @@ class Left_menu {
             $access_contract = get_array_value($permissions, "contract");
             $access_subscription = get_array_value($permissions, "subscription");
             $access_proposal = get_array_value($permissions, "proposal");
-            $access_order = get_array_value($permissions, "order");            
+            $access_order = get_array_value($permissions, "order"); 
+            $access_announcements =get_array_value($permissions, "announcement");
             $access_items = ($this->ci->login_user->is_admin || $access_invoice || $access_estimate);
 
             $client_message_users = get_setting("client_message_users");
@@ -64,9 +68,23 @@ class Left_menu {
             if ($this->ci->login_user->is_admin || !get_array_value($this->ci->login_user->permissions, "do_not_show_projects")) {
                 $sidebar_menu["projects"] = array("name" => "projects", "url" => "projects/all_projects", "class" => "command");
             }
+            if ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "task")) {
 
             $sidebar_menu["tasks"] = array("name" => "tasks", "url" => "tasks/all_tasks", "class" => "check-circle");
-
+            $sidebar_menu["reports"] = array("name" => "reports", "url" => "reports/index", "class" => "pie-chart",
+            "sub_pages" => array(
+                "invoices/invoices_summary",
+                "orders/orders_summary",
+                "projects/all_timesheets",
+                "expenses/income_vs_expenses",
+                "invoice_payments/payments_summary",
+                "expenses/summary",
+                "projects/team_members_summary",
+                "leads/converted_to_client_report",
+                "tickets/tickets_chart_report"
+            )
+        );
+            }
             if (get_setting("module_lead") == "1" && ($this->ci->login_user->is_admin || $access_lead)) {
                 $sidebar_menu["leads"] = array("name" => "leads", "url" => "leads", "class" => "layers");
             }
@@ -109,7 +127,7 @@ class Left_menu {
 
             $prospects_submenu = array();
 
-            if (get_setting("module_estimate") && ($this->ci->login_user->is_admin || $access_estimate)) {
+            if (get_setting("module_invoice") && ($this->ci->login_user->is_admin || $access_invoice)) {
 
                 $prospects_submenu["estimates"] = array("name" => "quotation", "url" => "estimates", "class" => "file");
 
@@ -128,6 +146,35 @@ class Left_menu {
             }
 
 
+           
+            $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
+            if (get_setting("module_expense") == "1" && ($this->ci->login_user->is_admin || $access_expense)) {
+
+            $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
+            }
+            if ($this->ci->login_user->user_type === "staff" && !$this->ci->login_user->is_admin && get_array_value($this->ci->login_user->permissions, "do_not_show_projects") == "1") {
+
+            $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
+            }
+            if (get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1") {
+
+            $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
+            }
+            if (($this->ci->login_user->is_admin || $access_client)) {
+
+            
+            $sidebar_menu["client"] = array("name" => "client", "url" => "client", "class" => "briefcase","position" => 11,);
+             }
+            
+             if (($this->ci->login_user->is_admin || $access_item)) {
+
+            $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
+            $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);
+
+            $sidebar_menu["Sales_and_crm"] = array("name" => "Sales_and_crm", "url" => "", "class" => "layers","position" => 4,);
+        
+            $sidebar_menu["items_list"] = array("name" => "items_list", "url" => "items_list", "class" => "layers","position" => 6,);
+        }
 
             if (get_setting("module_note") == "1") {
                 $sidebar_menu["notes"] = array("name" => "notes", "url" => "notes", "class" => "book");
@@ -148,16 +195,18 @@ class Left_menu {
 
             if (get_setting("module_attendance") == "1" && ($this->ci->login_user->is_admin || $access_timecard)) {
                 $team_submenu["attendance"] = array("name" => "attendance", "url" => "attendance", "class" => "clock");
-            } else if (get_setting("module_attendance") == "1") {
-                $team_submenu["attendance"] = array("name" => "attendance", "url" => "attendance/attendance_info", "class" => "clock");
             }
+            //  else if (get_setting("module_attendance") == "1") {
+            //     $team_submenu["attendance"] = array("name" => "attendance", "url" => "attendance/attendance_info", "class" => "clock");
+            // }
 
 
             if (get_setting("module_leave") == "1" && ($this->ci->login_user->is_admin || $access_leave)) {
                 $team_submenu["leaves"] = array("name" => "leaves", "url" => "leaves", "class" => "log-out");
-            } else if (get_setting("module_leave") == "1") {
-                $team_submenu["leaves"] = array("name" => "leaves", "url" => "leaves/leave_info", "class" => "log-out");
-            }
+            } 
+            // else if (get_setting("module_leave") == "1") {
+            //     $team_submenu["leaves"] = array("name" => "leaves", "url" => "leaves/leave_info", "class" => "log-out");
+            // }
 
 
 
@@ -166,7 +215,7 @@ class Left_menu {
             }
 
 
-            if (get_setting("module_announcement") == "1") {
+            if ($this->ci->login_user->is_admin || $access_announcements) {
                 $team_submenu["announcements"] = array("name" => "announcements", "url" => "announcements", "class" => "bell");
             }
 
@@ -199,23 +248,10 @@ class Left_menu {
                 $show_expenses_menu = true;
             }
 
-            $sidebar_menu["reports"] = array("name" => "reports", "url" => "reports/index", "class" => "pie-chart",
-                "sub_pages" => array(
-                    "invoices/invoices_summary",
-                    "orders/orders_summary",
-                    "projects/all_timesheets",
-                    "expenses/income_vs_expenses",
-                    "invoice_payments/payments_summary",
-                    "expenses/summary",
-                    "projects/team_members_summary",
-                    "leads/converted_to_client_report",
-                    "tickets/tickets_chart_report"
-                )
-            );
-
+       
+        
             
-            $access_file_manager = true;
-            if (get_setting("module_file_manager") == "1" && ($this->ci->login_user->is_admin || $access_file_manager)) {
+            if ($this->ci->login_user->is_admin || $access_file_manager) {
                 $sidebar_menu["file_manager"] = array("name" => "files", "url" => "file_manager", "class" => "folder");
                 $show_expenses_menu = true;
             }

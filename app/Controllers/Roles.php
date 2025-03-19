@@ -69,6 +69,8 @@ class Roles extends Security_Controller {
             $view_data['expense'] = get_array_value($permissions, "expense");
             $view_data['task'] = get_array_value($permissions, "task");
             $view_data['order'] = get_array_value($permissions, "order");
+            $view_data['items'] = get_array_value($permissions, "items");
+
             $view_data['client'] = get_array_value($permissions, "client");
             $view_data['lead'] = get_array_value($permissions, "lead");
             $view_data['company'] = get_array_value($permissions, "company");
@@ -203,6 +205,9 @@ class Roles extends Security_Controller {
         $department = $this->request->getPost('department_permission');
         $proposal = $this->request->getPost('proposal_permission');
         $order = $this->request->getPost('order_permission');       
+        $items = $this->request->getPost('items_permission');       
+
+
          $expense = $this->request->getPost('expense_permission');
          $task = $this->request->getPost('task_permission');
         $client = $this->request->getPost('client_permission');
@@ -332,6 +337,8 @@ class Roles extends Security_Controller {
             "task" =>$task,
             "expense" => $expense,
             "order" => $order,
+            "items" => $items,
+
             "client" => $client,
             "client_specific" => $client_specific,
             "lead" => $lead,

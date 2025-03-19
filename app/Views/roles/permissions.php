@@ -1038,6 +1038,36 @@
                         </div>
                     </li>
                 <?php } ?>
+                <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_access_items"); ?></h5>
+                        <div>
+                            <?php
+                            if (is_null($items)) {
+                                $items = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "items_no",
+                                "name" => "items_permission",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $items, ($items === "") ? true : false);
+                            ?>
+                            <label for="items_no"><?php echo app_lang("no"); ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "items_yes",
+                                "name" => "items_permission",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $items, ($items === "all") ? true : false);
+                            ?>
+                            <label for="items_yes"><?php echo app_lang("yes"); ?></label>
+                        </div>
+                    </li>
+                   
                 <?php if (get_setting("module_help") || get_setting("module_knowledge_base")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>

@@ -113,7 +113,8 @@ class Security_Controller extends App_Controller {
 
     //only allowed to access for team members 
     protected function access_only_team_members() {
-        if ($this->login_user->user_type !== "staff") {
+        if (!$this->login_user->is_admin|| get_array_value(!$this->login_user->permissions, "task")) {
+            
             app_redirect("forbidden");
         }
     }

@@ -3258,6 +3258,8 @@ $lang["add_Screen_size"] = "add screen size";
 $lang["quotation"] = "Quotation";
 $lang["Sales_and_crm"] = "Sales & CRM";
 
+$lang["can_access_invoices_quotation_payment"] = "can access invoices quotation payment";
+$lang["can_access_items"] = "can access items";
 
 
 
