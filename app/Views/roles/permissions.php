@@ -517,7 +517,7 @@
                 <?php if (get_setting("module_invoice")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_access_invoices"); ?></h5>
+                        <h5><?php echo app_lang("can_access_invoices_quotation_payment"); ?></h5>
                         <div>
                             <?php
                             if (is_null($invoice)) {

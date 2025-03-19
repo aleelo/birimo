@@ -135,7 +135,7 @@ class Expense extends Security_Controller_Plugin {
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
         $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all"));
+        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all" || get_array_value($this->login_user->permissions, "expense") == "all"));
             $view_data['company_id'] = $this->login_user->company_id;
 
 
@@ -394,7 +394,7 @@ class Expense extends Security_Controller_Plugin {
         $row_data = array(
             $data->expense_date,
             modal_anchor(get_uri("expense/expense_details"), format_to_date($data->expense_date, false), array("title" => app_lang("expense_details"), "data-post-id" => $data->id, "data-modal-lg" => "1")),
-            $data->company_name,
+            $data->companies,
             $data->created_by,
             $data->title,
             $description,

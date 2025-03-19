@@ -146,6 +146,7 @@
                     </div>
                 </div>
             <?php } ?>
+            <?php if ($has_all_permission) { ?>
 
             <div class="form-group">
                 <div class="row">
@@ -157,6 +158,7 @@
                     </div>
                 </div>
             </div>
+            <?php } ?>
 
             <?php if ($model_info->id) { ?>
             <div class="form-group">

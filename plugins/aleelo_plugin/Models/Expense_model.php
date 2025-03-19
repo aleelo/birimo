@@ -83,6 +83,7 @@ class Expense_model extends Crud_model {
                  CONCAT(u.first_name, ' ', u.last_name) AS created_by,
                  $clients_table.company_name AS linked_client_name,
                  $projects_table.title AS project_title,
+                 cm.name AS companies,
                  tax_table.percentage AS tax_percentage,
                  tax_table2.percentage AS tax_percentage2,
                  cm.id AS company_name

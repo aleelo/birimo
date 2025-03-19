@@ -21,6 +21,8 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
             $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
             $sidebar_menu["client"] = array("name" => "client", "url" => "client", "class" => "briefcase","position" => 11,);
+                     $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
+
             $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
     return $sidebar_menu;
 });

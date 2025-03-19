@@ -3255,36 +3255,10 @@ $lang["contract_lock_state_description"] = "Once you enable the lock state, the 
 /////    company  //////
 
 $lang["add_Screen_size"] = "add screen size";
+$lang["quotation"] = "quotation";
 $lang["aaaaaaaaa"] = "aaaaaaa";
 $lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
-$lang["aaaaaaaaa"] = "aaaaaaa";
+
 
 
 
