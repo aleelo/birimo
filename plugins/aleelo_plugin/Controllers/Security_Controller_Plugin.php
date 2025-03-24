@@ -102,6 +102,27 @@ $this->Users_model = new \aleelo_plugin\Models\Users_models();
 
         return $temp_array;
     }
+    protected function get_clients_and_leads_dropdown($return_json = false) {
+        $clients_dropdown = array("" => "-");
+        $clients_json_dropdown = array(array("id" => "", "text" => "-"));
+       if($this->login_user->user_type == "staff" && $this->login_user->company_access == "all"){
+        $company_id = $this->login_user->department;
+        $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
+       }
+       else{
+        $company_id = $this->login_user->company_id;
+        $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
+         }
+      
+        foreach ($clients as $client) {
+            $company_name = $client->is_lead ? app_lang("lead") . ": " . $client->company_name : $client->company_name;
+
+            $clients_dropdown[$client->id] = $company_name;
+            $clients_json_dropdown[] = array("id" => $client->id, "text" => $company_name);
+        }
+
+        return $return_json ? $clients_json_dropdown : $clients_dropdown;
+    }
 
     protected function can_view_own_project() {
         if (
@@ -119,6 +140,28 @@ $this->Users_model = new \aleelo_plugin\Models\Users_models();
         }
         return null; 
     }
+
+
+
+    protected function can_view_own_company_client() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
+            return $this->login_user->company_id; 
+        }
+        return null; 
+    }
+
+
+
+    protected function can_view_own_department_client() {
+        if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" )) {
+            return $this->login_user->department; 
+        }
+        return null; 
+    }
+
+
+
+
     public function get_merchant_types_dropdown() {
         
         $merchant_types = $this->db->query("SELECT mt.id, mt.merchant_type FROM rise_merchant_types mt WHERE mt.deleted=0")->getResult();

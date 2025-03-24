@@ -60,7 +60,15 @@ class Clients_model extends Crud_model {
         if ($created_by) {
             $where .= " AND $clients_table.created_by=$created_by";
         }
-
+        $can_view_own_company_client = $this->_get_clean_value($options, "can_view_own_company_client");
+        if ($can_view_own_company_client) {
+            $where .= " AND $clients_table.company_id=$can_view_own_company_client";
+        }
+        $can_view_own_department_client = $this->_get_clean_value($options, "can_view_own_department_client");
+        if ($can_view_own_department_client) {
+            $where .= " AND $clients_table.company_id=$can_view_own_department_client";
+        }
+        
         $show_own_clients_only_user_id = $this->_get_clean_value($options, "show_own_clients_only_user_id");
         if ($show_own_clients_only_user_id) {
             $where .= " AND ($clients_table.created_by=$show_own_clients_only_user_id OR $clients_table.owner_id=$show_own_clients_only_user_id)";
@@ -95,6 +103,8 @@ class Clients_model extends Crud_model {
             $where .= " AND (FIND_IN_SET('$label_id', $clients_table.labels)) ";
         }
 
+
+        
         $select_labels_data_query = $this->get_labels_data_query();
 
         $client_groups = $this->_get_clean_value($options, "client_groups");

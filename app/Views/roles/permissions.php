@@ -807,6 +807,17 @@
                     <div>
                         <?php
                         echo form_radio(array(
+                            "id" => "own_company",
+                            "name" => "client_permission",
+                            "value" => "own_company",
+                            "class" => "client_permission toggle_specific form-check-input",
+                        ), $client, ($client === "own_company") ? true : false);
+                        ?>
+                        <label for="own_company"><?php echo app_lang("own_company"); ?></label>
+                    </div>
+                    <div>
+                        <?php
+                        echo form_radio(array(
                             "id" => "client_yes_own",
                             "name" => "client_permission",
                             "value" => "own",

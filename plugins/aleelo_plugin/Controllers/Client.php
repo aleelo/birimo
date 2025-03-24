@@ -224,7 +224,10 @@ class Client extends Security_Controller_Plugin {
             "quick_filter" => $this->request->getPost("quick_filter"),
             "created_by" => $this->request->getPost("created_by"),
             "client_groups" => $this->allowed_client_groups,
-            "label_id" => $this->request->getPost('label_id')
+            "label_id" => $this->request->getPost('label_id'),
+            "can_view_own_department_client" => $this->can_view_own_department_client(),
+            "can_view_own_company_client" => $this->can_view_own_company_client(),
+
         );
 
         $all_options = append_server_side_filtering_commmon_params($options);
