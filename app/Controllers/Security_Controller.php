@@ -674,7 +674,7 @@ class Security_Controller extends App_Controller {
     }
     protected function can_view_own_members() {
         if (
-            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
+            ($this->login_user->user_type == "staff") &&
             $this->login_user->company_access= "all" &&
             $this->login_user->department != 0
         ) {
