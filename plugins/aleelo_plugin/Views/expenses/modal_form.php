@@ -92,7 +92,9 @@
                             "name" => "title",
                             "value" => $model_info->title,
                             "class" => "form-control",
-                            "placeholder" => app_lang("title")
+                            "placeholder" => app_lang("title"),
+                            "data-rule-required" => true,
+                            "data-msg-required" => app_lang("field_required"),
                         ));
                         ?>
                     </div>
@@ -109,7 +111,9 @@
                             "value" => $model_info->description ? process_images_from_content($model_info->description, false) : "",
                             "class" => "form-control",
                             "placeholder" => app_lang('description'),
-                            "data-rich-text-editor" => true
+                            "data-rich-text-editor" => true,
+                            "data-rule-required" => true,
+                            "data-msg-required" => app_lang("field_required"),
                         ));
                         ?>
                     </div>
@@ -142,7 +146,7 @@
                         <label for="expense_project_id" class=" col-md-3"><?php echo app_lang('project'); ?></label>
                         <div class=" col-md-9">
                             <?php
-                            echo form_dropdown("expense_project_id", $projects_dropdown, $model_info->project_id, "class='select2 validate-hidden' id='expense_project_id'");
+                            echo form_dropdown("expense_project_id", $projects_dropdown, $model_info->project_id, "class='select2 validate-hidden' id='expense_project_id'data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
                             ?>
                         </div>
                     </div>

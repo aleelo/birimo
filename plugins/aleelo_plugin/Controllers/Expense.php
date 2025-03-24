@@ -147,7 +147,7 @@ class Expense extends Security_Controller_Plugin {
         $project_id = $this->request->getPost('project_id');
 
         $model_info = $this->Expenses_model->get_one($this->request->getPost('id'));
-        $view_data['categories_dropdown'] = $this->Expense_categories_model->get_dropdown_list(array("title"));
+        $view_data['categories_dropdown'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"));
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
 
         $members_dropdown = array();
@@ -160,13 +160,18 @@ class Expense extends Security_Controller_Plugin {
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
        
         if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
-            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id");
+            $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id");
         } else if ($this->login_user->company_access == "all" && $this->login_user->department !==0) {
             $department = $this->login_user->department;
-            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
-        } else {
+            $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
+        } else if ($this->login_user->company_access !== "all" && $this->login_user->company_id == 1) {
             $department = $this->login_user->company_id;
-            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
+            $end_date = date('Y-m-d', strtotime('-15 days'));
+        
+            $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department,"deadline >=" => $end_date ));
+        }else {
+            $department = $this->login_user->company_id;
+            $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
         }
         
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
