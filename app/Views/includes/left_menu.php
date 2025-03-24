@@ -19,14 +19,14 @@ $user_id = $login_user->id;
 $logo_url = get_logo_url(); 
 
 if ($user_id) {
-    $builder = $db->table('rise_users');
-    $department = $builder->select('company_id, department')
-                          ->where('id', $user_id)
-                          ->get()
-                          ->getRow();
+    $builder = $db->table('rise_team_member_job_info');
+    $builder->select('rise_team_member_job_info.company_id, rise_users.department')
+            ->join('rise_users', 'rise_users.id = rise_team_member_job_info.user_id', 'left') 
+            ->where('rise_users.id', $user_id);
+    $department = $builder->get()->getRow();
 
     if ($department) {
-        if ((get_array_value($login_user->permissions, "company") === "all")) {
+        if ($login_user->company_access == "all") {
             $department_id = isset($department->department) ? $department->department : $department->company_id;
         } else {
             $department_id = isset($department->company_id) ? $department->company_id : null;

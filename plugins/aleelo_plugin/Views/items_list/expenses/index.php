@@ -15,6 +15,11 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
+        
+        var optionVisibility = false;
+        if ("<?php echo $can_edit_expense ?>") {
+            optionVisibility = true;
+        }
         $("#expense-table").appTable({
             source: '<?php echo_uri("expenses/expense_list_data_of_client/" . $user) ?>',
             order: [[0, "desc"]],
@@ -31,17 +36,18 @@
             columns: [
                 {visible: false, searchable: false},
                 {title: '<?php echo app_lang("date") ?>', "iDataSort": 0},
-                {title: '<?php echo app_lang("category") ?>'},
+                {title: '<?php echo app_lang("company") ?>'},
+                {title: '<?php echo ("Created by") ?>'},
                 {title: '<?php echo app_lang("title") ?>'},
                 {title: '<?php echo app_lang("description") ?>'},
-                {title: '<?php echo app_lang("files") ?>'},
+                {title: '<?php echo app_lang("category") ?>', "class": "text-right"},
                 {title: '<?php echo app_lang("amount") ?>', "class": "text-right"},
-                {title: '<?php echo app_lang("tax") ?>', "class": "text-right"},
-                {title: '<?php echo app_lang("second_tax") ?>', "class": "text-right"},
-                {title: '<?php echo app_lang("total") ?>', "class": "text-right"}
-                <?php echo $custom_field_headers; ?>
+                {title: '<?php echo app_lang("status") ?>', "class": "text-right"}
+
+                <?php echo $custom_field_headers; ?>,
+
             ],
-            summation: [{column: 6, dataType: 'currency'}, {column: 7, dataType: 'currency'}, {column: 8, dataType: 'currency'}, {column: 9, dataType: 'currency'}]
+            summation: [{column: 7, dataType: 'currency'}]
         });
         $(".hidden-filter").hide(); // 
 

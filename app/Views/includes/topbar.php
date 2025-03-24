@@ -148,8 +148,10 @@
                         </li>
                     <?php } ?>
 <?php
-              if (($login_user->is_admin || get_array_value($login_user->permissions, "company") === "all") && !in_array("to_do", $hidden_topbar_menus)) {
-                echo view("todo/company_topbar_icon");
+                 if (($login_user->company_access) === "all" && !in_array("to_do", $hidden_topbar_menus)) {
+
+        //    /      if (get_array_value($login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
+                    echo view("todo/company_topbar_icon");
             }
             
                 ?>

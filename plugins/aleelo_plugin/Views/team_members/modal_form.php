@@ -5,9 +5,12 @@
         <div class="form-widget">
             <div class="widget-title clearfix">
                 <div class="row">
-                    <div id="general-info-label" class="col-sm-4"><i data-feather="circle" class="icon-16"></i><strong> <?php echo app_lang('general_info'); ?></strong></div>
-                    <div id="job-info-label" class="col-sm-4"><i data-feather="circle" class="icon-16"></i><strong>  <?php echo app_lang('job_info'); ?></strong></div>
-                    <div id="account-info-label" class="col-sm-4"><i data-feather="circle" class="icon-16"></i><strong>  <?php echo app_lang('account_settings'); ?></strong></div> 
+                    <div id="general-info-label" class="col-sm-3"><i data-feather="circle" class="icon-16"></i><strong> <?php echo app_lang('general_info'); ?></strong></div>
+                    <div id="job-info-label" class="col-sm-3"><i data-feather="circle" class="icon-16"></i><strong>  <?php echo app_lang('job_info'); ?></strong></div>
+                    <div id="company-access-label" class="col-sm-3"><i data-feather="circle" class="icon-16"></i><strong>  <?php echo app_lang('company_access'); ?></strong></div> 
+
+                    <div id="account-info-label" class="col-sm-3"><i data-feather="circle" class="icon-16"></i><strong>  <?php echo app_lang('account_settings'); ?></strong></div> 
+
                 </div>
             </div>
 
@@ -19,7 +22,7 @@
 
         <div class="tab-content mt15">
             <div role="tabpanel" class="tab-pane active" id="general-info-tab">
-                <div class="form-group">
+           <div class="form-group">
                     <div class="row">
                         <label for="first_name" class=" col-md-3"><?php echo app_lang('first_name'); ?></label>
                         <div class=" col-md-9">
@@ -120,7 +123,21 @@
                 <?php echo view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?> 
 
             </div>
+
             <div role="tabpanel" class="tab-pane" id="job-info-tab">
+                
+            <div class="form-group">
+                    <div class="row">
+                        <label for="company" class="col-md-3"><?php echo app_lang('company'); ?></label>
+                        <div class="col-md-9">
+                            <?php
+                            echo form_dropdown("company", $company_dropdown, array(), "class='select2' id='company'");
+                            ?>
+                            <div id="user-role-help-block" class="help-block ml10 hide"><i data-feather="alert-triangle" class="icon-16 text-warning"></i> <?php echo app_lang("admin_user_has_all_power"); ?></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <div class="row">
                         <label for="job_title" class=" col-md-3"><?php echo app_lang('job_title'); ?></label>
@@ -185,6 +202,38 @@
                     </div>
                 </div>
             </div>
+            <div role="tabpanel" class="tab-pane" id="company_access-tab">
+               
+            <div class="modal-body clearfix">
+                    <div class="container-fluid">
+                        <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
+                        <input type="hidden" name="company_id" value="<?php echo $company_id; ?>" />
+
+                        <div class="form-group" style="min-height: 50px">
+                            <div class="row">
+                                <label for="user_id" class=" col-md-3"><?php echo ($add_user_type == "client_contacts") ? app_lang('contact') : app_lang('member'); ?></label>
+                                <div class="col-md-9">
+                                    <div class="select-member-field">
+                                        <div class="select-member-form clearfix pb10">
+                                            <?php echo form_dropdown("user_id[]", $company, array($model_info->id), "class='select2 col-md-7 p0' id='user_id'"); ?>
+                                            <?php echo js_anchor("<i data-feather='x' class='icon-16'></i> ", array("class" => "remove-member delete ml20")); ?>
+                                        </div>   
+                                                                     
+                                    </div>
+                                    <?php // echo js_anchor("<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_more'), array("class" => "add-member", "id" => "add-more-user")); ?>
+                                </div>
+                            </div> <?php
+                        echo form_checkbox("user_id", "all", false, "id='can_accsess_all_company' class='form-check-input'");
+                        ?> <label for="user_id"><?php echo app_lang('can_accsess_all_company'); ?></label>
+                   
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+                            
             <div role="tabpanel" class="tab-pane" id="account-info-tab">
                 <div class="form-group">
                     <div class="row">
@@ -253,12 +302,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+   </div>
 
     </div>
 </div>
-
-
 <div class="modal-footer">
     <button class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
     <button id="form-previous" type="button" class="btn btn-default hide"><span data-feather="arrow-left-circle" class="icon-16"></span> <?php echo app_lang('previous'); ?></button>
@@ -266,7 +313,6 @@
     <button id="form-submit" type="button" class="btn btn-primary hide"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
 </div>
 <?php echo form_close(); ?>
-
 <script type="text/javascript">
     $(document).ready(function () {
         $("#team_member-form").appForm({
@@ -303,6 +349,7 @@
         $("#form-previous").click(function () {
             var $generalTab = $("#general-info-tab"),
                     $jobTab = $("#job-info-tab"),
+                    $companyAccessTab = $("#company_access-tab"),
                     $accountTab = $("#account-info-tab"),
                     $previousButton = $("#form-previous"),
                     $nextButton = $("#form-next"),
@@ -310,6 +357,11 @@
 
             if ($accountTab.hasClass("active")) {
                 $accountTab.removeClass("active");
+                $companyAccessTab.addClass("active");
+                $nextButton.removeClass("hide");
+                $submitButton.addClass("hide");
+            } else if ($companyAccessTab.hasClass("active")) {
+                $companyAccessTab.removeClass("active");
                 $jobTab.addClass("active");
                 $nextButton.removeClass("hide");
                 $submitButton.addClass("hide");
@@ -325,6 +377,7 @@
         $("#form-next").click(function () {
             var $generalTab = $("#general-info-tab"),
                     $jobTab = $("#job-info-tab"),
+                    $companyAccessTab = $("#company_access-tab"),
                     $accountTab = $("#account-info-tab"),
                     $previousButton = $("#form-previous"),
                     $nextButton = $("#form-next"),
@@ -344,13 +397,24 @@
                 $("#job_title").focus();
             } else if ($jobTab.hasClass("active")) {
                 $jobTab.removeClass("active");
+                $companyAccessTab.addClass("active");
+                $previousButton.removeClass("hide");
+                $nextButton.removeClass("hide");
+                $submitButton.addClass("hide");
+                $("#form-progress-bar").width("55%");
+                $("#job-info-label").find("svg").remove();
+                $("#job-info-label").prepend('<i data-feather="check-circle" class="icon-16"></i>');
+                feather.replace();
+                $("#company_access").focus();
+            } else if ($companyAccessTab.hasClass("active")) {
+                $companyAccessTab.removeClass("active");
                 $accountTab.addClass("active");
                 $previousButton.removeClass("hide");
                 $nextButton.addClass("hide");
                 $submitButton.removeClass("hide");
                 $("#form-progress-bar").width("72%");
-                $("#job-info-label").find("svg").remove();
-                $("#job-info-label").prepend('<i data-feather="check-circle" class="icon-16"></i>');
+                $("#company-access-label").find("svg").remove();
+                $("#company-access-label").prepend('<i data-feather="check-circle" class="icon-16"></i>');
                 feather.replace();
                 $("#username").focus();
                 $("#email").focus();
@@ -388,7 +452,58 @@
                 $("#user-role-help-block").addClass("hide");
             }
         });
+        window.projectMemberForm = $("#team_member-form").appForm({
+            closeModalOnSuccess: false,
+            onSuccess: function (result) {
+                if (result.id !== "exists") {
+                    for (i = 0; i < result.data.length; i++) {
+                        $("#project-member-table").appTable({newData: result.data[i], dataId: result.id[i]});
+                    }
+                }
 
+                if (window.showAddMultipleTasksModal) {
+                    showAddMultipleTaskModal();
+                } else {
+                    window.projectMemberForm.closeModal();
+                }
+            }
+        });
+
+        var $wrapper = $('.select-member-field'),
+                $field = $('.select-member-form:first-child', $wrapper).clone(); //keep a clone for future use.
+
+        $(".add-member", $(this)).click(function (e) {
+            var $newField = $field.clone();
+
+            //remove used options
+            $('.user_select2').each(function () {
+                $newField.find("option[value='" + $(this).val() + "']").remove();
+            });
+
+            var $newObj = $newField.appendTo($wrapper);
+            $newObj.find(".user_select2").select2();
+
+            $newObj.find('.remove-member').click(function () {
+                $(this).parent('.select-member-form').remove();
+                showHideAddMore($field);
+            });
+
+            showHideAddMore($field);
+        });
+
+        showHideAddMore($field);
+
+        $(".remove-member").hide();
+        $(".user_select2").select2();
+
+        function showHideAddMore($field) {
+            //hide add more button if there are no options 
+            if ($('.select-member-form').length < $field.find("option").length) {
+                $("#add-more-user").show();
+            } else {
+                $("#add-more-user").hide();
+            }
+        }
         $("#email_login_details").click(function () {
             if ($(this).is(":checked")) {
                 $("#password").attr("data-rule-required", true);
@@ -398,5 +513,12 @@
                 $("#password").removeAttr("data-msg-required");
             }
         });
-    });
+    //     $("#can_accsess_all_company").change(function () {
+    //     if ($(this).is(":checked")) {
+    //         $("#user_id").prop("disabled", true);
+    //     } else {
+    //         $("#user_id").prop("disabled", false);
+    //     }
+    // });
+});
 </script>

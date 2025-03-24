@@ -56,7 +56,7 @@
             <?php if (count($companies_dropdown) > 1) { ?>
                 <div class="form-group">
                     <div class="row">
-                        <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
+                        <label for="company_id" class=" col-md-3"><?php // echo app_lang('company'); ?></label>
                         <div class="col-md-9">
                             <?php
                             echo form_hidden(array(

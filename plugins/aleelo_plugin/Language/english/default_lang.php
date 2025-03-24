@@ -3260,7 +3260,7 @@ $lang["Sales_and_crm"] = "Sales & CRM";
 
 $lang["can_access_invoices_quotation_payment"] = "can access invoices quotation payment";
 $lang["can_access_items"] = "can access items";
-
+$lang["company_access"] = "company access";
 
 
 

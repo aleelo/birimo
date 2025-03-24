@@ -120,12 +120,16 @@ class Team_member extends Security_Controller_Plugin {
         ));
 
         $view_data['role_dropdown'] = $this->_get_roles_dropdown();
-
+        $view_data['company_dropdown']=array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
         $id = $this->request->getPost('id');
         $options = array(
             "id" => $id,
         );
-
+        $add_user_type=$this->request->getPost('add_user_type');
+        $view_data['add_user_type']=$add_user_type;
+        $company_id=$this->request->getPost('company_id');
+        $view_data['company_id']=$company_id;
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", 0, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
@@ -153,7 +157,14 @@ class Team_member extends Security_Controller_Plugin {
         ));
 
         $password = $this->request->getPost("password");
-
+        $user_id = $this->request->getPost('user_id');
+        $can_access_all = $this->request->getPost('can_accsess_all_company');
+        
+        if ($can_access_all) {
+            $cc = 'all';
+        } else {
+            $cc = !empty($user_id) ? json_encode($user_id) : '';
+        }
         $user_data = array(
             "email" => $this->request->getPost('email'),
             "first_name" => $this->request->getPost('first_name'),
@@ -163,11 +174,11 @@ class Team_member extends Security_Controller_Plugin {
             "phone" => $this->request->getPost('phone'),
             "gender" => $this->request->getPost('gender'),
             "job_title" => $this->request->getPost('job_title'),
-            "phone" => $this->request->getPost('phone'),
-            "gender" => $this->request->getPost('gender'),
             "user_type" => "staff",
-            "created_at" => get_current_utc_time()
-        );
+            "created_at" => get_current_utc_time(),
+            // "company_id" => $this->request->getPost('user_id'),
+                    "company_id" => $user_id,
+);
 
         if ($password) {
             $user_data["password"] = password_hash($password, PASSWORD_DEFAULT);
@@ -194,10 +205,13 @@ class Team_member extends Security_Controller_Plugin {
                 "user_id" => $user_id,
                 "salary" => $this->request->getPost('salary') ? $this->request->getPost('salary') : 0,
                 "salary_term" => $this->request->getPost('salary_term'),
-                "date_of_hire" => $this->request->getPost('date_of_hire')
+                "date_of_hire" => $this->request->getPost('date_of_hire'),
+                "company_id" => $this->request->getPost('company'),
+
             );
             $this->Users_models->save_job_info($job_data);
 
+            
             save_custom_fields("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type);
 
             //send login details to user

@@ -343,6 +343,7 @@ class Users_model extends Crud_model {
         $users_table = $this->db->prefixTable('users');
         $roles_table = $this->db->prefixTable('roles');
         $team_table = $this->db->prefixTable('team');
+        $team_member_job_info = $this->db->prefixTable('team_member_job_info');
 
         $user_id = $this->_get_clean_value($user_id);
 
@@ -350,13 +351,15 @@ class Users_model extends Crud_model {
             $user_id = 0;
         }
 
-        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,$users_table.company_id,$users_table.department,
+        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,$users_table.department,$team_member_job_info.company_id,$users_table.company_access,
             $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id, $users_table.enable_web_notification,
             $users_table.is_primary_contact, $users_table.sticky_note, $users_table.language, $users_table.client_permissions,
             $roles_table.title as role_title, $roles_table.permissions,
             (SELECT GROUP_CONCAT(id) team_ids FROM $team_table WHERE FIND_IN_SET('$user_id', `members`)) as team_ids
         FROM $users_table
         LEFT JOIN $roles_table ON $roles_table.id = $users_table.role_id AND $roles_table.deleted = 0
+        LEFT JOIN $team_member_job_info ON $team_member_job_info.user_id = $users_table.id AND $team_member_job_info.deleted = 0
+
         WHERE $users_table.deleted=0 AND $users_table.id=$user_id";
         return $this->db->query($sql)->getRow();
     }

@@ -150,13 +150,13 @@ class Users_models extends Crud_model {
 
 
         if ($own_company_members) {
-            $where .= " AND $users_table.company_id=$own_company_members";
+            $where .= " AND $team_member_job_info_table.company_id=$own_company_members";
         }
         if ($can_view_own_members) {
-            $where .= " AND $users_table.company_id=$can_view_own_members";
+            $where .= " AND $team_member_job_info_table.company_id=$can_view_own_members";
         }
          if ($can_view_all_members) {
-            $where .= " AND $users_table.company_id=$can_view_all_members";
+            $where .= " AND $team_member_job_info_table.company_id=$can_view_all_members";
         }
         if ($id) {
             $where .= " AND $users_table.id=$id";
@@ -272,14 +272,13 @@ class Users_models extends Crud_model {
 
         //prepare full query string
         $sql = "SELECT SQL_CALC_FOUND_ROWS $users_table.*, $roles_table.title AS role_title,
-            $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, $team_member_job_info_table.salary_term $select_custom_fieds
-        FROM $users_table
-        LEFT JOIN $team_member_job_info_table ON $team_member_job_info_table.user_id=$users_table.id
-        LEFT JOIN $clients_table ON $clients_table.id=$users_table.client_id
-        LEFT JOIN $roles_table ON $roles_table.id=$users_table.role_id
-        $join_custom_fieds    
-        WHERE $users_table.deleted=0 $where $custom_fields_where
-        $order $limit_offset";
+        $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, $team_member_job_info_table.salary_term
+    FROM $users_table
+    LEFT JOIN $team_member_job_info_table ON $team_member_job_info_table.user_id=$users_table.id
+    LEFT JOIN $clients_table ON $clients_table.id=$users_table.client_id
+    LEFT JOIN $roles_table ON $roles_table.id=$users_table.role_id
+    WHERE $users_table.deleted=0 $where
+    $order";
 
         $raw_query = $this->db->query($sql);
 
@@ -339,6 +338,20 @@ class Users_models extends Crud_model {
             return parent::ci_save($data);
         }
     }
+    function save_company_accesss_info($data) {
+        parent::use_table("company_access");
+
+        //check if job info already exists
+        $where = array("user_id" => $this->_get_clean_value($data, "user_id"));
+        $exists = parent::get_one_where($where);
+        if ($exists->user_id) {
+            //job info found. update the record
+            return parent::update_where($data, $where);
+        } else {
+            //insert new one
+            return parent::ci_save($data);
+        }
+    }
 
     function get_team_members($member_ids) {
 
@@ -366,7 +379,7 @@ class Users_models extends Crud_model {
             $user_id = 0;
         }
 
-        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,$users_table.company_id,$users_table.department,
+        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,$users_table.department,
             $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id, $users_table.enable_web_notification,
             $users_table.is_primary_contact, $users_table.sticky_note, $users_table.language, $users_table.client_permissions,
             $roles_table.title as role_title, $roles_table.permissions,

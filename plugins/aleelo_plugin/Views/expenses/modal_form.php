@@ -29,8 +29,10 @@
             </div>
         </div>
      </div>
+     <?php } else if($has_department_permission){ ?>
+              <input type="hidden" name="company_id" value="<?php echo $department; ?>">
             <?php } else{ ?>
-              <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
+              <input type="hidden" name="company_id" value="<?php echo $company_id; ?>">
             <?php } ?>
 
 
@@ -114,26 +116,26 @@
                 </div>
             </div>
 
-            <?php if ($project_id) { ?>
-                <input type="hidden" name="expense_project_id" value="<?php echo $project_id; ?>" />
-            <?php } else { ?>
-                <?php if ($login_user->is_admin || $can_access_clients && $can_access_expenses) { ?>
+            <!-- <?php// if ($project_id) { ?>
+                <input type="hidden" name="expense_project_id" value="<?php// echo $project_id; ?>" />
+            <?php// } else { ?>
+                <?php // if ($login_user->is_admin || $can_access_clients && $can_access_expenses) { ?>
 
-                    <?php if ($client_id) { ?>
-                        <input type="hidden" name="expense_client_id" value="<?php echo $client_id; ?>" />
-                    <?php } else { ?>
+                    <?php// if ($client_id) { ?>
+                        <input type="hidden" name="expense_client_id" value="<?php //echo $client_id; ?>" />
+                    <?php //} else { ?>
                         <div class="form-group">
                             <div class="row">
-                                <label for="expense_client_id" class="col-md-3"><?php echo app_lang('client'); ?></label>
+                                <label for="expense_client_id" class="col-md-3"><?php //echo app_lang('client'); ?></label>
                                 <div class="col-md-9">
                                     <?php
-                                    echo form_dropdown("expense_client_id", $clients_dropdown, $model_info->client_id, "class='select2' id='expense_client_id'");
+                                    // echo form_dropdown("expense_client_id", $clients_dropdown, $model_info->client_id, "class='select2' id='expense_client_id'");
                                     ?>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
-                <?php } ?>
+                    <?php // } ?>
+                <?php //} ?> -->
 
                 <div class="form-group">
                     <div class="row">
@@ -145,8 +147,8 @@
                         </div>
                     </div>
                 </div>
-            <?php } ?>
-            <?php if ($has_all_permission) { ?>
+            <?php //} ?>
+            <?php if ($has_permission) { ?>
 
             <div class="form-group">
                 <div class="row">

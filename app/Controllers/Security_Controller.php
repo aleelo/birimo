@@ -635,6 +635,11 @@ class Security_Controller extends App_Controller {
             return true;
         }
     }
+    protected function can_edit_expense() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "expense") === "all"|| get_array_value($this->login_user->permissions, "expense") === "own_company")) {
+            return true;
+        }
+    }
     protected function can_view_own_company() {
         if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "expense") === "all"|| get_array_value($this->login_user->permissions, "expense") === "own_company")) {
             return true;
@@ -660,7 +665,7 @@ class Security_Controller extends App_Controller {
     protected function can_view_own_department_invoice() {
         if (
             ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
-            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->company_access= "all" &&
             $this->login_user->department != 0
         ) {
             return $this->login_user->department;
@@ -670,7 +675,7 @@ class Security_Controller extends App_Controller {
     protected function can_view_own_members() {
         if (
             ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
-            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->company_access= "all" &&
             $this->login_user->department != 0
         ) {
             return $this->login_user->department;
@@ -680,7 +685,7 @@ class Security_Controller extends App_Controller {
     protected function can_view_all_tasks() {
         if (
             ($this->login_user->user_type == "staff" ) &&
-            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->company_access= "all" &&
             $this->login_user->department != 0
         ) {
             return $this->login_user->department;

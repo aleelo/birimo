@@ -137,7 +137,7 @@ class Invoices extends Security_Controller {
 
         //make the drodown lists
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
-        if(get_array_value($this->login_user->permissions, "company") === "all"){
+        if($this->login_user->company_access= "all"){
         $department = $this->login_user->department;
     }
     else{

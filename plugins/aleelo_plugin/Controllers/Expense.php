@@ -16,20 +16,22 @@ class Expense extends Security_Controller_Plugin {
     //load the expenses list view
     function index() {
        $this->check_module_availability("module_expense");
-       if ($this->login_user->is_admin || $this->login_user->user_type === "staff"  && get_array_value($this->login_user->permissions, "expense") == "all" ) {
+       if ($this->login_user->is_admin || $this->login_user->user_type === "staff"  && get_array_value($this->login_user->permissions, "expense") == "all" || get_array_value($this->login_user->permissions, "expense") == "own_company") {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data['login_user'] = $this->login_user;
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
         $view_data['company'] = $this->_get_company();
-                  
+    
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
+        $department=$this->login_user->department;
+        $company=$this->login_user->company_id;
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
         $view_data['user'] = $this->login_user->id;
         $view_data['company_id'] = $this->login_user->company_id;
 
         return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
-    } elseif ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "expense") == "own_expenses"|| get_array_value($this->login_user->permissions, "expense") == "own_company") {
+    } elseif ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "expense") == "own_expenses") {
        
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
@@ -37,6 +39,7 @@ class Expense extends Security_Controller_Plugin {
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
                 $view_data['company'] = $this->_get_company();
                 $view_data['user'] = $this->login_user->id;
+                $view_data["can_edit_expense"] = $this->can_edit_expense();
 
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
@@ -99,7 +102,46 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
         ));
-        $department=$this->login_user->company_id;
+        // $company_access=$this->login_user->company_id;
+        $team_members = "";
+        if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
+            
+            $team_members = $this->Users_model
+                ->db
+                ->table("users")
+                ->select("users.id, users.first_name, users.last_name")
+                ->join("rise_team_member_job_info", "users.id = rise_team_member_job_info.user_id", "left")
+                ->where("users.deleted", 0)
+                ->where("users.user_type", "staff")
+                ->get()
+                ->getResult();
+        }
+        else if ($this->login_user->company_access == "all") {
+            $department = $this->login_user->department;
+            
+            $team_members = $this->Users_model
+                ->db
+                ->table("users")
+                ->select("users.id, users.first_name, users.last_name")
+                ->join("rise_team_member_job_info", "users.id = rise_team_member_job_info.user_id", "left")
+                ->where("users.deleted", 0)
+                ->where("users.user_type", "staff")
+                ->where("rise_team_member_job_info.company_id", $this->login_user->department) 
+                ->get()
+                ->getResult();
+        }  else {
+            $team_members = $this->Users_model
+                ->db
+                ->table("users")
+                ->select("users.id, users.first_name, users.last_name")
+                ->join("rise_team_member_job_info", "users.id = rise_team_member_job_info.user_id", "left")
+                ->where("users.deleted", 0)
+                ->where("users.user_type", "staff")
+                ->where("rise_team_member_job_info.company_id", $this->login_user->company_id) 
+                ->get()
+                ->getResult();
+        }
+        
 
         $client_id = $this->request->getPost('client_id');
         $project_id = $this->request->getPost('project_id');
@@ -108,7 +150,6 @@ class Expense extends Security_Controller_Plugin {
         $view_data['categories_dropdown'] = $this->Expense_categories_model->get_dropdown_list(array("title"));
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
 
-        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "user_type" => "staff","company_id"=>$department))->getResult();
         $members_dropdown = array();
 
         foreach ($team_members as $team_member) {
@@ -117,7 +158,17 @@ class Expense extends Security_Controller_Plugin {
 
         $view_data['members_dropdown'] = array("0" => "-") + $members_dropdown;
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
-        $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"));
+       
+        if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
+            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id");
+        } else if ($this->login_user->company_access == "all" && $this->login_user->department !==0) {
+            $department = $this->login_user->department;
+            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
+        } else {
+            $department = $this->login_user->company_id;
+            $view_data['projects_dropdown'] = array("0" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
+        }
+        
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
 
         $model_info->project_id = $model_info->project_id ? $model_info->project_id : $this->request->getPost('project_id');
@@ -134,9 +185,15 @@ class Expense extends Security_Controller_Plugin {
         //clone invoice
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
-        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all" || get_array_value($this->login_user->permissions, "expense") == "all"));
-            $view_data['company_id'] = $this->login_user->company_id;
+        $view_data['company_id'] = $this->login_user->company_id;
+
+        $view_data['has_permission'] = ($this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
+
+        $view_data['has_all_permission'] = ($this->login_user->department == 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
+
+        $view_data['has_department_permission'] = ($this->login_user->department !== 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
+                $view_data['company_id'] = $this->login_user->company_id;
+        $view_data['department'] = $this->login_user->department; 
 
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("expenses", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
@@ -617,7 +674,6 @@ class Expense extends Security_Controller_Plugin {
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
     
         $options = array(
-            "company_id_company" => $this->login_user->company_id, 
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type),
             "created_by_user"=>$this->show_own_expenses_only_user_id(),

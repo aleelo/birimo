@@ -21,6 +21,8 @@ class Security_Controller_Plugin extends Security_Controller {
     // use App_Controller;
     public$Field_of_study_model;
     public$Users_models;
+    public$Users_model;
+
     public$Tasks_model;
 
     public$Estimates_model;
@@ -42,6 +44,7 @@ $this->Field_of_study_model = new \aleelo_plugin\Models\Field_of_study_model();
 $this->Users_models = new \aleelo_plugin\Models\Users_models();
 $this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
 $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
+$this->Users_model = new \aleelo_plugin\Models\Users_models();
 
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();
@@ -103,7 +106,7 @@ $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
     protected function can_view_own_project() {
         if (
             ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
-            get_array_value($this->login_user->permissions, "company") === "all" &&
+            $this->login_user->company_access= "all" &&
             $this->login_user->department != 0
         ) {
             return $this->login_user->department;
