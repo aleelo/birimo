@@ -47,7 +47,7 @@
                 }
             ],
             filterDropdown: [
-                <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
+                <?php if ( $login_user->company_access== "all") 
  { ?>
             {name: "can_view_all_project", class: "w200 ", options: <?php echo $company; ?>},
 

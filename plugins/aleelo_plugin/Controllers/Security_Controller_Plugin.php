@@ -109,9 +109,12 @@ $this->Users_model = new \aleelo_plugin\Models\Users_models();
         $company_id = $this->login_user->department;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
        }
-       else{
+       else if($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company" || get_array_value($this->login_user->permissions, "invoice") === "own_invoice"){
         $company_id = $this->login_user->company_id;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
+         }
+         else{
+            $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
          }
       
         foreach ($clients as $client) {
@@ -126,9 +129,8 @@ $this->Users_model = new \aleelo_plugin\Models\Users_models();
 
     protected function can_view_own_project() {
         if (
-            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
-            $this->login_user->company_access= "all" &&
-            $this->login_user->department != 0
+            
+            $this->login_user->company_access==="all" 
         ) {
             return $this->login_user->department;
         }

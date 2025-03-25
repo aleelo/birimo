@@ -669,6 +669,16 @@ class Team_member extends Security_Controller_Plugin {
         if (!($this->login_user->is_admin || $this->login_user->id === $user_id || $this->has_job_info_manage_permission())) {
             app_redirect("forbidden");
         }
+        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
+        $id = $this->request->getPost('id');
+        $options = array(
+            "id" => $id,
+        );
+        $add_user_type=$this->request->getPost('add_user_type');
+        $view_data['add_user_type']=$add_user_type;
+        $company_id=$this->request->getPost('company_id');
+        $view_data['company_id']=$company_id;
+        $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
 
         $options = array("id" => $user_id);
         $user_info = $this->Users_models->get_details($options)->getRow();

@@ -664,37 +664,30 @@ class Security_Controller extends App_Controller {
     }
     protected function can_view_own_department_invoice() {
         if (
-            ($this->login_user->user_type == "staff" || $this->login_user->is_admin) &&
-            $this->login_user->company_access= "all" &&
-            $this->login_user->department != 0
-        ) {
+            $this->login_user->company_access= "all"         ) {
             return $this->login_user->department;
         }
         return null;
     }
     protected function can_view_own_members() {
         if (
-            ($this->login_user->user_type == "staff") &&
-            $this->login_user->company_access= "all" &&
-            $this->login_user->department != 0
+            
+            $this->login_user->company_access= "all" 
         ) {
             return $this->login_user->department;
         }
         return null;
     }
-    protected function can_view_all_tasks() {
-        if (
-            ($this->login_user->user_type == "staff" ) &&
-            $this->login_user->company_access= "all" &&
-            $this->login_user->department != 0
-        ) {
-            return $this->login_user->department;
-        }
-        return null;
+ 
+protected function can_view_all_tasks() {
+    if ($this->login_user->company_access === "all") {
+        return $this->login_user->department;
     }
+    return null; // Deny access if company_access is not "all"
+}
     protected function can_view_own_company_tasks() {
         if (
-            ($this->login_user->user_type == "staff" ) &&
+            
             get_array_value($this->login_user->permissions, "task") === "own_company"
         ) {
             return $this->login_user->company_id;

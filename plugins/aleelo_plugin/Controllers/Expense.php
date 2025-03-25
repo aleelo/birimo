@@ -330,7 +330,13 @@ class Expense extends Security_Controller_Plugin {
             echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
         }
     }
-
+    protected function can_view_all_expense() {
+        if ($this->login_user->company_access === "all") {
+            return $this->login_user->department;
+        }
+        return null; // Deny access if company_access is not "all"
+    }
+    
     //get the expnese list data
     function list_data($recurring = false) {
         $start_date = $this->request->getPost('start_date');
@@ -339,7 +345,7 @@ class Expense extends Security_Controller_Plugin {
         $project_id = $this->request->getPost('project_id');
         $user_id = $this->request->getPost('user_id');
         $company_id_company= $this->request->getPost('company_id_company');
-       $company= $this->login_user->department;
+       $company= $this->can_view_all_expense();
     
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
