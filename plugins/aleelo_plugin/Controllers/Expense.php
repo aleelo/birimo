@@ -22,7 +22,8 @@ class Expense extends Security_Controller_Plugin {
         $view_data['login_user'] = $this->login_user;
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
         $view_data['company'] = $this->_get_company();
-    
+        $view_data["can_edit_expense"] = $this->can_edit_expense();
+
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $department=$this->login_user->department;
         $company=$this->login_user->company_id;
@@ -44,7 +45,7 @@ class Expense extends Security_Controller_Plugin {
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
 
-        return $this->template->rander("aleelo_plugin\Views\items_list/expenses/index", $view_data);
+        return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
     }
     else{
         app_redirect("forbidden");
@@ -199,8 +200,9 @@ class Expense extends Security_Controller_Plugin {
         $view_data['has_department_permission'] = ($this->login_user->department !== 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
                 $view_data['company_id'] = $this->login_user->company_id;
         $view_data['department'] = $this->login_user->department; 
-
-
+        $now = get_current_utc_time();
+        $user_id = $this->login_user->id; // Get the currently logged-in user ID
+    
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("expenses", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
         return $this->template->view('aleelo_plugin\Views/expenses/modal_form', $view_data);
     }
@@ -250,9 +252,14 @@ class Expense extends Security_Controller_Plugin {
             "no_of_cycles" => $no_of_cycles ? $no_of_cycles : 0,
         );
 
-        $data["created_at"] = get_current_utc_time();
-        $data["created_by"] = $this->login_user->id;
-
+        $data["updated_at"] = get_current_utc_time();
+        $data["updated_by"] = $this->login_user->id;
+    
+        if (!$id) {
+            $data["created_at"] = get_current_utc_time();
+            $data["created_by"] = $this->login_user->id;
+        }
+    
         $expense_info = $this->Expenses_model->get_one($id);
 
         //is editing? update the files if required
@@ -317,6 +324,15 @@ class Expense extends Security_Controller_Plugin {
         if ($this->Expenses_model->delete($id)) {
             //delete the files
             $file_path = get_setting("timeline_file_path");
+            $now = get_current_utc_time();
+            $user_id = $this->login_user->id; // Get the currently logged-in user ID
+        
+            $data = [
+                "deleted_at" => $now,
+                "deleted_by" => $user_id
+            ];
+            $save_id = $this->Expenses_model->ci_save($data, $id);
+
             if ($expense_info->files) {
                 $files = unserialize($expense_info->files);
 
@@ -479,10 +495,16 @@ class Expense extends Security_Controller_Plugin {
             $cf_id = "cfv_" . $field->id;
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
-
-        $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
+if (get_array_value($this->login_user->permissions, "expense") === "own_expenses" && $data->status == "unpaid") {
+    $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
+    . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expense/delete"), "data-action" => "delete-confirmation"));
+}
+        else if ($this->can_edit_expense()) {
+            $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expense/delete"), "data-action" => "delete-confirmation"));
-            
+        } else {
+            $row_data[] = ""; //
+        }
         return $row_data;
     }
 
@@ -710,7 +732,7 @@ class Expense extends Security_Controller_Plugin {
         if (!$info) {
             show_404();
         }
-
+        $view_data["can_edit_expense"] = $this->can_edit_expense();
         $view_data["expense_info"] = $info;
         $view_data['custom_fields_list'] = $this->Custom_fields_model->get_combined_details("expenses", $expense_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 

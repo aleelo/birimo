@@ -37,9 +37,17 @@
                             </div>
                             <div class="form-group">
                                 <div class="row">
-                                    <label for="estimate_color" class=" col-md-2"><?php echo app_lang('estimate_color'); ?></label>
+                                    <label for="estimate_color" class=" col-md-2"><?php echo app_lang('estimate_color_pixel'); ?></label>
                                     <div class=" col-md-10">
-                                        <input type="color" id="estimate_color" name="estimate_color" value="<?php echo get_setting("estimate_color"); ?>" />
+                                        <input type="color" id="estimate_color_pixel" name="estimate_color_pixel" value="<?php echo get_setting("estimate_color_pixel"); ?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label for="estimate_color" class=" col-md-2"><?php echo app_lang('estimate_color_solution'); ?></label>
+                                    <div class=" col-md-10">
+                                        <input type="color" id="estimate_color_solution" name="estimate_color_solution" value="<?php echo get_setting("estimate_color_solution"); ?>" />
                                     </div>
                                 </div>
                             </div>

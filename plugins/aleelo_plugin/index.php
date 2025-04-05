@@ -47,12 +47,20 @@ $routes = service('routes');
     $routes->get('signin', 'Signinn::index');
     $routes->get('signin/(:any)', 'Signinn::$1');
     $routes->post('signin/(:any)', 'Signinn::$1');
+
+    $routes->get('company', 'Company::index');
+    $routes->get('company/(:any)', 'Company::$1');
+    $routes->post('company/(:any)', 'Company::$1');
     
     $routes->get('tasks', 'Tasks::index');
     $routes->get('tasks/(:any)', 'Tasks::$1');
     $routes->post('tasks/(:any)', 'Tasks::$1');
 
-      $routes->get('estimates', 'Estimates::index');
+      $routes->get('estimate', 'Estimate::index');
+    $routes->get('estimate/(:any)', 'Estimate::$1');
+    $routes->post('estimate/(:any)', 'Estimate::$1');
+
+    $routes->get('estimates', 'Estimates::index');
     $routes->get('estimates/(:any)', 'Estimates::$1');
     $routes->post('estimates/(:any)', 'Estimates::$1');
 

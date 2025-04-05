@@ -81,7 +81,7 @@
                 </div>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade" id="estimate-details-section">
-                        <?php echo view("estimates/details"); ?>
+                        <?php echo view("aleelo_plugin\Views/estimates/details"); ?>
                     </div>
                     <div role="tabpanel" class="tab-pane fade grid-button" id="estimate-tasks-section"></div>
                 </div>

@@ -141,12 +141,16 @@ class Invoices extends Security_Controller_Plugin {
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
         if($this->login_user->company_access= "all"){
         $department = $this->login_user->department;
-    }
-    else{
-        $department = $this->login_user->company_id;
+        $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0,"company_id"=>$department));
 
     }
+    else if(get_array_value($this->login_user->permissions, "expense") == "own_company"){
+        $department = $this->login_user->company_id;
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0,"company_id"=>$department));
+
+    }else{
+        $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
+    }
 // if (get_array_value($this->login_user->permissions, "company")) {
 //     if($departments = $this->Companyy_model->get_access_info($this->login_user->id)){
 //         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0, "company_id" => $departments));

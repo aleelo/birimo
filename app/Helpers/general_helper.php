@@ -810,8 +810,10 @@ if (!function_exists('prepare_invoice_pdf')) {
 if (!function_exists('prepare_estimate_pdf')) {
 
     function prepare_estimate_pdf($estimate_data, $mode = "download") {
-        $pdf = new Pdf();
-        $pdf->setPrintHeader(false);
+        $pdf = new Pdf("invoice");
+        if (!get_setting("enable_background_image_for_invoice_pdf")) {
+            $pdf->setPrintHeader(false);
+        }
         $pdf->setPrintFooter(false);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
@@ -821,7 +823,7 @@ if (!function_exists('prepare_estimate_pdf')) {
 
             $estimate_data["mode"] = clean_data($mode);
 
-            $html = view("estimates/estimate_pdf", $estimate_data);
+            $html = view("aleelo_plugin\Views/estimates/estimate_pdf", $estimate_data);
             if ($mode != "html") {
                 $pdf->writeHTML($html, true, false, true, false, '');
             }

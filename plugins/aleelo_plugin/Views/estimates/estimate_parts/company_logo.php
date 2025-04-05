@@ -1,3 +1,3 @@
 <?php
 
-echo get_company_logo($estimate_info->company_id, "estimate");
+echo get_company_logo($client_info->company_id, "estimate");

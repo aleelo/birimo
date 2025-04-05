@@ -105,17 +105,23 @@ $this->Users_model = new \aleelo_plugin\Models\Users_models();
     protected function get_clients_and_leads_dropdown($return_json = false) {
         $clients_dropdown = array("" => "-");
         $clients_json_dropdown = array(array("id" => "", "text" => "-"));
-       if($this->login_user->user_type == "staff" && $this->login_user->company_access == "all"){
+       if($this->login_user->company_access == "all"){
+       if( $company_id = $this->login_user->department==0){
+        $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
+       }
+       else{
         $company_id = $this->login_user->department;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
        }
-       else if($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company" || get_array_value($this->login_user->permissions, "invoice") === "own_invoice"){
+    }
+       else if(get_array_value($this->login_user->permissions, "client") === "own_company" || get_array_value($this->login_user->permissions, "invoice") === "own_invoice"){
         $company_id = $this->login_user->company_id;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
          }
          else{
             $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
          }
+        
       
         foreach ($clients as $client) {
             $company_name = $client->is_lead ? app_lang("lead") . ": " . $client->company_name : $client->company_name;

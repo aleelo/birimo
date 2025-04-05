@@ -196,13 +196,13 @@
                                                 <span class="selected-mark <?php echo $invoice_style == 'style_1' ? '' : 'hide'; ?>"><i data-feather="check-circle"></i></span>
                                                 <img src="<?php echo get_file_uri("assets/images/invoice_style_1.png") ?>" alt="style_1" />
                                             </div>
-                                            <div data-value="style_2" class="item <?php echo $invoice_style === 'style_2' ? ' active ' : ''; ?>">
+                                            <!-- <div data-value="style_2" class="item <?php echo $invoice_style === 'style_2' ? ' active ' : ''; ?>">
                                                 <span class="selected-mark <?php echo $invoice_style === 'style_2' ? '' : 'hide'; ?>"><i data-feather="check-circle"></i></span>
                                                 <img src="<?php echo get_file_uri("assets/images/invoice_style_2.png") ?>" alt="style_2" />
                                             </div>
                                             <div data-value="style_3" class="item <?php echo $invoice_style === 'style_3' ? ' active ' : ''; ?>">
                                                 <span class="selected-mark <?php echo $invoice_style === 'style_3' ? '' : 'hide'; ?>"><i data-feather="check-circle"></i></span>
-                                                <img src="<?php echo get_file_uri("assets/images/invoice_style_3.png") ?>" alt="style_3" />
+                                                <img src="<?php echo get_file_uri("assets/images/invoice_style_3.png") ?>" alt="style_3" /> -->
                                             </div>
                                         </div>
                                     </div>

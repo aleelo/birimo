@@ -21,7 +21,7 @@
     </tr>
     <tr>
         <td><?php
-            echo view('estimates/estimate_parts/estimate_from', $data);
+            echo "cc";
             ?>
         </td>
         <td></td>

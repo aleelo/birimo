@@ -177,7 +177,7 @@ class Team_member extends Security_Controller_Plugin {
             "user_type" => "staff",
             "created_at" => get_current_utc_time(),
             // "company_id" => $this->request->getPost('user_id'),
-                    "company_id" => $user_id,
+                    "company_access" => $user_id,
 );
 
         if ($password) {

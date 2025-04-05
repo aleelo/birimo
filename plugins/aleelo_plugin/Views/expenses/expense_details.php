@@ -6,8 +6,8 @@
                 <div class="col-md-12">
                     <ul id="expense-tabs" data-bs-toggle="ajax-tab" class="nav nav-pills rounded classic mb20 scrollable-tabs border-white" role="tablist" style="background: #EEF1F9;">
                         <li><a role="presentation" data-bs-toggle="tab" class="active" href="javascript:;" data-bs-target="#expenses-details-section"><?php echo app_lang("details"); ?></a></li>
-                        <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("expense/tasks/" . $expense_info->id); ?>" data-bs-target="#expenses-tasks-section"><?php echo app_lang('tasks'); ?></a></li>
-                    </ul>
+                      <?php if($can_edit_expense){?>  <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("expense/tasks/" . $expense_info->id); ?>" data-bs-target="#expenses-tasks-section"><?php echo app_lang('tasks'); ?></a></li>
+                   <?php }?> </ul>
                 </div>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade active show" id="expenses-details-section">
@@ -141,9 +141,9 @@
     </div>
 </div>
 <div class="modal-footer">
-    <?php
+    <?php if($can_edit_expense){
     echo modal_anchor(get_uri("expense/modal_form"), "<i data-feather='copy' class='icon-16'></i> " . app_lang('clone_expense'), array("class" => "btn btn-default float-start", "data-post-is_clone" => true, "data-post-id" => $expense_info->id, "title" => app_lang('clone_expense')));
     echo modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('edit_expense'), array("class" => "btn btn-default", "data-post-id" => $expense_info->id, "title" => app_lang('edit_expense')));
-    ?>
+                              }  ?>
     <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
 </div>

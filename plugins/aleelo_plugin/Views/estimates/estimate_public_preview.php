@@ -28,8 +28,8 @@
                 ));
                 ?>
 
-                <div class="invoice-preview estimate-preview">
-                    <div class = "card  p15 no-border">
+<div class=" estimate-preview" style="  max-width: 900px; min-width: 400px; margin: auto;">
+<div class = "card  p15 no-border">
                         <div class="clearfix">
                             <?php if ($estimate_info->status === "accepted" || $estimate_info->status === "declined" || $estimate_info->status === "rejected") { ?>
                                 <img class="dashboard-image float-start" src="<?php echo get_logo_url(); ?>" />
