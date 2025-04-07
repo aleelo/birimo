@@ -94,7 +94,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <div class="row">
                 <label for="tax_id" class=" col-md-3"><?php echo app_lang('second_tax'); ?></label>
                 <div class="col-md-9">
@@ -103,7 +103,7 @@
                     ?>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="form-group">
             <div class="row">
                 <label for="estimate_note" class=" col-md-3"><?php echo app_lang('note'); ?></label>
