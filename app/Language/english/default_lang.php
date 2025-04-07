@@ -757,13 +757,6 @@ $lang["mark_as_closed"] = "Mark as Closed";
 
 $lang["ticket_assignee"] = "Ticket assignee";
 
-$lang["estimate"] = "Estimate";
-$lang["estimates"] = "Estimates";
-$lang["estimate_request"] = "Estimate Request";
-$lang["estimate_requests"] = "Estimate Requests";
-$lang["estimate_list"] = "Estimate List";
-$lang["estimate_forms"] = "Estimate Forms";
-$lang["estimate_request_forms"] = "Estimate Request Forms";
 
 $lang["add_form"] = "Add form";
 $lang["edit_form"] = "Edit form";
@@ -781,30 +774,16 @@ $lang["field_type_textarea"] = "Textarea";
 $lang["field_type_select"] = "Select";
 $lang["field_type_multi_select"] = "Multi Select";
 
-$lang["request_an_estimate"] = "Request an Estimate";
-$lang["estimate_submission_message"] = "Your request has been submitted successfully!";
 
 $lang["hold"] = "Hold";
 $lang["processing"] = "Processing";
-$lang["estimated"] = "Estimated";
 
-$lang["add_estimate"] = "Add estimate";
-$lang["edit_estimate"] = "Edit estimate";
-$lang["delete_estimate"] = "Delete estimate";
 $lang["valid_until"] = "Valid until";
-$lang["estimate_date"] = "Estimate date";
 $lang["accepted"] = "Accepted";
 $lang["declined"] = "Declined";
 $lang["sent"] = "Sent";
-$lang["estimate_preview"] = "Estimate Preview";
-$lang["estimate_to"] = "Estimate To";
-
-$lang["can_access_estimates"] = "Can access estimates?";
-$lang["request_an_estimate"] = "Request an estimate";
-$lang["estimate_request_form_selection_title"] = "Please select a form from the following list to submit your request.";
 
 $lang["mark_as_processing"] = "Mark as Processing";
-$lang["mark_as_estimated"] = "Mark as Estimated";
 $lang["mark_as_hold"] = "Mark as Hold";
 $lang["mark_as_canceled"] = "Mark as Canceled";
 
@@ -813,15 +792,7 @@ $lang["mark_as_accepted"] = "Mark as Accepted";
 $lang["mark_as_rejected"] = "Mark as Rejected";
 $lang["mark_as_declined"] = "Mark as Declined";
 
-$lang["estimate_request_received"] = "Estimate request received";
-$lang["estimate_sent"] = "Estimate sent";
-$lang["estimate_accepted"] = "Estimate accepted";
-$lang["estimate_rejected"] = "Estimate rejected";
 
-$lang["notification_estimate_request_received"] = "Submitted an estimate request";
-$lang["notification_estimate_sent"] = "Sent an estimate";
-$lang["notification_estimate_accepted"] = "Accepted an estimate";
-$lang["notification_estimate_rejected"] = "Rejected an estimate";
 
 $lang["clone_project"] = "Clone Project";
 $lang["copy_tasks"] = "Copy tasks";
@@ -890,7 +861,6 @@ $lang["gantt"] = "Gantt";
 $lang["not_specified"] = "Not specified";
 $lang["group_by"] = "Group by";
 $lang["create_invoice"] = "Create Invoice";
-$lang["include_all_items_of_this_estimate"] = "Include all items of this estimate";
 $lang["edit_payment"] = "Edit payment";
 $lang["disable_client_login"] = "Disable client login";
 $lang["disable_client_signup"] = "Disable client signup";
@@ -941,7 +911,6 @@ $lang["client_can_view_milestones"] = "Client can view milestones?";
 
 $lang["items"] = "Items";
 $lang["edit_item"] = "Edit item";
-$lang["item_edit_instruction"] = "Note: The changes will not be affected on existing invoices, estimates or orders.";
 
 $lang["recurring"] = "Recurring";
 $lang["repeat_every"] = "Repeat every"; //Ex. repeat every 2 months
@@ -1105,7 +1074,6 @@ $lang["enable_email_notification"] = "Enable email notification";
 
 /* Version 2.0.3 */
 
-$lang["show_in_estimate"] = "Show in estimate";
 $lang["mentioned_members"] = "Mentioned members";
 $lang["all"] = "All";
 
@@ -1248,7 +1216,6 @@ $lang["unauthorized"] = "Unauthorized";
 
 $lang["not_clocked_id_yet"] = "Not clocked in yet";
 
-$lang["create_estimate_request"] = "Create estimate request";
 
 $lang["in_last_number_of_days"] = "In last %s days";
 $lang["in_last_number_of_month"] = "In last %s month";
@@ -1301,20 +1268,12 @@ $lang["cancelled_by"] = "Cancelled by";
 $lang["test_push_notification"] = "Test push notification";
 $lang["notification_test_push_notification"] = "Great! Push notification looks OK.";
 $lang["push_notification_error_message"] = "Error! Can't connect with the Pusher using the credentials.";
-$lang["clone_estimate"] = "Clone Estimate";
 
 $lang["import_clients"] = "Import clients";
 $lang["download_sample_file"] = "Download sample file";
 
-$lang["estimate_settings"] = "Estimate Settings";
-$lang["estimate_logo"] = "Estimate Logo";
-$lang["estimate_color"] = "Estimate Color";
-$lang["initial_number_of_the_estimate"] = "Initial number of the estimate";
-$lang["the_estimates_id_must_be_larger_then_last_estimate_id"] = "The estimates ID must be larger than the last estimate ID.";
 
 $lang["send_to_client"] = "Send to client";
-$lang["estimate_sent_message"] = "The estimate has been sent!";
-$lang["send_estimate_bcc_to"] = "When sending estimate to client, send BCC to";
 
 $lang["task_settings"] = "Task settings";
 $lang["enable_recurring_option_for_tasks"] = "Enable recurring option for tasks";
@@ -1347,7 +1306,6 @@ $lang["notification_client_created_from_lead"] = "Converted a lead to client.";
 $lang["project_deadline"] = "Project deadline";
 $lang["task_deadline"] = "Task deadline";
 $lang["event_type"] = "Event type";
-$lang["delete_estimate_form"] = "Delete estimate form";
 $lang["calendar_event_modified"] = "Calendar event modified";
 $lang["notification_calendar_event_modified"] = "Modified an event.";
 
@@ -1356,7 +1314,6 @@ $lang["lead_created_at"] = "Lead created at";
 $lang["past_lead_information"] = "Past lead information";
 $lang["last_status"] = "Last status";
 $lang["migrated_to_client_at"] = "Migrated to client at";
-$lang["edit_estimate_form"] = "Edit estimate form";
 
 $lang["please_upload_a_excel_file"] = "Please upload a excel file.";
 $lang["back"] = "Back";
@@ -1377,7 +1334,6 @@ $lang["copy_discount"] = "Copy discount";
 $lang["clone_task"] = "Clone task";
 $lang["copy_checklist"] = "Copy checklist";
 
-$lang["auto_assign_estimate_request_to"] = "Auto assign estimate request to";
 
 $lang["email_template_variable"] = "Email template variable";
 $lang["example_variable_name"] = "Example_variable_name";
@@ -1442,7 +1398,6 @@ $lang["google_calendar_help_message"] = "You'll get your Google Calendar events 
 
 $lang["footer"] = "Footer";
 $lang["footer_description_message"] = "This footer will be visible on all public pages.";
-$lang["estimate_footer"] = "Estimate Footer";
 $lang["enable_footer"] = "Enable footer";
 $lang["footer_menus"] = "Footer menus";
 $lang["footer_copyright_text"] = "Copyright text";
@@ -1486,8 +1441,6 @@ $lang["blocking"] = "Blocking";
 $lang["blocked"] = "Blocked";
 $lang["dependency"] = "Dependency";
 
-$lang["estimate_request_settings"] = "Estimate request settings";
-$lang["hidden_client_fields_on_public_estimate_requests"] = "Hide fields from public estimate request forms";
 $lang["hidden_client_fields"] = "Hidden client fields";
 
 $lang["account"] = "Account";
@@ -1525,7 +1478,6 @@ $lang["gdpr_terms_and_conditions"] = "Terms and Conditions";
 $lang["removal_request_pending"] = "Removal Request Pending";
 
 $lang["client_access_files_help_message"] = "The files which are located in client details view in the Files tab.";
-$lang["estimate_request_name_email_error_message"] = "Email can't be shown without first name and last name.";
 
 $lang["slug"] = "Slug";
 $lang["add_assignee"] = "Add assignee";
@@ -1591,7 +1543,6 @@ $lang["can_send_messages_to_specific_members_or_teams"] = "Can send messages to 
 $lang["embed"] = "Embed";
 $lang["copy"] = "Copy";
 
-$lang["estimate_prefix"] = "Estimate prefix";
 
 $lang["likes"] = "Likes";
 
@@ -1682,7 +1633,6 @@ $lang["private_template"] = "Private template";
 
 $lang["requested_by"] = "Requested by";
 
-$lang["create_new_projects_automatically_when_estimates_gets_accepted"] = "Create new projects automatically when estimates gets accepted";
 
 $lang["typing"] = "Typing";
 
@@ -1769,7 +1719,6 @@ $lang["process_order_info_message"] = "You are about to create the order. Please
 
 $lang["order_creator_contact"] = "Order creator contact";
 
-$lang["create_estimate"] = "Create Estimate";
 $lang["include_all_items_of_this_order"] = "Include all items of this order";
 
 $lang["new_order_received"] = "New order received";
@@ -1841,8 +1790,6 @@ $lang["find_more_items"] = "Find more items";
 
 $lang["reports"] = "Reports";
 
-$lang["yes_all_estimates"] = "Yes, all estimates";
-$lang["yes_only_own_estimates"] = "Yes, only own estimates";
 
 $lang["add_category"] = "Add category";
 $lang["edit_category"] = "Edit category";
@@ -1872,7 +1819,6 @@ $lang["proposal_accepted"] = "Proposal accepted";
 $lang["notification_proposal_accepted"] = "Accepted a proposal";
 $lang["proposal_rejected"] = "Proposal rejected";
 $lang["notification_proposal_rejected"] = "Rejected a proposal";
-$lang["create_estimate"] = "Create Estimate";
 $lang["include_all_items_of_this_proposal"] = "Include all items of this proposal";
 $lang["proposal_view"] = "Proposal view";
 $lang["accept_proposal"] = "Accept proposal";
@@ -1945,7 +1891,6 @@ $lang["save_as_note"] = "Save as note";
 $lang["client_will_not_see_any_notes"] = "Client will not see any notes.";
 
 $lang["prospects"] = "Prospects";
-$lang["estimate_forms"] = "Estimate Forms";
 
 $lang["proposal_editor"] = "Proposal Editor";
 $lang["proposal_templates"] = "Proposal templates";
@@ -1987,11 +1932,6 @@ $lang["client_can_assign_tasks"] = "Client can assign tasks?";
 $lang["can_create_lead_from_public_form"] = "Can create lead from public form";
 $lang["lead_html_form_code"] = "Lead creation HTML form code";
 
-$lang["enable_comments_on_estimates"] = "Enable comments on estimates";
-$lang["show_most_recent_estimate_comments_at_the_top"] = "Show most recent estimate comments at the top";
-$lang["estimate_commented"] = "Estimate commented";
-$lang["estimate_creator"] = "Estimate creator";
-$lang["notification_estimate_commented"] = "Commented on an estimate.";
 
 $lang["contacts_logged_in_today"] = "Contacts logged in today";
 $lang["contacts_logged_in_last_seven_days"] = "Contacts logged in last 7 days";
@@ -2008,14 +1948,6 @@ $lang["clients_has_hold_projects"] = "Clients has hold projects";
 $lang["clients_has_completed_projects"] = "Clients has completed projects";
 $lang["clients_has_canceled_projects"] = "Clients has canceled projects";
 
-$lang["has_open_estimates"] = "Has open estimates";
-$lang["has_accepted_estimates"] = "Has accepted estimates";
-$lang["has_new_estimate_requests"] = "Has new estimate requests";
-$lang["has_estimate_requests_in_progress"] = "Has estimate requests in progress";
-$lang["clients_has_open_estimates"] = "Client has open estimates";
-$lang["clients_has_accepted_estimates"] = "Clients has accepted estimates";
-$lang["clients_has_new_estimate_requests"] = "Clients has new estimate requests";
-$lang["clients_has_estimate_requests_in_progress"] = "Clients has estimate requests in progress";
 
 $lang["has_open_tickets"] = "Has open tickets";
 $lang["clients_has_open_tickets"] = "Clients has open tickets";
@@ -2060,7 +1992,6 @@ $lang["contract_accepted"] = "Contract accepted";
 $lang["notification_contract_accepted"] = "Accepted a contract";
 $lang["contract_rejected"] = "Contract rejected";
 $lang["notification_contract_rejected"] = "Rejected a contract";
-$lang["create_estimate"] = "Create Estimate";
 $lang["include_all_items_of_this_contract"] = "Include all items of this contract";
 $lang["contract_view"] = "Contract view";
 $lang["accept_contract"] = "Accept contract";
@@ -2085,8 +2016,6 @@ $lang["total_invoiced"] = "Total invoiced";
 
 $lang["show_sub_tasks"] = "Show sub tasks";
 
-$lang["add_signature_option_on_accepting_estimate"] = "Add signature option on accepting estimate";
-$lang["accept_estimate"] = "Accept estimate";
 
 $lang["sub_tasks_completed"] = "Sub tasks completed";
 
@@ -2125,7 +2054,6 @@ $lang["task_statuses"] = "Task Statuses";
 
 $lang["file_delete_permission_error_message"] = "We can't delete some files since you don't have permission.";
 
-$lang["reject_estimate"] = "Reject estimate";
 
 $lang["unknown_user"] = "Unknown user";
 
@@ -2222,7 +2150,6 @@ $lang["this_year"] = "This Year";
 $lang["last_year"] = "Last Year";
 $lang["last_12_months"] = "Last 12 months";
 
-$lang["estimate_sent_statistics"] = "Estimate sent statistics";
 
 $lang["title_language_key"] = "Title Language Key";
 $lang["placeholder_language_key"] = "Placeholder Language Key";
@@ -2231,7 +2158,6 @@ $lang["language_key_recommendation_help_text"] = "Recommended to use any prefix 
 
 $lang["other"] = "Other";
 
-$lang["print_estimate"] = "Print estimate";
 
 $lang["the_person_who_will_manage_this_client"] = "The person who'll manage this client.";
 $lang["the_person_who_will_manage_this_lead"] = "The person who'll manage this lead.";
@@ -2344,7 +2270,6 @@ $lang["next_billing_date"] = "Next billing date";
 $lang["cancel_subscription"] = "Cancel subscription";
 
 $lang["invoice_number"] = "Invoice number";
-$lang["estimate_number"] = "Estimate number";
 $lang["order_number"] = "Order number";
 
 $lang["client_can_access_notes"] = "Client can access notes?";
@@ -2440,7 +2365,6 @@ $lang["public_store_page_setting_permission_error_message"] = "Please enable the
 $lang["order_status_after_payment_help_message"] = "This will be applicable only when the order status is";
 
 $lang["subscription_first_billing_date_error_message"] = "The first billing date should be before the next billing date based on the billing period!";
-$lang["client_currency_not_editable_message"] = "The currency is not editable when there is any invoice, estimate, order, proposal, contract or subscription.";
 
 $lang["subscription_started"] = "Subscription started";
 $lang["notification_subscription_started"] = "Started a subscription.";
@@ -2476,10 +2400,8 @@ $lang["landing_page_help_text"] = "Normally keep it blank. Set this value only i
 $lang["fixed_amount_discount_before_tax_error_message"] = "Fixed amount discount can't be added before tax.";
 
 $lang["invoices_summary"] = "Invoices summary";
-$lang["estimates_summary"] = "Estimates summary";
 $lang["leads_summary"] = "Leads summary";
 $lang["orders_summary"] = "Orders summary";
-$lang["estimate_request_summary"] = "Estimate request summary";
 $lang["proposals_summary"] = "Proposals summary";
 $lang["expenses_summary"] = "Expenses summary";
 $lang["monthly_summary"] = "Monthly summary";
@@ -2531,7 +2453,6 @@ $lang["hide_topbar"] = "Hide topbar";
 
 $lang["enable_lock_state"] = "Enable lock state";
 $lang["invoice_lock_state_description"] = "Once you enable the lock state, the invoices can’t be edited after sending to client or changing the status.";
-$lang["estimate_lock_state_description"] = "Once you enable the lock state, the accepted estimates can’t be edited.";
 $lang["proposal_lock_state_description"] = "Once you enable the lock state, the accepted proposals can’t be edited.";
 $lang["contract_lock_state_description"] = "Once you enable the lock state, the accepted contracts can't be edited.";
 

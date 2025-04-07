@@ -43,7 +43,10 @@ class Team_member extends Security_Controller_Plugin {
             app_redirect("forbidden");
         }
     }
-
+    function validate_team_file()
+    {
+        return validate_post_file($this->request->getPost("file_name"));
+    } 
     //only admin can change other user's info
     //none admin users can only change his/her own info
     //allowed members can update other members info    
@@ -719,7 +722,34 @@ class Team_member extends Security_Controller_Plugin {
         $user_data = array(
             "job_title" => $this->request->getPost('job_title')
         );
+        $signature_type = $this->request->getPost("signature_type");
+        $data = array();
+    
+     
+        if ($signature_type === "digital") {
+            $digital_signature = $this->request->getPost("digital_signature");
+            $signature_parts = explode(",", $digital_signature);
+            $signature_base64 = get_array_value($signature_parts, 1);
+            $signature_decoded = base64_decode($signature_base64);
+            $signature_path = get_setting("signature_file_path");
+if (!$signature_path) {
+    $signature_path = "files/signature/"; // fallback path
+}
 
+            $signature_file = move_temp_file("signature.jpg", get_setting("signature_file_path"), "signature", NULL, "", $signature_decoded);
+            if ($signature_file) {
+                $job_data["signature"] = serialize($signature_file);
+            }
+        }
+        else{
+            $signature_file = $this->request->getFile('signature');
+
+            $target_path = get_setting("signature_file_path");
+            $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, $signature_file);
+            $signature = unserialize($files_data);
+            $job_data["signature"] = serialize($signature);
+
+        }
         $this->Users_models->ci_save($user_data, $user_id);
         if ($this->Users_models->save_job_info($job_data)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));

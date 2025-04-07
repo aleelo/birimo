@@ -43,8 +43,19 @@
         <?php } ?>
 
         <?php if ($show_job_info) { ?>
-            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/job_info/" . $user_info->id); ?>" data-bs-target="#tab-job-info"> <?php echo app_lang('job_info'); ?></a></li>
-        <?php } ?>
+          
+          <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/job_info/" . $user_info->id); ?>" data-bs-target="#tab-job-info"> <?php echo app_lang('job_info'); ?></a></li>
+              <?php
+              load_css(array(
+                  "assets/css/invoice.css",
+              ));
+
+              load_js(array(
+                  "assets/js/signature/signature_pad.min.js",
+              ));
+           
+          ?>
+              <?php } ?>
 
         <?php if ($show_account_settings) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/account_settings/" . $user_info->id); ?>" data-bs-target="#tab-account-settings"> <?php echo app_lang('account_settings'); ?></a></li>
