@@ -23,6 +23,7 @@ class Company extends Security_Controller_Plugin {
             "id" => "numeric"
         ));
 
+        $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
         $view_data['model_info'] = $this->Company_model->get_one($this->request->getPost('id'));
         return $this->template->view('aleelo_plugin\Views/company/modal_form', $view_data);
     }

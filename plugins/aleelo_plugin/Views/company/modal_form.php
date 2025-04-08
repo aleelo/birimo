@@ -137,7 +137,7 @@
             <div class="form-group">
                 <div class="row">
                     <label for="we_accept" class=" col-md-3"><?php echo app_lang('we_accept'); ?></label>
-                    <div class=" col-md-9">we_accept
+                    <div class=" col-md-9">
                         <?php
                         echo form_input(array(
                             "id" => "we_accept",
@@ -145,6 +145,38 @@
                             "value" => $model_info->we_accept,
                             "class" => "form-control",
                             "placeholder" => app_lang('we_accept')
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="finance_manager_id" class=" col-md-3"><?php echo app_lang('finance_manager'); ?></label>
+                    <div class="col-md-9">
+                        <?php
+                        echo form_dropdown(array(
+                            "id" => "finance_manager_id",
+                            "name" => "finance_manager_id",
+                            "class" => "form-control select2",
+                            "placeholder" => 'Status',
+                            "autocomplete" => "off"
+                        ),$finance_manager_id,[$model_info->finance_manager_id]);
+                        ?>
+                </div>
+            </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="vat_number" class=" col-md-3"><?php echo app_lang('vat_number'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_input(array(
+                            "id" => "vat_number",
+                            "name" => "vat_number",
+                            "value" => $model_info->vat_number,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('vat_number')
                         ));
                         ?>
                     </div>
@@ -215,12 +247,14 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+
         var uploadUrl = "<?php echo get_uri("uploader/upload_file"); ?>";
         var validationUri = "<?php echo get_uri("uploader/validate_image_file"); ?>";
 
         var dropzone = attachDropzoneWithForm("#company-dropzone", uploadUrl, validationUri, {
             maxFiles: 1
         });
+        $("#company-form .select2").select2();
 
         $("#company-form").appForm({
             onSuccess: function(result) {

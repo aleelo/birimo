@@ -3261,6 +3261,10 @@ $lang["Sales_and_crm"] = "Sales & CRM";
 $lang["can_access_invoices_quotation_payment"] = "can access invoices quotation payment";
 $lang["can_access_items"] = "can access items";
 $lang["company_access"] = "company access";
+$lang["finance_manager"] = "finance manager"; 
+$lang["we_accept"] = "we accept";
+$lang["account_no"] = "account no";
+$lang["bank_name"] = "bank name";
 
 
 
