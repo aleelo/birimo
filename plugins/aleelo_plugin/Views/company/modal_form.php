@@ -88,15 +88,63 @@
             </div>
             <div class="form-group">
                 <div class="row">
-                    <label for="vat_number" class=" col-md-3"><?php echo app_lang('vat_number'); ?></label>
+                    <label for="bank_name" class=" col-md-3"><?php echo app_lang('bank_name'); ?></label>
                     <div class=" col-md-9">
                         <?php
                         echo form_input(array(
-                            "id" => "vat_number",
-                            "name" => "vat_number",
-                            "value" => $model_info->vat_number,
+                            "id" => "bank_name",
+                            "name" => "bank_name",
+                            "value" => $model_info->bank_name,
                             "class" => "form-control",
-                            "placeholder" => app_lang('vat_number')
+                            "placeholder" => app_lang('bank_name')
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="account_no" class=" col-md-3"><?php echo app_lang('account_no'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_input(array(
+                            "id" => "account_no",
+                            "name" => "account_no",
+                            "value" => $model_info->account_no,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('account_no')
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="website" class=" col-md-3"><?php echo app_lang('website'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_input(array(
+                            "id" => "website",
+                            "name" => "website",
+                            "value" => $model_info->website,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('website')
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="we_accept" class=" col-md-3"><?php echo app_lang('we_accept'); ?></label>
+                    <div class=" col-md-9">we_accept
+                        <?php
+                        echo form_input(array(
+                            "id" => "we_accept",
+                            "name" => "we_accept",
+                            "value" => $model_info->we_accept,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('we_accept')
                         ));
                         ?>
                     </div>

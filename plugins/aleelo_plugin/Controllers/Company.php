@@ -42,7 +42,10 @@ class Company extends Security_Controller_Plugin {
             "website" => $this->request->getPost('website'),
             "vat_number" => $this->request->getPost('vat_number'),
             "is_default" => $is_default ? $is_default : 0,
-            "gst_number" => $this->request->getPost('gst_number')
+            "gst_number" => $this->request->getPost('gst_number'),
+            "we_accept" => $this->request->getPost('we_accept'),
+            "account_no" => $this->request->getPost('account_no'),
+            "bank_name" => $this->request->getPost('bank_name'),
         );
 
         $id = $this->request->getPost('id');
