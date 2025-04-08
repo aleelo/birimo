@@ -48,6 +48,7 @@ class Company extends Security_Controller_Plugin {
             "account_no" => $this->request->getPost('account_no'),
             "bank_name" => $this->request->getPost('bank_name'),
             "Condition_company" => $this->request->getPost('Condition_company'),
+            "finance_manager_id" => $this->request->getPost('finance_manager_id'),
         );
 
         $id = $this->request->getPost('id');

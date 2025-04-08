@@ -151,7 +151,20 @@ $style = get_setting("invoice_style");
         <?php echo $company_info->Condition_company; ?>
     <?php } ?>
    </td>
-    <td style="width: 50%; vertical-align: top; text-align: right; padding: 0px;">
+    <td style="width: 25%;"></td>
+    <td style="width: 25%; vertical-align: top; text-align: left; padding: 0px;">
+    <?php if ($company_info->finance_manager_id) { ?>
+        <br /><br />
+        <br /><br />
+        <br /><br />
+        <br /><br />
+
+        <?php echo $company_info->finance_manager_id; ?>
+        <br /><br />        <br /><br />
+
+        <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("finance_manager"); ?></strong> <br/>
+        <br/>
+    <?php } ?>
     </td>
 </tr>
 
