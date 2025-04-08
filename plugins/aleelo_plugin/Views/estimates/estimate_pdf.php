@@ -1,4 +1,4 @@
-<div style=" margin: auto;">
+<div >
 <?php
 if (isset($client_info->company_id)) {
     if ($client_info->company_id == 1) {
@@ -30,7 +30,7 @@ $style = get_setting("invoice_style");
     } else if ($style === "style_2") {
         echo view('aleelo_plugin\Views/estimates/estimate_parts/header_style_2.php', $data);
     } else {
-        echo view('aleelo_plugin\Views/estimates/estimate_parts/header_style_1.php', $data);
+        echo view('aleelo_plugin\Views/estimates/estimate_parts/header_style_1_pdf.php', $data);
     }
 
     $discount_row = '<tr>

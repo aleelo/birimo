@@ -1,4 +1,3 @@
-
 <span class="invoice-meta text-default"><?php 
 if (isset($estimate_info->custom_fields) && $estimate_info->custom_fields) {
     foreach ($estimate_info->custom_fields as $field) {
@@ -13,7 +12,5 @@ $address = str_replace(array("\n", "\r"), ' ', $company_info->address);
 echo $address; ?><br /><?php 
 echo $company_info->phone; ?><br /><?php 
 echo $company_info->email; ?><br /><?php 
-echo $company_info->website; ?><br />     
-
-<br/>
+echo $company_info->website; ?>
 </span>
