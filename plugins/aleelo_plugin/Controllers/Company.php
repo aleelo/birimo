@@ -47,6 +47,7 @@ class Company extends Security_Controller_Plugin {
             "we_accept" => $this->request->getPost('we_accept'),
             "account_no" => $this->request->getPost('account_no'),
             "bank_name" => $this->request->getPost('bank_name'),
+            "Condition_company" => $this->request->getPost('Condition_company'),
         );
 
         $id = $this->request->getPost('id');
