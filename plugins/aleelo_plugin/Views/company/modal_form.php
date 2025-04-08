@@ -150,6 +150,22 @@
                     </div>
                 </div>
             </div>
+               <div class="form-group">
+                <div class="row">
+                    <label for="Condition_company" class=" col-md-3"><?php echo app_lang('Condition_company'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_input(array(
+                            "id" => "Condition_company",
+                            "name" => "Condition_company",
+                            "value" => $model_info->Condition_company,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('Condition_company')
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
             <div class="form-group">
                 <div class="row">
                     <label for="finance_manager_id" class=" col-md-3"><?php echo app_lang('finance_manager'); ?></label>

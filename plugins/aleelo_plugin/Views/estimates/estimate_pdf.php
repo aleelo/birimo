@@ -22,7 +22,8 @@ $style = get_setting("invoice_style");
     $data = array(
         "client_info" => $client_info,
         "color" => $color,
-        "estimate_info" => $estimate_info
+        "estimate_info" => $estimate_info,
+        "company_info" => $company_info,
     );
 
     if ($style === "style_3") {
@@ -113,9 +114,48 @@ $style = get_setting("invoice_style");
     <div style="border-top: 1px solid #f2f4f6; color:#444; padding:0 0 20px 0;"><br /><?php echo custom_nl2br(process_images_from_content($estimate_info->note)); ?></div>
 <?php } else { ?><!-- use table to avoid extra spaces -->
     <br /><br />
-    <table class="invoice-pdf-hidden-table" style="border-top: 1px solid #f2f4f6; margin: 0; padding: 0; display: block; width: 100%; height: 10px;"></table>
 <?php } ?>
 
 <span style="color:#444; line-height: 14px;">
+<table >
+
+<tr>
+    <td style="width: 50%; vertical-align: top; padding: 0px;">
+    <br /><br /> <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Payment"); ?></strong> 
+    <br /><br /><?php echo app_lang("company"); ?>: <?php echo $company_info->name; ?>
+
+    <?php if ($company_info->bank_name) { ?>
+        <br /><br /> <?php echo app_lang("bank_name"); ?>: <?php echo $company_info->bank_name; ?>
+    <?php } ?>
+  
+ 
+    <?php if ($company_info->account_no) { ?>
+        <br /><br /><?php echo app_lang("account_no"); ?>: <?php echo $company_info->account_no; ?>
+    <?php } ?>
+<br/>
+<br/>
+
+
+
+    <?php if ($company_info->we_accept) { ?>
+        <br /><br /><strong style="color: <?php echo $color; ?>;"><?php echo app_lang("we_accept"); ?>:</strong> <br/>
+        <br/>
+        <?php echo $company_info->we_accept; ?>
+    <?php } ?>
+    <br/>
+    
+
+    <?php if ($company_info->Condition_company) { ?>
+        <br /><br /><strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Condition_company"); ?>:</strong> <br/>
+        <br/>
+        <?php echo $company_info->Condition_company; ?>
+    <?php } ?>
+   </td>
+    <td style="width: 50%; vertical-align: top; text-align: right; padding: 0px;">
+    </td>
+</tr>
+
+</table>
+
     <?php echo get_setting("estimate_footer"); ?>
 </span>

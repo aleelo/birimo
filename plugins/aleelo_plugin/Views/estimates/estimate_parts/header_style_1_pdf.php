@@ -60,14 +60,14 @@ if (!$color) {
     <div role="navigation" style="
         background-color: <?php echo $color; ?>;
         color: white;
-        font-size: 3em;
+        font-size: 2.5em;
         width: 100%;
         padding: 0em 0;
         border-bottom: 3px solid black;
         text-align: left;
         margin-top: 100px; /* Move the div closer to the top */
     ">
-        <?php echo app_lang("estimate") ?>
+       <strong> <?php echo app_lang("estimate") ?></strong>
     </div>
 </td>
 </tr>

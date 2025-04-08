@@ -3265,7 +3265,7 @@ $lang["finance_manager"] = "finance manager";
 $lang["we_accept"] = "we accept";
 $lang["account_no"] = "account no";
 $lang["bank_name"] = "bank name";
-
+$lang["Payment"] = "Payment";
 
 
 
