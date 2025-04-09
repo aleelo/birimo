@@ -221,7 +221,7 @@ if (!empty($finance_manager_info->signature)) {
         <?php if(!$users_info->job_title_en) { 
         echo $finance_manager_info->job_title_en ?>
    <?php     
-}
+}}
 ?>
 
 
