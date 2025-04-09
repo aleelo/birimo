@@ -1,3 +1,24 @@
+<?php
+function adjust_brightness($hex, $steps) {
+    // Remove the hash (#) if it exists
+    $hex = str_replace('#', '', $hex);
+
+    // Convert hex to RGB
+    $r = hexdec(substr($hex, 0, 2));
+    $g = hexdec(substr($hex, 2, 2));
+    $b = hexdec(substr($hex, 4, 2));
+
+    // Adjust brightness
+    $r = max(0, min(255, $r + $steps));
+    $g = max(0, min(255, $g + $steps));
+    $b = max(0, min(255, $b + $steps));
+
+    // Convert back to hex
+    return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT)
+               . str_pad(dechex($g), 2, '0', STR_PAD_LEFT)
+               . str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
+}
+?>
 <table >
 <?php
 if (isset($client_info->company_id)) {
@@ -18,27 +39,25 @@ if (!$color) {
 
 ?> 
     <tr class="invoice-preview-header-row"> <!-- Adjust the height as needed -->
-        <td style="width: 43%;  line-height: 0.5; vertical-align: top;;">
+        <td style="width: 55%;  line-height: -0; vertical-align: top;;">
         <div style="min-height: 35px; overflow: hidden;">
         <?php  
         echo view('aleelo_plugin\Views/estimates/estimate_parts/company_logo'); ?>
     </div> </td> 
-      <td style="width: 1%; vertical-align: top;">
-    <div style="
-        background-image: linear-gradient(to left,  <?php echo $color; ?>, orange); 
-        color:  <?php echo $color; ?>;  
-        padding: 0; 
-        text-align: left;
-        font-size: 0.5em;
-
-        font-weight:12;
-        height: 10%; /* Make the height dynamic */
-        line-height: 10em; /* Adjust line height for better spacing */
-        margin-top: 34px; /* Adjust margin as needed */
-
-    ">&nbsp; </div>
+    <td style="width: 2.6%;"></td>
+    <td style="width: 1%; vertical-align: top;">
+    <table style="width: 100%; height: 300px; border-collapse: collapse;">
+    <tr>
+        <td style="background-color: <?php echo $color; ?>; width: 25%; height: 90px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 20); ?>; width: 25%; height: 90px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 40); ?>; width: 25%; height: 90px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 60); ?>; width: 25%; height: 90px;"></td>
+    </tr>
+</table>  
+    
 </td>
-<td style="width: 15%;"></td>
+<td style="width: 0.4%; vertical-align: top;">
+</td>
 <td class="invoice-info-container invoice-header-style-one" 
     style="width: 41%; vertical-align: top; padding: 5px;">
     <?php
@@ -56,7 +75,7 @@ if (!$color) {
     </tr>
     
     <tr >
-    <td colspan="4">
+    <td colspan="6">
     <div role="navigation" style="
         background-color: <?php echo $color; ?>;
         color: white;

@@ -51,6 +51,86 @@ if (!function_exists('demo_load_css')) {
     }
 
 }
+if (!function_exists('prepare_estimate_pdf')) {
+
+    function prepare_estimate_pdf($estimate_data, $mode = "download") {
+        $pdf = new Pdf("invoice");
+        if (!get_setting("enable_background_image_for_invoice_pdf")) {
+            $pdf->setPrintHeader(false);
+        }
+        $pdf->setPrintFooter(false);
+        $pdf->SetCellPadding(1.5);
+        $pdf->setImageScale(1.42);
+        $pdf->AddPage();
+
+        if ($estimate_data) {
+
+            $estimate_data["mode"] = clean_data($mode);
+
+            $html = view("aleelo_plugin\Views/estimates/estimate_pdf_view", $estimate_data);
+            if ($mode != "html") {
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+            $estimate_info = get_array_value($estimate_data, "estimate_info");
+            $pdf_file_name = app_lang("estimate") . "-$estimate_info->id.pdf";
+
+            if ($mode === "download") {
+                $pdf->Output($pdf_file_name, "D");
+            } else if ($mode === "send_email") {
+                $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;
+                $pdf->Output($temp_download_path, "F");
+                return $temp_download_path;
+            } else if ($mode === "view") {
+                $pdf->SetTitle($pdf_file_name);
+                $pdf->Output($pdf_file_name, "I");
+                exit;
+            } else if ($mode === "html") {
+                return $html;
+            }
+        }
+    }
+}
+if (!function_exists('prepare_estimate_pdff')) {
+
+    function prepare_estimate_pdff($estimate_data, $mode = "download") {
+        $pdf = new Pdf("invoice");
+        if (!get_setting("enable_background_image_for_invoice_pdf")) {
+            $pdf->setPrintHeader(false);
+        }
+        $pdf->setPrintFooter(false);
+        $pdf->SetCellPadding(1.5);
+        $pdf->setImageScale(1.42);
+        $pdf->AddPage();
+
+        if ($estimate_data) {
+
+            $estimate_data["mode"] = clean_data($mode);
+
+            $html = view("aleelo_plugin\Views/estimates/estimate_pdf", $estimate_data);
+            if ($mode != "html") {
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+            $estimate_info = get_array_value($estimate_data, "estimate_info");
+            $pdf_file_name = app_lang("estimate") . "-$estimate_info->id.pdf";
+
+            if ($mode === "download") {
+                $pdf->Output($pdf_file_name, "D");
+            } else if ($mode === "send_email") {
+                $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;
+                $pdf->Output($temp_download_path, "F");
+                return $temp_download_path;
+            } else if ($mode === "view") {
+                $pdf->SetTitle($pdf_file_name);
+                $pdf->Output($pdf_file_name, "I");
+                exit;
+            } else if ($mode === "html") {
+                return $html;
+            }
+        }
+    }
+}
 if (!function_exists('get_estimate_making_data')) {
 
     function get_estimate_making_data($estimate_id) {

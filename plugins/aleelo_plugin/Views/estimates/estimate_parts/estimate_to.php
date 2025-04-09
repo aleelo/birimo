@@ -1,5 +1,4 @@
 <?php
-$color="#A84A0B";
 // echo company_widget($estimate_info->company_id, "estimate");
 ?>
 <?php if (get_setting("invoice_style") != "style_3") { ?>

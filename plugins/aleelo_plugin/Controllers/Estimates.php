@@ -840,14 +840,14 @@ class Estimates extends Security_Controller_Plugin {
                     $language->setLocale($user_language);
                 }
 
-                prepare_estimate_pdf($estimate_data, $mode);
+                prepare_estimate_pdff($estimate_data, $mode);
 
                 if ($user_language && $user_language !== $active_locale) {
                     // Reset to active locale
                     $language->setLocale($active_locale);
                 }
             } else {
-                prepare_estimate_pdf($estimate_data, $mode);
+                prepare_estimate_pdff($estimate_data, $mode);
             }
         } else {
             show_404();
