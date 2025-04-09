@@ -24,6 +24,7 @@ $style = get_setting("invoice_style");
         "color" => $color,
         "estimate_info" => $estimate_info,
         "company_info" => $company_info,
+        "users_info" => $users_info,
     );
 
     if ($style === "style_3") {
@@ -154,18 +155,54 @@ $style = get_setting("invoice_style");
    </td>
     <td style="width: 25%;"></td>
     <td style="width: 25%; vertical-align: top; text-align: left; padding: 0px;">
-    <?php if ($company_info->finance_manager_id) { ?>
-        <br /><br />
-        <br /><br />
-        <br /><br />
-        <br /><br />
+  <?php if ($company_info->finance_manager_id) { ?>
+    <br /><br />
+    <br /><br />
+    <br/>
 
-        <?php echo $company_info->finance_manager_id; ?>
-        <br /><br />        <br /><br />
+    <?php if (!empty($finance_manager_info->signature)) { ?>
+        <?php
+        // Check if the signature is serialized or a direct file path
+        $signature_data = @unserialize($finance_manager_info->signature);
 
-        <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("finance_manager"); ?></strong> <br/>
-        <br/>
+        if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+            // Handle serialized signature data
+            $signature_file_name = $signature_data[0]['file_name'];
+        } else {
+            // Handle direct file path
+            $signature_file_name = $finance_manager_info->signature;
+        }
+
+        // Construct the full path to the signature file
+        $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+        // Check if the file exists
+        if (file_exists($signature_path)) {
+            // Display the signature image
+            echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
+        } else {
+            // File not found
+            echo '<p>Signature file not found.</p>';
+        }
+        ?>
+    <?php } else { ?>
+        <p>No signature available.</p>
     <?php } ?>
+
+    <strong style="font-size:150%; color: <?php echo $color; ?>;">
+        <?php echo $users_info->first_name . " " . $users_info->last_name; ?>
+    </strong>
+    <br/>
+    <br/>
+
+    <?php if (!$users_info->job_title_en) { 
+        echo $finance_manager_info->job_title_en;
+    } ?>
+<?php } ?>
+
+
+
+
     </td>
 </tr>
 

@@ -142,6 +142,16 @@ if (!function_exists('get_estimate_making_data')) {
             $data['estimate_info'] = $estimate_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['estimate_info']->client_id);
             $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
+            $data['users_info'] = $ci->Users_models->get_one($data['company_info']->finance_manager_id);
+          
+            $finance_manager_info = $ci->db->table('team_member_job_info')
+            ->select('*') // Select user_id and job_title_en
+            ->where('user_id', $data['company_info']->finance_manager_id)
+            ->get()
+            ->getRow();
+
+        $data['finance_manager_info'] = $finance_manager_info;
+
             $data['estimate_items'] = $ci->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
             $data["estimate_total_summary"] = $ci->Estimates_model->get_estimate_total_summary($estimate_id);
             $data['estimate_status_label'] = get_estimate_status_label($estimate_info);

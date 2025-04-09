@@ -15,7 +15,11 @@ class Team_member extends Security_Controller_Plugin {
         parent::__construct();
         $this->access_only_team_members();
     }
-
+    function upload_file()
+    {
+        upload_file_to_temp();
+        
+    }
     // private function can_view_team_members_contact_info() {
     //     if ($this->login_user->user_type == "staff") {
     //         if ($this->login_user->is_admin) {
