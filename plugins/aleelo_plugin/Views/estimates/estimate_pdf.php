@@ -174,8 +174,9 @@ $style = get_setting("invoice_style");
         <?php if (!empty($finance_manager_info->job_title_en)) { ?>
             <?php 
 
+
+// Try the first method
 if (!empty($finance_manager_info->signature)) {
-    // Attempt to unserialize the signature if it's serialized
     $signature_data = @unserialize($finance_manager_info->signature);
 
     if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
@@ -194,24 +195,28 @@ if (!empty($finance_manager_info->signature)) {
         // Display the signature image
         echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
     } else {
-        // File not found
-        echo '<p>Signature file not found.</p>';
+        // File not found, try the second method
+        $signature_data = @unserialize($finance_manager_info->signature);
+
+        if (!empty($signature_data['file_name'])) {
+            $signature_file_name = $signature_data['file_name'];
+
+            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+            if (file_exists($signature_path)) {
+                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
+            } else {
+                echo '<p>Signature file not found.</p>';
+            }
+        } else {
+            echo '<p>Signature file not found.</p>';
+        }
     }
 } else {
-    // No signature available
     echo '<p>No signature available.</p>';
-}
+}}}
+?>
 
-?>
-<br/>
-<strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ", $users_info->last_name ?></strong> <br/>
-<br/>
-<?php 
-// Display job title if it's not empty, else show the finance manager's job title
-if (!$users_info->job_title_en) { 
-    echo $finance_manager_info->job_title_en;
-} }}
-?>
 
 
 
