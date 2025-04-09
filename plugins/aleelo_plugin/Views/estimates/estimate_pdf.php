@@ -214,7 +214,14 @@ if (!empty($finance_manager_info->signature)) {
     }
 } else {
     echo '<p>No signature available.</p>';
-}}}
+}}?>
+<br/>
+        <strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ",$users_info->last_name ?></strong> <br/>
+<br/>
+        <?php if(!$users_info->job_title_en) { 
+        echo $finance_manager_info->job_title_en ?>
+   <?php     
+}
 ?>
 
 
