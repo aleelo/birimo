@@ -33,15 +33,16 @@ $style = get_setting("invoice_style");
     } else {
         echo view('aleelo_plugin\Views/estimates/estimate_parts/header_style_1_pdf.php', $data);
     }
+    $item_background = get_setting("invoice_item_list_background");
 
     $discount_row = '<tr>
                         <td colspan="3" style="text-align: right;">' . app_lang("discount") . '</td>
-                        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">' . to_currency($estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
+                        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: '.$item_background.';">' . to_currency($estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
                     </tr>';
 
     $total_after_discount_row = '<tr>
                                     <td colspan="3" style="text-align: right;">' . app_lang("total_after_discount") . '</td>
-                                    <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">' . to_currency($estimate_total_summary->estimate_subtotal - $estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
+                                    <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: '.$item_background.';">' . to_currency($estimate_total_summary->estimate_subtotal - $estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
                                 </tr>';
     ?>
 </div>
@@ -59,7 +60,7 @@ $style = get_setting("invoice_style");
     <?php
     foreach ($estimate_items as $item) {
     ?>
-        <tr style="background-color: #f4f4f4; ">
+        <tr style="background-color:<?php echo $item_background; ?>; ">
             <td style="width: 45%; border: 1px solid #fff; padding: 10px; hyphens: auto;"><?php echo $item->title; ?>
                 <br />
                 <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ? process_images_from_content($item->description) : ""); ?></span>
@@ -71,7 +72,7 @@ $style = get_setting("invoice_style");
     <?php } ?>
     <tr>
         <td colspan="3" style="text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">
+        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background; ?>">
             <?php echo to_currency($estimate_total_summary->estimate_subtotal, $estimate_total_summary->currency_symbol); ?>
         </td>
     </tr>
@@ -83,7 +84,7 @@ $style = get_setting("invoice_style");
     <?php if ($estimate_total_summary->tax) { ?>
         <tr>
             <td colspan="3" style="text-align: right;"><?php echo $estimate_total_summary->tax_name; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">
+            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($estimate_total_summary->tax, $estimate_total_summary->currency_symbol); ?>
             </td>
         </tr>
@@ -91,7 +92,7 @@ $style = get_setting("invoice_style");
     <?php if ($estimate_total_summary->tax2) { ?>
         <tr>
             <td colspan="3" style="text-align: right;"><?php echo $estimate_total_summary->tax_name2; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">
+            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color:<?php echo $item_background; ?>;">
                 <?php echo to_currency($estimate_total_summary->tax2, $estimate_total_summary->currency_symbol); ?>
             </td>
         </tr>
