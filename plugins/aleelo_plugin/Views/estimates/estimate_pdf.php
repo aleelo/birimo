@@ -153,8 +153,8 @@ $style = get_setting("invoice_style");
         <?php echo $company_info->Condition_company; ?>
     <?php } ?>
    </td>
-    <td style="width: 25%;"></td>
-    <td style="width: 25%; vertical-align: top; text-align: left; padding: 0px;">
+    <td style="width: 20%;"></td>
+    <td style="width: 30%; vertical-align: top; text-align: left; padding: 0px;">
   
   
   
