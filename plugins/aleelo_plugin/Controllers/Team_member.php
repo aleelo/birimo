@@ -719,12 +719,14 @@ class Team_member extends Security_Controller_Plugin {
             "user_id" => $user_id,
             "salary" => unformat_currency($this->request->getPost('salary')),
             "salary_term" => $this->request->getPost('salary_term'),
-            "date_of_hire" => $this->request->getPost('date_of_hire')
+            "date_of_hire" => $this->request->getPost('date_of_hire'),
+            "job_title_en" => $this->request->getPost('job_title')
+
         );
 
         //we'll save the job title in users table
         $user_data = array(
-            "job_title" => $this->request->getPost('job_title')
+            "job_title_en" => $this->request->getPost('job_title')
         );
         $signature_type = $this->request->getPost("signature_type");
         $data = array();
