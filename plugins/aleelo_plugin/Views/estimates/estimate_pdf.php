@@ -155,33 +155,63 @@ $style = get_setting("invoice_style");
    </td>
     <td style="width: 25%;"></td>
     <td style="width: 25%; vertical-align: top; text-align: left; padding: 0px;">
-  <?php if ($company_info->finance_manager_id) { ?>
-    <br /><br />
-    <br /><br />
-    <br/>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <?php if ($company_info->finance_manager_id) { ?>
+        <br /><br />
+        <br /><br />
 
-    <?php
+
+        <br/>
+        <?php if (!empty($finance_manager_info->job_title_en)) { ?>
+            <?php 
+
 if (!empty($finance_manager_info->signature)) {
+    // Attempt to unserialize the signature if it's serialized
     $signature_data = @unserialize($finance_manager_info->signature);
 
-    if ($signature_data !== false && !empty($signature_data['file_name'])) {
-        $signature_file_name = $signature_data['file_name'];
-    
-        $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
-
-        if (file_exists($signature_path)) {
-            echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
-        } else {
-            echo '<p>Signature file not found: ' . $signature_file_name . '</p>';
-        }
+    if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+        // Handle serialized signature data
+        $signature_file_name = $signature_data[0]['file_name'];
     } else {
-        echo '<p>No valid signature data found.</p>';
+        // Handle direct file path
+        $signature_file_name = $finance_manager_info->signature;
+    }
+
+    // Construct the full path to the signature file
+    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+    // Check if the file exists
+    if (file_exists($signature_path)) {
+        // Display the signature image
+        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
+    } else {
+        // File not found
+        echo '<p>Signature file not found.</p>';
     }
 } else {
+    // No signature available
     echo '<p>No signature available.</p>';
-}}
-?>
+}
 
+?>
+<br/>
+<strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ", $users_info->last_name ?></strong> <br/>
+<br/>
+<?php 
+// Display job title if it's not empty, else show the finance manager's job title
+if (!$users_info->job_title_en) { 
+    echo $finance_manager_info->job_title_en;
+} }}
+?>
 
 
 

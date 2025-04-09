@@ -5,7 +5,7 @@
 
 <div class="form-group">
 <div class="row">
-
+<!-- 
                 <div class="row">
                     <label for="company_id" class="<?php echo $label_column; ?>"><?php echo app_lang('company'); ?></label>
                     <div class=" <?php echo $field_column; ?>">
@@ -46,7 +46,7 @@
             <label for="type_person" class=""><?php echo app_lang('person'); ?></label>
         </div>
     </div>
-</div>
+</div> -->
 
 <?php if ($model_info->id) { ?>
     <div class="form-group">
