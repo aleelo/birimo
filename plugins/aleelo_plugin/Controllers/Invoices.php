@@ -151,7 +151,7 @@ class Invoices extends Security_Controller_Plugin {
 
     }
     
-    else if ($this->login_user->is_admin == 1 && $this->login_user->company_access != "all") {        
+    else if($this->login_user->is_admin && $this->login_user->company_access != "all") {        
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
 
     }
