@@ -1142,7 +1142,7 @@ class Invoices extends Security_Controller_Plugin {
 
             $this->_check_invoice_access_permission($view_data);
 
-            $view_data['invoice_preview'] = prepare_invoice_pdf($view_data, "html");
+            $view_data['invoice_preview'] = prepare_invoice_pdf_view($view_data, "html");
 
             //show a back button
             $view_data['show_close_preview'] = $show_close_preview && $this->login_user->user_type === "staff" ? true : false;

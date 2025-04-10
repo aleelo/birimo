@@ -216,6 +216,22 @@
 </div>
 <div class="form-group">
     <div class="row">
+        <label for="phone" class="<?php echo $label_column; ?>"><?php echo app_lang('email'); ?></label>
+        <div class="<?php echo $field_column; ?>">
+            <?php
+            echo form_input(array(
+                "id" => "email",
+                "name" => "email",
+                "value" => $model_info->email,
+                "class" => "form-control",
+                "placeholder" => app_lang('email')
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
         <label for="website" class="<?php echo $label_column; ?>"><?php echo app_lang('website'); ?></label>
         <div class="<?php echo $field_column; ?>">
             <?php

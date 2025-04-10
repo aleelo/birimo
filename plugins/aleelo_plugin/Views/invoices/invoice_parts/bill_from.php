@@ -22,4 +22,7 @@
         <?php } ?>
  
     <?php } ?>
+    <?php if ($client_info->email) { ?>
+            <br /><strong style="color: <?php echo $color; ?>;"><?php echo ("EMAIL"); ?>:</strong> <?php echo $client_info->email; ?>
+        <?php } ?>
 </span>

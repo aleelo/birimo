@@ -124,7 +124,8 @@ class Client extends Security_Controller_Plugin {
             "phone" => $this->request->getPost('phone'),
             "website" => $this->request->getPost('website'),
             "vat_number" => $this->request->getPost('vat_number'),
-            "gst_number" => $this->request->getPost('gst_number')
+            "gst_number" => $this->request->getPost('gst_number'),
+            "email" => $this->request->getPost('email'),
         );
 
         if ($this->login_user->user_type === "staff") {

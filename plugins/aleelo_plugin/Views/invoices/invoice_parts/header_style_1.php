@@ -62,8 +62,8 @@ if (!$color) {
             margin-top: 8px;
             text-align: left;
         ">
-            <?php echo app_lang("estimate")?>
-        </div>
+       <strong> <?php echo app_lang("invoice") ?></strong>
+       </div>
     </td>
 </tr>
 
