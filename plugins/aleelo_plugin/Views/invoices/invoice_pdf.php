@@ -196,16 +196,12 @@
     <?php } ?>
    </td>
     <td style="width: 12%;"></td>
-    <td style="width: 43%; vertical-align: top; text-align: left; padding: 0px;">
+    <td style="width: 43%; vertical-align: top; padding: 0px;">
   
   
   
   
     <?php if ($company_info->finance_manager_id) { ?>
-        <br /><br />
-        <br /><br />
-
-
         <br/>
         <?php if (!empty($finance_manager_info->job_title_en)) { ?>
             <?php 
