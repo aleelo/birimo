@@ -254,8 +254,7 @@ if (!empty($finance_manager_info->signature)) {
 <br/>
         <strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ",$users_info->last_name ?></strong> <br/>
 <br/>
-<br/>   
-<br/>
+
         <?php if (!empty($users_info->job_title_en)) { ?>
             <?php echo $users_info->job_title_en; ?>
         <?php } ?>
