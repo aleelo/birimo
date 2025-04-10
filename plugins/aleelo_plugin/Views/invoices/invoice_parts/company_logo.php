@@ -1,3 +1,3 @@
 <?php
 
-echo get_company_logo($invoice_info->company_id, "invoice");
+echo get_company_logo($client_info->company_id, "invoice");

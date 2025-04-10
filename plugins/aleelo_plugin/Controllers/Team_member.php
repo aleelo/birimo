@@ -726,7 +726,7 @@ class Team_member extends Security_Controller_Plugin {
 
         //we'll save the job title in users table
         $user_data = array(
-            "job_title_en" => $this->request->getPost('job_title')
+            "job_title" => $this->request->getPost('job_title')
         );
         $signature_type = $this->request->getPost("signature_type");
         $data = array();

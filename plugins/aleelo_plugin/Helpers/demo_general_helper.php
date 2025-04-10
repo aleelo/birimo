@@ -162,6 +162,154 @@ if (!function_exists('get_estimate_making_data')) {
     }
 }
 
+
+/**
+ * get all data to make an invoice
+ * 
+ * @param Int $invoice_id
+ * @return array
+ */
+if (!function_exists('get_invoice_making_data')) {
+
+    function get_invoice_making_data($invoice_id) {
+        $ci = new Security_Controller_Plugin();
+        $invoice_info = $ci->Invoices_model->get_details(array("id" => $invoice_id))->getRow();
+        if ($invoice_info) {
+            $data['invoice_info'] = $invoice_info;
+            $data['client_info'] = $ci->Clients_model->get_one($data['invoice_info']->client_id);
+            $data['invoice_items'] = $ci->Invoice_items_model->get_details(array("invoice_id" => $invoice_id))->getResult();
+            $data['invoice_status_label'] = get_invoice_status_label($invoice_info);
+            $data["invoice_total_summary"] = $ci->Invoices_model->get_invoice_total_summary($invoice_id);
+              $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
+            $data['users_info'] = $ci->Users_models->get_one($data['company_info']->finance_manager_id);
+          
+            $finance_manager_info = $ci->db->table('team_member_job_info')
+            ->select('*') // Select user_id and job_title_en
+            ->where('user_id', $data['company_info']->finance_manager_id)
+            ->get()
+            ->getRow();
+
+        $data['finance_manager_info'] = $finance_manager_info;
+            $data['invoice_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "invoices", "show_in_invoice" => true, "related_to_id" => $invoice_id))->getResult();
+            $data['client_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "clients", "show_in_invoice" => true, "related_to_id" => $data['invoice_info']->client_id))->getResult();
+            return $data;
+        }
+    }
+}
+
+if (!function_exists('prepare_invoice_pdf')) {
+
+    function prepare_invoice_pdf($invoice_data, $mode = "download") {
+        $pdf = new Pdf("invoice");
+
+        //if setting is desable then don't show header
+        if (!get_setting("enable_background_image_for_invoice_pdf")) {
+            $pdf->setPrintHeader(false);
+        }
+
+        $pdf->setPrintFooter(false);
+        $pdf->SetCellPadding(1.5);
+        $pdf->setImageScale(1.42);
+        $pdf->AddPage();
+
+        // Get the page width in user units (default is millimeters)
+        $pageWidthInUserUnits = $pdf->getPageWidth();
+
+        $pageWidthInPixels = ($pageWidthInUserUnits / 25.4) * 92;
+
+        //show background image on first page
+        if (get_setting("set_invoice_pdf_background_only_on_first_page")) {
+            $pdf->setPrintHeader(false);
+        }
+
+        if ($invoice_data) {
+
+            $invoice_data["mode"] = clean_data($mode);
+
+            $html = view("aleelo_plugin\Views/invoices/invoice_pdf", $invoice_data);
+
+            if ($mode != "html") {
+                $html = rebuild_html($html, $pageWidthInPixels);
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+            $invoice_info = get_array_value($invoice_data, "invoice_info");
+            $invoice_id = $invoice_info->display_id;
+            $pdf_file_name = preg_replace('/[^A-Za-z0-9\-]/', '-', $invoice_id) . ".pdf";
+
+            if ($mode === "download") {
+                $pdf->Output($pdf_file_name, "D");
+            } else if ($mode === "send_email") {
+                $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;
+                $pdf->Output($temp_download_path, "F");
+                return $temp_download_path;
+            } else if ($mode === "view") {
+                $pdf->SetTitle($pdf_file_name);
+                $pdf->Output($pdf_file_name, "I");
+                exit;
+            } else if ($mode === "html") {
+                return $html;
+            }
+        }
+    }
+}
+
+if (!function_exists('prepare_invoice_pdf_view')) {
+
+    function prepare_invoice_pdf_view($invoice_data, $mode = "download") {
+        $pdf = new Pdf("invoice");
+
+        //if setting is desable then don't show header
+        if (!get_setting("enable_background_image_for_invoice_pdf")) {
+            $pdf->setPrintHeader(false);
+        }
+
+        $pdf->setPrintFooter(false);
+        $pdf->SetCellPadding(1.5);
+        $pdf->setImageScale(1.42);
+        $pdf->AddPage();
+
+        // Get the page width in user units (default is millimeters)
+        $pageWidthInUserUnits = $pdf->getPageWidth();
+
+        $pageWidthInPixels = ($pageWidthInUserUnits / 25.4) * 92;
+
+        //show background image on first page
+        if (get_setting("set_invoice_pdf_background_only_on_first_page")) {
+            $pdf->setPrintHeader(false);
+        }
+
+        if ($invoice_data) {
+
+            $invoice_data["mode"] = clean_data($mode);
+
+            $html = view("aleelo_plugin\Views/invoices/invoice_pdf_view", $invoice_data);
+
+            if ($mode != "html") {
+                $html = rebuild_html($html, $pageWidthInPixels);
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+            $invoice_info = get_array_value($invoice_data, "invoice_info");
+            $invoice_id = $invoice_info->display_id;
+            $pdf_file_name = preg_replace('/[^A-Za-z0-9\-]/', '-', $invoice_id) . ".pdf";
+
+            if ($mode === "download") {
+                $pdf->Output($pdf_file_name, "D");
+            } else if ($mode === "send_email") {
+                $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;
+                $pdf->Output($temp_download_path, "F");
+                return $temp_download_path;
+            } else if ($mode === "view") {
+                $pdf->SetTitle($pdf_file_name);
+                $pdf->Output($pdf_file_name, "I");
+                exit;
+            } else if ($mode === "html") {
+                return $html;
+            }
+        }
+    }
+}
 // if (!function_exists('prepare_estimate_pdf')) {
 
 //     function prepare_estimate_pdf($estimate_data, $mode = "download") {

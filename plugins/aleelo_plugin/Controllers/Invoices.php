@@ -1167,7 +1167,7 @@ class Invoices extends Security_Controller_Plugin {
 
             $this->_check_invoice_access_permission($view_data);
 
-            $view_data['invoice_preview'] = prepare_invoice_pdf($view_data, "html");
+            $view_data['invoice_preview'] = prepare_invoice_pdf_view($view_data, "html");
 
             echo json_encode(array("success" => true, "print_view" => $this->template->view("invoices/print_invoice", $view_data)));
         } else {
@@ -1404,7 +1404,7 @@ class Invoices extends Security_Controller_Plugin {
             $language->setLocale($user_language);
         }
 
-        $attachement_url = prepare_invoice_pdf($invoice_data, "send_email");
+        $attachement_url = prepare_invoice_pdf_view($invoice_data, "send_email");
 
         if ($user_language && $user_language !== $active_locale) {
             // Reset to active locale
