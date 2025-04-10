@@ -248,6 +248,7 @@ if (!empty($finance_manager_info->signature)) {
     echo '<p>No signature available.</p>';
 }}?>
 <br/>
+<br/>
         <strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ",$users_info->last_name ?></strong> <br/>
 <br/>
 
