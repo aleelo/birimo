@@ -259,6 +259,9 @@ if (!empty($finance_manager_info->signature)) {
             <?php echo $users_info->job_title_en; ?>
         <?php } ?>
         <br/>
+        <br/>
+        <br/>
+
         <?php     
 }
 ?>
