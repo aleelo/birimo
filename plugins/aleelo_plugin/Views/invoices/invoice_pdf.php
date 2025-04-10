@@ -93,7 +93,8 @@
         </tr>
     <?php } ?>
     <tr>
-        <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo app_lang("sub_total"); ?></td>
+        <td style="width: 60%;"></td>
+        <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("sub_total"); ?></td>
         <td style="text-align: right; width: 20%; border-botton: 1px solid #fff; border-top: 1px solid #fff; border-left: 1px solid #9B9997; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
             <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
         </td>
@@ -134,14 +135,17 @@
     ?> 
     <?php if ($invoice_total_summary->total_paid) { ?>     
         <tr>
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo app_lang("paid"); ?></td>
+        <td style="width: 60%;"></td>
+
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("paid"); ?></td>
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->total_paid, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>
     <?php } ?>
     <tr>
-        <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo app_lang("balance_due"); ?></td>
+        <td style="width: 60%;"></td>
+        <td colspan="<?php echo $colspan; ?>" style="text-align: right;width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>; "><?php echo app_lang("balance_due"); ?></td>
         <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
             <?php echo to_currency($invoice_total_summary->balance_due, $invoice_total_summary->currency_symbol); ?>
         </td>
@@ -191,14 +195,8 @@
         <?php echo $company_info->Condition_company; ?>
     <?php } ?>
    </td>
-    <td style="width: 10%;"></td>
-    <td style="width: 40%; vertical-align: top; text-align: left; padding: 0px;">
-  
-  
-  
-  
-  
-  
+    <td style="width: 15%;"></td>
+    <td style="width: 35%; vertical-align: top; text-align: left; padding: 0px;">
   
   
   
@@ -260,11 +258,11 @@ if (!empty($finance_manager_info->signature)) {
             <?php echo $users_info->job_title_en; ?>
         <?php } ?>
         <br/>
-       
-    </td>
-   <?php     
+        <?php     
 }
 ?>
+    </td>
+ 
 
 
 
