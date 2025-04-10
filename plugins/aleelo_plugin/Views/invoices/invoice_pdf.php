@@ -191,8 +191,8 @@
         <?php echo $company_info->Condition_company; ?>
     <?php } ?>
    </td>
-    <td style="width: 20%;"></td>
-    <td style="width: 30%; vertical-align: top; text-align: left; padding: 0px;">
+    <td style="width: 10%;"></td>
+    <td style="width: 40%; vertical-align: top; text-align: left; padding: 0px;">
   
   
   
