@@ -118,22 +118,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="row">
-                    <label for="website" class=" col-md-3"><?php echo app_lang('website'); ?></label>
-                    <div class=" col-md-9">
-                        <?php
-                        echo form_input(array(
-                            "id" => "website",
-                            "name" => "website",
-                            "value" => $model_info->website,
-                            "class" => "form-control",
-                            "placeholder" => app_lang('website')
-                        ));
-                        ?>
-                    </div>
-                </div>
-            </div>
+           
             <div class="form-group">
                 <div class="row">
                     <label for="we_accept" class=" col-md-3"><?php echo app_lang('we_accept'); ?></label>

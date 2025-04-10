@@ -3266,6 +3266,10 @@ $lang["we_accept"] = "we accept";
 $lang["account_no"] = "account no";
 $lang["bank_name"] = "bank name";
 $lang["Payment"] = "Payment";
+$lang["Upload_Signature_Image"] = "Upload Signature Image";
+$lang["digital_signature"] = "digital signature";
+$lang["estimate_color_solution"] = "estimate color solution";
+$lang["estimate_color_pixel"] = "estimate color pixel";
 
 
 

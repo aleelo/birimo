@@ -93,6 +93,7 @@
     </div>
 </div>
 
+
 <div id="signature_image_field" class="form-group hide">
     <div class="row">
         <label class="col-md-3 col-xs-5 col-sm-4"><?php echo app_lang ('Upload_Signature_Image')?></label>
@@ -102,6 +103,56 @@
         </div>
     </div>
 </div>
+<div id="has" class="form-group">
+<div class="row">
+            <div class="col-md-6 col-xs-7 col-sm-8">
+
+            <?php 
+
+
+// Try the first method
+if (!empty($job_info->signature)) {
+    $signature_data = @unserialize($job_info->signature);
+
+    if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+        // Handle serialized signature data
+        $signature_file_name = $signature_data[0]['file_name'];
+    } else {
+        // Handle direct file path
+        $signature_file_name = $job_info->signature;
+    }
+
+    // Construct the full path to the signature file
+    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+    // Check if the file exists
+    if (file_exists($signature_path)) {
+        // Display the signature image
+        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
+    } else {
+        // File not found, try the second method
+        $signature_data = @unserialize($job_info->signature);
+
+        if (!empty($signature_data['file_name'])) {
+            $signature_file_name = $signature_data['file_name'];
+
+            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+            if (file_exists($signature_path)) {
+                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: auto;">';
+            } else {
+                echo '<p>Signature file not found.</p>';
+            }
+        } else {
+            echo '<p>Signature file not found.</p>';
+        }
+    }
+} else {
+    echo '<p>No signature available.</p>';
+}?>
+</div>
+</div>
+
 
 <div id="signature_digital_field" class="form-group hide">
     <div class="row">
