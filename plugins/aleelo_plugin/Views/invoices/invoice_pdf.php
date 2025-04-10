@@ -164,7 +164,7 @@
 <table >
 
 <tr>
-    <td style="width: 50%;  vertical-align: top; padding: 0px;">
+    <td style="width: 60%;  vertical-align: top; padding: 0px;">
     <br /><br /> <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Payment"); ?></strong> 
     <br /><br /><?php echo app_lang("company"); ?>: <?php echo $company_info->name; ?>
 
