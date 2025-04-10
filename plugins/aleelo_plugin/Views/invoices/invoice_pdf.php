@@ -196,7 +196,7 @@
     <?php } ?>
    </td>
     <td style="width: 15%;line-height: -0;"></td>
-    <td style="width: 35%; line-height: 100; vertical-align: top; text-align: left; padding: 0px;">
+    <td style="width: 35%; line-height: 4; vertical-align: top; text-align: left; padding: 0px;">
   
   
   
