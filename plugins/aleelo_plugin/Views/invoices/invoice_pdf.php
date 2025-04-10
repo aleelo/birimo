@@ -164,7 +164,7 @@
 <table >
 
 <tr>
-    <td style="width: 50%; vertical-align: top; padding: 0px;">
+    <td style="width: 50%; line-height: 1; vertical-align: top; padding: 0px;">
     <br /><br /> <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Payment"); ?></strong> 
     <br /><br /><?php echo app_lang("company"); ?>: <?php echo $company_info->name; ?>
 
@@ -195,7 +195,7 @@
         <?php echo $company_info->Condition_company; ?>
     <?php } ?>
    </td>
-    <td style="width: 15%;line-height: -0;"></td>
+    <td style="width: 15%;"></td>
     <td style="width: 35%; line-height: 1; vertical-align: top; text-align: left; padding: 0px;">
   
   
