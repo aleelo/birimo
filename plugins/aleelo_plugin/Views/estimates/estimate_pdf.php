@@ -105,7 +105,7 @@ $style = get_setting("invoice_style");
     ?>
     <tr>
     <td style="width: 60%;"></td>
-        <td colspan="3" style="text-align: right; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
+        <td colspan="3" style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
         <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
             <?php echo to_currency($estimate_total_summary->estimate_total, $estimate_total_summary->currency_symbol); ?>
         </td>
