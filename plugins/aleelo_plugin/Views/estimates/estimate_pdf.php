@@ -72,8 +72,9 @@ $style = get_setting("invoice_style");
         </tr>
     <?php } ?>
     <tr>
-        <td colspan="3" style="text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background; ?>">
+        <td style=" width: 60%;"></td>
+        <td colspan="3" style="text-align: right; border-right: 1px solid #9B9997;border-left: 1px solid #9B9997;border-top: 1px solid #fff;#9B9997;border: 1px solid #fff; width: 20%;background-color: <?php echo $item_background;?>"><?php echo app_lang("sub_total"); ?></td>
+        <td style="text-align: right; width: 20%;  border-right: 1px solid #9B9997;border-top: 1px solid #fff; background-color: <?php echo $item_background; ?>">
             <?php echo to_currency($estimate_total_summary->estimate_subtotal, $estimate_total_summary->currency_symbol); ?>
         </td>
     </tr>
@@ -84,16 +85,20 @@ $style = get_setting("invoice_style");
     ?>
     <?php if ($estimate_total_summary->tax) { ?>
         <tr>
-            <td colspan="3" style="text-align: right;"><?php echo $estimate_total_summary->tax_name; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background; ?>;">
+        <td style=" width: 60%;"></td>
+
+            <td colspan="3" style="text-align: right;border-left: 1px solid #9B9997;background-color:<?php echo $item_background; ?>"><?php echo $estimate_total_summary->tax_name; ?></td>
+            <td style="text-align: right; width: 20%;border-left: 1px solid #9B9997;  border-right: 1px solid #9B9997;border-top: 1px solid #fff; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($estimate_total_summary->tax, $estimate_total_summary->currency_symbol); ?>
             </td>
         </tr>
     <?php } ?>
     <?php if ($estimate_total_summary->tax2) { ?>
         <tr>
-            <td colspan="3" style="text-align: right;"><?php echo $estimate_total_summary->tax_name2; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color:<?php echo $item_background; ?>;">
+        <td style=" width: 60%;"></td>
+
+            <td colspan="3" style="text-align: right;background-color:<?php echo $item_background; ?>"><?php echo $estimate_total_summary->tax_name2; ?></td>
+            <td style="text-align: right; width: 20%;  border-right: 1px solid #9B9997;border-top: 1px solid #fff; background-color:<?php echo $item_background; ?>;">
                 <?php echo to_currency($estimate_total_summary->tax2, $estimate_total_summary->currency_symbol); ?>
             </td>
         </tr>
@@ -104,8 +109,8 @@ $style = get_setting("invoice_style");
     }
     ?>
     <tr>
-        
-        <td colspan="3" style="text-align: right; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
+        <td style=" width: 60%;">    </td>
+        <td colspan="3" style="text-align: right;  width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
         <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
             <?php echo to_currency($estimate_total_summary->estimate_total, $estimate_total_summary->currency_symbol); ?>
         </td>

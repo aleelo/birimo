@@ -66,8 +66,11 @@
                                             <li role="presentation"><?php echo modal_anchor(get_uri("projects/modal_form"), "<i data-feather='command' class='icon-16'></i> " . app_lang('create_project'), array("data-post-context" => "estimate", "data-post-context_id" => $estimate_info->id, "title" => app_lang('create_project'), "data-post-client_id" => $estimate_info->client_id, "class" => "dropdown-item")); ?> </li>
                                         <?php } ?>
                                         <?php if ($show_invoice_option) { ?>
-                                            <li role="presentation"><?php echo modal_anchor(get_uri("invoices/modal_form"), "<i data-feather='refresh-cw' class='icon-16'></i> " . app_lang('create_invoice'), array("title" => app_lang("create_invoice"), "data-post-estimate_id" => $estimate_info->id, "class" => "dropdown-item")); ?> </li>
-                                        <?php } ?>
+                                            <li role="presentation">
+    <a href="<?php echo get_uri("invoices/save_automatic/" . $estimate_info->id); ?>" class="dropdown-item">
+        <i data-feather="refresh-cw" class="icon-16"></i> <?php echo app_lang('create_invoice'); ?>
+    </a>
+</li>                                        <?php } ?>
                                     <?php } ?>
                                 </ul>
                             </span>

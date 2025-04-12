@@ -352,7 +352,87 @@ else{
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
+    function save_automatic($estimate_id, $id = null) {
+        if (!$estimate_id) {
+            show_404();
+        }
+    
+        if (!$this->can_edit_invoices()) {
+            app_redirect("forbidden");
+        }
+    
+        $client_id = $this->request->getPost('invoice_client_id');
+        $client_info = $this->Clients_model->get_one($client_id);
+        $company_id = $client_info->company_id;
+    
+        $target_path = get_setting("timeline_file_path");
+        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "invoice");
+        $new_files = unserialize($files_data);
+    
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+        if (!$estimate_info->id) {
+            show_404();
+        }
+    
+        $_invoice_data = array(
+            "client_id" => $estimate_info->client_id,
+            "project_id" => $estimate_info->project_id,
+            "bill_date" => $estimate_info->estimate_date,
+            "due_date" => $estimate_info->valid_until,
+            "tax_id" => $estimate_info->tax_id,
+            "tax_id2" => $estimate_info->tax_id2,
+            "company_id" => $estimate_info->company_id,
+            "note" => $estimate_info->note,
+            "estimate_id" => $estimate_info->id,
+        );
+    
+        $contract_id = $this->request->getPost('contract_id');
+        $proposal_id = $this->request->getPost('proposal_id');
+        $order_id = $this->request->getPost('order_id');
+    
+        $invoice_data["discount_amount"] = $this->request->getPost('discount_amount') ?: 0;
+        $invoice_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ?: "percentage";
+        $invoice_data["discount_type"] = $this->request->getPost('discount_type') ?: "before_tax";
+        $invoice_data["order_id"] = $order_id ?: 0;
+    
+        if (!$id) {
+            $invoice_data = array_merge($invoice_data, prepare_invoice_display_id_data($estimate_info->valid_until, $estimate_info->estimate_date));
+        }
+    
+        $invoice_data = array_merge($invoice_data, $_invoice_data, $this->_get_recurring_data());
+    
+        $invoice_info = $this->Invoices_model->get_one($id);
+        $timeline_file_path = get_setting("timeline_file_path");
+        $new_files = update_saved_files($timeline_file_path, $invoice_info->files, $new_files);
+    
+        $invoice_data["files"] = serialize($new_files);
+        $invoice_id = $this->Invoices_model->save_invoice_and_update_total($invoice_data);
+    
+        $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+        if (!$copy_items) {
+            return false;
+        }
+    
+        foreach ($copy_items as $data) {
+            $invoice_item_data = array(
+                "invoice_id" => $invoice_id,
+                "title" => $data->title ?: "",
+                "description" => $data->description ?: "",
+                "quantity" => $data->quantity ?: 0,
+                "unit_type" => $data->unit_type ?: "",
+                "rate" => $data->rate ?: 0,
+                "total" => $data->total ?: 0,
+                "taxable" => 1
+            );
+            $this->Invoice_items_model->ci_save($invoice_item_data);
+        }
+    
+        $this->Invoices_model->update_invoice_total_meta($invoice_id);
+         app_redirect("invoices/view/" . $invoice_id);
 
+    }
+
+    
     private function _get_recurring_data($invoice_id = 0) {
         $recurring = $this->request->getPost('recurring') ? 1 : 0;
         $bill_date = $this->request->getPost('invoice_bill_date');
