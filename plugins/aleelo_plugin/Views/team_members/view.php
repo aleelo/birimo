@@ -37,6 +37,9 @@
         <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/education_info/" . $user_info->id); ?>" data-bs-target="#tab-education-info"> <?php echo app_lang('education_info'); ?></a></li>
         <?php } ?>
+        <?php if ($show_general_info) { ?>
+            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/company_access/" . $user_info->id); ?>" data-bs-target="#tab-company-access"> <?php echo app_lang('company_access'); ?></a></li>
+        <?php } ?>
 
         <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/social_links/" . $user_info->id); ?>" data-bs-target="#tab-social-links"> <?php echo app_lang('social_links'); ?></a></li>
@@ -117,6 +120,7 @@
         </div>
         <div role="tabpanel" class="tab-pane fade" id="tab-general-info"></div>
         <div role="tabpanel" class="tab-pane fade" id="tab-education-info"></div>
+        <div role="tabpanel" class="tab-pane fade" id="tab-company-access"></div>
         <div role="tabpanel" class="tab-pane fade" id="tab-files"></div>
         <div role="tabpanel" class="tab-pane fade" id="tab-social-links"></div>
         <div role="tabpanel" class="tab-pane fade" id="tab-job-info"></div>
@@ -191,6 +195,8 @@
                 $("[data-bs-target='#tab-my-preferences']").trigger("click");
             } else if (tab === "left_menu") {
                 $("[data-bs-target='#tab-user-left-menu']").trigger("click");
+            }else if (tab === "company_access") {
+                $("[data-bs-target='#tab-company-access']").trigger("click");
             }
         }, 210);
 

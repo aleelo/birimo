@@ -776,6 +776,22 @@ if (!$signature_path) {
 
         return $this->template->view("aleelo_plugin\Views/team_members/general_info", $view_data);
     }
+    function company_access($user_id) {
+        validate_numeric_value($user_id);
+        $this->update_only_allowed_members($user_id);
+        $id = $this->request->getPost('id');
+
+        $options = array(
+            "id" => $id,
+        );
+        $view_data['user_info'] = $this->Users_models->get_one($user_id);
+        $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
+        $add_user_type=$this->request->getPost('add_user_type');
+        $view_data['add_user_type']=$add_user_type;
+        return $this->template->view("aleelo_plugin\Views/team_members/company_access", $view_data);
+    }
 
     //save general information of a team member
     function save_general_info($user_id) {
@@ -812,7 +828,34 @@ if (!$signature_path) {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
-
+    function save_company_access($user_id) {
+        validate_numeric_value($user_id);
+        $this->update_only_allowed_members($user_id);
+    
+        $post_user_id = $this->request->getPost('user_id');
+        $can_access_all = $this->request->getPost('can_accsess_all_company');
+    
+        // Process the company access value
+        if ($can_access_all) {
+            $cc = $can_access_all;
+        } else {
+            $cc =$post_user_id;
+        }
+    
+        // Prepare data for saving
+        $user_data = array(
+            "company_access" => $cc,
+        );
+    
+        // Save data
+        $result = $this->Users_models->ci_save($user_data, $user_id);
+    
+        if ($result) {
+            echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+    }
     //show social links of a team member
     function social_links($user_id) {
         //important! here id=user_id
