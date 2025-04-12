@@ -106,7 +106,8 @@
     ?>    
     <?php if ($invoice_total_summary->tax) { ?>
         <tr>
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo $invoice_total_summary->tax_name; ?></td>
+            <td style="width: 60%;"></td>
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name; ?></td>
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?>
             </td>
@@ -114,7 +115,9 @@
     <?php } ?>
     <?php if ($invoice_total_summary->tax2) { ?>
         <tr>
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo $invoice_total_summary->tax_name2; ?></td>
+        <td style="width: 60%;"></td>
+
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name2; ?></td>
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax2, $invoice_total_summary->currency_symbol); ?>
             </td>
@@ -122,7 +125,9 @@
     <?php } ?>
     <?php if ($invoice_total_summary->tax3) { ?>
         <tr>
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;"><?php echo $invoice_total_summary->tax_name3; ?></td>
+        <td style="width: 60%;"></td>
+
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name3; ?></td>
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax3, $invoice_total_summary->currency_symbol); ?>
             </td>
