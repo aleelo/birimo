@@ -17,8 +17,8 @@
                                 <ul class="dropdown-menu" role="menu">
                                     <li role="presentation"><?php echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_pdf'), array("title" => app_lang('download_pdf'), "class" => "dropdown-item")); ?> </li>
                                     <li role="presentation"><?php echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id . "/view"), "<i data-feather='file-text' class='icon-16'></i> " . app_lang('view_pdf'), array("title" => app_lang('view_pdf'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
-                                    <li role="presentation"><?php echo anchor(get_uri("estimates/preview/" . $estimate_info->id . "/1"), "<i data-feather='search' class='icon-16'></i> " . app_lang('estimate_preview'), array("title" => app_lang('estimate_preview'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
-                                    <li role="presentation"><?php echo anchor(get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='external-link' class='icon-16'></i> " . app_lang('estimate') . " " . app_lang("url"), array("target" => "_blank", "class" => "dropdown-item")); ?> </li>
+                                    <!-- <li role="presentation"><?php echo anchor(get_uri("estimates/preview/" . $estimate_info->id . "/1"), "<i data-feather='search' class='icon-16'></i> " . app_lang('estimate_preview'), array("title" => app_lang('estimate_preview'), "target" => "_blank", "class" => "dropdown-item")); ?> </li> -->
+                                    <!-- <li role="presentation"><?php echo anchor(get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='external-link' class='icon-16'></i> " . app_lang('estimate') . " " . app_lang("url"), array("target" => "_blank", "class" => "dropdown-item")); ?> </li> -->
                                     <li role="presentation"><?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('title' => app_lang('print_estimate'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li>
                                     <li role="presentation" class="dropdown-divider"></li>
 
@@ -67,10 +67,10 @@
                                         <?php } ?>
                                         <?php if ($show_invoice_option) { ?>
                                             <li role="presentation">
-    <a href="<?php echo get_uri("invoices/save_automatic/" . $estimate_info->id); ?>" class="dropdown-item">
-        <i data-feather="refresh-cw" class="icon-16"></i> <?php echo app_lang('create_invoice'); ?>
-    </a>
-</li>                                        <?php } ?>
+                                              <a href="<?php echo get_uri("invoices/save_automatic/" . $estimate_info->id); ?>" class="dropdown-item">
+                                                 <i data-feather="refresh-cw" class="icon-16"></i> <?php echo app_lang('create_invoice'); ?>
+                                              </a>
+                                            </li>                                        <?php } ?>
                                     <?php } ?>
                                 </ul>
                             </span>
@@ -79,7 +79,7 @@
 
                     <ul id="estimate-tabs" data-bs-toggle="ajax-tab" class="nav nav-pills rounded classic mb20 scrollable-tabs border-white" role="tablist">
                         <li><a role="presentation" data-bs-toggle="tab"  href="javascript:;" data-bs-target="#estimate-details-section"><?php echo app_lang("details"); ?></a></li>
-                        <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/tasks/" . $estimate_info->id); ?>" data-bs-target="#estimate-tasks-section"><?php echo app_lang('tasks'); ?></a></li>
+                        <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/tasks/" . $estimate_info->id); ?>" data-bs-target="#estimate-tasks-section"><?php echo app_lang('tasks'); ?></a></li> -->
                     </ul>
                 </div>
                 <div class="tab-content">
