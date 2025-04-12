@@ -52,19 +52,21 @@ if (!$color) {
     
     <tr>
     <td colspan="3">
-        <div role="navigation" style="
-            background-color: <?php echo $color; ?>;
-            color: white;
-            font-size: 1.5em;
-            width: 100%;
-            padding: 0.5em 0;
-            border-bottom: 2px solid black;
-            margin-top: 8px;
-            text-align: left;
-        ">
-            <?php echo app_lang("estimate")?>
-        </div>
-    </td>
+    <div role="navigation" style="
+        background-color: <?php echo $color; ?>;
+        color: white;
+        font-size: 1.5em;
+        width: 100%;
+        padding: 1em 0; 
+        border-bottom: 2px solid black;
+        margin: 16px 0; 
+        text-align: left; /* left-align the text */
+    ">
+        <span style="padding: 0 1em; display: inline-block;font-weight: bold;"> <!-- Added padding around the word -->
+            <?php echo app_lang("estimate") ?>
+        </span>
+    </div>
+</td>
 </tr>
 
     <tr>
