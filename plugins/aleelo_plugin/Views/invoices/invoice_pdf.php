@@ -150,7 +150,7 @@
     <?php } ?>
     <tr>
         <td style="width: 60%;"></td>
-        <td colspan="<?php echo $colspan; ?>" style="text-align: right;width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>; "><?php echo app_lang("balance_due"); ?></td>
+        <td colspan="<?php echo $colspan; ?>" style="text-align: right;color: white; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $color; ?>; "><?php echo app_lang("balance_due"); ?></td>
         <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
             <?php echo to_currency($invoice_total_summary->balance_due, $invoice_total_summary->currency_symbol); ?>
         </td>
@@ -230,7 +230,7 @@ if (!empty($finance_manager_info->signature)) {
     // Check if the file exists
     if (file_exists($signature_path)) {
         // Display the signature image
-        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 200px; height: 180px;">';
+        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: 180px;">';
     } else {
         // File not found, try the second method
         $signature_data = @unserialize($finance_manager_info->signature);
@@ -241,7 +241,7 @@ if (!empty($finance_manager_info->signature)) {
             $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
 
             if (file_exists($signature_path)) {
-                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 200px; height: 180px;">';
+                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="width: 150px; height: 180px;">';
             } else {
                 echo '<p>Signature file not found.</p>';
             }

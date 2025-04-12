@@ -686,6 +686,7 @@ class Team_member extends Security_Controller_Plugin {
         $company_id=$this->request->getPost('company_id');
         $view_data['company_id']=$company_id;
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
+        $view_data['company_dropdown']=array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
 
         $options = array("id" => $user_id);
         $user_info = $this->Users_models->get_details($options)->getRow();

@@ -203,34 +203,31 @@
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="company_access-tab">
-               
-            <div class="modal-body clearfix">
-                    <div class="container-fluid">
-                        <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
-                        <input type="hidden" name="company_id" value="<?php echo $company_id; ?>" />
+    <div class="modal-body clearfix">
+        <div class="container-fluid">
+            <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
+            <input type="hidden" name="company_id" value="<?php echo $company_id; ?>" />
 
-                        <div class="form-group" style="min-height: 50px">
-                            <div class="row">
-                                <label for="user_id" class=" col-md-3"><?php echo ($add_user_type == "client_contacts") ? app_lang('contact') : app_lang('member'); ?></label>
-                                <div class="col-md-9">
-                                    <div class="select-member-field">
-                                        <div class="select-member-form clearfix pb10">
-                                            <?php echo form_dropdown("user_id[]", $company, array($model_info->id), "class='select2 col-md-7 p0' id='user_id'"); ?>
-                                            <?php echo js_anchor("<i data-feather='x' class='icon-16'></i> ", array("class" => "remove-member delete ml20")); ?>
-                                        </div>   
-                                                                     
-                                    </div>
-                                    <?php // echo js_anchor("<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_more'), array("class" => "add-member", "id" => "add-more-user")); ?>
-                                </div>
-                            </div> <?php
-                        echo form_checkbox("user_id", "all", false, "id='can_accsess_all_company' class='form-check-input'");
-                        ?> <label for="user_id"><?php echo app_lang('can_accsess_all_company'); ?></label>
-                   
+            <div class="form-group" style="min-height: 50px">
+                <div class="row">
+                    <label for="user_id" class="col-md-3"><?php echo ($add_user_type == "client_contacts") ? app_lang('contact') : app_lang('company_access'); ?></label>
+                    <div class="col-md-9">
+                        <div class="select-member-field" id="user-dropdown-container">
+                            <div class="select-member-form clearfix pb10">
+                                <?php echo form_dropdown("user_id[]", $company, array($model_info->id), "class='select2 col-md-7 p0' id='user_id'"); ?>
+                                <?php echo js_anchor("<i data-feather='x' class='icon-16'></i> ", array("class" => "remove-member delete ml20")); ?>
+                            </div>
                         </div>
-
                     </div>
                 </div>
+                <?php
+                echo form_checkbox("user_id", "all", false, "id='can_access_all_company' class='form-check-input'");
+                ?>
+                <label for="can_access_all_company"><?php echo app_lang('can_accsess_all_company'); ?></label>
             </div>
+        </div>
+    </div>
+</div>
 
 
                             
@@ -343,7 +340,13 @@
             $("#first_name").focus();
         }, 200);
         $("#team_member-form .select2").select2();
-
+        $("#can_access_all_company").change(function () {
+            if ($(this).is(":checked")) {
+                $("#user-dropdown-container").hide(); // Hide the dropdown
+            } else {
+                $("#user-dropdown-container").show(); // Show the dropdown
+            }
+        });
         setDatePicker("#date_of_hire");
 
         $("#form-previous").click(function () {
