@@ -13,9 +13,13 @@
                     <div class="row">
                         <label for="company" class="col-md-2"><?php echo app_lang('company'); ?></label>
                         <div class="col-md-10">
-                            <?php
-                            echo form_dropdown("company", $company_dropdown, array(), "class='select2' id='company'value='" . $job_info->company_id . "' data-allow-clear='true' data-no-results-text='" . app_lang('no_result_found') . "' data-width='100%'");
-                            ?>
+                        <?php
+echo form_dropdown(
+    "company",
+    $company_dropdown,
+    $job_info->company_id, // Set the selected value here
+    "class='select2' id='company' data-allow-clear='true' data-no-results-text='" . app_lang('no_result_found') . "' data-width='100%'"
+); ?>
                             <div id="user-role-help-block" class="help-block ml10 hide"><i data-feather="alert-triangle" class="icon-16 text-warning"></i> <?php echo app_lang("admin_user_has_all_power"); ?></div>
                         </div>
                     </div>
