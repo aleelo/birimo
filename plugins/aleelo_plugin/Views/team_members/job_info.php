@@ -11,8 +11,8 @@
             <div class="card-body">
             <div class="form-group">
                     <div class="row">
-                        <label for="company" class="col-md-3"><?php echo app_lang('company'); ?></label>
-                        <div class="col-md-9">
+                        <label for="company" class="col-md-2"><?php echo app_lang('company'); ?></label>
+                        <div class="col-md-10">
                             <?php
                             echo form_dropdown("company", $company_dropdown, array(), "class='select2' id='company'value='" . $job_info->company_id . "' data-allow-clear='true' data-no-results-text='" . app_lang('no_result_found') . "' data-width='100%'");
                             ?>
@@ -88,16 +88,15 @@
         </div>
             <div class="form-group">
     <div class="row">
-        <label class="col-md-3 "><?php echo app_lang('has_signature'); ?></label>
-        <div class="col-md-9 ">
+        <label class="col-md-2 "><?php echo app_lang('has_signature'); ?></label>
+        <div class="col-md-10 ">
             <?php
             
             echo form_dropdown("signature_type", array(
                 ""=> "Select Signature Type",
                 "image" => "Upload Image",
                 "digital" => "Digital Signature",
-
-            ), "", "class='form-control select2' id='signature_type'");
+            ), "", "class='form-control select2' value=$job_info->signature id='signature_type'");
             ?>
         </div>
     </div>

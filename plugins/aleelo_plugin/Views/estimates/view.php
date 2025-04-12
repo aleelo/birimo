@@ -63,7 +63,7 @@
                                     <?php if ($estimate_status == "accepted") { ?>
                                         <li role="presentation" class="dropdown-divider"></li>
                                         <?php if ($can_create_projects && !$estimate_info->project_id) { ?>
-                                            <li role="presentation"><?php echo modal_anchor(get_uri("projects/modal_form"), "<i data-feather='command' class='icon-16'></i> " . app_lang('create_project'), array("data-post-context" => "estimate", "data-post-context_id" => $estimate_info->id, "title" => app_lang('create_project'), "data-post-client_id" => $estimate_info->client_id, "class" => "dropdown-item")); ?> </li>
+                                            <!-- <li role="presentation"><?php echo modal_anchor(get_uri("projects/modal_form"), "<i data-feather='command' class='icon-16'></i> " . app_lang('create_project'), array("data-post-context" => "estimate", "data-post-context_id" => $estimate_info->id, "title" => app_lang('create_project'), "data-post-client_id" => $estimate_info->client_id, "class" => "dropdown-item")); ?> </li> -->
                                         <?php } ?>
                                         <?php if ($show_invoice_option) { ?>
                                             <li role="presentation">
