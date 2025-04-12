@@ -786,7 +786,7 @@ if (!$signature_path) {
         );
         $view_data['user_info'] = $this->Users_models->get_one($user_id);
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company']=array("" => " -- Choose Company -- ") +$this->Company_model->get_dropdown_list(array("name"), "id");
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
         $add_user_type=$this->request->getPost('add_user_type');
         $view_data['add_user_type']=$add_user_type;
