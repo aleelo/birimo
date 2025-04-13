@@ -2557,6 +2557,8 @@ if (!function_exists('get_estimate_status_label')) {
             $estimate_status_class = "bg-primary";
         } else if ($estimate_info->status == "new") {
             $estimate_status_class = "bg-warning";
+        }else if ($estimate_info->status == "expired") { 
+            $estimate_status_class = "bg-dark"; 
         }
 
         $estimate_status = "<span class='mt0 badge $estimate_status_class large'>" . app_lang($estimate_info->status) . "</span>";

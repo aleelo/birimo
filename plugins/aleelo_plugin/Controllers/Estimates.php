@@ -23,6 +23,8 @@ class Estimates extends Security_Controller_Plugin {
 
     function index() {
         $this->check_module_availability("module_estimate");
+        $this->_update_expired_estimates(); // Check and update expired estimates
+
         $view_data['can_request_estimate'] = false;
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
@@ -143,7 +145,10 @@ class Estimates extends Security_Controller_Plugin {
         $this->validate_estimate_access($id);
         if (!$this->_is_estimate_editable($id, $is_clone)) {
             app_redirect("forbidden");
-        }
+        }$valid_until = $this->request->getPost('valid_until');
+        $today = date("Y-m-d");
+    
+        $status = ($valid_until < $today) ? "expired" : "draft";
 
         $estimate_data = array(
             "client_id" => $client_id,
@@ -151,6 +156,7 @@ class Estimates extends Security_Controller_Plugin {
             "valid_until" => $this->request->getPost('valid_until'),
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
+           "status" => $status,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
             "note" => $this->request->getPost('estimate_note')
         );
@@ -324,7 +330,18 @@ class Estimates extends Security_Controller_Plugin {
             }
         }
     }
+    private function _update_expired_estimates() {
+        $today = date("Y-m-d");
+        $expired_estimates = $this->Estimates_model->get_all_where(array(
+            "valid_until <" => $today,
+            "status !=" => "expired"
+        ))->getResult();
+        $estimate_data = array("status" => "expired");
 
+        foreach ($expired_estimates as $estimate) {
+            $this->Estimates_model->ci_save($estimate_data, $estimate->id);
+        }
+    }
     /* create new project from accepted estimate */
 
     private function _create_project_from_estimate($estimate_id) {
@@ -502,6 +519,7 @@ class Estimates extends Security_Controller_Plugin {
     function view($estimate_id = 0) {
         validate_numeric_value($estimate_id);
         $this->validate_estimate_access($estimate_id);
+        $this->_update_expired_estimates(); // Check and update expired estimates
 
         if ($estimate_id) {
 
