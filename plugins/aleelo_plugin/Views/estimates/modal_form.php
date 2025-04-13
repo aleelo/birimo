@@ -19,7 +19,7 @@
                     echo form_input(array(
                         "id" => "estimate_date",
                         "name" => "estimate_date",
-                        "value" => $model_info->estimate_date,
+                        "value" => $model_info->estimate_date ? $model_info->estimate_date : date("Y-m-d"),
                         "class" => "form-control",
                         "placeholder" => app_lang('estimate_date'),
                         "autocomplete" => "off",
@@ -38,7 +38,7 @@
                     echo form_input(array(
                         "id" => "valid_until",
                         "name" => "valid_until",
-                        "value" => $model_info->valid_until,
+                        "value" => $model_info->valid_until ? $model_info->valid_until : date("Y-m-d", strtotime("+1 month", strtotime(date("Y-m-d")))),
                         "class" => "form-control",
                         "placeholder" => app_lang('valid_until'),
                         "autocomplete" => "off",
