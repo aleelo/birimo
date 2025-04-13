@@ -282,7 +282,9 @@ class Settings extends Security_Controller {
     function invoice_general() {
         return $this->template->view("settings/invoices/invoice_general");
     }
-
+    function estimate_general() {
+        return $this->template->view("settings/estimate_general");
+    }
     function invoice_reminders() {
         return $this->template->view("settings/invoices/invoice_reminders");
     }
@@ -334,7 +336,21 @@ class Settings extends Security_Controller {
         }
         echo json_encode(array("success" => true, 'message' => app_lang('settings_updated')));
     }
+    function save_estimate_general_settings() {
+        $settings = array("default_due_date_after_estimate_date"
+        //, "send_bcc_to", "allow_partial_invoice_payment_from_clients", "client_can_pay_invoice_without_login", "enable_invoice_lock_state"
+        );
 
+        foreach ($settings as $setting) {
+            $value = $this->request->getPost($setting);
+            if (is_null($value)) {
+                $value = "";
+            }
+
+            $this->Settings_model->save_setting($setting, $value);
+        }
+        echo json_encode(array("success" => true, 'message' => app_lang('settings_updated')));
+    }
     function save_invoice_reminders_settings() {
         $settings = array("send_invoice_due_pre_reminder", "send_invoice_due_pre_second_reminder", "send_invoice_due_after_reminder", "send_invoice_due_after_second_reminder", "send_recurring_invoice_reminder_before_creation");
 

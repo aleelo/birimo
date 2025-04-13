@@ -218,7 +218,28 @@
     //    $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
 
         setDatePicker("#estimate_date, #valid_until");
+       
+        var defaultDue = "<?php echo get_setting('default_due_date_after_estimate_date'); ?>";
+        var id = "<?php echo $model_info->id; ?>";
 
+        //disable this operation in edit mode
+        if (defaultDue && !id) {
+            //for auto fill the due date based on bill date
+            setDefaultDueDate = function () {
+                var dateFormat = getJsDateFormat().toUpperCase();
+
+                var billDate = $('#estimate_date').val();
+                var dueDate = moment(billDate, dateFormat).add(defaultDue, 'days').format(dateFormat);
+                $("#valid_until").val(dueDate);
+
+            };
+
+            $("#estimate_date").change(function () {
+                setDefaultDueDate();
+            });
+
+            setDefaultDueDate();
+        }
 
     });
 </script>
