@@ -2557,12 +2557,13 @@ if (!function_exists('get_estimate_status_label')) {
             $estimate_status_class = "bg-primary";
         } else if ($estimate_info->status == "new") {
             $estimate_status_class = "bg-warning";
-        }else if ($estimate_info->status == "expired") { 
-            $estimate_status_class = "bg-dark"; 
         }
+if ($estimate_info->estimate_date && $estimate_info->valid_until< get_my_local_time("Y-m-d")) {
 
-        $estimate_status = "<span class='mt0 badge $estimate_status_class large'>" . app_lang($estimate_info->status) . "</span>";
-        if ($return_html) {
+        $estimate_status = "<span class='mt0 badge $estimate_status_class large'>" . app_lang($estimate_info->status). " (expired)</span>";
+        }
+       else{$estimate_status = "<span class='mt0 badge $estimate_status_class large'>" . app_lang($estimate_info->status) . "</span>";
+       } if ($return_html) {
             return $estimate_status;
         } else {
             return $estimate_info->status;
