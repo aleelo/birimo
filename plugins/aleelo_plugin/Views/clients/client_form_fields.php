@@ -6,14 +6,12 @@
 <div class="form-group">
 <div class="row">
 
-                <div class="row">
                     <label for="company_id" class="<?php echo $label_column; ?>"><?php echo app_lang('company'); ?></label>
                     <div class=" <?php echo $field_column; ?>">
                         <?php
                         echo form_dropdown("company_id", $companies_dropdown, $model_info->company_id, "class='select2 form-control validate-hidden' id='company_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
                    
                          ?>
-                    </div>
                 </div>
 </div>
             </div>
@@ -116,7 +114,30 @@
         </div>
     </div>
 <?php //} ?> -->
+            <div class="form-group">
+             <div class="row">
 
+                    <label for="country" class="<?php echo $label_column; ?>"><?php echo app_lang('country'); ?></label>
+                    <div class=" <?php echo $field_column; ?>">
+                        <?php
+                        echo form_dropdown("country", $countries_dropdown, $model_info->country, "class='select2 form-control validate-hidden' id='country' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                   
+                         ?>
+                </div>
+             </div>
+            </div>
+            <div class="form-group">
+             <div class="row">
+
+                    <label for="district" class="<?php echo $label_column; ?>"><?php echo app_lang('district'); ?></label>
+                    <div class=" <?php echo $field_column; ?>">
+                        <?php
+                        echo form_dropdown("district", $Regions_dropdown, $model_info->district, "class='select2 form-control validate-hidden' id='district' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                   
+                         ?>
+                </div>
+             </div>
+            </div>
 <div class="form-group">
     <div class="row">
         <label for="address" class="<?php echo $label_column; ?>"><?php echo app_lang('address'); ?></label>

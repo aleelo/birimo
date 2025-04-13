@@ -93,11 +93,11 @@ if (!$color) {
     <tr>
 
   
-    <td style="width: 50%; vertical-align: top;">
+    <td style="width: 70%; vertical-align: top;">
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_from', $data); ?>
     </td>
   <td style="width: 0.1%;"></td>
-    <td style="width: 49.9%; vertical-align: top; text-align: right;">
+    <td style="width: 49.9%; vertical-align: top; text-align: left;">
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_to', $data); ?>
     </td>
 </tr>

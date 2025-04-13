@@ -16,6 +16,8 @@ class Security_Controller_Plugin extends Security_Controller {
     public $Projects_model;
     public $Project_status_model;
     public $Clients_model;
+    public $Country_model;
+    public $Regions_model;
 
     public$University_names_model;
     // use App_Controller;
@@ -45,6 +47,8 @@ $this->Users_models = new \aleelo_plugin\Models\Users_models();
 $this->Tasks_model = new \aleelo_plugin\Models\Tasks_model();
 $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
 $this->Users_model = new \aleelo_plugin\Models\Users_models();
+$this->Country_model = new \aleelo_plugin\Models\Country_model();
+$this->Regions_model = new \aleelo_plugin\Models\Regions_model();
 
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();

@@ -45,6 +45,7 @@ if (!$color) {
         echo view('aleelo_plugin\Views/estimates/estimate_parts/company_logo'); ?>
     </div> </td> 
     <td style="width: 2.6%;"></td>
+    
     <td style="width: 1%; vertical-align: top;">
     <table style="width: 100%; height: 300px; border-collapse: collapse;">
     <tr>
@@ -97,8 +98,8 @@ if (!$color) {
     <td style="width: 50%; vertical-align: top;">
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_from', $data); ?>
     </td>
-  <td style="width: 0.1%;"></td>
-    <td style="width: 49.9%; vertical-align: top; text-align: right;">
+  <td style="width: 20%;"></td>
+    <td style="width: 30%; vertical-align: top; text-align: left;">
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_to', $data); ?>
     </td>
 </tr>

@@ -3271,6 +3271,6 @@ $lang["digital_signature"] = "digital signature";
 $lang["estimate_color_solution"] = "estimate color solution";
 $lang["estimate_color_pixel"] = "estimate color pixel";
 
-
+$lang["district"] = "region";
 
 return $lang;

@@ -76,13 +76,15 @@ class Client extends Security_Controller_Plugin {
 
         $view_data['label_column'] = "col-md-3";
         $view_data['field_column'] = "col-md-9";
+        $country_name= $this->request->getPost('country'); //view='details' needed only when loading from the client's details view
 
         $view_data["view"] = $this->request->getPost('view'); //view='details' needed only when loading from the client's details view
         $view_data["ticket_id"] = $this->request->getPost('ticket_id'); //needed only when loading from the ticket's details view and created by unknown client
         $view_data['model_info'] = $this->Clients_model->get_one($client_id);
         $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
         $view_data['companies_dropdown'] =array("" => "- Choose Company -") +$this->Company_model->get_dropdown_list(array("name"));
-
+        $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
+        $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
         //prepare groups dropdown list
         $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
 
