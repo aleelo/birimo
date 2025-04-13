@@ -251,80 +251,33 @@ class Estimates extends Security_Controller_Plugin {
     }
 
     //update estimate status
-    function update_estimate_status($estimate_id, $status, $is_modal = false) {
-        if (!($estimate_id && $status)) {
+function update_estimate_status($estimate_id, $status, $is_modal = false) {
+    if (!($estimate_id && $status)) {
+        show_404();
+    }
+
+    validate_numeric_value($estimate_id);
+    $this->validate_estimate_access($estimate_id, true);
+    $estimate_info = $this->Estimates_model->get_one($estimate_id);
+
+    // Allow "sent" status to be updated by team members
+    if ($this->login_user->user_type == "staff") {
+        if (!in_array($status, ["accepted", "declined", "sent"])) {
             show_404();
         }
 
-        validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id, true);
-        $estmate_info = $this->Estimates_model->get_one($estimate_id);
+        $estimate_data = array("status" => $status);
+        $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
 
-        if ($this->login_user->user_type == "client") {
-            //updating by client
-            //client can only update the status once and the value should be either accepted or declined
-            if (!($estmate_info->status == "sent" && ($status == "accepted" || $status == "declined"))) {
-                show_404();
-            }
-
-            $estimate_data = array("status" => $status);
-
-            //estimate acceptation with signature
-            if ($is_modal) {
-                if (!get_setting("add_signature_option_on_accepting_estimate") || $status !== "accepted") {
-                    show_404();
-                }
-
-                $this->validate_submitted_data(array(
-                    "signature" => "required"
-                ));
-
-                $meta_data = array();
-                $signature = $this->request->getPost("signature");
-                $signature = explode(",", $signature);
-                $signature = get_array_value($signature, 1);
-                $signature = base64_decode($signature);
-                $signature = serialize(move_temp_file("signature.jpg", get_setting("timeline_file_path"), "estimate", NULL, "", $signature));
-
-                $meta_data["signature"] = $signature;
-                $meta_data["signed_date"] = get_current_utc_time();
-
-                $estimate_data["meta_data"] = serialize($meta_data);
-                $estimate_data["accepted_by"] = $this->login_user->id;
-            }
-
-            $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
-
-            //create notification
-            if ($status == "accepted") {
-                log_notification("estimate_accepted", array("estimate_id" => $estimate_id));
-
-                //estimate accepted, create a new project
-                if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
-                    $this->_create_project_from_estimate($estimate_id);
-                }
-
-                if ($is_modal) {
-                    echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
-                }
-            } else if ($status == "declined") {
-                log_notification("estimate_rejected", array("estimate_id" => $estimate_id));
-            }
-        } else {
-            //updating by team members
-            if (!($status == "accepted" || $status == "declined")) {
-                show_404();
-            }
-
-            $estimate_data = array("status" => $status);
-            $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
-
-            //estimate accepted, create a new project
-            if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted") && $status == "accepted") {
-                $this->_create_project_from_estimate($estimate_id);
-            }
+        if ($status == "sent") {
+            log_notification("estimate_sent", array("estimate_id" => $estimate_id));
         }
+
+        echo json_encode(array("success" => true, "message" => app_lang("status_updated")));
+    } else {
+        show_404();
     }
+}
     
     /* create new project from accepted estimate */
 
