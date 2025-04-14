@@ -567,7 +567,7 @@
                         </div>
                     </li>
                 <?php } ?>
-                <?php if (get_setting("module_estimate")) { ?>
+                <!-- <?php if (get_setting("module_estimate")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_estimates"); ?></h5>
@@ -608,7 +608,7 @@
                             <label for="estimate_yes_own"><?php echo app_lang("yes_only_own_estimates"); ?></label>
                         </div>
                     </li>
-                <?php } ?>
+                <?php } ?> -->
                 <?php if (get_setting("module_contract")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>

@@ -295,7 +295,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
             //estimate accepted, create a new project
             if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
-                $this->create_project_from_estimate($estimate_id);
+                $this->_create_project_from_estimate($estimate_id);
             }
 
             if ($is_modal) {
@@ -313,14 +313,36 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
         //estimate accepted, create a new project
         if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted") && $status == "accepted") {
-            $this->create_project_from_estimate($estimate_id);
+            $this->_create_project_from_estimate($estimate_id);
         }
     }
         if ($status == "sent") {
             log_notification("estimate_sent", array("estimate_id" => $estimate_id));
         }
 
+} private function _create_project_from_estimate($estimate_id) {
+    if ($estimate_id) {
+        $this->validate_estimate_access($estimate_id);
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+
+        //don't create new project if there has already been created a new project with this estimate
+        if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+            $data = array(
+                "title" => get_estimate_id($estimate_info->id),
+                "client_id" => $estimate_info->client_id,
+                "start_date" => $estimate_info->estimate_date,
+                "deadline" => $estimate_info->valid_until,
+                "estimate_id" => $estimate_id
+            );
+            $save_id = $this->Projects_model->ci_save($data);
+
+            //save the project id
+            $data = array("project_id" => $save_id);
+            $this->Estimates_model->ci_save($data, $estimate_id);
+        }
+    }
 }
+
       function project ($estimate_id) {
         $this->validate_estimate_access($estimate_id, true);
         $estimate_info = $this->Estimates_model->get_one($estimate_id);
@@ -537,7 +559,28 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             );
             $view_data['comments'] = $this->Estimate_comments_model->get_details($comments_options)->getResult();
             $view_data["sort_as_decending"] = $sort_as_decending;
-
+            $project_id= $this->Estimates_model->get_one($estimate_id)->project_id;
+            $view_data['project_info'] = $this->Projects_model->get_one($project_id);
+            $view_data["task_statuses"] = $this->Tasks_model->get_task_statistics(array("project_id" => $project_id))->task_statuses;
+    
+            $view_data['project_id'] = $project_id;
+            $offset = 0;
+            $view_data['offset'] = $offset;
+            $view_data['activity_logs_params'] = array("log_for" => "project", "log_for_id" => $project_id, "limit" => 20, "offset" => $offset);
+    
+            $view_data["can_access_clients"] = $this->can_access_clients(true);
+    
+            $view_data['custom_fields_list'] = $this->Custom_fields_model->get_combined_details("projects", $project_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+    
+            //count total worked hours
+            $options = array("project_id" => $project_id);
+    
+            //get allowed member ids
+            $members = $this->_get_members_to_manage_timesheet();
+            if ($members != "all") {
+                //if user has permission to access all members, query param is not required
+                $options["allowed_members"] = $members;
+            }
             if ($view_data) {
                 $view_data['estimate_status_label'] = $this->_get_estimate_status_label($view_data["estimate_info"]);
                 $view_data['estimate_status'] = $this->_get_estimate_status_label($view_data["estimate_info"], false);
