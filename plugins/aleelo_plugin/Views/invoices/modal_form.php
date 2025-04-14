@@ -117,7 +117,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <div class="row">
                     <label for="tax_id" class=" col-md-3"><?php echo app_lang('second_tax'); ?></label>
                     <div class="col-md-9">
@@ -126,8 +126,8 @@
                         ?>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
+            </div> -->
+            <!-- <div class="form-group">
                 <div class="row">
                     <label for="tax_id" class=" col-md-3"><?php echo app_lang('tax_deducted_at_source'); ?></label>
                     <div class="col-md-9">
@@ -136,9 +136,9 @@
                         ?>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <?php echo view("aleelo_plugin\Views/invoices/recurring_fields"); ?>
+            <!-- <?php // echo view("aleelo_plugin\Views/invoices/recurring_fields"); ?> -->
 
             <div class="form-group">
                 <div class="row">
