@@ -340,11 +340,14 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         if ($estimate_id) {
             $this->validate_estimate_access($estimate_id);
             $estimate_info = $this->Estimates_model->get_one($estimate_id);
+            $client_id = $estimate_info->client_id;
+            $client_info = $this->Clients_model->get_one($client_id);
             $title=$this->request->getPost('title');
             //don't create new project if there has already been created a new project with this estimate
             if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
                 $data = array(
                     "title" => $title,
+                    "company_id" => $client_info->company_id,
                     "client_id" => $estimate_info->client_id,
                     "start_date" => $estimate_info->estimate_date,
                     "deadline" => $estimate_info->valid_until,
