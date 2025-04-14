@@ -376,7 +376,6 @@ else{
     
         $_invoice_data = array(
             "client_id" => $estimate_info->client_id,
-            "company_id" => $company_id,
             "project_id" => $estimate_info->project_id,
             "bill_date" => $estimate_info->estimate_date,
             "due_date" => $estimate_info->valid_until,
