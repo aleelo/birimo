@@ -381,7 +381,6 @@ else{
             "due_date" => $estimate_info->valid_until,
             "tax_id" => $estimate_info->tax_id,
             "tax_id2" => $estimate_info->tax_id2,
-            "company_id" => $estimate_info->company_id,
             "note" => $estimate_info->note,
             "estimate_id" => $estimate_info->id,
         );
