@@ -363,7 +363,7 @@ else{
     
         $client_id = $invoice_client_id;
         $client_info = $this->Clients_model->get_one($client_id);
-        $company_id = $client_info->company_id;
+        $company_id = $client_id->company_id;
     
         $target_path = get_setting("timeline_file_path");
         $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "invoice");
