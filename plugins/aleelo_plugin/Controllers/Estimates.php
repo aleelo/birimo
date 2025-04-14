@@ -482,6 +482,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             $estimate_url,
             $client,
             $data->estimate_date,
+            $data->valid_until,
             format_to_date($data->estimate_date, false),
             to_currency($data->estimate_value, $data->currency_symbol),
             $this->_get_estimate_status_label($data),

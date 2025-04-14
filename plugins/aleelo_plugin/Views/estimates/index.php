@@ -44,6 +44,7 @@
                 {title: "<?php echo app_lang("client") ?>", "class": "all"},
                 {visible: false, searchable: false},
                 {title: "<?php echo app_lang("estimate_date") ?>", "iDataSort": 2, "class": "w20p"},
+                {title: "<?php echo app_lang("valid_until") ?>", "iDataSort": 2, "class": "w20p"},
                 {title: "<?php echo app_lang("amount") ?>", "class": "text-right w20p"},
                 {title: "<?php echo app_lang("status") ?>", "class": "text-center"},
                 {visible: showCommentOption, title: '<i data-feather="message-circle" class="icon-16"></i>', "class": "text-center w50"}
