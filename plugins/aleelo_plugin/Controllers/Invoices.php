@@ -352,7 +352,7 @@ else{
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
-    function save_automatic($estimate_id, $id = null) {
+    function save_automatic($estimate_id, $id = null,$invoice_client_id = null) {
         if (!$estimate_id) {
             show_404();
         }
@@ -361,7 +361,7 @@ else{
             app_redirect("forbidden");
         }
     
-        $client_id = $this->request->getPost('invoice_client_id');
+        $client_id = $invoice_client_id;
         $client_info = $this->Clients_model->get_one($client_id);
         $company_id = $client_info->company_id;
     
@@ -395,9 +395,9 @@ else{
         $invoice_data["discount_type"] = $this->request->getPost('discount_type') ?: "before_tax";
         $invoice_data["order_id"] = $order_id ?: 0;
     
-        if (!$id) {
+      
             $invoice_data = array_merge($invoice_data, prepare_invoice_display_id_data($estimate_info->valid_until, $estimate_info->estimate_date));
-        }
+        
     
         $invoice_data = array_merge($invoice_data, $_invoice_data, $this->_get_recurring_data());
     
