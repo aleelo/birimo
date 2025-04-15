@@ -241,6 +241,16 @@ if (!empty($finance_manager_info->signature)) {
 </tr>
 
 </table>
-
-    <?php echo get_setting("estimate_footer"); ?>
+    <?php 
+    if($client_info->company_id == 1){
+    echo get_setting("estimate_footer_pixel"); 
+    }
+    else if($client_info->company_id == 2){
+    echo get_setting("estimate_footer_solution"); 
+    }
+    else{
+        echo get_setting("estimate_footer"); 
+    }
+    
+    ?>
 </span>

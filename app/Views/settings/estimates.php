@@ -89,13 +89,31 @@
                             </div>
                             <div class="form-group">
                                 <div class="row">
-                                    <label for="estimate_footer" class="col-md-2"><?php echo app_lang('estimate_footer') ?></label>
+                                    <label for="estimate_footer_pixel" class="col-md-2"><?php echo app_lang('estimate_footer_pixel') ?></label>
                                     <div class="col-md-10">
                                         <?php
                                         echo form_textarea(array(
-                                            "id" => "estimate_footer",
-                                            "name" => "estimate_footer",
-                                            "value" => process_images_from_content(get_setting('estimate_footer'), false),
+                                            "id" => "estimate_footer_pixel",
+                                            "name" => "estimate_footer_pixel",
+                                            "value" => process_images_from_content(get_setting('estimate_footer_pixel'), false),
+                                            "class" => "form-control",
+                                            "data-toolbar" => "pdf_friendly_toolbar",
+                                            "data-height" => 100,
+                                            "data-encode_ajax_post_data" => "1"
+                                        ));
+                                        ?>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <div class="row">
+                                    <label for="estimate_footer_solution" class="col-md-2"><?php echo app_lang('estimate_footer_solution') ?></label>
+                                    <div class="col-md-10">
+                                        <?php
+                                        echo form_textarea(array(
+                                            "id" => "estimate_footer_solution",
+                                            "name" => "estimate_footer_solution",
+                                            "value" => process_images_from_content(get_setting('estimate_footer_solution'), false),
                                             "class" => "form-control",
                                             "data-toolbar" => "pdf_friendly_toolbar",
                                             "data-height" => 100,
@@ -185,6 +203,9 @@
         });
         $("#estimate-settings-form .select2").select2();
 
+
+        initWYSIWYGEditor("#estimate_footer_pixel");
+        initWYSIWYGEditor("#estimate_footer_solution");
         initWYSIWYGEditor("#estimate_footer");
 
         $(".cropbox-upload").change(function () {

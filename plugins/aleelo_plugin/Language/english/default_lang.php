@@ -3272,5 +3272,8 @@ $lang["estimate_color_solution"] = "estimate color solution";
 $lang["estimate_color_pixel"] = "estimate color pixel";
 
 $lang["district"] = "region";
+$lang["state"] = "state";
+$lang["estimate_footer_solution"] = "estimate footer solution";
+$lang["estimate_footer_pixel"] = "estimate footer pixel";
 
 return $lang;
