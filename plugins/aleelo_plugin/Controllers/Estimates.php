@@ -189,7 +189,7 @@ class Estimates extends Security_Controller_Plugin {
             if ($is_clone && $main_estimate_id) {
                 //add estimate items
 
-                save_custom_fields("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
+                update_custom_fields_changes("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
 
                 $estimate_items = $this->Estimate_items_model->get_all_where(array("estimate_id" => $main_estimate_id, "deleted" => 0))->getResult();
 
@@ -559,14 +559,14 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             );
             $view_data['comments'] = $this->Estimate_comments_model->get_details($comments_options)->getResult();
             $view_data["sort_as_decending"] = $sort_as_decending;
-            $project_id= $this->Estimates_model->get_one($estimate_id)->project_id;
+            $project_id= $this->Estimates_model->get_one($estimate_id)->id;
             $view_data['project_info'] = $this->Projects_model->get_one($project_id);
             $view_data["task_statuses"] = $this->Tasks_model->get_task_statistics(array("project_id" => $project_id))->task_statuses;
     
             $view_data['project_id'] = $project_id;
             $offset = 0;
             $view_data['offset'] = $offset;
-            $view_data['activity_logs_params'] = array("log_for" => "project", "log_for_id" => $project_id, "limit" => 20, "offset" => $offset);
+            $view_data['activity_logs_params'] = array("log_for" => "estimate", "log_for_id" => $project_id, "limit" => 20, "offset" => $offset);
     
             $view_data["can_access_clients"] = $this->can_access_clients(true);
     

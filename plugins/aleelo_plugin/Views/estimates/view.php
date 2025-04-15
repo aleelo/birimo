@@ -89,6 +89,14 @@
                     </div>
                     <div role="tabpanel" class="tab-pane fade grid-button" id="estimate-tasks-section"></div>
                 </div>
+                <div class="col-md-6">
+            <div class="card project-activity-section">
+                <div class="card-header">
+                    <h4><?php echo app_lang('activity'); ?></h4>
+                </div>
+                <?php echo view("aleelo_plugin\Views/projects/history/index"); ?>
+            </div>
+        </div>
             </div>
         </div>
     </div>
