@@ -827,7 +827,7 @@ class Settings extends Security_Controller {
     }
 
     function save_estimate_settings() {
-        $settings = array("estimate_prefix", "estimate_color_pixel","estimate_color_solution", "estimate_footer","estimate_footer_pixel","estimate_footer_solutionde", "send_estimate_bcc_to", "initial_number_of_the_estimate", "create_new_projects_automatically_when_estimates_gets_accepted", "enable_comments_on_estimates", "show_most_recent_estimate_comments_at_the_top", "add_signature_option_on_accepting_estimate", "enable_estimate_lock_state");
+        $settings = array("estimate_prefix", "estimate_color_pixel","estimate_color_solution", "estimate_footer","estimate_footer_pixel","estimate_footer_solution", "send_estimate_bcc_to", "initial_number_of_the_estimate", "create_new_projects_automatically_when_estimates_gets_accepted", "enable_comments_on_estimates", "show_most_recent_estimate_comments_at_the_top", "add_signature_option_on_accepting_estimate", "enable_estimate_lock_state");
         $reload_page = false;
 
         foreach ($settings as $setting) {
