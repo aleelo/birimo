@@ -383,6 +383,7 @@ else{
             "tax_id2" => $estimate_info->tax_id2,
             "note" => $estimate_info->note,
             "estimate_id" => $estimate_info->id,
+            "discount_amount" => $estimate_info->discount_amount,
         );
     
         $contract_id = $this->request->getPost('contract_id');
