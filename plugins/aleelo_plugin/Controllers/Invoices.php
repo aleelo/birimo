@@ -381,9 +381,9 @@ else{
             "due_date" => $estimate_info->valid_until,
             "tax_id" => $estimate_info->tax_id,
             "tax_id2" => $estimate_info->tax_id2,
-            "note" => $estimate_info->note,
+            "note" => $estimate_info->note?: "",
             "estimate_id" => $estimate_info->id,
-            "discount_amount" => $estimate_info->discount_amount,
+            "discount_amount" => $estimate_info->discount_amount ?: 0,
         );
     
         $contract_id = $this->request->getPost('contract_id');
@@ -410,7 +410,7 @@ else{
     
         $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
         if (!$copy_items) {
-            return false;
+            app_redirect("invoices/view/" . $invoice_id);
         }
     
         foreach ($copy_items as $data) {
