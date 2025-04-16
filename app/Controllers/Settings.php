@@ -836,11 +836,17 @@ class Settings extends Security_Controller {
             if ($setting === "estimate_footer") {
                 $value = decode_ajax_post_data($value);
             }
+            if ($setting === "estimate_footer_pixel") {
+                $value = decode_ajax_post_data($value);
+            }
 
             if (is_null($value)) {
                 $value = "";
             }
 
+            if ($setting === "estimate_footer_solution") {
+                $value = decode_ajax_post_data($value);
+            }
 
             $this->Settings_model->save_setting($setting, $value);
 
