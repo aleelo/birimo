@@ -3275,5 +3275,5 @@ $lang["district"] = "region";
 $lang["state"] = "state";
 $lang["estimate_footer_solution"] = "estimate footer solution";
 $lang["estimate_footer_pixel"] = "estimate footer pixel";
-
+$lang["items"] = "Items";
 return $lang;
