@@ -1,31 +1,43 @@
 <?php echo form_open(get_uri("companyy/save"), array("id" => "company-form", "class" => "general-form", "role" => "form", "onsubmit" => "return false;")); ?>
 
-    <div class="form-group">
-        <label for="department"><?php ?></label>
-        <?php
-        echo form_dropdown("department", 
-            array(
-                "" => "Choose the company",
-                "1" => "aleelo pixel",
-                "2" => "aleelo solution",
-                "0" =>"all"
-            ), 
-            "",  
-            'class="form-control select2" id="department"'
-        );
-        ?>
-    </div>
+<div class="form-group">
+    <label for="department"></label>
+    <?php
+    echo form_dropdown("department", 
+        array(
+            "" => "Choose the company",
+            "1" => "aleelo pixel",
+            "2" => "aleelo solution",
+            "0" => "all"
+        ), 
+        "",  
+        'class="form-control select2" id="department"'
+    );
+    ?>
+</div>
 
-</form>
+<?php echo form_close(); ?>
+
 <script type="text/javascript">
- $(document).ready(function() {
-    $("#company-form .select2").select2();
+$(document).ready(function () {
+    // Restore last selected value from localStorage
+    let savedDepartment = localStorage.getItem("selected_department");
+    if (savedDepartment !== null) {
+        $("#department").val(savedDepartment).trigger("change");
+    }
 
-    $("#department").on("change", function() {
+        $("#department .select2").select2();
+        console.warn("Select2 not loaded.");
+    
+
+    $("#department").on("change", function () {
         let department = $(this).val();
-        
+
+        // Save selected department to localStorage
+        localStorage.setItem("selected_department", department);
+
         if (department === "0") {
-            department = ""; 
+            department = "";
         }
 
         $.ajax({
@@ -33,16 +45,13 @@
             type: "POST",
             data: { department: department },
             dataType: "json",
-            success: function(result) {
+            success: function (result) {
                 location.reload();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log("Error:", error);
             }
         });
     });
 });
-
-
-
 </script>
