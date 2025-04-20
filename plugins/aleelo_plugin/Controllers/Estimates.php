@@ -1,6 +1,7 @@
 <?php
 
 namespace aleelo_plugin\Controllers;
+use Accounting\Models\Accounting_model;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 
@@ -102,7 +103,7 @@ class Estimates extends Security_Controller_Plugin {
         }
 
         $view_data['model_info'] = $model_info;
-
+     
         $estimate_request_id = $this->request->getPost('estimate_request_id');
         $view_data['estimate_request_id'] = $estimate_request_id;
 
@@ -674,7 +675,28 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         if (!$this->_is_estimate_editable($estimate_id)) {
             app_redirect("forbidden");
         }
-
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+            $accounts = $accounting_model->get_accounts('', ['account_type_id' => 11]);
+            $accounts_dropdown = [];
+            foreach ($accounts as $account) {
+                $label = $account['name'] ?: app_lang($account['key_name']);
+                $accounts_dropdown[] = [
+                    "id" => $account['id'],
+                    "text" => $label
+                ];
+            }
+            $view_data['accounts_dropdown'] = $accounts_dropdown;
+       
+        } else {
+            log_message('error', 'Accounting plugin is not available.');
+        }
+        
+    
+      
+        
+    
+       
         $view_data['model_info'] = $this->Estimate_items_model->get_one($this->request->getPost('id'));
         if (!$estimate_id) {
             $estimate_id = $view_data['model_info']->estimate_id;
@@ -682,7 +704,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $view_data['estimate_id'] = $estimate_id;
         return $this->template->view('aleelo_plugin\Views/estimates/item_modal_form', $view_data);
     }
-
+  
     /* add or edit an estimate item */
 
     function save_item() {
@@ -702,6 +724,30 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $rate = unformat_currency($this->request->getPost('estimate_item_rate'));
         $quantity = unformat_currency($this->request->getPost('estimate_item_quantity'));
         $estimate_item_title = $this->request->getPost('estimate_item_title');
+        $account_name = $this->request->getPost("estimate_item_account_id"); 
+        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+            if ($account_name=="+"||$add_new_item_to_library) {
+                $account_data = array(
+                    "name" => $account_name,
+                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
+                   
+                );
+            
+                         $accounting_model->db->table("acc_accounts")->insert($account_data);
+            
+                $account_id = $accounting_model->db->insertID();
+            } 
+            else {
+                $account_id = $this->request->getPost("estimate_item_account_id");
+            }       
+    
+        } else {
+            $account_id = "0";
+        } 
+       
         $item_id = 0;
 
         if (!$id) {
@@ -710,12 +756,12 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
 
         //check if the add_new_item flag is on, if so, add the item to libary. 
-        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         if ($add_new_item_to_library) {
             $library_item_data = array(
                 "title" => $estimate_item_title,
                 "description" => $this->request->getPost('estimate_item_description'),
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
+                "account_id" =>$account_id,
                 "rate" => unformat_currency($this->request->getPost('estimate_item_rate'))
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
@@ -729,6 +775,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "unit_type" => $this->request->getPost('estimate_unit_type'),
             "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
             "total" => $rate * $quantity,
+            "account_id" => $account_id,
         );
 
         if ($item_id) {
@@ -744,7 +791,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
-
+ 
+    
     /* delete or undo an estimate item */
 
     function delete_item() {
@@ -821,11 +869,30 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     /* prepare suggestion of estimate item */
-
+    function get_estimate_account_suggestion() {
+        $key = $this->request->getPost("c");
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+        } else {
+            log_message('error', 'Accounting plugin is not available.');
+        }
+        
+        $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
+    
+        foreach ($accounts as $account) {
+            $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
+        }
+    
+        $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_account"));
+    
+        echo json_encode($suggestion);
+    }
+   
+    
     function get_estimate_item_suggestion() {
         $key = $this->request->getPost("q");
-        $suggestion = array();
-
+        $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id")));
+        
         $items = $this->Invoice_items_model->get_item_suggestion($key);
 
         foreach ($items as $item) {
@@ -836,11 +903,15 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
         echo json_encode($suggestion);
     }
+  
 
     function get_estimate_item_info_suggestion() {
         $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id")));
         if ($item) {
             $item->rate = $item->rate ? to_decimal_format($item->rate) : "";
+            $item->description = $item->description ? custom_nl2br($item->description) : "";
+            $item->unit_type = $item->unit_type ? $item->unit_type : "";
+            $item->account_id = $item->account_id ? $item->account_id : 0;
             echo json_encode(array("success" => true, "item_info" => $item));
         } else {
             echo json_encode(array("success" => false));

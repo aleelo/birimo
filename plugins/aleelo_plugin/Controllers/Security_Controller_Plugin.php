@@ -9,6 +9,7 @@ class Security_Controller_Plugin extends Security_Controller {
    public $Assigning_items_model;
 
     public $Screen_size_model;
+    public $Items_model;
     public $Items_list_model;
     public $db;
     public $Expenses_model;
@@ -49,6 +50,7 @@ $this->Estimates_model = new \aleelo_plugin\Models\Estimates_model();
 $this->Users_model = new \aleelo_plugin\Models\Users_models();
 $this->Country_model = new \aleelo_plugin\Models\Country_model();
 $this->Regions_model = new \aleelo_plugin\Models\Regions_model();
+$this->Items_model = new \aleelo_plugin\Models\Items_model();
 
         // if (!$login_user_id && $redirect) {
         //     $uri_string = uri_string();

@@ -106,12 +106,15 @@ class Invoice_payments extends Security_Controller_Plugin {
 
         $id = $this->request->getPost('id');
         $invoice_id = $this->request->getPost('invoice_id');
-
+        $payment_method_id = $this->request->getPost('invoice_payment_method_id');
+        $payment_method = $this->Payment_methods_model->get_one($payment_method_id);
+        $account = $payment_method ? $payment_method->account_id : 0;
         $invoice_payment_data = array(
             "invoice_id" => $invoice_id,
             "payment_date" => $this->request->getPost('invoice_payment_date'),
-            "payment_method_id" => $this->request->getPost('invoice_payment_method_id'),
             "note" => $this->request->getPost('invoice_payment_note'),
+            "payment_method_id" => $payment_method_id,
+            "account_id" => $account,
             "amount" => unformat_currency($this->request->getPost('invoice_payment_amount')),
             "created_at" => get_current_utc_time(),
             "created_by" => $this->login_user->id,

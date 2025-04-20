@@ -1,6 +1,7 @@
 <?php
 
 namespace aleelo_plugin\Controllers;
+use Accounting\Models\Accounting_model;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 
@@ -422,6 +423,7 @@ else{
                 "unit_type" => $data->unit_type ?: "",
                 "rate" => $data->rate ?: 0,
                 "total" => $data->total ?: 0,
+                "account_id" => $data->account_id ?: 0,
                 "taxable" => 1
             );
             $this->Invoice_items_model->ci_save($invoice_item_data);
@@ -1020,6 +1022,7 @@ else{
         ));
 
         $invoice_id = $this->request->getPost('invoice_id');
+        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
 
         if (!$this->can_edit_invoices()) {
             app_redirect("forbidden");
@@ -1033,6 +1036,27 @@ else{
         $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
         $invoice_item_title = $this->request->getPost('invoice_item_title');
+        $account_name = $this->request->getPost("estimate_item_account_id"); 
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+            if ($account_name=="+"||$add_new_item_to_library ) {
+                $account_data = array(
+                    "name" => $account_name,
+                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
+                   
+                );
+            
+                         $accounting_model->db->table("acc_accounts")->insert($account_data);
+            
+                $account_id = $accounting_model->db->insertID();
+            } 
+            else {
+                $account_id = $this->request->getPost("estimate_item_account_id");
+            }       
+    
+        } else {
+            $account_id = "0";
+        } 
         $item_id = 0;
 
         if (!$id) {
@@ -1041,12 +1065,12 @@ else{
         }
 
         //check if the add_new_item flag is on, if so, add the item to libary. 
-        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         if ($add_new_item_to_library) {
             $library_item_data = array(
                 "title" => $invoice_item_title,
                 "description" => $this->request->getPost('invoice_item_description'),
                 "unit_type" => $this->request->getPost('invoice_unit_type'),
+                "account_id" =>$account_id,
                 "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
                 "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
             );
@@ -1061,6 +1085,7 @@ else{
             "unit_type" => $this->request->getPost('invoice_unit_type'),
             "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
             "total" => $rate * $quantity,
+            "account_id" =>$account_id,
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
         );
 
@@ -1113,8 +1138,25 @@ else{
             }
         }
     }
-
-    /* list of invoice items, prepared for datatable  */
+    function get_estimate_account_suggestion() {
+        $key = $this->request->getPost("c");
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
+    
+            foreach ($accounts as $account) {
+                $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
+            }
+        
+            $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_account"));
+        
+            echo json_encode($suggestion);
+        } else {
+            log_message('error', 'Accounting plugin is not available.');
+        }
+        
+       
+    }
 
     function item_list_data($invoice_id = 0) {
         validate_numeric_value($invoice_id);

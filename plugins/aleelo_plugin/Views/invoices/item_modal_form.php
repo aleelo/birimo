@@ -24,6 +24,27 @@
                 </div>
             </div>
         </div>
+        <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
+    <div class="form-group">
+        <div class="row">
+            <label for="estimate_item_account_id" class=" col-md-3"><?php echo app_lang('account'); ?></label>
+            <div class="col-md-9">
+                <?php
+                echo form_input(array(
+                    "id" => "estimate_item_account_id",
+                    "name" => "estimate_item_account_id",
+                    "value" => $model_info->account_id,
+                    "class" => "form-control validate-hidden",
+                    "placeholder" => app_lang('select_or_create_new_item'),
+                    "data-rule-required" => true,
+                    "data-msg-required" => app_lang("field_required"),
+                ));
+                ?>
+                <a id="account_id_dropdown_icon" tabindex="-1" href="javascript:void(0);" style="color: #B3B3B3;float: right; padding: 5px 7px; margin-top: -35px; font-size: 18px;"><span>×</span></a>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
         <div class="form-group">
             <div class="row">
                 <label for="invoice_item_description" class="col-md-3"><?php echo app_lang('description'); ?></label>
@@ -180,6 +201,10 @@
 
                             $("#invoice_item_rate").val(response.item_info.rate);
 
+                            $("#invoice_item_quantity").val(response.item_info.quantity ? to_decimal_format(response.item_info.quantity) : "");
+                            $("#estimate_item_account_id").val(response.item_info.account_id ? response.item_info.account_id : "");
+                            $("#estimate_item_account_id").select2("val", response.item_info.account_id ? response.item_info.account_id : "");
+
                             if (response.item_info.taxable == 1) {
                                 $("#taxable").prop("checked", true);
                             } else {
@@ -193,7 +218,38 @@
         });
     }
 
+    function applySelect2OnAccountDropdown() {
+    $("#estimate_item_account_id").select2({
+        ajax: {
+            url: "<?php echo get_uri("estimates/get_estimate_account_suggestion"); ?>",
+            data: function (params) {
+                return {
+                    c: params.term // search term
+                };
+            },
+            type: 'POST',
+            dataType: 'json',
+            quietMillis: 250,
+            data: function (term, page) {
+                return {
+                    q: term
+                };
+            },
+            results: function (data, page) {
+                return { results: data };
+            }
+        }
+    }).change(function (e) {
+        if (e.val === "+") {
+            $("#estimate_item_account_id").select2("destroy").val("").focus();
+        }
+    });
+}
+applySelect2OnAccountDropdown();
 
+$("#account_id_dropdown_icon").click(function () {
+    applySelect2OnAccountDropdown();
+});
 
 
 </script>
