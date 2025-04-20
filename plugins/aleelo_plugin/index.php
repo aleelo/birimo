@@ -76,9 +76,9 @@ $routes = service('routes');
     $routes->get('invoices/(:any)', 'Invoices::$1');
     $routes->post('invoices/(:any)', 'Invoices::$1');
     
-    $routes->get('items', 'items::index');
-    $routes->get('items/(:any)', 'items::$1');
-    $routes->post('items/(:any)', 'items::$1');
+    $routes->get('items', 'Items::index');
+    $routes->get('items/(:any)', 'Items::$1');
+    $routes->post('items/(:any)', 'Items::$1');
 
     $routes->get('payment_methods', 'Payment_method::index');
     $routes->get('payment_methods/(:any)', 'Payment_method::$1');
