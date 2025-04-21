@@ -70,7 +70,8 @@ class Items extends Security_Controller_Plugin {
     // foreach ($accounts as $account) {
     //     $accounts_dropdown[$account->id] = $account->key_name; 
     // }
-    $accounting_model = new Accounting_model();
+    if (class_exists('\Accounting\Models\Accounting_model')) {
+        $accounting_model = new Accounting_model();
     $accounts = $accounting_model->get_accounts('', ['account_type_id' => 11]);
 
     $accounts_dropdown = array("" => "- choose account -");
@@ -80,7 +81,7 @@ class Items extends Security_Controller_Plugin {
     }
 
     $view_data['accounts_dropdown'] = $accounts_dropdown;
-   
+}
         $view_data['model_info'] = $this->Items_model->get_one($this->request->getPost('id'));
         $view_data['categories_dropdown'] = $this->Item_categories_model->get_dropdown_list(array("title"));
 
@@ -188,14 +189,18 @@ class Items extends Security_Controller_Plugin {
         $show_in_client_portal_icon = "";
         if ($data->show_in_client_portal && get_setting("module_order")) {
             $show_in_client_portal_icon = "<span title='" . app_lang("showing_in_client_portal") . "'><i data-feather='shopping-bag' class='icon-16'></i></span> ";
-        }
+            if (class_exists('\Accounting\Models\Accounting_model')){
+               $account= $data->account_name? $data->account_name: ($data->key_name? app_lang($data->key_name): "-");}
+        } else {
+$account="-";
+            }
 
         return array(
             modal_anchor(get_uri("items/view"), $show_in_client_portal_icon . $data->title, array("title" => app_lang("item_details"), "data-post-id" => $data->id)),
             custom_nl2br($data->description ? $data->description : ""),
             $data->category_title ? $data->category_title : "-",
-            $data->account_name? $data->account_name: ($data->key_name? app_lang($data->key_name): "-"),
-                    $type,
+           $account,
+            $type,
             to_decimal_format($data->rate),
             modal_anchor(get_uri("items/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_item'), "data-post-id" => $data->id))
             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("items/delete"), "data-action" => "delete"))

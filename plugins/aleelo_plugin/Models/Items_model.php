@@ -16,8 +16,18 @@ class Items_model extends Crud_model {
         $items_table = $this->db->prefixTable('items');
         $order_items_table = $this->db->prefixTable('order_items');
         $item_categories_table = $this->db->prefixTable('item_categories');
-        $accounts_table = $this->db->prefixTable('acc_accounts');
 
+
+
+        $join_accounts = "";
+        $select_accounts = "";
+    
+        // ✅ Check if acc_accounts table exists
+        if ($this->db->tableExists('acc_accounts')) {
+            $accounts_table = $this->db->prefixTable('acc_accounts');
+            $join_accounts = "LEFT JOIN $accounts_table ON $accounts_table.id = $items_table.account_id";
+            $select_accounts = ", $accounts_table.key_name as key_name, $accounts_table.name as account_name";
+        }
         $where = "";
         $id = $this->_get_clean_value($options, "id");
         if ($id) {
@@ -66,10 +76,10 @@ class Items_model extends Crud_model {
             $limit_query = "LIMIT $offset, $limit";
         }
 
-        $sql = "SELECT $items_table.*, $item_categories_table.title as category_title $extra_select, $accounts_table.key_name as key_name, $accounts_table.name as account_name
+        $sql = "SELECT $items_table.*, $item_categories_table.title as category_title $extra_select $select_accounts
         FROM $items_table
         LEFT JOIN $item_categories_table ON $item_categories_table.id= $items_table.category_id
-        LEFT JOIN $accounts_table ON $accounts_table.id= $items_table.account_id
+        $join_accounts
         WHERE $items_table.deleted=0 $where
         ORDER BY $items_table.title ASC
         $limit_query";

@@ -58,6 +58,8 @@
                     </div>
                 </div>
             </div>
+            <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
+
                 <? if($accounts_dropdown){?>
                 <div class="form-group">
                 <div class="row">
@@ -70,6 +72,7 @@
                 </div>
             </div>
             <?}?>
+            <?php endif; ?>
             <div class="form-group">
                 <div class="row">
                     <label for="unit_type" class=" col-md-3"><?php echo app_lang('unit_type'); ?></label>
