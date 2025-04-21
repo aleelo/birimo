@@ -191,9 +191,7 @@ class Items extends Security_Controller_Plugin {
             $show_in_client_portal_icon = "<span title='" . app_lang("showing_in_client_portal") . "'><i data-feather='shopping-bag' class='icon-16'></i></span> ";
             if (class_exists('\Accounting\Models\Accounting_model')){
                $account= $data->account_name? $data->account_name: ($data->key_name? app_lang($data->key_name): "-");}
-        } else {
-$account="-";
-            }
+        }
 
         return array(
             modal_anchor(get_uri("items/view"), $show_in_client_portal_icon . $data->title, array("title" => app_lang("item_details"), "data-post-id" => $data->id)),
