@@ -113,15 +113,85 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <div class="row">
                 <label for="taxable" class=" col-md-3 col-xs-5 col-sm-4"><?php echo app_lang('taxable'); ?></label>
                 <div class=" col-md-9 col-xs-7 col-sm-8">
                     <?php
-                    echo form_checkbox("taxable", "1", $model_info->taxable ? true : false, "id='taxable' class='form-check-input'");
+                    // echo form_checkbox("taxable", "1", $model_info->taxable ? true : false, "id='taxable' class='form-check-input'");
                     ?>                       
                 </div>
             </div>
+        </div> -->
+         <div class="form-group">
+            <div class="row">
+                <label for="supplier" class=" col-md-3 col-xs-5 col-sm-4"><?php echo ('from supplier'); ?></label>
+                <div class=" col-md-9 col-xs-7 col-sm-8">
+                    <?php
+                    echo form_checkbox("supplier", "1", $model_info->supplier ? true : false, "id='supplier' class='form-check-input'");
+                    ?>                       
+                </div>
+            </div>
+        </div>
+
+        <div id="cheked"  >
+        <div class="form-group">
+            <div class="row">
+                <label for="company_id" class="col-md-3"><?php echo 'supplier'; ?></label>
+                <div class="col-md-9">
+                    <?php 
+                    echo form_dropdown(array( 
+                        'id'=> "supplier_id",
+                        'name'=> "supplier_id",
+                        'class' => "form-control select2",
+                        "value" => $model_info->supplier_id,
+                        'autocomplete'=> "off",
+                        'data-rule-required' => true,
+                        'data-msg-required' => app_lang('field_required')
+                    ), $supplier_id, [$model_info->supplier_id]); 
+                    ?>
+                </div>
+            </div>
+        </div>
+        <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
+    <div class="form-group">
+        <div class="row">
+            <label for="supplier_account_id" class=" col-md-3"><?php echo app_lang('account'); ?></label>
+            <div class="col-md-9">
+                <?php
+                echo form_input(array(
+                    "id" => "supplier_account_id",
+                    "name" => "supplier_account_id",
+                    "value" => $model_info->supplier_account_id,
+                    "class" => "form-control validate-hidden",
+                    "placeholder" => app_lang('select_or_create_new_item'),
+                    "data-rule-required" => true,
+                    "data-msg-required" => app_lang("field_required"),
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<div class="form-group">
+            <div class="row">
+                <label for="supplier_price" class=" col-md-3"><?php echo ('supplier price'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "supplier_price",
+                        "name" => "supplier_price",
+                        "value" => $model_info->rate ? to_decimal_format($model_info->supplier_price) : "",
+                        "class" => "form-control",
+                        "placeholder" => app_lang('rate'),
+                        "data-rule-required" => true,
+                        "data-msg-required" => app_lang("field_required"),
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+
         </div>
     </div>
 </div>
@@ -210,6 +280,11 @@
                             } else {
                                 $("#taxable").prop("checked", false);
                             }
+                            if (response.item_info.supplier == 1) {
+                                $("#supplier").prop("supplier", true);
+                            } else {
+                                $("#supplier").prop("supplier", false);
+                            }
                         }
                     }
                 });
@@ -217,7 +292,7 @@
 
         });
     }
-
+    $("#supplier_id").select2();
     function applySelect2OnAccountDropdown() {
     $("#estimate_item_account_id").select2({
         ajax: {
@@ -250,6 +325,26 @@ applySelect2OnAccountDropdown();
 $("#account_id_dropdown_icon").click(function () {
     applySelect2OnAccountDropdown();
 });
-
+$("#supplier_account_id").select2({
+        ajax: {
+            url: "<?php echo get_uri("estimates/get_estimate_account_suggestion"); ?>",
+            data: function (params) {
+                return {
+                    c: params.term // search term
+                };
+            },
+            type: 'POST',
+            dataType: 'json',
+            quietMillis: 250,
+            data: function (term, page) {
+                return {
+                    q: term
+                };
+            },
+            results: function (data, page) {
+                return { results: data };
+            }
+        }
+    })
 
 </script>

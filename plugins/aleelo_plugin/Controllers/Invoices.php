@@ -1004,6 +1004,7 @@ else{
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
+        $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
 
         $view_data['model_info'] = $this->Invoice_items_model->get_one($this->request->getPost('id'));
         if (!$invoice_id) {
@@ -1072,7 +1073,12 @@ else{
                 "unit_type" => $this->request->getPost('invoice_unit_type'),
                 "account_id" =>$account_id,
                 "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+                "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+                "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+                "supplier_account_id"=>$this->request->getPost('supplier_account_id') ? $this->request->getPost('supplier_account_id') : "",
+                "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+    
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
         }
@@ -1086,7 +1092,12 @@ else{
             "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
             "total" => $rate * $quantity,
             "account_id" =>$account_id,
-            "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+            "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+            "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+            "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+            "supplier_account_id"=>$this->request->getPost('supplier_account_id') ? $this->request->getPost('supplier_account_id') : "",
+            "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+
         );
 
         if ($item_id) {

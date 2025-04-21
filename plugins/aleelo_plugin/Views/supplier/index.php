@@ -21,15 +21,20 @@
             filterDropdown: [
             ],
             columns: [
-                {title: "<?php echo app_lang('id') ?> ", "class": "w20p all"},
-                {title: "<?php echo app_lang('supplier_name') ?>"},
-                {title: "<?php echo app_lang('company') ?>,"},
+                {title: "<?php echo app_lang('id') ?> ", "class": "w8p all"},
+                {title: "<?php echo app_lang('supplier_name') ?>", "class": "w8p all"},
+                {title: "<?php echo app_lang('company') ?>,",},
                 {title: "<?php echo app_lang('phone') ?>", "class": "w200"},
                 {title: "<?php echo app_lang('email') ?>", "class": "w100"},
+                {title: "<?php echo app_lang('region') ?>", "class": "w100"},
+                {title: "<?php echo app_lang('country') ?>", "class": "w100"},
+                {title: "<?php echo app_lang('address') ?>", "class": "w100"},
+                {title: "<?php echo app_lang('website') ?>", "class": "w100"},
+
                 {title: "<i data-feather='menu' class='icon-16'></i>", "class": "text-center option w100"}
             ],
-            printColumns: [0, 1, 2, 3, 4],
-            xlsColumns: [0, 1, 2, 3, 4]
+            printColumns: [0, 1, 2, 3, 4,5,6,7,8,9,],
+            xlsColumns: [0, 1, 2, 3, 4,5,6,7,8,9]
         });
     });
 </script>

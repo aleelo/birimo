@@ -41,7 +41,30 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+             <div class="row">
 
+                    <label for="country" class="col-md-3"><?php echo app_lang('country'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("country", $countries_dropdown, $model_info->Country, "class='select2 form-control validate-hidden' id='country' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                   
+                         ?>
+                </div>
+             </div>
+            </div>
+            <div class="form-group">
+             <div class="row">
+
+                    <label for="district" class="col-md-3"><?php echo app_lang('district'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("district", $Regions_dropdown, $model_info->region, "class='select2 form-control validate-hidden' id='district' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                   
+                         ?>
+                </div>
+             </div>
+            </div>
         <div class="form-group">
             <div class="row">
                 <label for="address" class="col-md-3"><?php echo app_lang('address'); ?></label>
@@ -92,6 +115,22 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+    <div class="row">
+        <label for="website" class="col-md-3"><?php echo app_lang('website'); ?></label>
+        <div class="col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "website",
+                "name" => "website",
+                "value" => $model_info->Website,
+                "class" => "form-control",
+                "placeholder" => app_lang('website')
+            ));
+            ?>
+        </div>
+    </div>
+</div>
     </div>
 </div>
 

@@ -4331,6 +4331,6 @@ $lang['acc_reconcile'] = 'Reconcile';
 $lang['acc_budget'] = 'Budget';
 $lang['acc_reports'] = 'Reports';
 $lang['acc_setting'] = 'Setting';
-
+$lang['region']='region';
 
 return $lang;

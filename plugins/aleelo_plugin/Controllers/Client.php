@@ -122,12 +122,13 @@ class Client extends Security_Controller_Plugin {
             "city" => $this->request->getPost('city'),
             "state" => $this->request->getPost('state'),
             "zip" => $this->request->getPost('zip'),
-            "country" => $this->request->getPost('country'),
+            "Country" => $this->request->getPost('country'),
             "phone" => $this->request->getPost('phone'),
             "website" => $this->request->getPost('website'),
             "vat_number" => $this->request->getPost('vat_number'),
             "gst_number" => $this->request->getPost('gst_number'),
             "email" => $this->request->getPost('email'),
+            "district"=> $this->request->getPost('district'),
         );
 
         if ($this->login_user->user_type === "staff") {

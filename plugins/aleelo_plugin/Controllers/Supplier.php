@@ -20,7 +20,9 @@ class Supplier extends Security_Controller_Plugin {
             "id" => "numeric"
         ));
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
-
+        $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
+        $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
+       
         $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
         $view_data['model_info'] = $this->Supplier_model->get_one($this->request->getPost('id'));
         return $this->template->view('aleelo_plugin\Views/supplier/modal_form', $view_data);
@@ -42,7 +44,12 @@ class Supplier extends Security_Controller_Plugin {
             "phone" => $this->request->getPost('phone'),
             "email" => $this->request->getPost('email'),
             "company" => $this->request->getPost('company_id'),
-            "deleted" => 0
+            "deleted" => 0,
+            "Country" => $this->request->getPost('country'),
+            "region"=> $this->request->getPost('district'),
+            "website" => $this->request->getPost('website'),
+
+
         );
     
         // Optional file uploads (if needed in future)
@@ -120,6 +127,10 @@ class Supplier extends Security_Controller_Plugin {
             $data->company_name,
             $data->phone,
             $data->email,
+            $data->region,
+            $data->Country,
+            $data->address,
+            $data->Website,
             modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id))
             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("supplier/delete"), "data-action" => "delete"))
         );
