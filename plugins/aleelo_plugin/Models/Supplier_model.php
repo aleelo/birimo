@@ -17,7 +17,15 @@ class Supplier_model extends Crud_model {
         $company_table =$this->db->prefixTable('company');
         
         $where = "";
-       
+        
+        $can_view_own_company_client = $this->_get_clean_value($options, "can_view_own_company_client");
+        if ($can_view_own_company_client) {
+            $where .= " AND $supplier_table.company=$can_view_own_company_client";
+        }
+        $can_view_own_department_client = $this->_get_clean_value($options, "can_view_own_department_client");
+        if ($can_view_own_department_client) {
+            $where .= " AND $supplier_table.company=$can_view_own_department_client";
+        }
 
         $sql = "SELECT $supplier_table.*,$company_table.name AS company_name
         FROM $supplier_table
