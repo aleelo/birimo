@@ -83,6 +83,11 @@ $routes = service('routes');
     $routes->get('payment_methods', 'Payment_method::index');
     $routes->get('payment_methods/(:any)', 'Payment_method::$1');
     $routes->post('payment_methods/(:any)', 'Payment_method::$1');
+
+     $routes->get('supplier', 'Supplier::index');
+    $routes->get('supplier/(:any)', 'Supplier::$1');
+    $routes->post('supplier/(:any)', 'Supplier::$1');
+
  });
 //add admin setting menu item
 app_hooks()->add_filter('app_filter_admin_settings_menu', function ($settings_menu) {
