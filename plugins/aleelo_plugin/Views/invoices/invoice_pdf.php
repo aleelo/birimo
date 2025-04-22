@@ -53,13 +53,17 @@
     $item_background = get_setting("invoice_item_list_background");
 
     $discount_row = '<tr>
-                        <td colspan="' . $colspan . '" style="text-align: right;">' . app_lang("discount") . '</td>
-                        <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
+        <td style=" width: 60%;"></td>
+
+                        <td colspan="' . $colspan . '" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . app_lang("discount") . '</td>
+                        <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
                     </tr>';
 
     $total_after_discount_row = '<tr>
-                                    <td colspan="' . $colspan . '" style="text-align: right;">' . app_lang("total_after_discount") . '</td>
-                                    <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->invoice_subtotal - $invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
+        <td style=" width: 60%;"></td>
+
+                                    <td colspan="' . $colspan . '" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . app_lang("total_after_discount") . '</td>
+                                    <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->invoice_subtotal - $invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
                                 </tr>';
     ?>
 </div>
@@ -94,7 +98,7 @@
     <?php } ?>
     <tr>
         <td style="width: 60%;"></td>
-        <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("sub_total"); ?></td>
+        <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("sub_total"); ?></td>
         <td style="text-align: right; width: 20%; border-botton: 1px solid #fff; border-top: 1px solid #fff; border-left: 1px solid #9B9997; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
             <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
         </td>
@@ -142,8 +146,8 @@
         <tr>
         <td style="width: 60%;"></td>
 
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("paid"); ?></td>
-            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("paid"); ?></td>
+            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->total_paid, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>

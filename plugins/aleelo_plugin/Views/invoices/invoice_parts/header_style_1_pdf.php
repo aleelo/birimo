@@ -97,8 +97,8 @@ if (!$color) {
     <td style="width: 50%; vertical-align: top;">
         <?php echo view('aleelo_plugin\Views/invoices/invoice_parts/bill_from', $data);?>
     </td>
-  <td style="width: 0.1%;"></td>
-    <td style="width: 49.9%; vertical-align: top; text-align: right;">
+  <td style="width: 20%;"></td>
+    <td style="width: 30%; vertical-align: top; text-align: left;">
         <?php  echo view('aleelo_plugin\Views/invoices/invoice_parts/bill_to', $data);?>
     </td>
 </tr>
