@@ -324,7 +324,7 @@ $("#account_id_dropdown_icon").click(function () {
 });
 $("#supplier_account_id").select2({
         ajax: {
-            url: "<?php echo get_uri("estimates/get_estimate_account_suggestion_supplier"); ?>",
+            url: "<?php echo get_uri("invoices/get_estimate_account_suggestion_supplier"); ?>",
             data: function (params) {
                 return {
                     c: params.term // search term
