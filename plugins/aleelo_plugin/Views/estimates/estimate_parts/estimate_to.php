@@ -5,7 +5,7 @@
                 <?php echo ("Quotation#"); ?>
             </td>
             <td>
-                <?php echo $estimate_info->id; ?>
+                <?php echo ":";echo $estimate_info->id; ?>
             </td>
         </tr>
         <tr>

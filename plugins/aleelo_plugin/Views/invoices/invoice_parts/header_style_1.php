@@ -1,3 +1,24 @@
+<?php
+function adjust_brightness($hex, $steps) {
+    // Remove the hash (#) if it exists
+    $hex = str_replace('#', '', $hex);
+
+    // Convert hex to RGB
+    $r = hexdec(substr($hex, 0, 2));
+    $g = hexdec(substr($hex, 2, 2));
+    $b = hexdec(substr($hex, 4, 2));
+
+    // Adjust brightness
+    $r = max(0, min(255, $r + $steps));
+    $g = max(0, min(255, $g + $steps));
+    $b = max(0, min(255, $b + $steps));
+
+    // Convert back to hex
+    return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT)
+               . str_pad(dechex($g), 2, '0', STR_PAD_LEFT)
+               . str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
+}
+?>
 <table class="header-style" style="font-size: 13.5px;">
     <tr class="invoice-preview-header-row"> <!-- Adjust the height as needed -->
         <td style="width: 60%; vertical-align: top;">
@@ -22,7 +43,7 @@ if (!$color) {
 ?>  </td> 
       <td style="width: 1%; vertical-align: top;">
     <div style="
-        background-image: linear-gradient(to left,  <?php echo $color; ?>, orange); 
+        background-image: linear-gradient(to left,  <?php echo $color; ?>,<?php echo adjust_brightness($color, 20); ?>,<?php echo adjust_brightness($color, 40); ?>,<?php echo adjust_brightness($color, 60); ?>); 
         color:  <?php echo $color; ?>;
         padding: 0; 
          text-align: left;
@@ -78,7 +99,7 @@ if (!$color) {
             ?>
     </td>
   <td style="width: 0.1%;"></td>
-    <td style="width: 49.9%; vertical-align: top; text-align: right;">
+    <td style="width: 49.9%; vertical-align: top; text-align: left;">
         <?php 
             echo view('aleelo_plugin\Views/invoices/invoice_parts/bill_to', $data);
             ?>

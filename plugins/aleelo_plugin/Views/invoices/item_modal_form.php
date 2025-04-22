@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <div id="cheked"  >
+        <div id="cheked" class="hide" >
         <div class="form-group">
             <div class="row">
                 <label for="company_id" class="col-md-3"><?php echo 'supplier'; ?></label>
@@ -146,8 +146,7 @@
                         'class' => "form-control select2",
                         "value" => $model_info->supplier_id,
                         'autocomplete'=> "off",
-                        'data-rule-required' => true,
-                        'data-msg-required' => app_lang('field_required')
+                        
                     ), $supplier_id, [$model_info->supplier_id]); 
                     ?>
                 </div>
@@ -165,8 +164,7 @@
                     "value" => $model_info->supplier_account_id,
                     "class" => "form-control validate-hidden",
                     "placeholder" => app_lang('select_or_create_new_item'),
-                    "data-rule-required" => true,
-                    "data-msg-required" => app_lang("field_required"),
+                   
                 ));
                 ?>
             </div>
@@ -181,11 +179,10 @@
                     echo form_input(array(
                         "id" => "supplier_price",
                         "name" => "supplier_price",
-                        "value" => $model_info->rate ? to_decimal_format($model_info->supplier_price) : "",
+                        "value" => $model_info->supplier_price ? to_decimal_format($model_info->supplier_price) : "",
                         "class" => "form-control",
                         "placeholder" => app_lang('rate'),
-                        "data-rule-required" => true,
-                        "data-msg-required" => app_lang("field_required"),
+                        
                     ));
                     ?>
                 </div>
@@ -346,5 +343,17 @@ $("#supplier_account_id").select2({
             }
         }
     })
+    toggleSupplierFields();
 
+$("#supplier").change(function () {
+    toggleSupplierFields(); 
+});
+
+function toggleSupplierFields() {
+    if ($("#supplier").is(":checked")) {
+        $("#cheked").removeClass("hide");
+    } else {
+        $("#cheked").addClass("hide");
+    }
+}
 </script>
