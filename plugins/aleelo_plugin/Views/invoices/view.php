@@ -83,7 +83,7 @@
                                 <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/sub_invoices/" . $invoice_info->id); ?>" data-bs-target="#sub-invoices-section"><?php echo app_lang('sub_invoices'); ?></a></li>
                             <?php } ?>
                         <?php } ?>
-                        <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/tasks/" . $invoice_info->id); ?>" data-bs-target="#invoice-tasks-section"><?php echo app_lang('tasks'); ?></a></li>
+                        <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/tasks/" . $invoice_info->id); ?>" data-bs-target="#invoice-tasks-section"><?php echo app_lang('tasks'); ?></a></li> -->
                     </ul>
                 </div>
                 <div class="tab-content">
