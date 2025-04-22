@@ -1043,7 +1043,7 @@ else{
             if ($account_name=="+"||$add_new_item_to_library ) {
                 $account_data = array(
                     "name" => $account_name,
-                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
+                    "account_type_id" => 6, // Assuming 11 is the account type ID for "Income"
                    
                 );
             
