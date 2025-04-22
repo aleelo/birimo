@@ -1043,7 +1043,7 @@ else{
             if ($account_name=="+"||$add_new_item_to_library ) {
                 $account_data = array(
                     "name" => $account_name,
-                    "account_type_id" => 6, // Assuming 11 is the account type ID for "Income"
+                    "account_type_id" => 8, // Assuming 11 is the account type ID for "Income"
                    
                 );
             
@@ -1168,7 +1168,25 @@ else{
         
        
     }
-
+  function get_estimate_account_suggestion_supplier() {
+        $key = $this->request->getPost("c");
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $accounting_model = new Accounting_model();
+            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 6), $key);
+    
+            foreach ($accounts as $account) {
+                $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
+            }
+        
+            $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_account"));
+        
+            echo json_encode($suggestion);
+        } else {
+            log_message('error', 'Accounting plugin is not available.');
+        }
+        
+       
+    }
     function item_list_data($invoice_id = 0) {
         validate_numeric_value($invoice_id);
 
