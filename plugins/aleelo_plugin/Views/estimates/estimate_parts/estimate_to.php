@@ -1,23 +1,30 @@
-<?php
-// echo company_widget($estimate_info->company_id, "estimate");
-?>
-<?php if (get_setting("invoice_style") != "style_3") { ?>
+<?php if ($estimate_info->estimate_date || $estimate_info->valid_until) { ?>
+    <table style="width: 100%; ">
+        <tr>
+            <td style="font-size: 1.1em; color: <?php echo $color; ?>; font-weight: bold;">
+                <?php echo ("Quotation#"); ?>
+            </td>
+            <td>
+                <?php echo $estimate_info->id; ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: 1.1em; color: <?php echo $color; ?>; font-weight: bold;">
+                <?php echo ("DATE"); ?>
+            </td>
+            <td>
+                <?php echo format_to_date($estimate_info->estimate_date); ?>
+            </td>
+        </tr>
+        <?php if ($estimate_info->valid_until) { ?>
+        <tr>
+            <td style="font-size: 1.1em; color: <?php echo $color; ?>; font-weight: bold;">
+                <?php echo ("VALID DATE"); ?>
+            </td>
+            <td>
+                <?php echo format_to_date($estimate_info->valid_until); ?>
+            </td>
+        </tr>
+        <?php } ?>
+    </table>
 <?php } ?>
-<?php if ($estimate_info->estimate_date) { ?>
-        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("Quotation#"); ?>:</strong> <?php echo $estimate_info->id; }?>
-
-        <span class="invoice-meta text-default">
-    <?php if ($estimate_info->estimate_date) { ?>
-        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("DATE"); ?>:</strong> <?php echo format_to_date($estimate_info->estimate_date); ?>
-
-       
- 
-    <?php } ?>
-    <?php if ($estimate_info->valid_until) { ?>
-        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("VALID DATE"); ?>:</strong> <?php echo format_to_date($estimate_info->valid_until); ?>
-
-       
- 
-    <?php } ?>
-    
-</span>

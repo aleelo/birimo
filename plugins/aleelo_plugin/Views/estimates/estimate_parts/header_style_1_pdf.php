@@ -99,7 +99,7 @@ if (!$color) {
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_from', $data); ?>
     </td>
   <td style="width: 20%;"></td>
-    <td style="width: 30%; vertical-align: top; text-align: left;">
+    <td style="width: 34%; vertical-align: top; text-align: left;">
         <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/estimate_to', $data); ?>
     </td>
 </tr>
