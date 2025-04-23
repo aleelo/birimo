@@ -687,16 +687,17 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 ];
             }
             $view_data['accounts_dropdown'] = $accounts_dropdown;
-       
+    
         } else {
             log_message('error', 'Accounting plugin is not available.');
         }
         
     
-      
+    
         
     
-       
+        $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
+
         $view_data['model_info'] = $this->Estimate_items_model->get_one($this->request->getPost('id'));
         if (!$estimate_id) {
             $estimate_id = $view_data['model_info']->estimate_id;
@@ -704,7 +705,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $view_data['estimate_id'] = $estimate_id;
         return $this->template->view('aleelo_plugin\Views/estimates/item_modal_form', $view_data);
     }
-  
+
     /* add or edit an estimate item */
 
     function save_item() {
@@ -726,10 +727,11 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $estimate_item_title = $this->request->getPost('estimate_item_title');
         $account_name = $this->request->getPost("estimate_item_account_id"); 
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+        $new_account = $this->request->getPost("new_account");
 
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
-            if ($account_name=="+"||$add_new_item_to_library) {
+            if ($new_account) {
                 $account_data = array(
                     "name" => $account_name,
                     "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
@@ -776,6 +778,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
             "total" => $rate * $quantity,
             "account_id" => $account_id,
+            "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+            "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+            "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+
         );
 
         if ($item_id) {

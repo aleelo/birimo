@@ -5,6 +5,8 @@
         <input type="hidden" id="item_id" name="item_id" value="" />
         <input type="hidden" name="estimate_id" value="<?php echo $estimate_id; ?>" />
         <input type="hidden" name="add_new_item_to_library" value="" id="add_new_item_to_library" />
+        <input type="hidden" name="new_account" value="" id="new_account" />
+
         <div class="form-group">
             <div class="row">
                 <label for="estimate_item_title" class=" col-md-3"><?php echo app_lang('item'); ?></label>
@@ -116,6 +118,53 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+            <div class="row">
+                <label for="supplier" class=" col-md-3 col-xs-5 col-sm-4"><?php echo ('from supplier'); ?></label>
+                <div class=" col-md-9 col-xs-7 col-sm-8">
+                    <?php
+                    echo form_checkbox("supplier", "1", $model_info->supplier ? true : false, "id='supplier' class='form-check-input'");
+                    ?>                       
+                </div>
+            </div>
+        </div>
+
+        <div id="cheked" class="hide" >
+        <div class="form-group">
+            <div class="row">
+                <label for="company_id" class="col-md-3"><?php echo 'supplier'; ?></label>
+                <div class="col-md-9">
+                    <?php 
+                    echo form_dropdown(array( 
+                        'id'=> "supplier_id",
+                        'name'=> "supplier_id",
+                        'class' => "form-control select2",
+                        "value" => $model_info->supplier_id,
+                        'autocomplete'=> "off",
+                        
+                    ), $supplier_id, [$model_info->supplier_id]); 
+                    ?>
+                </div>
+            </div>
+        </div>
+
+<div class="form-group">
+            <div class="row">
+                <label for="supplier_price" class=" col-md-3"><?php echo ('supplier price'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "supplier_price",
+                        "name" => "supplier_price",
+                        "value" => $model_info->supplier_price ? to_decimal_format($model_info->supplier_price) : "",
+                        "class" => "form-control",
+                        "placeholder" => app_lang('rate'),
+                        
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -205,6 +254,8 @@
 
         });
     }
+    $("#supplier_id").select2();
+
     function applySelect2OnAccountDropdown() {
     $("#estimate_item_account_id").select2({
         ajax: {
@@ -229,6 +280,8 @@
     }).change(function (e) {
         if (e.val === "+") {
             $("#estimate_item_account_id").select2("destroy").val("").focus();
+            $("#new_account").val(1);
+
         }
     });
 }
@@ -243,5 +296,17 @@ var isUpdate = "<?php echo $model_info->id; ?>";
 $("#account_id_dropdown_icon").click(function () {
     applySelect2OnAccountDropdown();
 });
+toggleSupplierFields();
 
+$("#supplier").change(function () {
+    toggleSupplierFields(); 
+});
+
+function toggleSupplierFields() {
+    if ($("#supplier").is(":checked")) {
+        $("#cheked").removeClass("hide");
+    } else {
+        $("#cheked").addClass("hide");
+    }
+}
 </script>

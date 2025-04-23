@@ -166,6 +166,7 @@ class Team_member extends Security_Controller_Plugin {
         $password = $this->request->getPost("password");
         $user_id = $this->request->getPost('user_id');
         $can_access_all = $this->request->getPost('can_accsess_all_company');
+        $department=$this->request->getPost('user_id');
         
         if ($can_access_all) {
             $cc = 'all';
@@ -185,6 +186,7 @@ class Team_member extends Security_Controller_Plugin {
             "created_at" => get_current_utc_time(),
             // "company_id" => $this->request->getPost('user_id'),
                     "company_access" => $user_id,
+                    "department"=>$department,
 );
 
         if ($password) {

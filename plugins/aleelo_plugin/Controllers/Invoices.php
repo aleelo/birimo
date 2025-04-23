@@ -424,7 +424,10 @@ else{
                 "rate" => $data->rate ?: 0,
                 "total" => $data->total ?: 0,
                 "account_id" => $data->account_id ?: 0,
-                "taxable" => 1
+                "taxable" => 1,
+                "supplier_id" => $data->supplier_id ?: 0,
+                "supplier" => $data->supplier ?: "",
+                "supplier_price" => $data->supplier_price ?: 0,
             );
             $this->Invoice_items_model->ci_save($invoice_item_data);
         }
@@ -1024,6 +1027,7 @@ else{
 
         $invoice_id = $this->request->getPost('invoice_id');
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+        $new_account = $this->request->getPost("new_account");
 
         if (!$this->can_edit_invoices()) {
             app_redirect("forbidden");
@@ -1040,14 +1044,14 @@ else{
         $account_name = $this->request->getPost("estimate_item_account_id"); 
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
-            if ($account_name=="+"||$add_new_item_to_library ) {
+            if ($new_account ) {
                 $account_data = array(
                     "name" => $account_name,
-                    "account_type_id" => 8, // Assuming 11 is the account type ID for "Income"
-                   
+                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
+                
                 );
             
-                         $accounting_model->db->table("acc_accounts")->insert($account_data);
+                $accounting_model->db->table("acc_accounts")->insert($account_data);
             
                 $account_id = $accounting_model->db->insertID();
             } 
@@ -1074,11 +1078,6 @@ else{
                 "account_id" =>$account_id,
                 "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
                 "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-                "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-                "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-                "supplier_account_id"=>$this->request->getPost('supplier_account_id') ? $this->request->getPost('supplier_account_id') : "",
-                "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
-    
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
         }
@@ -1095,7 +1094,6 @@ else{
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-            "supplier_account_id"=>$this->request->getPost('supplier_account_id') ? $this->request->getPost('supplier_account_id') : "",
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
 
         );
