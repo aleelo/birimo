@@ -37,9 +37,7 @@
         <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/education_info/" . $user_info->id); ?>" data-bs-target="#tab-education-info"> <?php echo app_lang('education_info'); ?></a></li>
         <?php } ?>
-        <?php if ($show_general_info) { ?>
-            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/company_access/" . $user_info->id); ?>" data-bs-target="#tab-company-access"> <?php echo app_lang('company_access'); ?></a></li>
-        <?php } ?>
+      
 
         <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/social_links/" . $user_info->id); ?>" data-bs-target="#tab-social-links"> <?php echo app_lang('social_links'); ?></a></li>
@@ -59,7 +57,9 @@
            
           ?>
               <?php } ?>
-
+              <?php if ($show_general_info) { ?>
+            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/company_access/" . $user_info->id); ?>" data-bs-target="#tab-company-access"> <?php echo app_lang('company_access'); ?></a></li>
+        <?php } ?>
         <?php if ($show_account_settings) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/account_settings/" . $user_info->id); ?>" data-bs-target="#tab-account-settings"> <?php echo app_lang('account_settings'); ?></a></li>
         <?php } ?>
