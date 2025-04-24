@@ -26,10 +26,10 @@ class Expense extends Security_Controller_Plugin {
 
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $department=$this->login_user->department;
-        $company=$this->login_user->company_id;
+        $company=$this->login_user->department;
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
         $view_data['user'] = $this->login_user->id;
-        $view_data['company_id'] = $this->login_user->company_id;
+        $view_data['company_id'] = $this->login_user->department;
 
         return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
     } elseif ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "expense") == "own_expenses") {
@@ -103,7 +103,7 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
         ));
-        // $company_access=$this->login_user->company_id;
+        // $company_access=$this->login_user->department;
         $team_members = "";
         if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
             
@@ -138,7 +138,7 @@ class Expense extends Security_Controller_Plugin {
                 ->join("rise_team_member_job_info", "users.id = rise_team_member_job_info.user_id", "left")
                 ->where("users.deleted", 0)
                 ->where("users.user_type", "staff")
-                ->where("rise_team_member_job_info.company_id", $this->login_user->company_id) 
+                ->where("rise_team_member_job_info.company_id", $this->login_user->department) 
                 ->get()
                 ->getResult();
         }
@@ -165,13 +165,13 @@ class Expense extends Security_Controller_Plugin {
         } else if ($this->login_user->company_access == "all" && $this->login_user->department !==0) {
             $department = $this->login_user->department;
             $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
-        } else if ($this->login_user->company_access !== "all" && $this->login_user->company_id == 1) {
-            $department = $this->login_user->company_id;
+        } else if ($this->login_user->company_access !== "all" && $this->login_user->department == 1) {
+            $department = $this->login_user->department;
             $end_date = date('Y-m-d', strtotime('-15 days'));
         
             $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department,"deadline >=" => $end_date ));
         }else {
-            $department = $this->login_user->company_id;
+            $department = $this->login_user->department;
             $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id", array("company_id" => $department));
         }
         
@@ -186,19 +186,19 @@ class Expense extends Security_Controller_Plugin {
 
         $view_data['can_access_expenses'] = $this->can_access_expenses();
         $view_data['can_access_clients'] = $this->can_access_clients();
-        $department= $this->login_user->company_id;
+        $department= $this->login_user->department;
         $view_data['departments'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id",array("id"=>$department),);
         //clone invoice
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
-        $view_data['company_id'] = $this->login_user->company_id;
+        $view_data['company_id'] = $this->login_user->department;
 
         $view_data['has_permission'] = ($this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
 
         $view_data['has_all_permission'] = ($this->login_user->department == 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
 
         $view_data['has_department_permission'] = ($this->login_user->department !== 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
-                $view_data['company_id'] = $this->login_user->company_id;
+                $view_data['company_id'] = $this->login_user->department;
         $view_data['department'] = $this->login_user->department; 
         $now = get_current_utc_time();
         $user_id = $this->login_user->id; // Get the currently logged-in user ID
@@ -350,7 +350,7 @@ class Expense extends Security_Controller_Plugin {
         if ($this->login_user->company_access === "all") {
             return $this->login_user->department;
         }
-        return null; // Deny access if company_access is not "all"
+        return $this->login_user->department;
     }
     
     //get the expnese list data

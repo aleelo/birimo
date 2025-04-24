@@ -184,9 +184,8 @@ class Team_member extends Security_Controller_Plugin {
             "job_title" => $this->request->getPost('job_title'),
             "user_type" => "staff",
             "created_at" => get_current_utc_time(),
-            // "company_id" => $this->request->getPost('user_id'),
-                    "company_access" => $user_id,
-                    "department"=>$department,
+                    "company_access" => $cc,
+                    "department"=>$cc,
 );
 
         if ($password) {
@@ -847,6 +846,7 @@ if (!$signature_path) {
         // Prepare data for saving
         $user_data = array(
             "company_access" => $cc,
+            "department"=>$cc,
         );
     
         // Save data

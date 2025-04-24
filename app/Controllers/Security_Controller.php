@@ -252,7 +252,7 @@ class Security_Controller extends App_Controller {
                 return true;
             }
     
-            $user_company_id = $this->login_user->company_id;
+            $user_company_id = $this->login_user->department;
             if ($user_company_id) {
                 $team_members = $this->Users_model->get_details(["company_id" => $user_company_id]);
                 return $team_members;
@@ -652,13 +652,13 @@ class Security_Controller extends App_Controller {
     }
     protected function can_view_own_company_invoice() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
-            return $this->login_user->company_id; 
+            return $this->login_user->department; 
         }
         return null; 
     }
   protected function can_view_own_company_members() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_members") === "1") {
-            return $this->login_user->company_id; 
+            return $this->login_user->department; 
         }
         return null; 
     }
@@ -690,7 +690,7 @@ protected function can_view_all_tasks() {
             
             get_array_value($this->login_user->permissions, "task") === "own_company"
         ) {
-            return $this->login_user->company_id;
+            return $this->login_user->department;
         }
         return null;
     }

@@ -141,7 +141,7 @@ class Invoices extends Security_Controller {
         $department = $this->login_user->department;
     }
     else{
-        $department = $this->login_user->company_id;
+        $department = $this->login_user->department;
 
     }
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0,"company_id"=>$department));

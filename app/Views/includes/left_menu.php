@@ -27,9 +27,9 @@ if ($user_id) {
 
     if ($department) {
         if ($login_user->company_access == "all") {
-            $department_id = isset($department->department) ? $department->department : $department->company_id;
+            $department_id = isset($department->department) ? $department->department : $department->department;
         } else {
-            $department_id = isset($department->company_id) ? $department->company_id : null;
+            $department_id = isset($department->department) ? $department->department : null;
         }
 
         if ($department_id == 1) {

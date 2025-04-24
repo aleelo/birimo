@@ -7,6 +7,10 @@ use CodeIgniter\Database\Exceptions\DataException;
 
 class Companyy extends Security_Controller
 {
+    public function some_method() {
+        $data['login_user'] = $this->session->get('login_user'); // Assuming the user data is stored in the session
+        return view('todo/company_topbar_icon', $data);
+    }
     public function save()
     {
         $request = service('request');

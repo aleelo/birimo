@@ -123,7 +123,7 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
        }
     }
        else if(get_array_value($this->login_user->permissions, "client") === "own_company" || get_array_value($this->login_user->permissions, "invoice") === "own_invoice"){
-        $company_id = $this->login_user->company_id;
+        $company_id = $this->login_user->department;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
          }
          else{
@@ -148,11 +148,11 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         ) {
             return $this->login_user->department;
         }
-        return null;
+        return $this->login_user->department;
     }
     protected function can_view_own_company_project() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_project") === "1") {
-            return $this->login_user->company_id; 
+            return $this->login_user->department; 
         }
         return null; 
     }
@@ -161,7 +161,7 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
 
     protected function can_view_own_company_client() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
-            return $this->login_user->company_id; 
+            return $this->login_user->department; 
         }
         return null; 
     }
@@ -270,7 +270,7 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
     }
 
     public function get_user_department_id() {
-        $user_id = $this->login_user->company_id ?? null; 
+        $user_id = $this->login_user->department ?? null; 
     
         if (!$user_id) {
             return null; 

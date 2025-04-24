@@ -29,7 +29,7 @@
             {name: "company_id_company", class: "w200 hidden-filter ", options: <?php echo $company; ?>},
 
             <?php  } elseif(get_array_value($login_user->permissions, "expense") == "own_expenses"){ ?>
-                {name: "created_by_user", class: "w200 hidden-filter ", options: <?php echo $company; ?>, value: "<?php echo $login_user->company_id; ?>"},
+                {name: "created_by_user", class: "w200 hidden-filter ", options: <?php echo $company; ?>, value: "<?php echo $login_user->department; ?>"},
 
           <?php  } ?>
             ],

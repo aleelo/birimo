@@ -16,7 +16,7 @@
                     <div class="col-md-9">
                         <div class="select-member-field" id="user-dropdown-container">
                             <div class="select-member-form clearfix pb10">
-                                <?php echo form_dropdown("user_id[]", $company, array($model_info->id), "class='select2 col-md-7 p0' id='user_id'"); ?>
+                                <?php echo form_dropdown("user_id[]", $company, $user_info->department, "class='select2 col-md-7 p0' id='user_id'"); ?>
                                 <?php //echo js_anchor("<i data-feather='x' class='icon-16'></i> ", array("class" => "remove-member delete ml20")); ?>
                             </div>
                         </div>

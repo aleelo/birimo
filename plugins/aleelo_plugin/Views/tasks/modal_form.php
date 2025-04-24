@@ -40,7 +40,7 @@
 </div>
             </div>
             <?php } else{ ?>
-                <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
+                <input type="hidden" name="company_id" value="<?php echo $login_user->department; ?>">
                 <?php } ?>
 
 
