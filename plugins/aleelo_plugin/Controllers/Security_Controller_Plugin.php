@@ -172,7 +172,7 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" )) {
             return $this->login_user->department; 
         }
-        return null; 
+        return $this->login_user->department; 
     }
 
 

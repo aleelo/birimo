@@ -1308,6 +1308,9 @@ class Tasks extends Security_Controller_Plugin {
             "quick_filter" => $quick_filter,
             "label_id" => $this->request->getPost('label_id'),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("tasks", $this->login_user->is_admin, $this->login_user->user_type),
+            "can_view_own_department_client" => $this->can_view_own_department_client(),
+            "can_view_own_company_client" => $this->can_view_own_company_client(),
+
          
 
 

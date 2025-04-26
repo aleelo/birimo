@@ -107,9 +107,10 @@ class Supplier extends Security_Controller_Plugin {
     function list_data() {
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array(
-          
+        
             "can_view_own_department_client" => $this->can_view_own_department_client(),
             "can_view_own_company_client" => $this->can_view_own_company_client(),
+
 
         );
 
@@ -117,7 +118,12 @@ class Supplier extends Security_Controller_Plugin {
 
         $result = $this->Supplier_model->get_details($all_options);
 
-        $list_data = $this->Supplier_model->get_details()->getResult();
+  if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data);
