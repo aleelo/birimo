@@ -15,6 +15,8 @@ class Supplier_model extends Crud_model {
     function get_details($options = array()) {
         $supplier_table = $this->db->prefixTable('supplier');
         $company_table =$this->db->prefixTable('company');
+        $country_table = $this->db->prefixTable('countries');
+        $region_table = $this->db->prefixTable('regions');
         
         $where = "";
         
@@ -27,9 +29,12 @@ class Supplier_model extends Crud_model {
             $where .= " AND $supplier_table.company=$can_view_own_department_client";
         }
 
-        $sql = "SELECT $supplier_table.*,$company_table.name AS company_name
+        $sql = "SELECT $supplier_table.*,$company_table.name AS company_name,$region_table.region AS region_name,$country_table.country_name AS country_name
         FROM $supplier_table
         LEFT JOIN $company_table ON $company_table.id= $supplier_table.company
+        LEFT JOIN $region_table ON $region_table.id= $supplier_table.region
+        LEFT JOIN $country_table ON $country_table.id= $supplier_table.country
+
 
         WHERE $supplier_table.deleted=0 $where";
         return $this->db->query($sql);

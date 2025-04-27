@@ -104,7 +104,9 @@ class Security_Controller extends App_Controller {
                     //check the accessable client groups
                     $info->allowed_client_groups = $permissions;
                 }
-            } else if ($module_permission === "own" || $module_permission === "read_only" || $module_permission === "assigned_only" || $module_permission === "own_project_members" || $module_permission === "own_project_members_excluding_own") {
+            } else if ($module_permission === "own_invoice") {
+            $info->access_type = "own_invoice";
+        } else if ($module_permission === "own" || $module_permission === "read_only" || $module_permission === "assigned_only" || $module_permission === "own_project_members" || $module_permission === "own_project_members_excluding_own") {
                 $info->access_type = $module_permission;
             }
         }
@@ -113,8 +115,8 @@ class Security_Controller extends App_Controller {
 
     //only allowed to access for team members 
     protected function access_only_team_members() {
-        if (!$this->login_user->is_admin|| get_array_value(!$this->login_user->permissions, "task")) {
-            
+        $task_permission = get_array_value($this->login_user->permissions, "task");
+        if (!$this->login_user->is_admin && !$task_permission) {
             app_redirect("forbidden");
         }
     }
@@ -620,7 +622,10 @@ class Security_Controller extends App_Controller {
 
     protected function can_view_invoices($client_id = 0) {
         if ($this->login_user->user_type == "staff") {
-            if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all"|| get_array_value($this->login_user->permissions, "invoice") === "own_invoice"  || get_array_value($this->login_user->permissions, "invoice") === "read_only") {
+            if ($this->login_user->is_admin || 
+                get_array_value($this->login_user->permissions, "invoice") === "all" || 
+                get_array_value($this->login_user->permissions, "invoice") === "own_invoice" || 
+                get_array_value($this->login_user->permissions, "invoice") === "read_only") {
                 return true;
             }
         } else {

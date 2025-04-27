@@ -12,6 +12,9 @@ class Supplier extends Security_Controller_Plugin {
     }
 
     function index() {
+        if (!$this->can_view_invoices()) {
+            app_redirect("forbidden");
+        }
         return $this->template->rander("aleelo_plugin\Views/supplier/index");
     }
 
@@ -27,7 +30,23 @@ class Supplier extends Security_Controller_Plugin {
         $view_data['model_info'] = $this->Supplier_model->get_one($this->request->getPost('id'));
         return $this->template->view('aleelo_plugin\Views/supplier/modal_form', $view_data);
     }
-
+    function get_regions_by_country() {
+        $country_id = $this->request->getPost('country_id');
+    
+        if ($country_id) {
+            $regions = $this->Regions_model->get_all_where(array("country_id" => $country_id))->getResult();
+            
+            $result = array();
+            foreach ($regions as $region) {
+                $result[$region->id] = $region->region;
+            }
+    
+            echo json_encode($result);
+        } else {
+            echo json_encode([]);
+        }
+    }
+    
     function save() {
         $this->access_only_team_members();
     
@@ -105,6 +124,9 @@ class Supplier extends Security_Controller_Plugin {
     }
 
     function list_data() {
+        if (!$this->can_view_invoices()) {
+            app_redirect("forbidden");
+        }
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array(
         
@@ -145,13 +167,40 @@ class Supplier extends Security_Controller_Plugin {
             $data->company_name,
             $data->phone,
             $data->email,
-            $data->region,
-            $data->Country,
+            $data->country_name,
+            $data->region_name,
             $data->address,
             $data->Website,
             modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id))
             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("supplier/delete"), "data-action" => "delete"))
         );
     }
+    private function make_access_permissions_view_data() {
 
+        $access_invoice = $this->get_access_info("invoice");
+        $view_data["show_invoice_info"] = (get_setting("module_invoice") && $access_invoice->access_type == "all") ? true : false;
+
+        $access_estimate = $this->get_access_info("estimate");
+        $view_data["show_estimate_info"] = (get_setting("module_estimate") && $access_estimate->access_type == "all") ? true : false;
+
+        $view_data["show_estimate_request_info"] = (get_setting("module_estimate_request") && $access_estimate->access_type == "all") ? true : false;
+
+        $access_order = $this->get_access_info("order");
+        $view_data["show_order_info"] = (get_setting("module_order") && $access_order->access_type == "all") ? true : false;
+
+        $access_proposal = $this->get_access_info("proposal");
+        $view_data["show_proposal_info"] = (get_setting("module_proposal") && $access_proposal->access_type == "all") ? true : false;
+
+        $access_ticket = $this->get_access_info("ticket");
+        $view_data["show_ticket_info"] = (get_setting("module_ticket") && $access_ticket->access_type == "all") ? true : false;
+
+        $access_contract = $this->get_access_info("contract");
+        $view_data["show_contract_info"] = (get_setting("module_contract") && $access_contract->access_type == "all") ? true : false;
+        $view_data["show_project_info"] = !$this->has_all_projects_restricted_role();
+
+        $access_subscription = $this->get_access_info("subscription");
+        $view_data["show_subscription_info"] = (get_setting("module_subscription") && $access_subscription->access_type == "all") ? true : false;
+
+        return $view_data;
+    }
 }

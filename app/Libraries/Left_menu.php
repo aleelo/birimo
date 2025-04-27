@@ -60,9 +60,7 @@ class Left_menu {
             }
 
 
-            if ($this->ci->login_user->is_admin || $access_client) {
-                $sidebar_menu["clients"] = array("name" => "clients", "url" => "clients", "class" => "briefcase");
-            }
+            
 
 
             if ($this->ci->login_user->is_admin || !get_array_value($this->ci->login_user->permissions, "do_not_show_projects")) {
@@ -101,7 +99,9 @@ class Left_menu {
             if (get_setting("module_invoice") == "1" && ($this->ci->login_user->is_admin || $access_invoice)) {
                 $sales_submenu[] = array("name" => "invoices", "url" => "invoices", "class" => "file-text");
             }
-
+            if ($this->ci->login_user->is_admin || $access_client) {
+                $sales_submenu["clients"] = array("name" => "clients", "url" => "clients", "class" => "briefcase");
+            }
             if (get_setting("module_order") == "1" && ($this->ci->login_user->is_admin || $access_order)) {
                 $sales_submenu[] = array("name" => "orders_list", "url" => "orders", "class" => "truck");
                 $sales_submenu[] = array("name" => "store", "url" => "store", "class" => "list");
@@ -146,27 +146,25 @@ class Left_menu {
             }
 
 
-           
+        
             $sidebar_menu["assigning_items"] = array("name" => "assigning_items", "url" => "assigning_items", "class" => "layers","position" => 7,);
-            if (get_setting("module_expense") == "1" && ($this->ci->login_user->is_admin || $access_expense)) {
+            // if (get_setting("module_expense") == "1" && ($this->ci->login_user->is_admin || $access_expense)) {
 
-            $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
-            }
-            if ($this->ci->login_user->user_type === "staff" && !$this->ci->login_user->is_admin && get_array_value($this->ci->login_user->permissions, "do_not_show_projects") == "1") {
-
+            // $sidebar_menu["expense"] = array("name" => "expense", "url" => "expense", "class" => "arrow-right-circle","position" => 8,);
+            // }
+            if (
+                ($this->ci->login_user->user_type === "staff" || $this->ci->login_user->is_admin) 
+                && get_array_value($this->ci->login_user->permissions, "do_not_show_projects") != "1" 
+            ){
             $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
             }
             if (get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1") {
 
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
             }
-            if (($this->ci->login_user->is_admin || $access_client)) {
-
+        
             
-            $sidebar_menu["client"] = array("name" => "client", "url" => "client", "class" => "briefcase","position" => 11,);
-             }
-            
-             if (($this->ci->login_user->is_admin || $access_item)) {
+            if (($this->ci->login_user->is_admin || $access_item)) {
 
             $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
             $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);

@@ -16,7 +16,6 @@ class Expense extends Security_Controller_Plugin {
     //load the expenses list view
     function index() {
        $this->check_module_availability("module_expense");
-       if ($this->login_user->is_admin || $this->login_user->user_type === "staff"  && get_array_value($this->login_user->permissions, "expense") == "all" || get_array_value($this->login_user->permissions, "expense") == "own_company") {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data['login_user'] = $this->login_user;
@@ -32,24 +31,8 @@ class Expense extends Security_Controller_Plugin {
         $view_data['company_id'] = $this->login_user->department;
 
         return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
-    } elseif ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "expense") == "own_expenses") {
-       
-        $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
-        $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
-        $view_data['login_user'] = $this->login_user;
-        $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
-                $view_data['company'] = $this->_get_company();
-                $view_data['user'] = $this->login_user->id;
-                $view_data["can_edit_expense"] = $this->can_edit_expense();
-
-        $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
-        $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
-
-        return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
-    }
-    else{
-        app_redirect("forbidden");
-    }
+    
+    
     }
 
     //get categories dropdown
@@ -346,12 +329,22 @@ class Expense extends Security_Controller_Plugin {
             echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
         }
     }
+    protected function can_view_own_expense() {
+        if ($this->login_user->company_access === "all" || (get_array_value($this->login_user->permissions, "expense") === "own_expenses")) {
+            return $this->login_user->id;
+        }
+        return 0; // Default value if the condition is not met}
+    }
     protected function can_view_all_expense() {
-        if ($this->login_user->company_access === "all") {
+        if ($this->login_user->company_access === "all" || (get_array_value($this->login_user->permissions, "expense") === "all")) {
+            return 0;
+        }
+else  if ($this->login_user->company_access === "all" || (get_array_value($this->login_user->permissions, "expense") === "own_company")) {
             return $this->login_user->department;
         }
-        return $this->login_user->department;
+        return 0; // Default value if the condition is not met
     }
+
     
     //get the expnese list data
     function list_data($recurring = false) {
@@ -361,12 +354,15 @@ class Expense extends Security_Controller_Plugin {
         $project_id = $this->request->getPost('project_id');
         $user_id = $this->request->getPost('user_id');
         $company_id_company= $this->request->getPost('company_id_company');
-       $company= $this->can_view_all_expense();
+        $company= $this->can_view_all_expense();
+        
+        
     
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $options = array("start_date" => $start_date, "end_date" => $end_date, "category_id" => $category_id, "project_id" => $project_id,"company_id_company"=>$company_id_company, "user_id" => $user_id,"company_id" =>$company, "custom_fields" => $custom_fields, "recurring" => $recurring, "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type));
+        $options = array("start_date" => $start_date,"created_by_user"=>$this->can_view_own_expense(),
+        "end_date" => $end_date, "category_id" => $category_id, "project_id" => $project_id,"company_id_company"=>$company_id_company, "user_id" => $user_id,"company_id" =>$company, "custom_fields" => $custom_fields, "recurring" => $recurring, "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type));
         $list_data = $this->Expenses_model->get_details($options)->getResult();
 
         $result = array();

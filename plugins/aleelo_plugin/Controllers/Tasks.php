@@ -190,7 +190,7 @@ class Tasks extends Security_Controller_Plugin {
             return $this->_client_can_create_tasks($context, $context_id);
         }
 
-        if (!$_context && count($this->_get_accessible_contexts("create"))) {
+        if (!$_context && count($this->_get_accessible_contexts(type: "create"))) {
             return true; //calling to show modal or button. Allow it if has access in any context. 
         }
 
@@ -2811,8 +2811,7 @@ class Tasks extends Security_Controller_Plugin {
         return json_encode($assigned_to_dropdown);
     }
 
-    function all_tasks($tab = "", $status_id = 0, $priority_id = 0, $type = "", $deadline = "") {
-        $this->access_only_team_members();
+    function all_tasks($tab = "", $status_id = 0, $priority_id = 0, $type = "", $deadline = "") {$this->access_only_team_members();
         $view_data['project_id'] = 0;
 
         $projects = $this->Tasks_model->get_my_projects_dropdown_list($this->_get_only_own_projects_user_id())->getResult();
@@ -2938,7 +2937,6 @@ class Tasks extends Security_Controller_Plugin {
 
     function all_tasks_kanban_data() {
 
-        $this->access_only_team_members();
 
         $project_id = $this->request->getPost('project_id');
 
@@ -3446,7 +3444,6 @@ class Tasks extends Security_Controller_Plugin {
     /* list of tasks, prepared for datatable  */
 
     function all_tasks_list_data($is_widget = 0) {
-        $this->access_only_team_members();
 
         $project_id = $this->request->getPost('project_id');
 

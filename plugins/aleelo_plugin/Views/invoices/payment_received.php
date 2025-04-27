@@ -40,11 +40,7 @@
             {name: "project_id", class: "w200", options: <?php echo $projects_dropdown; ?>}
 <?php } ?>
 
-<?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
- { ?>
-            {name: "can_view_all_invoice", class: "w200 ", options: <?php echo $company; ?>}
 
-            <?php  }  ?>
     ],
             columns: [
                 {title: '<?php echo app_lang("invoice_id") ?> ', "class": "w10p all"},

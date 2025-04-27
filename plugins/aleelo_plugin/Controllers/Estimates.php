@@ -23,22 +23,24 @@ class Estimates extends Security_Controller_Plugin {
     /* load estimate list view */
 
     function index() {
-        $this->check_module_availability("module_estimate");
+        $this->check_module_availability("module_invoice");
 
         $view_data['can_request_estimate'] = false;
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("estimates", $this->login_user->is_admin, $this->login_user->user_type);
 
-        if ($this->login_user->user_type === "staff") {
-            $this->access_only_allowed_members();
+        if ($this->login_user->user_type === "staff") {  if (!$this->can_view_invoices()) {
+                app_redirect("forbidden");
+            }
+            $this->can_view_invoices();
             $view_data['company'] = $this->_get_company();
 
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
             return $this->template->rander("aleelo_plugin\Views/estimates/index", $view_data);
         } else {
             //client view
-            if (!$this->can_client_access("estimate")) {
+            if (!$this->can_view_invoices("estimate")) {
                 app_redirect("forbidden");
             }
 
@@ -424,8 +426,9 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     /* list of estimates, prepared for datatable  */
 
     function list_data() {
-        $this->access_only_allowed_members();
-
+        if (!$this->can_view_invoices()) {
+            app_redirect("forbidden");
+        }
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
 
         $options = array(
@@ -435,7 +438,6 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type),
-            "company_id_department" => $this->can_view_own_department_invoice(),
             "company_id" => $this->can_view_own_company_invoice(),
             "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
         );

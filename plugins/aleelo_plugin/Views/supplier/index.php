@@ -26,8 +26,9 @@
                 {title: "<?php echo app_lang('company') ?>,",},
                 {title: "<?php echo app_lang('phone') ?>", "class": "w200"},
                 {title: "<?php echo app_lang('email') ?>", "class": "w100"},
-                {title: "<?php echo app_lang('region') ?>", "class": "w100"},
                 {title: "<?php echo app_lang('country') ?>", "class": "w100"},
+                {title: "<?php echo app_lang('region') ?>", "class": "w100"},
+
                 {title: "<?php echo app_lang('address') ?>", "class": "w100"},
                 {title: "<?php echo app_lang('website') ?>", "class": "w100"},
 

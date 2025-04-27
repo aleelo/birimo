@@ -100,7 +100,19 @@ class Client extends Security_Controller_Plugin {
 
         return $this->template->view('aleelo_plugin\Views/clients/modal_form', $view_data);
     }
-
+    public function get_country_by_district()
+    {
+        $district_id = $this->request->getPost('district_id');
+    
+        if ($district_id) {
+            $district_info = $this->Regions_model->get_one($district_id);
+    
+            if ($district_info) {
+                echo json_encode(["country_id" => $district_info->country_id]);
+            }
+        }
+    }
+    
     /* insert or update a client */
 
     function save() {

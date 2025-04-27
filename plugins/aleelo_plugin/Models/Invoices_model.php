@@ -61,7 +61,7 @@ class Invoices_model extends Crud_model {
             $where .= " AND dp.id=$company_id_department";
         }
 
-         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
         if ($can_view_all_invoice) {
             $where .= " AND dp.id=$can_view_all_invoice";
         }

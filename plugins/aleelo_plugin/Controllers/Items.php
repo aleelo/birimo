@@ -22,7 +22,7 @@ class Items extends Security_Controller_Plugin {
 
         if ($this->login_user->is_admin) {
             return true;
-        } else if ($access_invoice->access_type === "all" || $access_estimate->access_type === "all") {
+        } else if ($access_invoice->access_type === "all" ||$access_invoice->access_type === "own_invoice" || $access_estimate->access_type === "all") {
             return true;
         } else {
             app_redirect("forbidden");
@@ -31,9 +31,7 @@ class Items extends Security_Controller_Plugin {
 
     //load items list view
     function index() {
-        $this->access_only_team_members();
-        $this->validate_access_to_items();
-
+      
        
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
 
@@ -54,7 +52,6 @@ class Items extends Security_Controller_Plugin {
 
     /* load item modal */
     function modal_form() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
@@ -91,7 +88,6 @@ class Items extends Security_Controller_Plugin {
     /* add or edit an item */
 
     function save() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
@@ -138,7 +134,6 @@ class Items extends Security_Controller_Plugin {
     /* delete or undo an item */
 
     function delete() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
@@ -167,7 +162,6 @@ class Items extends Security_Controller_Plugin {
     /* list of items, prepared for datatable  */
 
     function list_data() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $category_id = $this->request->getPost('category_id');
@@ -240,21 +234,18 @@ class Items extends Security_Controller_Plugin {
     }
 
     function import_items_modal_form() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         return $this->template->view("items/import_items_modal_form");
     }
 
     function download_sample_excel_file() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
         return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-items-sample.xlsx"))));
     }
 
 
     function validate_import_items_file() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $file_name = $this->request->getPost("file_name");
@@ -272,7 +263,6 @@ class Items extends Security_Controller_Plugin {
     }
 
     function save_item_from_excel_file() {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         if (!$this->validate_import_items_file_data(true)) {
@@ -371,7 +361,6 @@ class Items extends Security_Controller_Plugin {
     }
 
     function validate_import_items_file_data($check_on_submit = false) {
-        $this->access_only_team_members();
         $this->validate_access_to_items();
 
         $table_data = "";

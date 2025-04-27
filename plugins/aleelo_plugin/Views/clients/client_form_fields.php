@@ -16,7 +16,7 @@
 </div>
             </div>
             <?php } else{ ?>
-                <input type="hidden" name="company_id" value="<?php echo $login_user->department; ?>">
+                <input type="hidden" name="company_id" value="<?php echo $login_user->company_id; ?>">
                 <?php } ?>
 
 
@@ -392,6 +392,29 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $("#country").on("change", function () {
+    var country_id = $(this).val();
+    
+    if (country_id) {
+        $.ajax({
+            url: "<?php echo get_uri('supplier/get_regions_by_country'); ?>",
+            type: "POST",
+            data: { country_id: country_id },
+            success: function (response) {
+                var districts = JSON.parse(response);
+                var $district = $("#district");
+
+                $district.empty(); 
+
+                $.each(districts, function (id, name) {
+                    $district.append(new Option(name, id));
+                });
+
+                $district.trigger("change");
+            }
+        });
+    }
+});
         $('[data-bs-toggle="tooltip"]').tooltip();
 
         <?php if (isset($currency_dropdown)) { ?>

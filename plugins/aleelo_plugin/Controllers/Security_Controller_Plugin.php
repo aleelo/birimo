@@ -169,10 +169,10 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
 
 
     protected function can_view_own_department_client() {
-        if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" )) {
-            return $this->login_user->department; 
-        }
+        if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" || get_array_value($this->login_user->permissions,"invoice") ==="own_company")){
         return $this->login_user->department; 
+    }
+    return null; 
     }
 
 
