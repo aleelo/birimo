@@ -113,7 +113,7 @@ class Left_menu {
             }
 
             if (get_setting("module_invoice") == "1" && ($this->ci->login_user->is_admin || $access_invoice)) {
-                $sales_submenu[] = array("name" => "items", "url" => "items", "class" => "layers","position" => 5,);}
+                $sidebar_menu[] = array("name" => "items", "url" => "items", "class" => "layers","position" => 5,);}
 
             if (get_setting("module_contract") && ($this->ci->login_user->is_admin || $access_contract)) {
                 $sales_submenu[] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
