@@ -1093,8 +1093,9 @@ class Project extends Security_Controller_Plugin {
 
     function overview($project_id) {
         validate_numeric_value($project_id);
-        $this->access_only_team_members();
-        $this->init_project_permission_checker($project_id);
+        if ($this->has_all_projects_restricted_role()) {
+            app_redirect("forbidden");
+        }        $this->init_project_permission_checker($project_id);
 
         $view_data = $this->_get_project_info_data($project_id);
         $view_data["task_statuses"] = $this->Tasks_model->get_task_statistics(array("project_id" => $project_id))->task_statuses;
