@@ -32,8 +32,9 @@ class Items extends Security_Controller_Plugin {
     //load items list view
     function index() {
       
-        $this->validate_access_to_items();
-
+        if (!$this->can_view_invoices()) {
+            app_redirect("forbidden");
+        }
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
 
         return $this->template->rander("aleelo_plugin\Views/items/index", $view_data);
