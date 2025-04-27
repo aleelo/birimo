@@ -120,9 +120,9 @@ class Left_menu {
                 $sales_submenu[] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
             }
 
-            if (count($sales_submenu)) {
+            
                 $sidebar_menu["sales"] = array("name" => "sales", "class" => "shopping-cart", "submenu" => $sales_submenu);
-            }
+            
 
 
             $prospects_submenu = array();
