@@ -112,7 +112,7 @@ class Left_menu {
                 $show_payments_menu = true;
             }
 
-            if ($access_items && (get_setting("module_invoice") == "1" || get_setting("module_estimate") == "1" )) {
+            if (get_setting("module_invoice") == "1" && ($this->ci->login_user->is_admin || $access_invoice)) {
                 $sales_submenu[] = array("name" => "items", "url" => "items", "class" => "list");
             }
 
