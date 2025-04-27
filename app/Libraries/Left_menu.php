@@ -113,8 +113,7 @@ class Left_menu {
             }
 
             if (get_setting("module_invoice") == "1" && ($this->ci->login_user->is_admin || $access_invoice)) {
-                $sales_submenu[] = array("name" => "items", "url" => "items", "class" => "list");
-            }
+                $sales_submenu[] = array("name" => "items", "url" => "items", "class" => "layers","position" => 5,);}
 
             if (get_setting("module_contract") && ($this->ci->login_user->is_admin || $access_contract)) {
                 $sales_submenu[] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
@@ -169,9 +168,7 @@ class Left_menu {
             $sidebar_menu["Screen_size"] = array("name" => "Screen_size", "url" => "Screen_size", "class" => "layers","position" => 12,);
             $sidebar_menu["items"] = array("name" => "items", "url" => "", "class" => "layers","position" => 5,);
 
-            $sidebar_menu["Sales_and_crm"] = array("name" => "Sales_and_crm", "url" => "", "class" => "layers","position" => 4,);
         
-            $sidebar_menu["items_list"] = array("name" => "items_list", "url" => "items_list", "class" => "layers","position" => 6,);
         }
 
             if (get_setting("module_note") == "1") {
