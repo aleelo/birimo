@@ -188,7 +188,7 @@ class Team_member extends Security_Controller_Plugin {
             "created_at" => get_current_utc_time(),
                     "company_access" => $cc,
                     "department"=>$cid,
-                    "department_id"=>"1,2",
+                    "department_id"=>"1,2,3,4,5,6,7,8,9,10",
 
 );
 
@@ -853,7 +853,7 @@ if (!$signature_path) {
         $user_data = array(
             "company_access" => $cc,
             "department"=>$cid,
-            "department_id"=>"1,2",
+            "department_id"=>"1,2,3,4,5,6,7,8,9,10",
         );
     
         // Save data
