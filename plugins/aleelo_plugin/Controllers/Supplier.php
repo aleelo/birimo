@@ -130,7 +130,6 @@ class Supplier extends Security_Controller_Plugin {
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array(
         
-            "can_view_own_department_client" => $this->can_view_own_department_client(),
             "can_view_own_company_client" => $this->can_view_own_company_client(),
 
 

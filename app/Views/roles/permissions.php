@@ -740,7 +740,7 @@
                         ?>
                         <label for="own_company"><?php echo app_lang("own_company"); ?></label>
                     </div>
-                    <div>
+                    <!-- <div>
                         <?php
                         echo form_radio(array(
                             "id" => "client_yes_own",
@@ -750,7 +750,7 @@
                         ), $client, ($client === "own") ? true : false);
                         ?>
                         <label for="client_yes_own"><?php echo app_lang("yes_only_own_clients"); ?></label>
-                    </div>
+                    </div> -->
                     <!-- <div>
                         <?php
                         echo form_radio(array(
