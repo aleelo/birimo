@@ -24,9 +24,9 @@
                 </div>
                 
                 <?php
-                echo form_checkbox("can_access_all_company", "all", false, "id='can_access_all_company' class='form-check-input'");
+                echo form_checkbox("can_access_all_company", "all",  ($user_info->company_access === "all") ? true : false, "id='can_access_all_company' class='form-check-input'");
                 ?>
-                <label for="can_access_all_company"><?php echo app_lang('can_accsess_all_company'); ?></label>
+                <label for="can_access_all_company"><?php echo app_lang('can_access_all_company'); ?></label>
             </div>
         </div>
     </div>
@@ -46,13 +46,7 @@ $(document).ready(function () {
     // Initialize Select2 on page load
     $("#general-info-form .select2").select2();
 
-    $("#can_access_all_company").change(function () {
-        if ($(this).is(":checked")) {
-            $("#user-dropdown-container").hide(); // Hide the dropdown
-        } else {
-            $("#user-dropdown-container").show(); // Show the dropdown
-        }
-    });
+ 
     $("#general-info-form").appForm({
             isModal: false,
             onSuccess: function (result) {

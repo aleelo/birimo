@@ -861,7 +861,7 @@ protected function can_view_all_tasks() {
             return true;
         } else if (get_array_value($permissions, "client") == "all") {
             return true;
-        } else if (!$client_id && $this->login_user->user_type == "staff" && get_array_value($permissions, "client") === "read_only") {
+        } else if (!$client_id && $this->login_user->user_type == "staff" && get_array_value($permissions, "client") === "refad_only") {
             return false;
         } else if (!$client_id && get_array_value($permissions, "client")) {
             //clients list
