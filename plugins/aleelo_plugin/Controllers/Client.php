@@ -241,7 +241,7 @@ class Client extends Security_Controller_Plugin {
             "created_by" => $this->request->getPost("created_by"),
             "client_groups" => $this->allowed_client_groups,
             "label_id" => $this->request->getPost('label_id'),
-            "can_view_own_department_client" => $this->can_view_own_department_client(),
+           // "can_view_own_department_client" => $this->can_view_own_department_client(),
             "can_view_own_company_client" => $this->can_view_own_company_client(),
 
         );

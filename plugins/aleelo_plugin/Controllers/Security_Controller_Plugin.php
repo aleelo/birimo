@@ -163,6 +163,10 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
             return $this->login_user->department; 
         }
+        else if($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "all") 
+        {
+            return 0;
+        }
         return null; 
     }
 
