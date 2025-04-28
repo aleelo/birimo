@@ -615,7 +615,7 @@ else{
             "custom_fields" => $custom_fields,
             "company_id" => $this->can_view_own_company_invoice(),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("invoices", $this->login_user->is_admin, $this->login_user->user_type),
-            "company_id_department" => $this->can_view_own_company_invoice(),
+            // "company_id_department" => $this->can_view_own_company_invoice(),
             "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
         );
 
