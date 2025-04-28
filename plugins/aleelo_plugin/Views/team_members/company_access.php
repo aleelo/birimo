@@ -24,7 +24,7 @@
                 </div>
                 
                 <?php
-                echo form_checkbox("user_id", "all", false, "id='can_access_all_company' class='form-check-input'");
+                echo form_checkbox("can_access_all_company", "all", false, "id='can_access_all_company' class='form-check-input'");
                 ?>
                 <label for="can_access_all_company"><?php echo app_lang('can_accsess_all_company'); ?></label>
             </div>

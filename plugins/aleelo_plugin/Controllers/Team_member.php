@@ -165,13 +165,15 @@ class Team_member extends Security_Controller_Plugin {
 
         $password = $this->request->getPost("password");
         $user_id = $this->request->getPost('user_id');
-        $can_access_all = $this->request->getPost('can_accsess_all_company');
+        $can_access_all = $this->request->getPost('can_access_all_company');
         $department=$this->request->getPost('user_id');
         
         if ($can_access_all) {
-            $cc = 'all';
+            $cc = $can_access_all;
+            $cid=0;
         } else {
-            $cc = !empty($user_id) ? json_encode($user_id) : '';
+            $cc=0;
+            $cid = !empty($user_id) ? json_encode($user_id) : '';
         }
         $user_data = array(
             "email" => $this->request->getPost('email'),
@@ -185,7 +187,9 @@ class Team_member extends Security_Controller_Plugin {
             "user_type" => "staff",
             "created_at" => get_current_utc_time(),
                     "company_access" => $cc,
-                    "department"=>$cc,
+                    "department"=>$cid,
+                    "department_id"=>"1,2",
+
 );
 
         if ($password) {
@@ -834,19 +838,22 @@ if (!$signature_path) {
         $this->update_only_allowed_members($user_id);
     
         $post_user_id = $this->request->getPost('user_id');
-        $can_access_all = $this->request->getPost('can_accsess_all_company');
+        $can_access_all = $this->request->getPost('can_access_all_company');
     
         // Process the company access value
         if ($can_access_all) {
-            $cc = $can_access_all;
+            $cc = "all";
+            $cid=0;
         } else {
-            $cc =$post_user_id;
+            $cc =0;
+            $cid =$post_user_id;
         }
     
         // Prepare data for saving
         $user_data = array(
             "company_access" => $cc,
-            "department"=>$cc,
+            "department"=>$cid,
+            "department_id"=>"1,2",
         );
     
         // Save data
