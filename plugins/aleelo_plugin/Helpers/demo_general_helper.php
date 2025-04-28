@@ -180,9 +180,8 @@ if (!function_exists('get_invoice_making_data')) {
             $data['invoice_items'] = $ci->Invoice_items_model->get_details(array("invoice_id" => $invoice_id))->getResult();
             $data['invoice_status_label'] = get_invoice_status_label($invoice_info);
             $data["invoice_total_summary"] = $ci->Invoices_model->get_invoice_total_summary($invoice_id);
-              $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
+            $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
             $data['users_info'] = $ci->Users_models->get_one($data['company_info']->finance_manager_id);
-          
             $finance_manager_info = $ci->db->table('team_member_job_info')
             ->select('*') // Select user_id and job_title_en
             ->where('user_id', $data['company_info']->finance_manager_id)
