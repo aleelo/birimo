@@ -4333,5 +4333,6 @@ $lang['acc_reports'] = 'Reports';
 $lang['acc_setting'] = 'Setting';
 $lang['region']='region';
 $lang['create_new_account']='create new account';
+$lang['can_access_clients_&_Supplier_information']='can access clients & Supplier information';
 
 return $lang;

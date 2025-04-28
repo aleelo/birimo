@@ -703,7 +703,7 @@
                     </li>
                 <?php } ?> <li>
                     <span data-feather="key" class="icon-14 ml-20"></span>
-                    <h5><?php echo app_lang("can_access_clients_information"); ?> <span class="help" data-bs-toggle="tooltip" title="Hides all information of clients except company name."><i data-feather="help-circle" class="icon-14"></i></span></h5>
+                    <h5><?php echo app_lang("can_access_clients_&_Supplier_information"); ?> <span class="help" data-bs-toggle="tooltip" title="Hides all information of clients except company name."><i data-feather="help-circle" class="icon-14"></i></span></h5>
                     <div>
                         <?php
                         if (is_null($client)) {
