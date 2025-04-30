@@ -2916,6 +2916,8 @@ class Tasks extends Security_Controller_Plugin {
 
         $view_data['projects_dropdown'] = json_encode($projects_dropdown);
         $view_data['can_create_tasks'] = $this->can_create_tasks();
+        $view_data['can_add_task']= $this->can_add_task();
+        $view_data['can_edit_task'] = $this->can_edit_task();
 
         $view_data['task_statuses'] = $this->Task_status_model->get_details()->getResult();
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("tasks", $this->login_user->is_admin, $this->login_user->user_type);
@@ -2957,6 +2959,9 @@ class Tasks extends Security_Controller_Plugin {
             "unread_status_user_id" => $this->login_user->id,
             "quick_filter" => $this->request->getPost("quick_filter"),
             "label_id" => $this->request->getPost('label_id'),
+            "can_view_all_tasks"=>$this->can_view_all_tasks(),
+            "can_view_own_tasks"=>$this->can_view_own_tasks(),
+            "can_view_own_company_tasks"=>$this->can_view_own_company_tasks(),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("tasks", $this->login_user->is_admin, $this->login_user->user_type)
         );
 
