@@ -337,7 +337,7 @@ class Expense extends Security_Controller_Plugin {
         }
     }
     protected function can_view_own_expense() {
-        if ($this->login_user->company_access === "all" || (get_array_value($this->login_user->permissions, "expense") === "own_expenses")) {
+        if (get_array_value($this->login_user->permissions, "expense") === "own_expenses") {
             return $this->login_user->id;
         }
         return 0; // Default value if the condition is not met}
@@ -373,11 +373,13 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
 
         $options = array(
             "start_date" => $start_date,
+            "created_by_user"=>$this->can_view_own_expense(),
         "end_date" => $end_date, 
         "category_id" => $category_id,
          "project_id" => $project_id,
          "company_id_company"=>$company_id_company,
           "user_id" => $user_id,
+          "company_id" =>$company,
            "custom_fields" => $custom_fields,
             "recurring" => $recurring,
              "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses",
