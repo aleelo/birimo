@@ -4383,6 +4383,7 @@ $lang['can_add_supplier']='can add supplier';
 $lang['can_delete_supplier']='can delete supplier';
 $lang['Sales and crm']='Sales & CRM';
 $lang['hide_task']='hide_tasks';
+$lang['can_access_invoices?']='can access invoices';
 
 
 
