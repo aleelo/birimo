@@ -766,9 +766,7 @@ class Project extends Security_Controller_Plugin {
             'department_id' => $this->request->getPost("department_id"),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("projects", $this->login_user->is_admin, $this->login_user->user_type),
             "can_view_all_project"=>$this->request->getpost("can_view_all_project"),
-            "can_view_own_company_project" => $this->can_view_own_company_project(),
-            "can_view_own_project" => $this->can_view_own_project(),
-       
+            "can_view_own_company_project" => $this->can_view_own_company_project(),       
         );
 
         //only admin/ the user has permission to manage all projects, can see all projects, other team mebers can see only their own projects.
