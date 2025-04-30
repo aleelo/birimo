@@ -385,7 +385,7 @@ protected function can_view_task() {
 
 
 protected function can_edit_task() {
-    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_task") == "1")) {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_edit_tasks") == "1")) {
         return true;
     }
     return false; 
@@ -393,14 +393,14 @@ protected function can_edit_task() {
 
 
 protected function can_add_task() {
-    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_task") == "1")) {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_create_tasks") == "1")) {
         return true;
     }
     return false;
 }
 
 protected function can_delete_task() {
-    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_task") == "1")) {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_tasks") == "1")) {
         return true;
     }
     return false; 
