@@ -334,11 +334,11 @@ class Client extends Security_Controller_Plugin {
         }
 $delete = "";
 $edit = "";
-        if ($this->can_edit_client($data->id)) {
+        if ($this->can_edit_client()) {
             $edit =modal_anchor(get_uri("client/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id));
 
         }
-        if ($this->can_delete_client($data->id)) {
+        if ($this->can_delete_client()) {
             $delete =js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_client'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("clients/delete"), "data-action" => "delete-confirmation"));
         }
 
