@@ -154,6 +154,9 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_project") === "1") {
             return $this->login_user->department; 
         }
+        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+            return $this->login_user->department;
+        }
         return null; 
     }
 // ----------------------------------------------------invoice-----------------------------------------------------
@@ -190,6 +193,9 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
             return $this->login_user->department; 
         }
+        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+            return $this->login_user->department;
+        }
         return null; 
     }
 
@@ -198,6 +204,7 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_estimate") !== "1") {
             return true; 
         }
+        
         return app_redirect("forbidden"); 
     }
 
@@ -226,6 +233,9 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
     protected function can_view_own_company_estimate() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "estimate") === "own_company") {
             return $this->login_user->department; 
+        }
+        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+            return $this->login_user->department;
         }
         return null; 
     }
@@ -262,6 +272,9 @@ protected function can_delete_payment() {
 protected function can_view_own_company_payment() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "payment") === "own_company") {
         return $this->login_user->department; 
+    }
+    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+        return $this->login_user->department;
     }
     return false; 
 }
@@ -300,6 +313,9 @@ protected function can_view_own_company_client() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
         return $this->login_user->department; 
     }
+    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+        return $this->login_user->department;
+    }
     return false; 
 }
  // ----------------------------------------------------supplier-----------------------------------------------------
@@ -336,6 +352,9 @@ protected function can_view_own_company_supplier() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "supplier") === "own_company") {
         return $this->login_user->department; 
     }
+    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+        return $this->login_user->department;
+    }
     return false; 
 }
 
@@ -344,6 +363,7 @@ protected function can_view_expense() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_expense") !== "1") {
         return true; 
     }
+    
     return false;
 }
 
@@ -372,6 +392,9 @@ protected function can_delete_expense() {
 protected function can_view_own_company_expense() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "expense") === "own_company") {
         return $this->login_user->department; 
+    }
+    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+        return $this->login_user->department;
     }
     return false; 
 }
@@ -408,6 +431,9 @@ protected function can_delete_task() {
 protected function can_view_own_company_task() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "task") === "own_company") {
         return $this->login_user->department; 
+    }
+    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
+        return $this->login_user->department;
     }
     return false; 
 }
