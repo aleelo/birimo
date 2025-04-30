@@ -371,8 +371,18 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $options = array("start_date" => $start_date,"created_by_user"=>$this->can_view_own_expense(),
-        "end_date" => $end_date, "category_id" => $category_id, "project_id" => $project_id,"company_id_company"=>$company_id_company, "user_id" => $user_id,"company_id" =>$company, "custom_fields" => $custom_fields, "recurring" => $recurring, "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type));
+        $options = array(
+            "start_date" => $start_date,
+        "end_date" => $end_date, 
+        "category_id" => $category_id,
+         "project_id" => $project_id,
+         "company_id_company"=>$company_id_company,
+          "user_id" => $user_id,
+           "custom_fields" => $custom_fields,
+            "recurring" => $recurring,
+             "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses",
+              $this->login_user->is_admin, $this->login_user->user_type
+            ));
         $list_data = $this->Expenses_model->get_details($options)->getResult();
 
         $result = array();
