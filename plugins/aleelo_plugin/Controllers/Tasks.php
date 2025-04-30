@@ -1308,8 +1308,7 @@ class Tasks extends Security_Controller_Plugin {
             "quick_filter" => $quick_filter,
             "label_id" => $this->request->getPost('label_id'),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("tasks", $this->login_user->is_admin, $this->login_user->user_type),
-            "can_view_own_department_client" => $this->can_view_own_department_client(),
-            "can_view_own_company_client" => $this->can_view_own_company_client(),
+            "can_view_own_department_client" => $this->can_view_own_company_task(),
 
          
 
@@ -1520,10 +1519,10 @@ class Tasks extends Security_Controller_Plugin {
 
         $options = "";
 
-        if (get_array_value($tasks_edit_permissions, $data->id)) {
+        if ($this->can_edit_task()) {
             $options .= modal_anchor(get_uri("tasks/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_task'), "data-post-id" => $data->id));
         }
-        if ($this->can_delete_tasks($data)) {
+        if ($this->can_delete_task()) {
             $options .= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_task'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("tasks/delete"), "data-action" => "delete-confirmation"));
         }
 
