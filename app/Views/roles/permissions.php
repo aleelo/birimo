@@ -1611,6 +1611,13 @@
                 $("#supplier_permission").removeClass("hide");
             }
         });
+         $("#hide_task").click(function() {
+            if ($(this).is(":checked")) {
+                $("#task_permission").addClass("hide");
+            } else {
+                $("#task_permission").removeClass("hide");
+            }
+        });
         //show/hide message permission checkbox
         $("#message_permission_no").click(function() {
             if ($(this).is(":checked")) {
