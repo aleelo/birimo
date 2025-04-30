@@ -70,10 +70,10 @@ class Client extends Security_Controller_Plugin {
     function modal_form() {
         $client_id = $this->request->getPost('id');
         validate_numeric_value($client_id);
-        $this->_validate_client_manage_access($client_id);
-        if (!$this->can_add_client()) {
-            app_redirect("forbidden");
-        }
+        // $this->_validate_client_manage_access($client_id);
+        // if (!$this->can_add_client()) {
+        //     app_redirect("forbidden");
+        // }
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
