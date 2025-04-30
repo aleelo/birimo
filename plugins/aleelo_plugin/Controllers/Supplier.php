@@ -23,7 +23,7 @@ class Supplier extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
-        if (!$this->can_add_supplier()) {
+        if (!$this->can_add_supplier() || !$this->can_edit_supplier()) {
             app_redirect("forbidden");
         }
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
