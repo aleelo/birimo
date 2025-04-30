@@ -7,7 +7,7 @@
             <div class="tab-title clearfix no-border">
                 <div class="title-button-group">
                     <?php
-                    if ($can_edit_clients) {
+                    if ($can_add_clients) {
                         echo modal_anchor(get_uri("labels/modal_form"), "<i data-feather='tag' class='icon-16'></i> " . app_lang('manage_labels'), array("class" => "btn btn-default", "title" => app_lang('manage_labels'), "data-post-type" => "client"));
                         echo modal_anchor(get_uri("client/import_clients_modal_form"), "<i data-feather='upload' class='icon-16'></i> " . app_lang('import_clients'), array("class" => "btn btn-default", "title" => app_lang('import_clients'), "id" => "import-btn"));
                         echo modal_anchor(get_uri("client/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_client'), array("class" => "btn btn-default", "title" => app_lang('add_client')));

@@ -2811,9 +2811,12 @@ class Tasks extends Security_Controller_Plugin {
         return json_encode($assigned_to_dropdown);
     }
 
-    function all_tasks($tab = "", $status_id = 0, $priority_id = 0, $type = "", $deadline = "") {$this->access_only_team_members();
+    function all_tasks($tab = "", $status_id = 0, $priority_id = 0, $type = "", $deadline = "") {
+        if(!$this->can_view_task()) {
+            app_redirect("forbidden");
+        }
         $view_data['project_id'] = 0;
-
+        
         $projects = $this->Tasks_model->get_my_projects_dropdown_list($this->_get_only_own_projects_user_id())->getResult();
         $projects_dropdown = array(array("id" => "", "text" => "- " . app_lang("project") . " -"));
         foreach ($projects as $project) {

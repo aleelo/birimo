@@ -3,7 +3,10 @@
         <div class="page-title clearfix items-page-title">
             <h1> <?php echo app_lang('supplier'); ?></h1>
             <div class="title-button-group">
-                <?php echo modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_supplier'), array("class" => "btn btn-default", "title" => app_lang('add_supplier'))); ?>
+                <?php 
+                if ($can_add_supplier){
+                echo modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_supplier'), array("class" => "btn btn-default", "title" => app_lang('add_supplier'))); 
+                }?>
             </div>
         </div>
         <div class="table-responsive">

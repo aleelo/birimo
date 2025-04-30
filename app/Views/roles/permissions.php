@@ -134,7 +134,7 @@
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_tasks"); ?></h5>
-                        <div>
+                        <!-- <div>
                             <?php
                             if (is_null($task)) {
                                 $task = "";
@@ -147,7 +147,16 @@
                             ), $task, ($task === "") ? true : false);
                             ?>
                             <label for="task_no"><?php echo app_lang("no"); ?> </label>
+                        </div> -->
+                        <div>
+                            <?php
+                            echo form_checkbox("hide_task", "1", $hide_task ? true : false, "id='hide_task' class='form-check-input'");
+                            ?>
+                            <label for="hide_task"><?php echo app_lang("hide_task"); ?></label>
                         </div>
+
+                        <div id="task_permission" class="<?php echo $hide_task ? "hide" : ""; ?>">
+                    
                         <div>
                             <?php
                             echo form_radio(array(
@@ -211,6 +220,7 @@
                                 echo form_checkbox("can_update_only_assigned_tasks_status", "1", $can_update_only_assigned_tasks_status ? true : false, "id='can_update_only_assigned_tasks_status' class='form-check-input'");
                                 ?>
                                 <label for="can_update_only_assigned_tasks_status"><?php echo app_lang("can_update_only_assigned_tasks_status"); ?></label>
+                            </div>
                             </div>
                     </li>
                 </li>
@@ -570,7 +580,7 @@
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_expenses"); ?></h5>
-                        <div>
+                        <!-- <div>
                             <?php
                             if (is_null($expense)) {
                                 $expense = "";
@@ -583,7 +593,17 @@
                             ), $expense, ($expense === "") ? true : false);
                             ?>
                             <label for="expense_no"><?php echo app_lang("no"); ?> </label>
+                        </div> -->
+                       
+                    
+                        <div>
+                            <?php
+                            echo form_checkbox("hide_expense", "1", $hide_expense ? true : false, "id='hide_expense' class='form-check-input'");
+                            ?>
+                            <label for="hide_expense"><?php echo app_lang("hide_expense"); ?></label>
                         </div>
+
+                        <div id="expense_permission" class="<?php echo $hide_expense ? "hide" : ""; ?>">
                         <div>
                             <?php
                             echo form_radio(array(
@@ -617,32 +637,31 @@
                             ?>
                             <label for="expense_yes"><?php echo app_lang("all"); ?></label>
                         </div>
-                    </li>
-                <?php } ?>
-                <li>
-                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">message </h3>
-                </li>
-                <?php if (get_setting("module_message")) { ?>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("set_message_permissions"); ?>:</h5>
-                        <div>
-                            <?php
-                            echo form_checkbox("message_permission_no", "1", ($message_permission == "no") ? true : false, "id='message_permission_no' class='form-check-input'");
-                            ?>
-                            <label for="message_permission_no"><?php echo app_lang("cant_send_any_messages"); ?></label>
-                        </div>
-                        <div id="message_permission_specific_area" class="form-group <?php echo ($message_permission == "no") ? "hide" : ""; ?>">
-                            <?php
-                            echo form_checkbox("message_permission_specific_checkbox", "1", ($message_permission == "specific") ? true : false, "id='message_permission_specific_checkbox' class='message_permission_specific toggle_specific form-check-input'");
-                            ?>
-                            <label for="message_permission_specific_checkbox"><?php echo app_lang("can_send_messages_to_specific_members_or_teams"); ?></label>
-                            <div class="specific_dropdown">
-                                <input type="text" value="<?php echo $message_permission_specific; ?>" name="message_permission_specific" id="message_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            <div>
+                                <?php
+                                echo form_checkbox("can_add_expense", "1", $can_add_expense ? true : false, "id='can_add_expense' class='form-check-input'");
+                                ?>
+                                <label for="can_add_expense"><?php echo app_lang("can_add_expense"); ?></label>
                             </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_update_expense", "1", $can_update_expense ? true : false, "id='can_update_expense' class='form-check-input'");
+                                ?>
+                                <label for="can_update_expense"><?php echo app_lang("can_update_expense"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_delete_expense", "1", $can_delete_expense ? true : false, "id='can_delete_expense' class='form-check-input'");
+                                ?>
+                                <label for="can_delete_expense"><?php echo app_lang("can_delete_expense"); ?></label>
+                            </div>
+
                         </div>
                     </li>
                 <?php } ?>
+               
                 <?php if (get_setting("module_event")) { ?>
                     <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
@@ -662,8 +681,8 @@
                 <?php if (get_setting("module_invoice")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_access_invoices_quotation_payment"); ?></h5>
-                        <div>
+                        <h5><?php echo app_lang("can_access_invoices?"); ?></h5>
+                        <!-- <div>
                             <?php
                             if (is_null($invoice)) {
                                 $invoice = "";
@@ -676,7 +695,17 @@
                             ), $invoice, ($invoice === "") ? true : false);
                             ?>
                             <label for="invoice_no"><?php echo app_lang("no"); ?> </label>
+                        </div> -->
+                                          
+
+                        <div>
+                            <?php
+                            echo form_checkbox("hide_invoice", "1", $hide_invoice ? true : false, "id='hide_invoice' class='form-check-input'");
+                            ?>
+                            <label for="hide_invoice"><?php echo app_lang("hide_invoice"); ?></label>
                         </div>
+
+                        <div id="invoice_permission" class="<?php echo $hide_invoice ? "hide" : ""; ?>">
                         <div>
                             <?php
                             echo form_radio(array(
@@ -698,13 +727,187 @@
                             ), $invoice, ($invoice === "all") ? true : false);
                             ?>
                             <label for="invoice_yes"><?php echo app_lang("all"); ?></label>
+                        </div> 
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_add_invoice", "1", $can_add_invoice ? true : false, "id='can_add_invoice' class='form-check-input'");
+                                ?>
+                                <label for="can_add_invoice"><?php echo app_lang("can_add_invoice"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_update_invoice", "1", $can_update_invoice ? true : false, "id='can_update_invoice' class='form-check-input'");
+                                ?>
+                                <label for="can_update_invoice"><?php echo app_lang("can_update_invoice"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_delete_invoice", "1", $can_delete_invoice ? true : false, "id='can_delete_invoice' class='form-check-input'");
+                                ?>
+                                <label for="can_delete_invoice"><?php echo app_lang("can_delete_invoice"); ?></label>
+                            </div>
+
                         </div>
-                       
+
+                        
                     </li>
-                <?php } ?> <li>
+                <?php } ?>
+                
+                <?php if (get_setting("module_estimate")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_access_estimates"); ?></h5>
+                        <!-- <div>
+                            <?php
+                            if (is_null($estimate)) {
+                                $estimate = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "estimate_no",
+                                "name" => "estimate_permission",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $estimate, ($estimate === "") ? true : false);
+                            ?>
+                            <label for="estimate_no"><?php echo app_lang("no"); ?> </label>
+                        </div> -->
+                      
+                        <div>
+                            <?php
+                            echo form_checkbox("hide_estimate", "1", $hide_estimate ? true : false, "id='hide_estimate' class='form-check-input'");
+                            ?>
+                            <label for="hide_estimate"><?php echo app_lang("hide_estimate"); ?></label>
+                        </div>
+
+                        <div id="estimate_permission" class="<?php echo $hide_estimate ? "hide" : ""; ?>">
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "estimate_yes_own",
+                                "name" => "estimate_permission",
+                                "value" => "own_company",
+                                "class" => "form-check-input",
+                            ), $estimate, ($estimate === "own_company") ? true : false);
+                            ?>
+                            <label for="estimate_yes_own"><?php echo app_lang("own_company"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "estimate_yes",
+                                "name" => "estimate_permission",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $estimate, ($estimate === "all") ? true : false);
+                            ?>
+                            <label for="estimate_yes"><?php echo app_lang("yes_all_estimates"); ?></label>
+                        </div>
+                        
+                            <div>
+                                <?php
+                                echo form_checkbox("can_add_estimate", "1", $can_add_estimate ? true : false, "id='can_add_estimate' class='form-check-input'");
+                                ?>
+                                <label for="can_add_estimate"><?php echo app_lang("can_add_estimate"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_update_estimate", "1", $can_update_estimate ? true : false, "id='can_update_estimate' class='form-check-input'");
+                                ?>
+                                <label for="can_update_estimate"><?php echo app_lang("can_update_estimate"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_delete_estimate", "1", $can_delete_estimate ? true : false, "id='can_delete_estimate' class='form-check-input'");
+                                ?>
+                                <label for="can_delete_estimate"><?php echo app_lang("can_delete_estimate"); ?></label>
+                            </div>
+
+                        </div>
+
+                    </li>
+                <?php } ?>
+                <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_access_payment"); ?></h5>
+                        <!-- <div>
+                            <?php
+                            if (is_null($payment)) {
+                                $payment = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "estimate_no",
+                                "name" => "payment_permission",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $payment, ($payment === "") ? true : false);
+                            ?>
+                            <label for="estimate_no"><?php echo app_lang("no"); ?> </label>
+                        </div> -->
+                       
+                        
+                        <div>
+                            <?php
+                            echo form_checkbox("hide_payment", "1", $hide_payment ? true : false, "id='hide_payment' class='form-check-input'");
+                            ?>
+                            <label for="hide_payment"><?php echo app_lang("hide_payment"); ?></label>
+                        </div>
+
+                        <div id="payment_permission" class="<?php echo $hide_payment ? "hide" : ""; ?>">
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "estimate_yes_own",
+                                "name" => "payment_permission",
+                                "value" => "own_company",
+                                "class" => "form-check-input",
+                            ), $payment, ($payment === "own_company") ? true : false);
+                            ?>
+                            <label for="estimate_yes_own"><?php echo app_lang("own_company"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "estimate_yes",
+                                "name" => "payment_permission",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $payment, ($payment === "all") ? true : false);
+                            ?>
+                            <label for="estimate_yes"><?php echo app_lang("yes_all_payment"); ?></label>
+                        </div>
+                            <div>
+                                <?php
+                                echo form_checkbox("can_add_payment", "1", $can_add_payment ? true : false, "id='can_add_payment' class='form-check-input'");
+                                ?>
+                                <label for="can_add_payment"><?php echo app_lang("can_add_payment"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_update_payment", "1", $can_update_payment ? true : false, "id='can_update_payment' class='form-check-input'");
+                                ?>
+                                <label for="can_update_payment"><?php echo app_lang("can_update_payment"); ?></label>
+                            </div>
+
+                            <div>
+                                <?php
+                                echo form_checkbox("can_delete_payment", "1", $can_delete_payment ? true : false, "id='can_delete_payment' class='form-check-input'");
+                                ?>
+                                <label for="can_delete_payment"><?php echo app_lang("can_delete_payment"); ?></label>
+                            </div>
+
+                        </div>
+
+                    </li>
+                <li>
                     <span data-feather="key" class="icon-14 ml-20"></span>
-                    <h5><?php echo app_lang("can_access_clients_&_Supplier_information"); ?> <span class="help" data-bs-toggle="tooltip" title="Hides all information of clients except company name."><i data-feather="help-circle" class="icon-14"></i></span></h5>
-                    <div>
+                    <h5><?php echo app_lang("can_access_clients"); ?> <span class="help" data-bs-toggle="tooltip" title="Hides all information of clients except company name."><i data-feather="help-circle" class="icon-14"></i></span></h5>
+                    <!-- <div>
                         <?php
                         if (is_null($client)) {
                             $client = "";
@@ -717,8 +920,17 @@
                         ), $client, ($client === "") ? true : false);
                         ?>
                         <label for="client_no"><?php echo app_lang("no"); ?> </label>
-                    </div>
+                    </div> -->
+                    
                     <div>
+                <?php
+                echo form_checkbox("hide_client", "1", $hide_client ? true : false, "id='hide_client' class='form-check-input'");
+                ?>
+                <label for="hide_client"><?php echo app_lang("hide_client"); ?></label>
+                </div>
+
+                <div id="client_permission" class="<?php echo $hide_client ? "hide" : ""; ?>">
+                <div>
                         <?php
                         echo form_radio(array(
                             "id" => "client_yes",
@@ -740,6 +952,28 @@
                         ?>
                         <label for="own_company"><?php echo app_lang("own_company"); ?></label>
                     </div>
+                <div>
+                <?php
+                echo form_checkbox("can_add_client", "1", $can_add_client ? true : false, "id='can_add_client' class='form-check-input'");
+                ?>
+                <label for="can_add_client"><?php echo app_lang("can_add_client"); ?></label>
+            </div>
+
+            <div>
+                <?php
+                echo form_checkbox("can_update_client", "1", $can_update_client ? true : false, "id='can_update_client' class='form-check-input'");
+                ?>
+                <label for="can_update_client"><?php echo app_lang("can_update_client"); ?></label>
+            </div>
+
+            <div>
+                <?php
+                echo form_checkbox("can_delete_client", "1", $can_delete_client ? true : false, "id='can_delete_client' class='form-check-input'");
+                ?>
+                <label for="can_delete_client"><?php echo app_lang("can_delete_client"); ?></label>
+            </div>
+
+</div>
                     <!-- <div>
                         <?php
                         echo form_radio(array(
@@ -778,49 +1012,132 @@
                     </div> -->
                 </li>
 
-                <!-- <?php if (get_setting("module_estimate")) { ?>
-                    <li>
+                <li>
+                    <span data-feather="key" class="icon-14 ml-20"></span>
+                    <h5><?php echo app_lang("can_access_suppliers"); ?> <span class="help" data-bs-toggle="tooltip" title="Hides all information of suppliers except company name."><i data-feather="help-circle" class="icon-14"></i></span></h5>
+                    <!-- <div>
+                        <?php
+                        if (is_null($supplier)) {
+                            $supplier = "";
+                        }
+                        echo form_radio(array(
+                            "id" => "supplier_no",
+                            "name" => "supplier_permission",
+                            "value" => "",
+                            "class" => "supplier_permission toggle_specific form-check-input",
+                        ), $supplier, ($supplier === "") ? true : false);
+                        ?>
+                        <label for="supplier_no"><?php echo app_lang("no"); ?> </label>
+                    </div> -->
+                   
+                    <div>
+                    <?php
+                    echo form_checkbox("hide_supplier", "1", $hide_supplier ? true : false, "id='hide_supplier' class='form-check-input'");
+                        ?>
+                    <label for="hide_supplier"><?php echo app_lang("hide_supplier"); ?></label>
+                    </div>
+
+                    <div id="supplier_permission" class="<?php echo $hide_supplier ? "hide" : ""; ?>">
+                    <div>
+                        <?php
+                        echo form_radio(array(
+                            "id" => "supplier_yes",
+                            "name" => "supplier_permission",
+                            "value" => "all",
+                            "class" => "supplier_permission toggle_specific form-check-input",
+                        ), $supplier, ($supplier === "all") ? true : false);
+                        ?>
+                        <label for="supplier_yes"><?php echo app_lang("yes_all_suppliers"); ?></label>
+                    </div>
+                    <div>
+                        <?php
+                        echo form_radio(array(
+                            "id" => "own_company",
+                            "name" => "supplier_permission",
+                            "value" => "own_company",
+                            "class" => "supplier_permission toggle_specific form-check-input",
+                        ), $supplier, ($supplier === "own_company") ? true : false);
+                        ?>
+                        <label for="own_company"><?php echo app_lang("own_company"); ?></label>
+                    </div>
+                    <div>
+                    <?php
+                    echo form_checkbox("can_add_supplier", "1", $can_add_supplier ? true : false, "id='can_add_supplier' class='form-check-input'");
+                    ?>
+                    <label for="can_add_supplier"><?php echo app_lang("can_add_supplier"); ?></label>
+                    </div>
+
+                    <div>
+                    <?php
+                    echo form_checkbox("can_update_supplier", "1", $can_update_supplier ? true : false, "id='can_update_supplier' class='form-check-input'");
+                    ?>
+                    <label for="can_update_supplier"><?php echo app_lang("can_update_supplier"); ?></label>
+                    </div>
+
+                    <div>
+                    <?php
+                    echo form_checkbox("can_delete_supplier", "1", $can_delete_supplier ? true : false, "id='can_delete_supplier' class='form-check-input'");
+                    ?>
+                    <label for="can_delete_supplier"><?php echo app_lang("can_delete_supplier"); ?></label>
+                    </div>
+
+                    </div>
+                </li>
+                <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_access_estimates"); ?></h5>
+                        <h5><?php echo app_lang("can_access_items"); ?></h5>
                         <div>
                             <?php
-                            if (is_null($estimate)) {
-                                $estimate = "";
+                            if (is_null($items)) {
+                                $items = "";
                             }
                             echo form_radio(array(
-                                "id" => "estimate_no",
-                                "name" => "estimate_permission",
+                                "id" => "items_no",
+                                "name" => "items_permission",
                                 "value" => "",
                                 "class" => "form-check-input",
-                            ), $estimate, ($estimate === "") ? true : false);
+                            ), $items, ($items === "") ? true : false);
                             ?>
-                            <label for="estimate_no"><?php echo app_lang("no"); ?> </label>
+                            <label for="items_no"><?php echo app_lang("no"); ?> </label>
                         </div>
                         <div>
                             <?php
                             echo form_radio(array(
-                                "id" => "estimate_yes",
-                                "name" => "estimate_permission",
+                                "id" => "items_yes",
+                                "name" => "items_permission",
                                 "value" => "all",
                                 "class" => "form-check-input",
-                            ), $estimate, ($estimate === "all") ? true : false);
+                            ), $items, ($items === "all") ? true : false);
                             ?>
-                            <label for="estimate_yes"><?php echo app_lang("yes_all_estimates"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "estimate_yes_own",
-                                "name" => "estimate_permission",
-                                "value" => "own",
-                                "class" => "form-check-input",
-                            ), $estimate, ($estimate === "own") ? true : false);
-                            ?>
-                            <label for="estimate_yes_own"><?php echo app_lang("yes_only_own_estimates"); ?></label>
+                            <label for="items_yes"><?php echo app_lang("yes"); ?></label>
                         </div>
                     </li>
-                <?php } ?> -->
-                <?php if (get_setting("module_contract")) { ?>
+                    <li>
+                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">message </h3>
+                </li>
+                <?php if (get_setting("module_message")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("set_message_permissions"); ?>:</h5>
+                        <div>
+                            <?php
+                            echo form_checkbox("message_permission_no", "1", ($message_permission == "no") ? true : false, "id='message_permission_no' class='form-check-input'");
+                            ?>
+                            <label for="message_permission_no"><?php echo app_lang("cant_send_any_messages"); ?></label>
+                        </div>
+                        <div id="message_permission_specific_area" class="form-group <?php echo ($message_permission == "no") ? "hide" : ""; ?>">
+                            <?php
+                            echo form_checkbox("message_permission_specific_checkbox", "1", ($message_permission == "specific") ? true : false, "id='message_permission_specific_checkbox' class='message_permission_specific toggle_specific form-check-input'");
+                            ?>
+                            <label for="message_permission_specific_checkbox"><?php echo app_lang("can_send_messages_to_specific_members_or_teams"); ?></label>
+                            <div class="specific_dropdown">
+                                <input type="text" value="<?php echo $message_permission_specific; ?>" name="message_permission_specific" id="message_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            </div>
+                        </div>
+                    </li>
+                <?php } ?>
+                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Others</h3>
+                    <?php if (get_setting("module_contract")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_contracts"); ?></h5>
@@ -1052,7 +1369,6 @@
                     </li>
                 <?php } ?>
                 <li>
-                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Others</h3>
                 </li>
                 <?php if (get_setting("module_order")) { ?>
                     <li>
@@ -1085,35 +1401,7 @@
                         </div>
                     </li>
                 <?php } ?>
-                <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_access_items"); ?></h5>
-                        <div>
-                            <?php
-                            if (is_null($items)) {
-                                $items = "";
-                            }
-                            echo form_radio(array(
-                                "id" => "items_no",
-                                "name" => "items_permission",
-                                "value" => "",
-                                "class" => "form-check-input",
-                            ), $items, ($items === "") ? true : false);
-                            ?>
-                            <label for="items_no"><?php echo app_lang("no"); ?> </label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "items_yes",
-                                "name" => "items_permission",
-                                "value" => "all",
-                                "class" => "form-check-input",
-                            ), $items, ($items === "all") ? true : false);
-                            ?>
-                            <label for="items_yes"><?php echo app_lang("yes"); ?></label>
-                        </div>
-                    </li>
+             
                    
                 <?php if (get_setting("module_help") || get_setting("module_knowledge_base")) { ?>
                     <li>
@@ -1281,7 +1569,48 @@
             });
 
         }
-
+        $("#hide_invoice").click(function() {
+            if ($(this).is(":checked")) {
+                $("#invoice_permission").addClass("hide");
+            } else {
+                $("#invoice_permission").removeClass("hide");
+            }
+        });
+        $("#hide_estimate").click(function() {
+            if ($(this).is(":checked")) {
+                $("#estimate_permission").addClass("hide");
+            } else {
+                $("#estimate_permission").removeClass("hide");
+            }
+        });
+        $("#hide_payment").click(function() {
+            if ($(this).is(":checked")) {
+                $("#payment_permission").addClass("hide");
+            } else {
+                $("#payment_permission").removeClass("hide");
+            }
+        });
+        $("#hide_expense").click(function() {
+            if ($(this).is(":checked")) {
+                $("#expense_permission").addClass("hide");
+            } else {
+                $("#expense_permission").removeClass("hide");
+            }
+        });
+        $("#hide_client").click(function() {
+            if ($(this).is(":checked")) {
+                $("#client_permission").addClass("hide");
+            } else {
+                $("#client_permission").removeClass("hide");
+            }
+        });
+        $("#hide_supplier").click(function() {
+            if ($(this).is(":checked")) {
+                $("#supplier_permission").addClass("hide");
+            } else {
+                $("#supplier_permission").removeClass("hide");
+            }
+        });
         //show/hide message permission checkbox
         $("#message_permission_no").click(function() {
             if ($(this).is(":checked")) {

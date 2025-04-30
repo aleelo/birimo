@@ -19,12 +19,14 @@ class Invoices extends Security_Controller_Plugin {
     /* load invoice list view */
 
     function index($tab = "", $status = "", $selected_currency = "") {
-        $this->check_module_availability("module_invoice");
+        if (!$this->can_view_invoice()) {
+            app_redirect("forbidden");
+        }
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("invoices", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $view_data["can_edit_invoices"] = $this->can_edit_invoices();
+        $view_data["can_edit_invoices"] = $this->can_add_invoice();
         $view_data['company'] = $this->_get_company();
 
         $type_suggestions = array(
@@ -35,9 +37,6 @@ class Invoices extends Security_Controller_Plugin {
         $view_data['types_dropdown'] = json_encode($type_suggestions);
 
         if ($this->login_user->user_type === "staff") {
-            if (!$this->can_view_invoices()) {
-                app_redirect("forbidden");
-            }
 
             $view_data['tab'] = clean_data($tab);
             $view_data['status'] = clean_data($status);
@@ -48,9 +47,7 @@ class Invoices extends Security_Controller_Plugin {
 
             return $this->template->rander("aleelo_plugin\Views/invoices/index", $view_data);
         } else {
-            if (!$this->can_client_access("invoice")) {
-                app_redirect("forbidden");
-            }
+        
 
             $view_data["client_info"] = $this->Clients_model->get_one($this->login_user->client_id);
             $view_data['client_id'] = $this->login_user->client_id;
@@ -72,13 +69,7 @@ class Invoices extends Security_Controller_Plugin {
         $invoice_id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
 
-        if (!$this->can_edit_invoices()) {
-            app_redirect("forbidden");
-        }
-
-        if (!$this->is_invoice_editable($invoice_id, $is_clone)) {
-            app_redirect("forbidden");
-        }
+        $this->can_add_invoice();
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -599,9 +590,8 @@ else{
     /* list of invoices, prepared for datatable  */
 
     function list_data() {
-        if (!$this->can_view_invoices()) {
-            app_redirect("forbidden");
-        }
+        $this->can_view_invoice();
+
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -853,17 +843,20 @@ else{
 
     //prepare options dropdown for invoices list
     private function _make_options_dropdown($data) {
+       
         $edit = '';
-
+$delete= '';
         $edit_url = "invoices/modal_form";
         if (get_setting("enable_invoice_lock_state") && !$this->is_invoice_editable($data)) {
             $edit_url = "invoices/recurring_modal_form";
         }
-
+        if ($this->can_edit_invoice()) {
+        
         $edit = '<li role="presentation">' . modal_anchor(get_uri($edit_url), "<i data-feather='edit' class='icon-16'></i> " . app_lang('edit'), array("title" => app_lang('edit_invoice'), "data-post-id" => $data->id, "class" => "dropdown-item")) . '</li>';
-
+        }
+        if($this->can_delete_invoice()){
         $delete = '<li role="presentation">' . js_anchor("<i data-feather='x' class='icon-16'></i>" . app_lang('delete'), array('title' => app_lang('delete_invoice'), "class" => "delete dropdown-item", "data-id" => $data->id, "data-action-url" => get_uri("invoices/delete"), "data-action" => "delete-confirmation")) . '</li>';
-
+    }
         $add_payment = '<li role="presentation">' . modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_payment'), array("title" => app_lang('add_payment'), "data-post-invoice_id" => $data->id, "class" => "dropdown-item")) . '</li>';
 
         return '
@@ -958,10 +951,9 @@ else{
     /* load invoice details view */
 
     function view($invoice_id = 0) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
-
         if ($invoice_id) {
             validate_numeric_value($invoice_id);
             $view_data = get_invoice_making_data($invoice_id);

@@ -28,11 +28,13 @@ class Client extends Security_Controller_Plugin {
     /* load clients list view */
 
     function index($tab = "") {
-        $this->access_only_allowed_members();
-
+        if (!$this->can_view_client()) {
+            app_redirect("forbidden");
+        }
         $view_data = $this->make_access_permissions_view_data();
 
-        $view_data['can_edit_clients'] = $this->can_edit_clients();
+        $view_data['can_edit_clients'] = $this->can_edit_client();
+        $view_data['can_add_clients'] = $this->can_add_client();
         $view_data["show_project_info"] = $this->can_manage_all_projects() && !$this->has_all_projects_restricted_role();
 
         $view_data["show_own_clients_only_user_id"] = $this->show_own_clients_only_user_id();
@@ -69,7 +71,9 @@ class Client extends Security_Controller_Plugin {
         $client_id = $this->request->getPost('id');
         validate_numeric_value($client_id);
         $this->_validate_client_manage_access($client_id);
-
+        if (!$this->can_add_client()) {
+            app_redirect("forbidden");
+        }
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
@@ -230,7 +234,9 @@ class Client extends Security_Controller_Plugin {
 
     function list_data() {
 
-        $this->access_only_allowed_members();
+        if (!$this->can_view_client()) {
+            app_redirect("forbidden");
+        }
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array(
             "custom_fields" => $custom_fields,
@@ -326,10 +332,17 @@ class Client extends Security_Controller_Plugin {
             $cf_id = "cfv_" . $field->id;
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
+$delete = "";
+$edit = "";
+        if ($this->can_edit_client($data->id)) {
+            $edit =modal_anchor(get_uri("client/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id));
 
-        $row_data[] = modal_anchor(get_uri("client/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id))
-            . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_client'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("clients/delete"), "data-action" => "delete-confirmation"));
+        }
+        if ($this->can_delete_client($data->id)) {
+            $delete =js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_client'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("clients/delete"), "data-action" => "delete-confirmation"));
+        }
 
+        $row_data[] =$edit . $delete;
         return $row_data;
     }
 

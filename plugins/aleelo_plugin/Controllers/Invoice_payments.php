@@ -18,15 +18,22 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* load invoice list view */
 
     function index() {
-        if (            $invoice_permission = get_array_value($this->login_user->permissions, "invoice")
-        ) {
+        if(!$this->can_view_payment())
+    {
+        app_redirect("forbidden");
+}
+
+        if (            $invoice_permission = get_array_value($this->login_user->permissions, "payment")
+        )
+     {
     
-            if ($this->login_user->is_admin || $invoice_permission === "all" || $invoice_permission === "own_invoice" || $invoice_permission === "read_only") {
+            if ($this->login_user->is_admin || $invoice_permission === "all" || $invoice_permission === "own_company" || $invoice_permission === "read_only") {
                 $view_data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
                 $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown();
                 $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("payments");
                 $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
                 $view_data['company'] = $this->_get_company();
+                $view_data['can_edit_payment'] = $this->can_edit_payment();
     
                 return $this->template->rander("aleelo_plugin\Views/invoices/payment_received", $view_data);
             } else {
@@ -60,7 +67,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* load payment modal */
 
     function payment_modal_form() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_add_payment()) {
             app_redirect("forbidden");
         }
         $this->validate_submitted_data(array(
@@ -149,8 +156,9 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* delete or undo a payment */
 
     function delete_payment() {
-        $this->access_only_allowed_members();
-
+        if (!$this->can_delete_payment()) {
+            app_redirect("forbidden");
+        }
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
         ));
@@ -177,7 +185,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* list of invoice payments, prepared for datatable  */
 
     function payment_list_data($invoice_id = 0) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_payment()) {
             app_redirect("forbidden");
         }
 
@@ -194,7 +202,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             "payment_method_id" => $payment_method_id,
             "currency" => $this->request->getPost("currency"),
             "project_id" => $this->request->getPost("project_id"),
-            "company_id" => $this->can_view_own_company_invoice(),
+            "company_id" => $this->can_view_own_company_payment(),
             "can_view_all_invoice" =>$ss,
         );
 
@@ -252,6 +260,14 @@ class Invoice_payments extends Security_Controller_Plugin {
         } else {
             $invoice_url = anchor(get_uri("invoices/preview/" . $data->invoice_id), $data->display_id);
         }
+        $edit= '';
+        $delete= '';
+        if ($this->can_edit_payment()) {
+            $edit= modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_payment'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id,));
+        }
+        if ($this->can_delete_payment()) {
+        $delete= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment"), "data-action" => "delete"));
+        }
         return array(
             $invoice_url,
             $data->payment_date,
@@ -259,9 +275,8 @@ class Invoice_payments extends Security_Controller_Plugin {
             $data->payment_method_title,
             $data->note,
             to_currency($data->amount, $data->currency_symbol),
-            modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_payment'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id,))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment"), "data-action" => "delete"))
-        );
+            $edit . " " . $delete,
+            );
     }
 
     /* invoice total section */

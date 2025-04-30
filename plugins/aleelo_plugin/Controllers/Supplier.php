@@ -12,16 +12,20 @@ class Supplier extends Security_Controller_Plugin {
     }
 
     function index() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_supplier()) {
             app_redirect("forbidden");
         }
-        return $this->template->rander("aleelo_plugin\Views/supplier/index");
+        $view_data['can_add_supplier'] = $this->can_add_supplier();
+        return $this->template->rander("aleelo_plugin\Views/supplier/index",$view_data);
     }
 
     function modal_form() {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
+        if (!$this->can_add_supplier()) {
+            app_redirect("forbidden");
+        }
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
         $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
         $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
@@ -124,7 +128,7 @@ class Supplier extends Security_Controller_Plugin {
     }
 
     function list_data() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_supplier()) {
             app_redirect("forbidden");
         }
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
@@ -157,9 +161,16 @@ class Supplier extends Security_Controller_Plugin {
         $data = $this->Supplier_model->get_details($options)->getRow();
         return $this->_make_row($data);
     }
-
-    private function _make_row($data) {
-      
+       private function _make_row($data) {
+        $edit='';
+        $delete='';
+        if ($this->can_edit_supplier()) {
+            $edit = modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id));
+        }
+        if ($this->can_delete_supplier()) {
+            $delete = 
+             js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("supplier/delete"), "data-action" => "delete"));    }
+        
         return array(
             $data->id,
             $data->supplier_name,
@@ -170,8 +181,7 @@ class Supplier extends Security_Controller_Plugin {
             $data->region_name,
             $data->address,
             $data->Website,
-            modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id))
-            . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("supplier/delete"), "data-action" => "delete"))
+            $edit.$delete,
         );
     }
     private function make_access_permissions_view_data() {

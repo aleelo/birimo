@@ -156,19 +156,233 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
         }
         return null; 
     }
-
-
-
-    protected function can_view_own_company_client() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
-            return $this->login_user->department; 
+// ----------------------------------------------------invoice-----------------------------------------------------
+    protected function can_view_invoice() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_invoice") !== "1") {
+            return true; 
         }
-        else if($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "all") 
-        {
-            return 0;
+        return false; 
+    }
+
+
+    protected function can_edit_invoice() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_invoice") == "1")) {
+            return true;
         }
         return null; 
     }
+
+
+    protected function can_add_invoice() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_invoice") == "1")) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function can_delete_invoice() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_invoice") == "1")) {
+            return true;
+        }
+        return null; 
+    }
+    protected function can_view_own_company_invoice() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
+            return $this->login_user->department; 
+        }
+        return null; 
+    }
+
+    // ----------------------------------------------------estimate-----------------------------------------------------
+    protected function can_view_estimate() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_estimate") !== "1") {
+            return true; 
+        }
+        return app_redirect("forbidden"); 
+    }
+
+
+    protected function can_edit_estimate() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_estimate") == "1")) {
+            return true;
+        }
+        return null; 
+    }
+
+
+    protected function can_add_estimate() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_estimate") == "1")) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function can_delete_estimate() {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_estimate") == "1")) {
+            return true;
+        }
+        return null; 
+    }
+    protected function can_view_own_company_estimate() {
+        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "estimate") === "own_company") {
+            return $this->login_user->department; 
+        }
+        return null; 
+    }
+   // ----------------------------------------------------payment-----------------------------------------------------
+   protected function can_view_payment() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_payment") !== "1") {
+        return true; 
+    }
+    return false;
+}
+
+
+protected function can_edit_payment() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_payment") == "1")) {
+        return true;
+    }
+    return false; 
+}
+
+
+protected function can_add_payment() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_payment") == "1")) {
+        return true;
+    }
+    return false;
+}
+
+protected function can_delete_payment() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_payment") == "1")) {
+        return true;
+    }
+    return false; 
+}
+protected function can_view_own_company_payment() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "payment") === "own_company") {
+        return $this->login_user->department; 
+    }
+    return false; 
+}
+
+ // ----------------------------------------------------client-----------------------------------------------------
+ protected function can_view_client() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_client") !== "1") {
+        return true; 
+    }
+    return false;
+}
+
+
+protected function can_edit_client() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_client") == "1")) {
+        return true;
+    }
+    return false; 
+}
+
+
+protected function can_add_client() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_client") == "1")) {
+        return true;
+    }
+    return false;
+}
+
+protected function can_delete_client() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_client") == "1")) {
+        return true;
+    }
+    return false; 
+}
+protected function can_view_own_company_client() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
+        return $this->login_user->department; 
+    }
+    return false; 
+}
+ // ----------------------------------------------------supplier-----------------------------------------------------
+ protected function can_view_supplier() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_supplier") !== "1") {
+        return true; 
+    }
+    return false;
+}
+
+
+protected function can_edit_supplier() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_supplier") == "1")) {
+        return true;
+    }
+    return false; 
+}
+
+
+protected function can_add_supplier() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_supplier") == "1")) {
+        return true;
+    }
+    return false;
+}
+
+protected function can_delete_supplier() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_supplier") == "1")) {
+        return true;
+    }
+    return false; 
+}
+protected function can_view_own_company_supplier() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "supplier") === "own_company") {
+        return $this->login_user->department; 
+    }
+    return false; 
+}
+
+// ----------------------------------------------------expense-----------------------------------------------------
+protected function can_view_expense() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_expense") !== "1") {
+        return true; 
+    }
+    return false;
+}
+
+
+protected function can_edit_expense() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_update_expense") == "1")) {
+        return true;
+    }
+    return false; 
+}
+
+
+protected function can_add_expense() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_expense") == "1")) {
+        return true;
+    }
+    return false;
+}
+
+protected function can_delete_expense() {
+    if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_delete_expense") == "1")) {
+        return true;
+    }
+    return false; 
+}
+protected function can_view_own_company_expense() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "expense") === "own_company") {
+        return $this->login_user->department; 
+    }
+    return false; 
+}
+// ----------------------------------------------------expense-----------------------------------------------------
+protected function can_view_task() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_task") !== "1") {
+        return true; 
+    }
+    return false;
+}
+
 
 
 

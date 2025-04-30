@@ -24,16 +24,14 @@ class Estimates extends Security_Controller_Plugin {
 
     function index() {
         $this->check_module_availability("module_invoice");
+        $this->can_view_estimate();
 
         $view_data['can_request_estimate'] = false;
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("estimates", $this->login_user->is_admin, $this->login_user->user_type);
-
-        if ($this->login_user->user_type === "staff") {  if (!$this->can_view_invoices()) {
-                app_redirect("forbidden");
-            }
-            $this->can_view_invoices();
+        $view_data['can_edit_estimates'] = $this->can_edit_estimate();
+        if ($this->login_user->user_type === "staff") {  
             $view_data['company'] = $this->_get_company();
 
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
@@ -63,6 +61,10 @@ class Estimates extends Security_Controller_Plugin {
             "id" => "numeric",
             "client_id" => "numeric"
         ));
+        if (!$this->can_add_estimate()) {
+            app_redirect("forbidden");
+        }
+
 
         $id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
@@ -400,7 +402,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     /* delete or undo an estimate */
 
     function delete() {
-
+        $this->can_delete_estimate();
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
         ));
@@ -426,7 +428,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     /* list of estimates, prepared for datatable  */
 
     function list_data() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_estimate()) {
             app_redirect("forbidden");
         }
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
@@ -438,7 +440,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type),
-            "company_id" => $this->can_view_own_company_invoice(),
+            "company_id" => $this->can_view_own_company_estimate(),
             "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
         );
 
@@ -528,14 +530,22 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
 
-        $edit = "";
-        if ($this->_is_estimate_editable($data)) {
+        $delete='';
+        if ($this->can_edit_estimate()) {
             $edit = modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id));
-        }
+        }else{
+            $edit ='';
 
+        }
+        if ($this->can_delete_estimate()){
+        $delete=  js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
+        }
+        else{
+            $delete ='';
+        }
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
             . $edit
-            . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
+            . $delete;
 
         return $row_data;
     }
@@ -549,7 +559,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function view($estimate_id = 0) {
         validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id);
+        // $this->validate_estimate_access($estimate_id);
+        $this->can_view_estimate();
 
         if ($estimate_id) {
 

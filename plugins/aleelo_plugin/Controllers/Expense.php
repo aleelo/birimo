@@ -15,13 +15,17 @@ class Expense extends Security_Controller_Plugin {
 
     //load the expenses list view
     function index() {
-       $this->check_module_availability("module_expense");
+        $this->check_module_availability("module_expense");
+        if (!$this->can_view_expense()) {
+        app_redirect("forbidden");
+    }
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data['login_user'] = $this->login_user;
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
         $view_data['company'] = $this->_get_company();
         $view_data["can_edit_expense"] = $this->can_edit_expense();
+        $view_data["can_add_expense"] = $this->can_add_expense();
 
         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
         $department=$this->login_user->department;
@@ -86,6 +90,9 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
         ));
+        if (!$this->can_add_expense()) {
+            app_redirect("forbidden");
+        }
         // $company_access=$this->login_user->department;
         $team_members = "";
         if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
@@ -348,13 +355,16 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
     
     //get the expnese list data
     function list_data($recurring = false) {
+        if (!$this->can_view_expense()) {
+            app_redirect("forbidden");
+        }
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
         $category_id = $this->request->getPost('category_id');
         $project_id = $this->request->getPost('project_id');
         $user_id = $this->request->getPost('user_id');
         $company_id_company= $this->request->getPost('company_id_company');
-        $company= $this->can_view_all_expense();
+        $company= $this->can_view_own_company_expense();
         
         
     
@@ -390,7 +400,7 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
 
         $meta_info = $this->_prepare_expense_info($data);
         
-       
+    
         $description = $data->description;
         if ($data->linked_client_name) {
             if ($description) {
@@ -491,16 +501,53 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
             $cf_id = "cfv_" . $field->id;
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
-if (get_array_value($this->login_user->permissions, "expense") === "own_expenses" && $data->status == "unpaid") {
-    $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
-    . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expense/delete"), "data-action" => "delete-confirmation"));
-}
-        else if ($this->can_edit_expense()) {
-            $row_data[] = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expense/delete"), "data-action" => "delete-confirmation"));
+        $edit = "";
+        $delete = "";
+        
+        if (get_array_value($this->login_user->permissions, "expense") === "own_expenses") {
+            if ($data->status === "unpaid") {
+                $edit = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                    "class" => "edit",
+                    "title" => app_lang('edit_expense'),
+                    "data-post-id" => $data->id
+                ));
+        
+                $delete = js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+                    'title' => app_lang('delete_expense'),
+                    "class" => "delete",
+                    "data-id" => $data->id,
+                    "data-action-url" => get_uri("expense/delete"),
+                    "data-action" => "delete-confirmation"
+                ));
+            }
+            else if ($data->status === "paid" || $data->status === "rejected" || $data->status === "draft" ) {
+                $edit ='';
+        
+                $delete = '';
+            }
         } else {
-            $row_data[] = ""; //
+            if ($this->can_edit_expense()) {
+                $edit = modal_anchor(get_uri("expense/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                    "class" => "edit",
+                    "title" => app_lang('edit_expense'),
+                    "data-post-id" => $data->id
+                ));
+            }
+        
+            if ($this->can_delete_expense()) {
+                $delete = js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+                    'title' => app_lang('delete_expense'),
+                    "class" => "delete",
+                    "data-id" => $data->id,
+                    "data-action-url" => get_uri("expense/delete"),
+                    "data-action" => "delete-confirmation"
+                ));
+            }
         }
+        
+        
+        
+        $row_data[] = $edit . $delete;
         return $row_data;
     }
 

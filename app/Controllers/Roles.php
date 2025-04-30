@@ -74,7 +74,8 @@ class Roles extends Security_Controller {
             $view_data['client'] = get_array_value($permissions, "client");
             $view_data['lead'] = get_array_value($permissions, "lead");
             $view_data['company'] = get_array_value($permissions, "company");
-
+            $view_data['payment'] = get_array_value($permissions, "payment");
+            $view_data['supplier'] = get_array_value($permissions, "supplier");
 
 
             $view_data['ticket'] = get_array_value($permissions, "ticket");
@@ -120,14 +121,14 @@ class Roles extends Security_Controller {
             $view_data['disable_event_sharing'] = get_array_value($permissions, "disable_event_sharing");
 
             $view_data['hide_team_members_list'] = get_array_value($permissions, "hide_team_members_list");
-                        $view_data['can_view_own_company_members'] = get_array_value($permissions, "can_view_own_company_members");
+            $view_data['can_view_own_company_members'] = get_array_value($permissions, "can_view_own_company_members");
 
 
             $view_data['can_delete_leave_application'] = get_array_value($permissions, "can_delete_leave_application");
 
             $view_data['message_permission'] = get_array_value($permissions, "message_permission");
             $view_data['message_permission_specific'] = get_array_value($permissions, "message_permission_specific");
-           
+        
             $view_data['job_info_manage_permission'] = get_array_value($permissions, "job_info_manage_permission");
 
             $view_data['can_manage_all_kinds_of_settings'] = get_array_value($permissions, "can_manage_all_kinds_of_settings");
@@ -146,8 +147,33 @@ class Roles extends Security_Controller {
             $view_data['can_upload_and_edit_files'] = get_array_value($permissions, "can_upload_and_edit_files");
             $view_data['can_view_files'] = get_array_value($permissions, "can_view_files");
             $view_data['can_comment_on_projects'] = get_array_value($permissions, "can_comment_on_projects");
-
+            $view_data['hide_invoice'] = get_array_value($permissions, "hide_invoice");
+            $view_data['can_add_invoice'] = get_array_value($permissions, "can_add_invoice");
             $view_data['permissions'] = $permissions;
+            $view_data['can_update_invoice'] = get_array_value($permissions, "can_update_invoice");
+            $view_data['can_delete_invoice'] = get_array_value($permissions, "can_delete_invoice");
+            $view_data['can_delete_estimate'] = get_array_value($permissions, "can_delete_estimate");
+            $view_data['can_update_estimate'] = get_array_value($permissions, "can_update_estimate");
+            $view_data['hide_estimate'] = get_array_value($permissions, "hide_estimate");
+            $view_data['can_add_estimate'] = get_array_value($permissions, "can_add_estimate");
+            $view_data['can_delete_payment'] = get_array_value($permissions, "can_delete_payment");
+            $view_data['can_update_payment'] = get_array_value($permissions, "can_update_payment");
+            $view_data['hide_payment'] = get_array_value($permissions, "hide_payment");
+            $view_data['can_add_payment'] = get_array_value($permissions, "can_add_payment");
+            $view_data['hide_client'] = get_array_value($permissions, "hide_client");
+            $view_data['hide_supplier'] = get_array_value($permissions, "hide_supplier");
+            $view_data['can_add_client'] = get_array_value($permissions, "can_add_client");
+            $view_data['can_update_client'] = get_array_value($permissions, "can_update_client");
+            $view_data['can_delete_client'] = get_array_value($permissions, "can_delete_client");
+            $view_data['can_add_supplier'] = get_array_value($permissions, "can_add_supplier");
+            $view_data['can_update_supplier'] = get_array_value($permissions, "can_update_supplier");
+            $view_data['can_delete_supplier'] = get_array_value($permissions, "can_delete_supplier");
+            $view_data['hide_expense'] = get_array_value($permissions, "hide_expense");
+            $view_data['can_add_expense'] = get_array_value($permissions, "can_add_expense");
+            $view_data['can_update_expense'] = get_array_value($permissions, "can_update_expense");
+            $view_data['can_delete_expense'] = get_array_value($permissions, "can_delete_expense");
+
+            $view_data['hide_task'] = get_array_value($permissions, "hide_task");
 
             return $this->template->view("roles/permissions", $view_data);
         }
@@ -206,13 +232,15 @@ class Roles extends Security_Controller {
         $proposal = $this->request->getPost('proposal_permission');
         $order = $this->request->getPost('order_permission');       
         $items = $this->request->getPost('items_permission');       
+        $payment = $this->request->getPost('payment_permission');
 
-
-         $expense = $this->request->getPost('expense_permission');
-         $task = $this->request->getPost('task_permission');
+        $expense = $this->request->getPost('expense_permission');
+        $task = $this->request->getPost('task_permission');
         $client = $this->request->getPost('client_permission');
+        $supplier = $this->request->getPost('supplier_permission');
         $lead = $this->request->getPost('lead_permission');
         $company = $this->request->getPost('switch_company');
+
 
         $ticket = $this->request->getPost('ticket_permission');
 
@@ -318,15 +346,41 @@ class Roles extends Security_Controller {
         $client_feedback_access_permission = $this->request->getPost('client_feedback_access_permission');
 
         $team_members_note_manage_permission = $this->request->getPost('team_members_note_manage_permission');
-
+$can_add_invoice = $this->request->getPost('can_add_invoice');
+$can_update_invoice = $this->request->getPost('can_update_invoice');
+$can_delete_invoice = $this->request->getPost('can_delete_invoice');
+$hide_invoice = $this->request->getPost('hide_invoice');
+$can_delete_estimate = $this->request->getPost('can_delete_estimate');
+$can_update_estimate = $this->request->getPost('can_update_estimate');
+$hide_estimate = $this->request->getPost('hide_estimate');
+$can_add_estimate = $this->request->getPost('can_add_estimate');
         $can_upload_and_edit_files = $this->request->getPost('can_upload_and_edit_files');
         $can_view_files = $this->request->getPost('can_view_files');
         $can_comment_on_projects = $this->request->getPost('can_comment_on_projects');
+        $can_delete_payment = $this->request->getPost('can_delete_payment');    
+        $can_update_payment = $this->request->getPost('can_update_payment');
+        $hide_payment = $this->request->getPost('hide_payment');
+        $can_add_payment = $this->request->getPost('can_add_payment');
+        $hide_client = $this->request->getPost('hide_client');
+        $hide_supplier = $this->request->getPost('hide_supplier');
+        $can_add_client = $this->request->getPost('can_add_client');
+        $can_update_client = $this->request->getPost('can_update_client');
+        $can_delete_client = $this->request->getPost('can_delete_client');
+        $can_add_supplier = $this->request->getPost('can_add_supplier');
+        $can_update_supplier = $this->request->getPost('can_update_supplier');
+        $can_delete_supplier = $this->request->getPost('can_delete_supplier');
+        $hide_expense = $this->request->getPost('hide_expense');
+        $can_add_expense = $this->request->getPost('can_add_expense');
+        $can_update_expense = $this->request->getPost('can_update_expense');
+        $can_delete_expense = $this->request->getPost('can_delete_expense');
+        $hide_task = $this->request->getPost('hide_task');
 
+        
         $permissions = array(
             "leave" => $leave,
             "leave_specific" => $leave_specific,
             "attendance" => $attendance,
+            "payment"=>$payment,
             "attendance_specific" => $attendance_specific,
             "invoice" => $invoice,
             "subscription" => $subscription,
@@ -338,7 +392,7 @@ class Roles extends Security_Controller {
             "expense" => $expense,
             "order" => $order,
             "items" => $items,
-
+            "supplier" => $supplier,
             "client" => $client,
             "client_specific" => $client_specific,
             "lead" => $lead,
@@ -380,7 +434,7 @@ class Roles extends Security_Controller {
             "can_delete_leave_application" => $can_delete_leave_application,
             "message_permission" => $message_permission,
             "message_permission_specific" => $message_permission_specific,
-          
+            
             
             "job_info_manage_permission" => $job_info_manage_permission,
             "can_manage_all_kinds_of_settings" => $can_manage_all_kinds_of_settings,
@@ -395,6 +449,35 @@ class Roles extends Security_Controller {
             "can_upload_and_edit_files" => $can_upload_and_edit_files,
             "can_view_files" => $can_view_files,
             "can_comment_on_projects" => $can_comment_on_projects,
+            "can_add_invoice" => $can_add_invoice ,
+            "can_update_invoice" => $can_update_invoice,
+            "can_delete_invoice" => $can_delete_invoice,
+            "hide_invoice" => $hide_invoice,
+            "can_add_estimate" => $can_add_estimate,
+            "can_update_estimate" => $can_update_estimate,
+            "can_delete_estimate" => $can_delete_estimate,
+            "hide_estimate" => $hide_estimate,
+            "can_delete_payment" => $can_delete_payment,
+            "can_update_payment" => $can_update_payment,
+            "hide_payment" => $hide_payment,
+            "can_add_payment" => $can_add_payment,
+            "hide_client" => $hide_client,
+            "hide_supplier" => $hide_supplier,
+            "can_add_client" => $can_add_client,
+            "can_update_client" => $can_update_client,
+            "can_delete_client" => $can_delete_client,
+            "can_add_supplier" => $can_add_supplier,
+            "can_update_supplier" => $can_update_supplier,
+            "can_delete_supplier" => $can_delete_supplier,
+            "hide_expense" => $hide_expense,
+            "can_add_expense" => $can_add_expense,
+            "can_update_expense" => $can_update_expense,
+            "can_delete_expense" => $can_delete_expense,
+            "hide_task" => $hide_task,
+            
+            
+            
+
         );
 
         try {

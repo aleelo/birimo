@@ -7,7 +7,9 @@
 
             <div class="tab-title clearfix no-border">
                 <div class="title-button-group">
-                    <?php echo modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_payment'), array("class" => "btn btn-default mb0", "title" => app_lang('add_payment'))); ?>
+                    <?php if($can_edit_payment){
+                   echo modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_payment'), array("class" => "btn btn-default mb0", "title" => app_lang('add_payment')));
+                     } ?>
                 </div>
             </div>
         </ul>
@@ -48,7 +50,8 @@
                 {title: '<?php echo app_lang("payment_date") ?> ', "class": "w15p", "iDataSort": 1},
                 {title: '<?php echo app_lang("payment_method") ?>', "class": "w15p"},
                 {title: '<?php echo app_lang("note") ?>'},
-                {title: '<?php echo app_lang("amount") ?>', "class": "text-right w15p all"}
+                {title: '<?php echo app_lang("amount") ?>', "class": "text-right w15p all"},
+                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", visible: true}
                 ],
                 summation: [{column: 5, dataType: 'currency', currencySymbol: AppHelper.settings.currencySymbol, conversionRate: <?php echo $conversion_rate; ?>}],
                 printColumns: [0, 2, 3, 4, 5],

@@ -32,7 +32,7 @@
                 {title: '<?php echo app_lang("payment_method") ?>', "class": "w15p all"},
                 {title: '<?php echo app_lang("note") ?>'},
                 {title: '<?php echo app_lang("amount") ?>', "class": "text-right w15p"},
-                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", visible: optionVisibility}
+                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", visible: true}
             ],
             onDeleteSuccess: function (result) {
                 $("#invoice-total-section").html(result.invoice_total_view);

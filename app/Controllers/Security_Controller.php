@@ -636,9 +636,11 @@ class Security_Controller extends App_Controller {
     }
 
     protected function can_edit_invoices() {
-        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all"|| get_array_value($this->login_user->permissions, "invoice") === "own_invoice")) {
+        if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "invoice") === "all"|| get_array_value($this->login_user->permissions, "invoice") === "own_company")) {
             return true;
         }
+        return true;
+
     }
     protected function can_edit_expense() {
         if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "expense") === "all"|| get_array_value($this->login_user->permissions, "expense") === "own_company")) {
@@ -655,12 +657,7 @@ class Security_Controller extends App_Controller {
             return true;
         }
     }
-    protected function can_view_own_company_invoice() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
-            return $this->login_user->department; 
-        }
-        return null; 
-    }
+ 
   protected function can_view_own_company_members() {
         if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_members") === "1") {
             return $this->login_user->department; 

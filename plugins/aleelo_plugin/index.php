@@ -68,9 +68,6 @@ $routes = service('routes');
     $routes->get('invoice_payments/(:any)', 'Invoice_payments::$1');
     $routes->post('invoice_payments/(:any)', 'Invoice_payments::$1');
 
-    $routes->get('invoice_payments', 'Invoices::index');
-    $routes->get('invoice_payments/(:any)', 'Invoices::$1');
-    $routes->post('invoice_payments/(:any)', 'Invoices::$1');
 
     $routes->get('invoices', 'Invoices::index');
     $routes->get('invoices/(:any)', 'Invoices::$1');
