@@ -358,7 +358,7 @@ $edit = "";
             $client_info = $this->Clients_model->get_details($options)->getRow();
             if ($client_info && !$client_info->is_lead) {
 
-              //  $view_data = $this->make_access_permissions_view_data();
+                $view_data = $this->make_access_permissions_view_data();
 
                 $view_data["show_note_info"] = (get_setting("module_note")) ? true : false;
                 $view_data["show_event_info"] = (get_setting("module_event")) ? true : false;
