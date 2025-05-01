@@ -368,23 +368,6 @@ $edit = "";
 
                 $view_data['client_info'] = $client_info;
 
-                $view_data["view"] = $this->request->getPost('view'); //view='details' needed only when loading from the client's details view
-                $view_data["ticket_id"] = $this->request->getPost('ticket_id'); //needed only when loading from the ticket's details view and created by unknown client
-                $view_data['model_info'] = $this->Clients_model->get_one($client_id);
-                $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
-                $view_data['companies_dropdown'] =array("" => "- Choose Company -") +$this->Company_model->get_dropdown_list(array("name"));
-                $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
-                $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
-                //prepare groups dropdown list
-                $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
-        
-                $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
-        
-                //prepare label suggestions
-                $view_data['label_suggestions'] = $this->make_labels_dropdown("client", $view_data['model_info']->labels);
-                $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-                ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
-                
                 $view_data["is_starred"] = strpos($client_info->starred_by, ":" . $this->login_user->id . ":") ? true : false;
 
                 $view_data["tab"] = clean_data($tab);
@@ -959,6 +942,23 @@ $edit = "";
 
             $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("clients", $client_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
+            $view_data["view"] = $this->request->getPost('view'); //view='details' needed only when loading from the client's details view
+            $view_data["ticket_id"] = $this->request->getPost('ticket_id'); //needed only when loading from the ticket's details view and created by unknown client
+            $view_data['model_info'] = $this->Clients_model->get_one($client_id);
+            $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
+            $view_data['companies_dropdown'] =array("" => "- Choose Company -") +$this->Company_model->get_dropdown_list(array("name"));
+            $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
+            $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
+            //prepare groups dropdown list
+            $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
+    
+            $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
+    
+            //prepare label suggestions
+            $view_data['label_suggestions'] = $this->make_labels_dropdown("client", $view_data['model_info']->labels);
+            $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
+            ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
+            
             $view_data['label_column'] = "col-md-2";
             $view_data['field_column'] = "col-md-10";
             $view_data['can_edit_clients'] = $this->can_edit_clients($client_id);
