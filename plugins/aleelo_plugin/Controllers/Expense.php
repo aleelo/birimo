@@ -149,7 +149,7 @@ class Expense extends Security_Controller_Plugin {
 
         $view_data['members_dropdown'] = array("0" => "-") + $members_dropdown;
         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
-       
+        
         if ($this->login_user->company_access == "all" && $this->login_user->department == 0) {
             $view_data['projects_dropdown'] = array("" => "-") + $this->Projects_model->get_dropdown_list(array("title"), "id");
         } else if ($this->login_user->company_access == "all" && $this->login_user->department !==0) {
