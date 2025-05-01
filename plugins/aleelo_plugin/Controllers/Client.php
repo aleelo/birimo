@@ -351,7 +351,7 @@ $edit = "";
     function view($client_id = 0, $tab = "", $folder_id = 0) {
         validate_numeric_value($client_id);
        // // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+        //$this->restrict_client_access();
 
         if ($client_id) {
             $options = array("id" => $client_id);
