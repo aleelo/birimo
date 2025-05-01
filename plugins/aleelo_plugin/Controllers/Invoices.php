@@ -44,6 +44,7 @@ class Invoices extends Security_Controller_Plugin {
 
             $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown(true, $selected_currency);
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
+            $view_data['can_add_payment'] = $this->can_add_payment();
 
             return $this->template->rander("aleelo_plugin\Views/invoices/index", $view_data);
         } else {

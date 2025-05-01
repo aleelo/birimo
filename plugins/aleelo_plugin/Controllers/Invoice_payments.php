@@ -34,6 +34,7 @@ class Invoice_payments extends Security_Controller_Plugin {
                 $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
                 $view_data['company'] = $this->_get_company();
                 $view_data['can_edit_payment'] = $this->can_edit_payment();
+                $view_data['can_add_payment'] = $this->can_add_payment();
     
                 return $this->template->rander("aleelo_plugin\Views/invoices/payment_received", $view_data);
             } else {
