@@ -421,7 +421,7 @@ $edit = "";
     function projects($client_id) {
         validate_numeric_value($client_id);
       //  // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+     //   $this->restrict_client_access();
 
         $view_data['can_create_projects'] = $this->can_create_projects();
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("projects", $this->login_user->is_admin, $this->login_user->user_type);
@@ -540,7 +540,7 @@ $edit = "";
     function notes($client_id) {
         validate_numeric_value($client_id);
         // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+     //   $this->restrict_client_access();
 
         if ($client_id) {
             $view_data['client_id'] = clean_data($client_id);
@@ -553,7 +553,7 @@ $edit = "";
     function events($client_id) {
         validate_numeric_value($client_id);
         // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+     //   $this->restrict_client_access();
 
         if ($client_id) {
             $view_data['client_id'] = clean_data($client_id);
@@ -875,7 +875,7 @@ $edit = "";
     function contacts($client_id = 0) {
         validate_numeric_value($client_id);
         // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+     //   $this->restrict_client_access();
 
         if ($client_id) {
             $view_data["client_id"] = clean_data($client_id);
@@ -2128,7 +2128,7 @@ $edit = "";
     function tasks($client_id) {
         validate_numeric_value($client_id);
         // $this->_validate_client_view_access($client_id);
-        $this->restrict_client_access();
+     //   $this->restrict_client_access();
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["can_create_task"] = $this->can_edit_clients();
