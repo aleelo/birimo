@@ -234,7 +234,7 @@ if (!empty($finance_manager_info->signature)) {
     // Check if the file exists
     if (file_exists($signature_path)) {
         // Display the signature image
-        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" 250px; height: auto; max-height: 150px;">';
+        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="  200px; height: auto; max-height: 120px;">';
     } else {
         // File not found, try the second method
         $signature_data = @unserialize($finance_manager_info->signature);
@@ -245,7 +245,7 @@ if (!empty($finance_manager_info->signature)) {
             $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
 
             if (file_exists($signature_path)) {
-                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" 250px; height: auto; max-height: 150px;">';
+                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style="  200px; height: auto; max-height: 120px;">';
             } else {
                 echo '<p>Signature file not found.</p>';
             }
