@@ -10,7 +10,7 @@ class Expense extends Security_Controller_Plugin {
         parent::__construct();
 
         $this->init_permission_checker("expense");
-      
+        
     }
 
     //load the expenses list view
