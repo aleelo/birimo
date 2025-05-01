@@ -352,7 +352,7 @@ $edit = "";
         validate_numeric_value($client_id);
        // // $this->_validate_client_view_access($client_id);
         //$this->restrict_client_access();
-
+        $this->can_view_client();
         if ($client_id) {
             $options = array("id" => $client_id);
             $client_info = $this->Clients_model->get_details($options)->getRow();
