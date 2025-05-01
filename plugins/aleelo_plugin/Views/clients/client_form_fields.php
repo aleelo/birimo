@@ -1,7 +1,8 @@
 <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
 <input type="hidden" name="view" value="<?php echo isset($view) ? $view : ""; ?>" />
-<!-- 
-<?php if ($has_all_permission){ ?>
+
+<?php if  ( $login_user->is_admin || 
+        ($login_user->user_type === "staff" &&  $login_user->company_access ==="all" && $login_user->department ==0)){ ?>
 
 <div class="form-group">
 <div class="row">
@@ -18,7 +19,7 @@
             <?php } else{ ?>
                 <input type="hidden" name="company_id" value="<?php echo $login_user->department; ?>">
                 <?php } ?>
- -->
+
 
 <div class="form-group">
     <div class="row">
