@@ -70,7 +70,7 @@ class Invoices extends Security_Controller_Plugin {
         $invoice_id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
 
-        if (!$this->can_edit_invoices() || !$this->can_add_invoice()) {
+        if (!$this->can_edit_invoices()  && !$this->can_add_invoice()) {
             app_redirect("forbidden");
         }
         $this->validate_submitted_data(array(

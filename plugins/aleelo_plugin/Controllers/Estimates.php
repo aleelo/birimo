@@ -30,7 +30,7 @@ class Estimates extends Security_Controller_Plugin {
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("estimates", $this->login_user->is_admin, $this->login_user->user_type);
-        $view_data['can_edit_estimates'] = $this->can_edit_estimate();
+        $view_data['can_edit_estimates'] = $this->can_add_estimate();
         if ($this->login_user->user_type === "staff") {  
             $view_data['company'] = $this->_get_company();
 
@@ -61,7 +61,7 @@ class Estimates extends Security_Controller_Plugin {
             "id" => "numeric",
             "client_id" => "numeric"
         ));
-        if (!$this->can_add_estimate() || !$this->can_edit_estimate()) {
+        if (!$this->can_add_estimate()  && !$this->can_edit_estimate()) {
             app_redirect("forbidden");
         }
 

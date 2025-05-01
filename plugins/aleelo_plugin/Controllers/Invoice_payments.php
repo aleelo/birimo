@@ -68,7 +68,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* load payment modal */
 
     function payment_modal_form() {
-        if (!$this->can_add_payment() || !$this->can_edit_payment()) {
+        if (!$this->can_add_payment()  && !$this->can_edit_payment()) {
             app_redirect("forbidden");
         }
         $this->validate_submitted_data(array(

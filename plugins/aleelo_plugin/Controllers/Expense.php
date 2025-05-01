@@ -90,7 +90,7 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
         ));
-        if (!$this->can_add_expense() || !$this->can_edit_expense()) {
+        if (!$this->can_add_expense()  && !$this->can_edit_expense()) {
             app_redirect("forbidden");
         }
         // $company_access=$this->login_user->department;
