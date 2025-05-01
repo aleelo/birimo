@@ -350,7 +350,7 @@ $edit = "";
 
     function view($client_id = 0, $tab = "", $folder_id = 0) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+       // // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         if ($client_id) {
@@ -420,7 +420,7 @@ $edit = "";
 
     function projects($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+      //  // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         $view_data['can_create_projects'] = $this->can_create_projects();
@@ -436,7 +436,7 @@ $edit = "";
 
     function payments($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -449,7 +449,7 @@ $edit = "";
 
     function tickets($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
 
@@ -467,7 +467,7 @@ $edit = "";
 
     function invoices($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -493,7 +493,7 @@ $edit = "";
 
     function estimates($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -510,7 +510,7 @@ $edit = "";
 
     function orders($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -527,7 +527,7 @@ $edit = "";
 
     function estimate_requests($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data['client_id'] = clean_data($client_id);
@@ -539,7 +539,7 @@ $edit = "";
 
     function notes($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         if ($client_id) {
@@ -552,7 +552,7 @@ $edit = "";
 
     function events($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         if ($client_id) {
@@ -573,7 +573,7 @@ $edit = "";
             $client_id = $this->login_user->client_id;
         }
 
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         $view_data['client_id'] = clean_data($client_id);
         $view_data['page_view'] = false;
@@ -681,7 +681,7 @@ $edit = "";
     function files_list_data($client_id = 0) {
         validate_numeric_value($client_id);
         $this->_validate_view_file_access();
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         $options = array("client_id" => $client_id, "context" => "client");
         $list_data = $this->General_files_model->get_details($options)->getResult();
@@ -874,7 +874,7 @@ $edit = "";
 
     function contacts($client_id = 0) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         if ($client_id) {
@@ -935,7 +935,7 @@ $edit = "";
         validate_numeric_value($client_id);
 
         if ($client_id) {
-            $this->_validate_client_view_access($client_id);
+            // $this->_validate_client_view_access($client_id);
 
             $view_data['model_info'] = $this->Clients_model->get_one($client_id);
             $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
@@ -1263,7 +1263,7 @@ $edit = "";
 
     function contacts_list_data($client_id = 0) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("client_contacts", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -2010,7 +2010,7 @@ $edit = "";
 
     function expenses($client_id) {
         $this->can_access_expenses();
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -2127,7 +2127,7 @@ $edit = "";
 
     function tasks($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
         $this->restrict_client_access();
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
@@ -2139,7 +2139,7 @@ $edit = "";
 
     function subscriptions($client_id) {
         validate_numeric_value($client_id);
-        $this->_validate_client_view_access($client_id);
+        // $this->_validate_client_view_access($client_id);
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -2337,7 +2337,7 @@ $edit = "";
                 app_redirect("forbidden");
             }
         } else {
-            $this->_validate_client_view_access($client_id);
+            // $this->_validate_client_view_access($client_id);
         }
 
         return $this->General_files_model->get_all_where(array("folder_id" => $folder_id, "client_id" => $client_id))->getResult();
