@@ -54,7 +54,7 @@ class Supplier extends Security_Controller_Plugin {
     }
     
     function save() {
-        $this->access_only_team_members();
+        // $this->access_only_team_members();
     
         $this->validate_submitted_data(array(
             "id" => "numeric",

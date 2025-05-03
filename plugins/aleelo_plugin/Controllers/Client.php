@@ -121,7 +121,7 @@ class Client extends Security_Controller_Plugin {
 
     function save() {
         $client_id = $this->request->getPost('id');
-        $this->_validate_client_manage_access($client_id);
+        // $this->_validate_client_manage_access($client_id);
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
