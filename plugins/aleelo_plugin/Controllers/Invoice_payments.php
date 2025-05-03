@@ -51,7 +51,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             return $this->template->rander("aleelo_plugin\Views/clients/payments/index", $view_data);
         }
     }
-    function supplier_payments($invoice_id ,$supplier_id) {
+    function supplier_payments($invoice_id ,$supplier_id=0) {
         if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
