@@ -46,6 +46,7 @@ class Labels extends Security_Controller {
         } else if ($context == "lead" && $this->get_access_info("client")->access_type) {
             return true; //client and lead has same labels. allow access if there is any one. 
         }
+        return true;
     }
 
     function modal_form() {

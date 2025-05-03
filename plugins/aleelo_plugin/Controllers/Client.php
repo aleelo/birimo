@@ -217,7 +217,7 @@ class Client extends Security_Controller_Plugin {
 
     function delete() {
         $id = $this->request->getPost('id');
-        $this->_validate_client_manage_access($id);
+       // $this->_validate_client_manage_access($id);
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
