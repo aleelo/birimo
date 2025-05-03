@@ -84,10 +84,13 @@
                             <?php } ?>
                      
                         <?php } ?>
-                        <?php if($invoice_items[0]->supplier){?>
+                        <?php //if($invoice_items[0]->supplier){?>
                             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoice_payments/supplier_payments/" . $invoice_info->id . "/".$invoice_items[0]->supplier_id ); ?>" data-bs-target="#invoice-payments-supplier"><?php echo app_lang('supplier_payments'); ?></a></li>
                         
-                        <?php  }?>
+                        <?php  
+                            
+                       // }?>
+
                         <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/tasks/" . $invoice_info->id); ?>" data-bs-target="#invoice-tasks-section"><?php echo app_lang('tasks'); ?></a></li> -->
                     </ul>
                 </div>
