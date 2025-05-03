@@ -432,10 +432,10 @@ class Invoice_payments extends Security_Controller_Plugin {
         }
         return array(
             
-            $data->supplier_name,
-            $invoice_url,
             $data->payment_date,
             format_to_date($data->payment_date, false),
+            format_to_date($data->payment_date, false),
+            $data->supplier_name,
             $data->payment_method_title,
             $data->note,
             to_currency($data->amount, $data->currency_symbol),

@@ -82,15 +82,21 @@ class Invoice_payments_model extends Crud_model {
             $where .= $this->_get_clients_of_currency_query($currency, $invoices_table, $clients_table);
         }
 
-        $sql = "SELECT $invoice_payments_table.*, $invoices_table.client_id, $invoices_table.display_id, (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id limit 1) AS currency_symbol, $payment_methods_table.title AS payment_method_title,pp.supplier_name AS supplier_name
-        FROM $invoice_payments_table
-
-        LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
-        LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
-        LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
-        LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
-        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
-        WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+        $sql = "SELECT 
+        $invoice_payments_table.*, 
+        $invoices_table.client_id, 
+        $invoices_table.display_id, 
+        (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id LIMIT 1) AS currency_symbol, 
+        $payment_methods_table.title AS payment_method_title, 
+        pp.supplier_name AS supplier_name, 
+        pp.id AS supplier_id
+    FROM $invoice_payments_table
+    LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
+    LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
+    LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+    LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
+    LEFT JOIN rise_company as dp ON dp.id = cn.company_id
+    WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
 

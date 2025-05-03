@@ -4387,6 +4387,8 @@ $lang['can_access_invoices?']='can access invoices';
 $lang['can_access_all_companys']='can access all companys';
 $lang['supplier_payments']='supplier payments';
 $lang['client_payments']='client payments';
+$lang['supplier_invoice_payment_list']='supplier invoice payment list';
+$lang['add_invoice_payment']='add invoice payment';
 
 
 return $lang;
