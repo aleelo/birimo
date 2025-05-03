@@ -20,7 +20,7 @@ class Client extends Security_Controller_Plugin {
     }
 
     private function _validate_client_view_access($client_id = 0) {
-        if (!$this->can_view_clients($client_id)) {
+        if (!$this->can_view_client()) {
             app_redirect("forbidden");
         }
     }
