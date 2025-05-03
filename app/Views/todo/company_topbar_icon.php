@@ -47,7 +47,6 @@ $(document).ready(function () {
     }
 
     // Initialize Select2
-    $("#department").select2();
 
     // Handle change event
     $("#department").on("change", function () {

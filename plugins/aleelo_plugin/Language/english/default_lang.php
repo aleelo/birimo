@@ -4385,6 +4385,8 @@ $lang['Sales and crm']='Sales & CRM';
 $lang['hide_task']='hide tasks';
 $lang['can_access_invoices?']='can access invoices';
 $lang['can_access_all_companys']='can access all companys';
+$lang['supplier_payments']='supplier payments';
+$lang['client_payments']='client payments';
 
 
 return $lang;

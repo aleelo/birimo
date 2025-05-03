@@ -51,6 +51,22 @@ class Invoice_payments extends Security_Controller_Plugin {
             return $this->template->rander("aleelo_plugin\Views/clients/payments/index", $view_data);
         }
     }
+    function supplier_payments($invoice_id ,$supplier_id) {
+        if (!$this->can_view_invoice()) {
+            app_redirect("forbidden");
+        }
+
+        if ($invoice_id) {
+            validate_numeric_value($invoice_id);
+            $view_data["invoice_id"] = $invoice_id;
+            $view_data["supplier_id"] = $supplier_id;
+            $view_data["can_edit_invoices"] = $this->can_edit_invoice();
+
+            return $this->template->view("aleelo_plugin\Views/invoices/payments/supplier_payments", $view_data);
+        } else {
+            show_404();
+        }
+    }
     function get_payment_method_dropdown() {
         if (!$this->can_view_invoices()) {
             app_redirect("forbidden");
@@ -104,7 +120,45 @@ class Invoice_payments extends Security_Controller_Plugin {
 
         return $this->template->view('aleelo_plugin\Views/invoices/payment_modal_form', $view_data);
     }
+  /* load payment modal */
 
+  function supplier_payment_modal_form() {
+    if (!$this->can_add_payment()  && !$this->can_edit_payment()) {
+        app_redirect("forbidden");
+    }
+    $this->validate_submitted_data(array(
+        "id" => "numeric",
+        "invoice_id" => "numeric"
+    ));
+
+    $view_data['model_info'] = $this->Invoice_payments_model->get_one($this->request->getPost('id'));
+
+    $invoice_id = $this->request->getPost('invoice_id') ? $this->request->getPost('invoice_id') : $view_data['model_info']->invoice_id;
+
+    if (!$invoice_id) {
+        //prepare invoices dropdown
+        $invoices = $this->Invoices_model->get_invoices_dropdown_list()->getResult();
+        $invoices_dropdown = array();
+
+        foreach ($invoices as $invoice) {
+            $invoices_dropdown[$invoice->id] = $invoice->display_id;
+        }
+
+        $view_data['invoices_dropdown'] = array("" => "-") + $invoices_dropdown;
+    }
+    $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
+    $amount = $view_data['model_info']->amount ? to_decimal_format($view_data['model_info']->amount) : "";
+    if (!$view_data['model_info']->amount && $invoice_id) {
+        $amount = to_decimal_format($this->Invoices_model->get_invoice_total_summary($invoice_id)->balance_due);
+    }
+
+    $view_data["amount"] = $amount;
+
+    $view_data['payment_methods_dropdown'] = $this->Payment_methods_model->get_dropdown_list(array("title"), "id", array("online_payable" => 0, "deleted" => 0));
+    $view_data['invoice_id'] = $invoice_id;
+
+    return $this->template->view('aleelo_plugin\Views/invoices/supplier_payment_modal_form', $view_data);
+}
     /* add or edit a payment */
 
     function save_payment() {
@@ -153,7 +207,54 @@ class Invoice_payments extends Security_Controller_Plugin {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
+  /* add or edit a payment */
 
+  function save_payment_supplier() {
+    $this->access_only_allowed_members();
+
+    $this->validate_submitted_data(array(
+        "id" => "numeric",
+        "invoice_id" => "required|numeric",
+        "invoice_payment_method_id" => "required|numeric",
+        "invoice_payment_date" => "required",
+        "invoice_payment_amount" => "required"
+    ));
+
+    $id = $this->request->getPost('id');
+    $invoice_id = $this->request->getPost('invoice_id');
+    $payment_method_id = $this->request->getPost('invoice_payment_method_id');
+    $payment_method = $this->Payment_methods_model->get_one($payment_method_id);
+    $account = $payment_method ? $payment_method->account_id : 0;
+    $invoice_payment_data = array(
+        "invoice_id" => $invoice_id,
+        "payment_date" => $this->request->getPost('invoice_payment_date'),
+        "note" => $this->request->getPost('invoice_payment_note'),
+        "payment_method_id" => $payment_method_id,
+        "amount" => unformat_currency($this->request->getPost('invoice_payment_amount')),
+        "created_at" => get_current_utc_time(),
+        "created_by" => $this->login_user->id,
+        "supplier_id" => $this->request->getPost('supplier_id'),
+    );
+
+    $invoice_payment_id = $this->Invoice_payments_model->ci_save($invoice_payment_data, $id);
+    if ($invoice_payment_id) {
+
+        //As receiving payment for the invoice, we'll remove the 'draft' status from the invoice 
+        $this->Invoices_model->update_invoice_status($invoice_id);
+
+        if (!$id) {
+            //show payment confirmation and payment received notification for new payments only
+            log_notification("invoice_payment_confirmation", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), "0");
+            log_notification("invoice_manual_payment_added", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), $this->login_user->id);
+        }
+        //get payment data
+        $options = array("id" => $invoice_payment_id);
+        $item_info = $this->Invoice_payments_model->get_details($options)->getRow();
+        echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_payment_row($item_info), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_payment_id, 'message' => app_lang('record_saved')));
+    } else {
+        echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+    }
+}
     /* delete or undo a payment */
 
     function delete_payment() {
@@ -216,7 +317,38 @@ class Invoice_payments extends Security_Controller_Plugin {
         
         echo json_encode(array("data" => $result));
     }
+    function payment_supplier_data($invoice_id = 0 ,$supplier_id = 0) {
+        if (!$this->can_view_payment()) {
+            app_redirect("forbidden");
+        }
 
+        validate_numeric_value($invoice_id);
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+        $payment_method_id = $this->request->getPost('payment_method_id');
+        $ss= $this->request->getPost("can_view_all_invoice");
+
+        $options = array(
+            "start_date" => $start_date,
+            "end_date" => $end_date,
+            "invoice_id" => $invoice_id,
+            "supplier_id" => $supplier_id,
+            "payment_method_id" => $payment_method_id,
+            "currency" => $this->request->getPost("currency"),
+            "project_id" => $this->request->getPost("project_id"),
+            "company_id" => $this->can_view_own_company_payment(),
+            "can_view_all_invoice" =>$ss,
+        );
+
+        $list_data = $this->Invoice_payments_model->get_details($options)->getResult();
+        
+        $result = array();
+        foreach ($list_data as $data) {
+            $result[] = $this->_make_supplier_payment_row($data);
+        }
+        
+        echo json_encode(array("data" => $result));
+    }
     /* list of invoice payments, prepared for datatable  */
 
     function payment_list_data_of_client($client_id = 0) {
@@ -259,7 +391,7 @@ class Invoice_payments extends Security_Controller_Plugin {
         if ($this->login_user->user_type == "staff") {
             $invoice_url = anchor(get_uri("invoices/view/" . $data->invoice_id), $data->display_id);
         } else {
-            $invoice_url = anchor(get_uri("invoices/preview/" . $data->invoice_id), $data->display_id);
+            $invoice_url = anchor(get_uri(uri: "invoices/preview/" . $data->invoice_id), $data->display_id);
         }
         $edit= '';
         $delete= '';
@@ -270,6 +402,37 @@ class Invoice_payments extends Security_Controller_Plugin {
         $delete= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment"), "data-action" => "delete"));
         }
         return array(
+            $invoice_url,
+            $data->payment_date,
+            format_to_date($data->payment_date, false),
+            $data->payment_method_title,
+            $data->note,
+            to_currency($data->amount, $data->currency_symbol),
+            $edit . " " . $delete,
+            );
+    }
+    private function _make_supplier_payment_row($data) {
+        $invoice_url = "";
+        // if (!$this->can_view_invoices($data->client_id)) {
+        //     app_redirect("forbidden");
+        // }
+
+        if ($this->login_user->user_type == "staff") {
+            $invoice_url = anchor(get_uri("invoices/view/" . $data->invoice_id), $data->display_id);
+        } else {
+            $invoice_url = anchor(get_uri("invoices/preview/" . $data->invoice_id), $data->display_id);
+        }
+        $edit= '';
+        $delete= '';
+        if ($this->can_edit_payment()) {
+            $edit= modal_anchor(get_uri(uri: "invoice_payments/supplier_payment_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_payment'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id,));
+        }
+        if ($this->can_delete_payment()) {
+        $delete= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment"), "data-action" => "delete"));
+        }
+        return array(
+            
+            $data->supplier_name,
             $invoice_url,
             $data->payment_date,
             format_to_date($data->payment_date, false),

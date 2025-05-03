@@ -34,6 +34,7 @@ class Invoice_payments_model extends Crud_model {
         if ($order_id) {
             $where .= " AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0 AND $invoices_table.order_id=$order_id)";
         }
+        $supplier_id = $this->_get_clean_value($options, "supplier_id");
 
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
@@ -45,6 +46,10 @@ class Invoice_payments_model extends Crud_model {
             $where .= " AND dp.id=$company_id";
         }
         
+        $supplier_id = $this->_get_clean_value($options, "supplier_id");
+        if ($supplier_id) {
+            $where .= " AND $invoice_payments_table.supplier_id != 0";
+        }
         $company_id_department = $this->_get_clean_value($options, "company_id_department");
         if ($company_id_department) {
             $where .= " AND dp.id=$company_id_department";
@@ -77,12 +82,13 @@ class Invoice_payments_model extends Crud_model {
             $where .= $this->_get_clients_of_currency_query($currency, $invoices_table, $clients_table);
         }
 
-        $sql = "SELECT $invoice_payments_table.*, $invoices_table.client_id, $invoices_table.display_id, (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id limit 1) AS currency_symbol, $payment_methods_table.title AS payment_method_title
+        $sql = "SELECT $invoice_payments_table.*, $invoices_table.client_id, $invoices_table.display_id, (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id limit 1) AS currency_symbol, $payment_methods_table.title AS payment_method_title,pp.supplier_name AS supplier_name
         FROM $invoice_payments_table
 
         LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
         LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
-             LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
         LEFT JOIN rise_company as dp ON dp.id = cn.company_id
         WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);

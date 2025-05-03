@@ -78,11 +78,16 @@
                     <ul id="invoice-tabs" data-bs-toggle="ajax-tab" class="nav nav-pills rounded classic mb20 scrollable-tabs border-white" role="tablist">
                         <li><a role="presentation" data-bs-toggle="tab"  href="<?php echo_uri("invoices/details/" . $invoice_info->id); ?>" data-bs-target="#invoice-details-section"><?php echo app_lang("details"); ?></a></li>
                         <?php if ($invoice_info->type == "invoice") { ?>
-                            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/payments/" . $invoice_info->id); ?>" data-bs-target="#invoice-payments-section"><?php echo app_lang('payments'); ?></a></li>
+                            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/payments/" . $invoice_info->id); ?>" data-bs-target="#invoice-payments-section"><?php echo app_lang('client_payments'); ?></a></li>
                             <?php if ($invoice_info->recurring) { ?>
                                 <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/sub_invoices/" . $invoice_info->id); ?>" data-bs-target="#sub-invoices-section"><?php echo app_lang('sub_invoices'); ?></a></li>
                             <?php } ?>
+                     
                         <?php } ?>
+                        <?php if($invoice_items[0]->supplier){?>
+                            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoice_payments/supplier_payments/" . $invoice_info->id . "/".$invoice_items[0]->supplier_id ); ?>" data-bs-target="#invoice-payments-supplier"><?php echo app_lang('supplier_payments'); ?></a></li>
+                        
+                        <?php  }?>
                         <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("invoices/tasks/" . $invoice_info->id); ?>" data-bs-target="#invoice-tasks-section"><?php echo app_lang('tasks'); ?></a></li> -->
                     </ul>
                 </div>
@@ -95,6 +100,8 @@
                         <?php } ?>
                     <?php } ?>
                     <div role="tabpanel" class="tab-pane fade grid-button" id="invoice-tasks-section"></div>
+                    <div role="tabpanel" class="tab-pane fade grid-button" id="invoice-payments-supplier"></div>
+
                 </div>
             </div>
         </div>
