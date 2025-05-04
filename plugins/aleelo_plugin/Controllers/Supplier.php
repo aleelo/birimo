@@ -29,8 +29,8 @@ class Supplier extends Security_Controller_Plugin {
         $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
         $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
         $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
-        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
+        $view_data['has_all_permission'] =
+        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
         $view_data['can_add_supplier'] = $this->can_add_supplier();
         $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
         $view_data['model_info'] = $this->Supplier_model->get_one($this->request->getPost('id'));

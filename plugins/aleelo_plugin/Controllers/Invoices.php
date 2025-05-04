@@ -1784,7 +1784,7 @@ $delete= '';
 
             if ($view_data) {
                 $can_edit_invoice = false;
-                if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
+                if ($this->can_edit_invoice()|| $this->can_add_invoice()) {
                     $can_edit_invoice = true;
                 }
                 $view_data["can_edit_invoices"] = $can_edit_invoice;
