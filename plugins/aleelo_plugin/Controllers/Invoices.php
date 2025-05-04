@@ -26,7 +26,7 @@ class Invoices extends Security_Controller_Plugin {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("invoices", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $view_data["can_edit_invoice"] = $this->can_add_invoice();
+        $view_data["can_edit_invoices"] = $this->can_add_invoice();
         $view_data['company'] = $this->_get_company();
 
         $type_suggestions = array(
