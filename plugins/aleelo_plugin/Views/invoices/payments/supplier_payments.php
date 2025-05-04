@@ -1,6 +1,6 @@
 <div class="card">
     <div class="tab-title clearfix">
-        <h4> <?php echo app_lang('supplier_invoice_oooo_payment_list'); ?></h4>
+        <h4> <?php echo app_lang('supplier_invoice_payment_list'); ?></h4>
         <div class="title-button-group">
             <?php
             
