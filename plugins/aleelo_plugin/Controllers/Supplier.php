@@ -15,6 +15,10 @@ class Supplier extends Security_Controller_Plugin {
         if (!$this->can_view_supplier()) {
             app_redirect("forbidden");
         }
+        $view_data['companies_dropdown'] =$this->_get_company();
+
+
+        $view_data['see_company_dropdown'] = $this->login_user->user_type === "staff" && $this->login_user->company_access ==="all" && $this->login_user->department ==0;
         $view_data['can_add_supplier'] = $this->can_add_supplier();
         return $this->template->rander("aleelo_plugin\Views/supplier/index",$view_data);
     }
@@ -137,6 +141,7 @@ class Supplier extends Security_Controller_Plugin {
         $options = array(
         
             "can_view_own_company_client" => $this->can_view_own_company_client(),
+            "company_id" => $this->request->getPost('company_id'),
 
 
         );

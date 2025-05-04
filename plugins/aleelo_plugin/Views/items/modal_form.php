@@ -3,7 +3,23 @@
     <div class="modal-body clearfix">
         <div class="container-fluid">
             <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
+            <?php if ($has_all_permission){ ?>
 
+<div class="form-group">
+<div class="row">
+
+                    <label for="company_id" class="col-md-3"><?php echo app_lang('company'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("company_id", $companies_dropdown, $model_info->company_id, "class='select2 form-control validate-hidden' id='company_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                
+                    ?>
+                </div>
+</div>
+            </div>
+            <?php } else{ ?>
+                <input type="hidden" name="company_id" value="<?php echo $login_user->department; ?>">
+                <?php } ?>
             <?php if ($model_info->id) { ?>
                 <div class="form-group">
                     <div class="row">

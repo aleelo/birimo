@@ -684,10 +684,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('estimate_id');
-        $this->validate_estimate_access($estimate_id);
-        if (!$this->_is_estimate_editable($estimate_id)) {
-            app_redirect("forbidden");
-        }
+        // $this->validate_estimate_access($estimate_id);
+        // if (!$this->_is_estimate_editable($estimate_id)) {
+        //     app_redirect("forbidden");
+        // }
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
             $accounts = $accounting_model->get_accounts('', ['account_type_id' => 11]);
@@ -777,7 +777,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 "description" => $this->request->getPost('estimate_item_description'),
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
                 "account_id" =>$account_id,
-                "rate" => unformat_currency($this->request->getPost('estimate_item_rate'))
+                "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
+                "company_id"=>$this->login_user->department,
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
         }
@@ -910,10 +911,12 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     
     function get_estimate_item_suggestion() {
         $key = $this->request->getPost("q");
-        $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id")));
+        $company_id = $this->login_user->department;
+        $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id"),"company_id" => $company_id));
         
-        $items = $this->Invoice_items_model->get_item_suggestion($key);
-
+        $company_id = $this->login_user->department; 
+        $items = $this->Invoice_items_model->get_item_suggestion($key, "", $company_id);
+        
         foreach ($items as $item) {
             $suggestion[] = array("id" => $item->id, "text" => $item->title);
         }

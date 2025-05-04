@@ -23,6 +23,7 @@
                 {name: "category_id", class: "w200", options: <?php echo $categories_dropdown; ?>}
             ],
             columns: [
+                {title: "<?php echo app_lang('company_item') ?>"},
                 {title: "<?php echo app_lang('title') ?> ", "class": "w20p all"},
                 {title: "<?php echo app_lang('description') ?>"},
                 {title: "<?php echo app_lang('category') ?>,"},

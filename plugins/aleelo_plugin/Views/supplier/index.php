@@ -22,6 +22,10 @@
             source: '<?php echo_uri("supplier/list_data") ?>',
             order: [[0, 'desc']],
             filterDropdown: [
+              <?php  if($see_company_dropdown){ ?>
+                {name: "company_id", class: "w200", options:
+                     <?php echo $companies_dropdown; ?>},
+               <?php }?>
             ],
             columns: [
                 {title: "<?php echo app_lang('id') ?> ", "class": "w8p all"},

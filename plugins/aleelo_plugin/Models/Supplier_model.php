@@ -28,6 +28,10 @@ class Supplier_model extends Crud_model {
         if ($can_view_own_department_client) {
             $where .= " AND $supplier_table.company=$can_view_own_department_client";
         }
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND $supplier_table.company=$company_id";
+        }
 
         $sql = "SELECT $supplier_table.*,$company_table.name AS company_name,$region_table.region AS region_name,$country_table.country_name AS country_name
         FROM $supplier_table

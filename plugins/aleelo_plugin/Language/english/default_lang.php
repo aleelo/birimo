@@ -4389,6 +4389,7 @@ $lang['supplier_payments']='supplier payments';
 $lang['client_payments']='client payments';
 $lang['supplier_invoice_payment_list']='supplier invoice payment list';
 $lang['add_invoice_payment']='add invoice payment';
+$lang['company_item']='company item';
 
 
 return $lang;

@@ -80,7 +80,10 @@ class Items extends Security_Controller_Plugin {
     }
 
     $view_data['accounts_dropdown'] = $accounts_dropdown;
-}
+}        $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
+$view_data['has_all_permission'] =
+        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
+       
         $view_data['model_info'] = $this->Items_model->get_one($this->request->getPost('id'));
         $view_data['categories_dropdown'] = $this->Item_categories_model->get_dropdown_list(array("title"));
 
@@ -107,7 +110,9 @@ class Items extends Security_Controller_Plugin {
             "account_id" => $this->request->getPost('account_id'),
             "rate" => unformat_currency($this->request->getPost('item_rate')),
             "show_in_client_portal" => $this->request->getPost('show_in_client_portal') ? $this->request->getPost('show_in_client_portal') : "",
-            "taxable" => ""
+            "taxable" => "",
+            "company_id" => $this->request->getPost('company_id'),
+
         );
 
         $target_path = get_setting("timeline_file_path");
@@ -191,6 +196,7 @@ class Items extends Security_Controller_Plugin {
         if (class_exists('\Accounting\Models\Accounting_model')){
           $account= $data->account_name? $data->account_name: ($data->key_name? app_lang($data->key_name): "-");}
         return array(
+            $data->company_name ? $data->company_name : "-",
             modal_anchor(get_uri("items/view"), $show_in_client_portal_icon . $data->title, array("title" => app_lang("item_details"), "data-post-id" => $data->id)),
             custom_nl2br($data->description ? $data->description : ""),
             $data->category_title ? $data->category_title : "-",

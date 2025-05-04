@@ -37,29 +37,33 @@ class Invoice_items_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function get_item_suggestion($keyword = "", $user_type = "") {
+    function get_item_suggestion($keyword = "", $user_type = "", $company_id = "") {
         $items_table = $this->db->prefixTable('items');
-
+    
         $keyword = $this->_get_clean_value($keyword);
         $where = "";
-
+    
         if ($keyword) {
             $keyword = $this->db->escapeLikeString($keyword);
             $where .= " AND $items_table.title LIKE '%$keyword%' ESCAPE '!' ";
         }
-
+    
         if ($user_type && $user_type === "client") {
             $where .= " AND $items_table.show_in_client_portal=1";
         }
-
+    
+        if ($company_id !== null) {
+            $where .= " AND $items_table.company_id=$company_id";
+        }
+    
         $sql = "SELECT $items_table.id, $items_table.title
-        FROM $items_table
-        WHERE $items_table.deleted=0 $where
-        LIMIT 10 
-        ";
+            FROM $items_table
+            WHERE $items_table.deleted=0 $where
+            LIMIT 10";
+        
         return $this->db->query($sql)->getResult();
     }
-
+    
     function get_item_info_suggestion($options = array()) {
 
         $items_table = $this->db->prefixTable('items');

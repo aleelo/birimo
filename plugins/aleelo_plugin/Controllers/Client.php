@@ -32,7 +32,8 @@ class Client extends Security_Controller_Plugin {
             app_redirect("forbidden");
         }
         $view_data = $this->make_access_permissions_view_data();
-
+        $view_data['companies_dropdown'] =$this->_get_company();
+        $view_data['see_company_dropdown'] = $this->login_user->user_type === "staff" && $this->login_user->company_access ==="all" && $this->login_user->department ==0;
         $view_data['can_edit_clients'] = $this->can_edit_client();
         $view_data['can_add_clients'] = $this->can_add_client();
         $view_data["show_project_info"] = $this->can_manage_all_projects() && !$this->has_all_projects_restricted_role();
@@ -249,6 +250,7 @@ class Client extends Security_Controller_Plugin {
             "label_id" => $this->request->getPost('label_id'),
            // "can_view_own_department_client" => $this->can_view_own_department_client(),
             "can_view_own_company_client" => $this->can_view_own_company_client(),
+            "company_id" => $this->request->getPost('company_id'),
 
         );
 
@@ -2059,6 +2061,8 @@ $edit = "";
         $this->access_only_allowed_members();
 
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("clients", $this->login_user->is_admin, $this->login_user->user_type);
+        $view_data['see_company_dropdown'] = $this->login_user->user_type === "staff" && $this->login_user->company_access ==="all" && $this->login_user->department ==0;
+        $view_data['companies_dropdown'] =$this->_get_company();
 
         $access_info = $this->get_access_info("invoice");
         $view_data["show_invoice_info"] = (get_setting("module_invoice") && $access_info->access_type == "all") ? true : false;

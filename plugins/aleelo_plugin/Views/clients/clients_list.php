@@ -40,6 +40,10 @@
 <?php } ?>
             {name: "group_id", class: "w200", options: <?php echo $groups_dropdown; ?>},
             {name: "label_id", class: "w200", options: <?php echo $labels_dropdown; ?>},
+            <?php  if($see_company_dropdown){ ?>
+                {name: "company_id", class: "w200", options:
+                     <?php echo $companies_dropdown; ?>},
+               <?php }?>
 <?php echo $custom_field_filters; ?>
             ],
             columns: [
