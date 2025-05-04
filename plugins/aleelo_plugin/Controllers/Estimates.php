@@ -61,9 +61,7 @@ class Estimates extends Security_Controller_Plugin {
             "id" => "numeric",
             "client_id" => "numeric"
         ));
-        if (!$this->can_add_estimate()  && !$this->can_edit_estimate()) {
-            app_redirect("forbidden");
-        }
+     
 
 
         $id = $this->request->getPost('id');
