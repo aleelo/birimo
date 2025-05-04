@@ -66,7 +66,7 @@ class Estimates extends Security_Controller_Plugin {
 
         $id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
-        $this->validate_estimate_access($id);
+        //  $this->validate_estimate_access($id);
         if (!$this->_is_estimate_editable($id, $is_clone)) {
             app_redirect("forbidden");
         }
@@ -144,7 +144,7 @@ class Estimates extends Security_Controller_Plugin {
         $id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
 
-        $this->validate_estimate_access($id);
+        //  $this->validate_estimate_access($id);
         if (!$this->_is_estimate_editable($id, $is_clone)) {
             app_redirect("forbidden");
         }
@@ -260,7 +260,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     validate_numeric_value($estimate_id);
-    $this->validate_estimate_access($estimate_id, true);
+    //  $this->validate_estimate_access($estimate_id, true);
     $estimate_info = $this->Estimates_model->get_one($estimate_id);
 
     // Allow "sent" status to be updated by team members
@@ -325,7 +325,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
 } private function _create_project_from_estimate($estimate_id) {
     if ($estimate_id) {
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
         $estimate_info = $this->Estimates_model->get_one($estimate_id);
 
         //don't create new project if there has already been created a new project with this estimate
@@ -347,7 +347,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 }
 
       function project ($estimate_id) {
-        $this->validate_estimate_access($estimate_id, true);
+        //  $this->validate_estimate_access($estimate_id, true);
         $estimate_info = $this->Estimates_model->get_one($estimate_id);
         $project_id = $this->request->getPost('id');
 
@@ -363,7 +363,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
      function create_project_from_estimate() {
        $estimate_id = $this->request->getPost(index: 'estimate_id');
         if ($estimate_id) {
-            $this->validate_estimate_access($estimate_id);
+            //  $this->validate_estimate_access($estimate_id);
             $estimate_info = $this->Estimates_model->get_one($estimate_id);
             $client_id = $estimate_info->client_id;
             $client_info = $this->Clients_model->get_one($client_id);
@@ -406,7 +406,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $id = $this->request->getPost('id');
-        $this->validate_estimate_access($id);
+        //  $this->validate_estimate_access($id);
         $estimate_info = $this->Estimates_model->get_one($id);
 
         if ($this->Estimates_model->delete($id)) {
@@ -556,7 +556,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function view($estimate_id = 0) {
         validate_numeric_value($estimate_id);
-        // $this->validate_estimate_access($estimate_id);
+        // //  $this->validate_estimate_access($estimate_id);
         $this->can_view_estimate();
 
         if ($estimate_id) {
@@ -629,7 +629,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('estimate_id');
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
         if (!$this->_is_estimate_editable($estimate_id)) {
             app_redirect("forbidden");
         }
@@ -651,7 +651,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('estimate_id');
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
         if (!$this->_is_estimate_editable($estimate_id)) {
             app_redirect("forbidden");
         }
@@ -681,7 +681,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('estimate_id');
-        // $this->validate_estimate_access($estimate_id);
+        // //  $this->validate_estimate_access($estimate_id);
         // if (!$this->_is_estimate_editable($estimate_id)) {
         //     app_redirect("forbidden");
         // }
@@ -726,7 +726,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('estimate_id');
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
         if (!$this->_is_estimate_editable($estimate_id)) {
             app_redirect("forbidden");
         }
@@ -847,7 +847,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function item_list_data($estimate_id = 0) {
         validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
 
         $list_data = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
         $result = array();
@@ -945,7 +945,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
 
-            $this->validate_estimate_access($estimate_id, true);
+            //  $this->validate_estimate_access($estimate_id, true);
 
             $estimate_data = get_estimate_making_data($estimate_id);
             $this->_check_estimate_access_permission($estimate_data);
@@ -979,7 +979,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     function download_pdf($estimate_id = 0, $mode = "download", $user_language = "") {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
-            $this->validate_estimate_access($estimate_id, true);
+            //  $this->validate_estimate_access($estimate_id, true);
             $estimate_data = get_estimate_making_data($estimate_id);
             $this->_check_estimate_access_permission($estimate_data);
 
@@ -1029,7 +1029,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function get_estimate_status_bar($estimate_id = 0) {
         validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
 
         $view_data["estimate_info"] = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
         $view_data['estimate_status_label'] = $this->_get_estimate_status_label($view_data["estimate_info"]);
@@ -1038,7 +1038,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function send_estimate_modal_form($estimate_id) {
         validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
 
         if ($estimate_id) {
             $options = array("id" => $estimate_id);
@@ -1140,7 +1140,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         ));
 
         $estimate_id = $this->request->getPost('id');
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
 
         $contact_id = $this->request->getPost('contact_id');
         $cc = $this->request->getPost('estimate_cc');
@@ -1357,7 +1357,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function tasks($estimate_id) {
         validate_numeric_value($estimate_id);
-        $this->validate_estimate_access($estimate_id);
+        //  $this->validate_estimate_access($estimate_id);
 
         $view_data["estimate_id"] = $estimate_id;
         $view_data["custom_field_headers_of_task"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
