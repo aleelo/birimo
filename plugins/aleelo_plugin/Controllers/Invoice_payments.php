@@ -162,7 +162,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* add or edit a payment */
 
     function save_payment() {
-        $this->access_only_allowed_members();
+        // $this->access_only_allowed_members();
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -210,7 +210,7 @@ class Invoice_payments extends Security_Controller_Plugin {
   /* add or edit a payment */
 
   function save_payment_supplier() {
-    $this->access_only_allowed_members();
+    // $this->access_only_allowed_members();
 
     $this->validate_submitted_data(array(
         "id" => "numeric",
