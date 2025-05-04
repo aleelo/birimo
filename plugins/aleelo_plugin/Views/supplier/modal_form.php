@@ -13,7 +13,7 @@
                     <label for="company_id" class="col-md-3"><?php echo app_lang('company'); ?></label>
                     <div class=" col-md-9">
                         <?php
-                        echo form_dropdown("company_id", $companies_dropdown, $model_info->company_id, "class='select2 form-control validate-hidden' id='company_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        echo form_dropdown("company_id", $companies_dropdown, $model_info->company, "class='select2 form-control validate-hidden' id='company_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
                 
                     ?>
                 </div>

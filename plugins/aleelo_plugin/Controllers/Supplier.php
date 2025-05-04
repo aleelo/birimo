@@ -25,8 +25,8 @@ class Supplier extends Security_Controller_Plugin {
         ));
         if (!$this->can_add_supplier()  && !$this->can_edit_supplier()) {
             app_redirect("forbidden");
-        }
-        $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
+        }       
+        $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
         $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
         $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
         $view_data['has_all_permission'] = ( $this->login_user->is_admin || 

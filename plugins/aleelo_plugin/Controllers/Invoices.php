@@ -26,7 +26,7 @@ class Invoices extends Security_Controller_Plugin {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("invoices", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("invoices", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $view_data["can_edit_invoices"] = $this->can_add_invoice();
+        $view_data["can_edit_invoice"] = $this->can_add_invoice();
         $view_data['company'] = $this->_get_company();
 
         $type_suggestions = array(
@@ -60,7 +60,7 @@ class Invoices extends Security_Controller_Plugin {
     //load the recurring view of invoice list 
     function recurring() {
         $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown();
-        $view_data["can_edit_invoices"] = $this->can_edit_invoices();
+        $view_data["can_edit_invoice"] = $this->can_edit_invoice();
         return $this->template->view("aleelo_plugin\Views/invoices/recurring_invoices_list", $view_data);
     }
 
@@ -70,7 +70,7 @@ class Invoices extends Security_Controller_Plugin {
         $invoice_id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
 
-        if (!$this->can_edit_invoices()  && !$this->can_add_invoice()) {
+        if (!$this->can_edit_invoice()  && !$this->can_add_invoice()) {
             app_redirect("forbidden");
         }
         $this->validate_submitted_data(array(
@@ -201,7 +201,7 @@ else{
             "id" => "required|numeric"
         ));
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -215,7 +215,7 @@ else{
     /* prepare project dropdown based on this suggestion */
 
     function get_project_suggestion($client_id = 0) {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -235,7 +235,7 @@ else{
         $id = $this->request->getPost('id');
         $is_clone = $this->request->getPost('is_clone');
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -351,7 +351,7 @@ else{
             show_404();
         }
     
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
     
@@ -505,7 +505,7 @@ else{
     function save_recurring_info() {
         $id = $this->request->getPost('id');
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -560,7 +560,7 @@ else{
     /* delete or undo an invoice */
 
     function delete() {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -962,7 +962,7 @@ $delete= '';
 
             if ($view_data) {
                 $view_data['invoice_status'] = $this->_get_invoice_status_label($view_data["invoice_info"], false);
-                $view_data["can_edit_invoices"] = $this->can_edit_invoices();
+                $view_data["can_edit_invoice"] = $this->can_edit_invoice();
                 $view_data["is_invoice_editable"] = $this->is_invoice_editable($invoice_id);
                 return $this->template->rander("aleelo_plugin\Views/invoices/view", $view_data);
             } else {
@@ -976,11 +976,11 @@ $delete= '';
     private function _get_invoice_total_view($invoice_id = 0) {
         $view_data["invoice_total_summary"] = $this->Invoices_model->get_invoice_total_summary($invoice_id);
         $view_data["invoice_id"] = $invoice_id;
-        $can_edit_invoices = false;
-        if ($this->can_edit_invoices() && $this->is_invoice_editable($invoice_id)) {
-            $can_edit_invoices = true;
+        $can_edit_invoice = false;
+        if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
+            $can_edit_invoice = true;
         }
-        $view_data["can_edit_invoices"] = $can_edit_invoices;
+        $view_data["can_edit_invoice"] = $can_edit_invoice;
         return $this->template->view('aleelo_plugin\Views/invoices/invoice_total_section', $view_data);
     }
 
@@ -989,13 +989,13 @@ $delete= '';
     function item_modal_form() {
         $invoice_id = $this->request->getPost('invoice_id');
 
-        if (!$this->can_edit_invoices()) {
-            app_redirect("forbidden");
-        }
+        // if (!$this->can_edit_invoice()) {
+        //     app_redirect("forbidden");
+        // }
 
-        if (!$this->is_invoice_editable($invoice_id)) {
-            app_redirect("forbidden");
-        }
+        // if (!$this->is_invoice_editable($invoice_id)) {
+        //     app_redirect("forbidden");
+        // }
 
         $this->validate_submitted_data(array(
             "id" => "numeric"
@@ -1022,7 +1022,7 @@ $delete= '';
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         $new_account = $this->request->getPost("new_account");
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1115,7 +1115,7 @@ $delete= '';
         $id = $this->request->getPost('id');
         $item_info = $this->Invoice_items_model->get_one($id);
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1188,7 +1188,7 @@ $delete= '';
         $list_data = $this->Invoice_items_model->get_details(array("invoice_id" => $invoice_id))->getResult();
 
         $is_ediable = false;
-        if ($this->can_edit_invoices() && $this->is_invoice_editable($invoice_id)) {
+        if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
             $is_ediable = true;
         }
 
@@ -1234,7 +1234,7 @@ $delete= '';
     //update the sort value for the item
     function update_item_sort_values($id = 0) {
         validate_numeric_value($id);
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1377,7 +1377,7 @@ $delete= '';
     }
 
     function send_invoice_modal_form($invoice_id) {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1424,7 +1424,7 @@ $delete= '';
     }
 
     function get_send_invoice_template($invoice_id = 0, $contact_id = 0, $return_type = "", $invoice_info = "", $contact_info = "") {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1510,7 +1510,7 @@ $delete= '';
     }
 
     function send_invoice() {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1625,7 +1625,7 @@ $delete= '';
     }
 
     function update_invoice_status($invoice_id = 0, $status = "") {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1659,7 +1659,7 @@ $delete= '';
 
         $invoice_id = $this->request->getPost('invoice_id');
 
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1692,7 +1692,7 @@ $delete= '';
             return false;
         }
 
-        if (!($this->can_edit_invoices() && $this->is_invoice_editable($invoice_id))) {
+        if (!($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id))) {
             app_redirect("forbidden");
         }
 
@@ -1783,11 +1783,11 @@ $delete= '';
             $view_data = get_invoice_making_data($invoice_id);
 
             if ($view_data) {
-                $can_edit_invoices = false;
-                if ($this->can_edit_invoices() && $this->is_invoice_editable($invoice_id)) {
-                    $can_edit_invoices = true;
+                $can_edit_invoice = false;
+                if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
+                    $can_edit_invoice = true;
                 }
-                $view_data["can_edit_invoices"] = $can_edit_invoices;
+                $view_data["can_edit_invoice"] = $can_edit_invoice;
 
                 return $this->template->view("aleelo_plugin\Views/invoices/details", $view_data);
             } else {
@@ -1805,7 +1805,7 @@ $delete= '';
         if ($invoice_id) {
             validate_numeric_value($invoice_id);
             $view_data["invoice_id"] = $invoice_id;
-            $view_data["can_edit_invoices"] = $this->can_edit_invoice();
+            $view_data["can_edit_invoice"] = $this->can_edit_invoice();
 
             return $this->template->view("aleelo_plugin\Views/invoices/payments/index", $view_data);
         } else {
@@ -1821,8 +1821,8 @@ $delete= '';
         }
 
         //it'll be based on the context permission
-        $can_edit_invoices = $this->can_edit_invoices();
-        $view_data['can_create_tasks'] = $can_edit_invoices;
+        $can_edit_invoice = $this->can_edit_invoice();
+        $view_data['can_create_tasks'] = $can_edit_invoice;
 
         $view_data["custom_field_headers_of_task"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -1863,7 +1863,7 @@ $delete= '';
     }
 
     function create_credit_note_modal_form($invoice_id) {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1878,7 +1878,7 @@ $delete= '';
     }
 
     function create_credit_note() {
-        if (!$this->can_edit_invoices()) {
+        if (!$this->can_edit_invoice()) {
             app_redirect("forbidden");
         }
 
