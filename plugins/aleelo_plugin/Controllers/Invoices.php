@@ -60,7 +60,7 @@ class Invoices extends Security_Controller_Plugin {
     //load the recurring view of invoice list 
     function recurring() {
         $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown();
-        $view_data["can_edit_invoice"] = $this->can_edit_invoice();
+        $view_data["can_edit_invoices"] = $this->can_edit_invoice();
         return $this->template->view("aleelo_plugin\Views/invoices/recurring_invoices_list", $view_data);
     }
 
@@ -962,7 +962,7 @@ $delete= '';
 
             if ($view_data) {
                 $view_data['invoice_status'] = $this->_get_invoice_status_label($view_data["invoice_info"], false);
-                $view_data["can_edit_invoice"] = $this->can_edit_invoice();
+                $view_data["can_edit_invoices"] = $this->can_edit_invoice();
                 $view_data["is_invoice_editable"] = $this->is_invoice_editable($invoice_id);
                 return $this->template->rander("aleelo_plugin\Views/invoices/view", $view_data);
             } else {
@@ -980,7 +980,7 @@ $delete= '';
         if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
             $can_edit_invoice = true;
         }
-        $view_data["can_edit_invoice"] = $can_edit_invoice;
+        $view_data["can_edit_invoices"] = $can_edit_invoice;
         return $this->template->view('aleelo_plugin\Views/invoices/invoice_total_section', $view_data);
     }
 
@@ -1787,7 +1787,7 @@ $delete= '';
                 if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
                     $can_edit_invoice = true;
                 }
-                $view_data["can_edit_invoice"] = $can_edit_invoice;
+                $view_data["can_edit_invoices"] = $can_edit_invoice;
 
                 return $this->template->view("aleelo_plugin\Views/invoices/details", $view_data);
             } else {
@@ -1805,7 +1805,7 @@ $delete= '';
         if ($invoice_id) {
             validate_numeric_value($invoice_id);
             $view_data["invoice_id"] = $invoice_id;
-            $view_data["can_edit_invoice"] = $this->can_edit_invoice();
+            $view_data["can_edit_invoices"] = $this->can_edit_invoice();
 
             return $this->template->view("aleelo_plugin\Views/invoices/payments/index", $view_data);
         } else {
