@@ -948,7 +948,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             //  $this->validate_estimate_access($estimate_id, true);
 
             $estimate_data = get_estimate_making_data($estimate_id);
-            $this->_check_estimate_access_permission($estimate_data);
+           // $this->_check_estimate_access_permission($estimate_data);
 
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");
 
@@ -981,7 +981,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             validate_numeric_value($estimate_id);
             //  $this->validate_estimate_access($estimate_id, true);
             $estimate_data = get_estimate_making_data($estimate_id);
-            $this->_check_estimate_access_permission($estimate_data);
+           // $this->_check_estimate_access_permission($estimate_data);
 
             if (@ob_get_length())
                 @ob_clean();
@@ -1343,7 +1343,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             validate_numeric_value($estimate_id);
             $view_data = get_estimate_making_data($estimate_id);
 
-            $this->_check_estimate_access_permission($view_data);
+           // $this->_check_estimate_access_permission($view_data);
 
             $view_data['estimate_preview'] = prepare_estimate_pdf($view_data, "html");
 
