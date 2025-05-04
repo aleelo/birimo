@@ -172,7 +172,10 @@ $view_data['has_all_permission'] =
         $this->validate_access_to_items();
 
         $category_id = $this->request->getPost('category_id');
-        $options = array("category_id" => $category_id);
+        $options = array(
+            "category_id" => $category_id,
+            "company_id" => $this->login_user->department,
+    );
 
         $list_data = $this->Items_model->get_details($options)->getResult();
         $result = array();

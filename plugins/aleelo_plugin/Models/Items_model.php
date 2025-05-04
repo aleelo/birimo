@@ -35,7 +35,11 @@ class Items_model extends Crud_model {
         if ($id) {
             $where .= " AND $items_table.id=$id";
         }
-
+ 
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND $items_table.company_id=$company_id";
+        }
         $search = $this->_get_clean_value($options, "search");
         if ($search) {
             $search = $this->db->escapeLikeString($search);
