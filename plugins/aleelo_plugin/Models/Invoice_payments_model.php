@@ -12,7 +12,7 @@ class Invoice_payments_model extends Crud_model {
         parent::__construct($this->table);
     }
 
-    function get_details($options = array()) {
+    function get_details($options = array(),$option = array()) {
         $invoice_payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $payment_methods_table = $this->db->prefixTable('payment_methods');
@@ -29,13 +29,32 @@ class Invoice_payments_model extends Crud_model {
         if ($invoice_id) {
             $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
         }
-
+ $invoice_id = $this->_get_clean_value($option, "invoice_id");
+        if ($invoice_id) {
+            $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
+        }
         $order_id = $this->_get_clean_value($options, "order_id");
         if ($order_id) {
             $where .= " AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0 AND $invoices_table.order_id=$order_id)";
         }
-        $supplier_id = $this->_get_clean_value($options, "supplier_id");
+        // $supplier = $this->_get_clean_value($options, "supplier");
+        // if ($supplier) {
+        //     $where .= " AND $invoice_payments_table.supplier_id= 0";
+        // }
+        
+        $supplier_type = $this->_get_clean_value($options, "supplier_type");
 
+        if ($supplier_type === "client") {
+            $where .= " AND $invoice_payments_table.supplier_id = 0";
+        } elseif ($supplier_type === "supplier") {
+            $supplier_id = $this->_get_clean_value($options, "supplier_id");
+            if ($supplier_id) {
+                $where .= " AND $invoice_payments_table.supplier_id != 0";
+            } else {
+                $where .= " AND $invoice_payments_table.supplier_id != 0";
+            }
+        }
+        
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
             $where .= " AND $invoices_table.client_id=$client_id";
@@ -46,10 +65,10 @@ class Invoice_payments_model extends Crud_model {
             $where .= " AND dp.id=$company_id";
         }
         
-        $supplier_id = $this->_get_clean_value($options, "supplier_id");
-        if ($supplier_id) {
-            $where .= " AND $invoice_payments_table.supplier_id != 0";
-        }
+        // $supplier_id = $this->_get_clean_value($option, "supplier_id");
+        // if ($supplier_id) {
+        //     $where .= " AND $invoice_payments_table.supplier_id !=0";
+        // }
         $company_id_department = $this->_get_clean_value($options, "company_id_department");
         if ($company_id_department) {
             $where .= " AND dp.id=$company_id_department";

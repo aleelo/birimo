@@ -296,7 +296,6 @@ class Invoice_payments extends Security_Controller_Plugin {
         $end_date = $this->request->getPost('end_date');
         $payment_method_id = $this->request->getPost('payment_method_id');
         $ss= $this->request->getPost("can_view_all_invoice");
-
         $options = array(
             "start_date" => $start_date,
             "end_date" => $end_date,
@@ -306,6 +305,9 @@ class Invoice_payments extends Security_Controller_Plugin {
             "project_id" => $this->request->getPost("project_id"),
             "company_id" => $this->can_view_own_company_payment(),
             "can_view_all_invoice" =>$ss,
+            "supplier"=>"2",
+            "supplier_type" => "client",  // or: "no_supplier"
+
         );
 
         $list_data = $this->Invoice_payments_model->get_details($options)->getResult();
@@ -332,13 +334,13 @@ class Invoice_payments extends Security_Controller_Plugin {
             "start_date" => $start_date,
             "end_date" => $end_date,
             "invoice_id" => $invoice_id,
-            "supplier_id" => $supplier_id,
             "payment_method_id" => $payment_method_id,
             "currency" => $this->request->getPost("currency"),
             "project_id" => $this->request->getPost("project_id"),
             "company_id" => $this->can_view_own_company_payment(),
             "can_view_all_invoice" =>$ss,
-        );
+"supplier_type" => "supplier",
+"supplier_id" => 13,        );
 
         $list_data = $this->Invoice_payments_model->get_details($options)->getResult();
         
