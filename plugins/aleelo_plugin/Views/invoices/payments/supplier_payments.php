@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table id="invoice-payment-table" class="display" cellspacing="0" width="100%">            
+        <table id="invoice-supplier-payment-table" class="display" cellspacing="0" width="100%">            
         </table>
     </div>
 </div>
@@ -23,7 +23,7 @@
             optionVisibility = true;
         }
 
-        $("#invoice-payment-table").appTable({
+        $("#invoice-supplier-payment-table").appTable({
             source: '<?php echo_uri("invoice_payments/payment_supplier_data/" . $invoice_id . "/" .$supplier_id) ?>',
             order: [[0, "asc"]],
             filterDropdown:[
