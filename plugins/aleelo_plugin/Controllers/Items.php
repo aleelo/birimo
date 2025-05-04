@@ -54,7 +54,7 @@ class Items extends Security_Controller_Plugin {
 
     /* load item modal */
     function modal_form() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
             "id" => "numeric"
@@ -93,7 +93,7 @@ $view_data['has_all_permission'] =
     /* add or edit an item */
 
     function save() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -141,7 +141,7 @@ $view_data['has_all_permission'] =
     /* delete or undo an item */
 
     function delete() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -169,7 +169,7 @@ $view_data['has_all_permission'] =
     /* list of items, prepared for datatable  */
 
     function list_data() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $category_id = $this->request->getPost('category_id');
         $options = array(
@@ -245,19 +245,19 @@ $view_data['has_all_permission'] =
     }
 
     function import_items_modal_form() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         return $this->template->view("items/import_items_modal_form");
     }
 
     function download_sample_excel_file() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
         return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-items-sample.xlsx"))));
     }
 
 
     function validate_import_items_file() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $file_name = $this->request->getPost("file_name");
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -274,7 +274,7 @@ $view_data['has_all_permission'] =
     }
 
     function save_item_from_excel_file() {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         if (!$this->validate_import_items_file_data(true)) {
             echo json_encode(array('success' => false, 'message' => app_lang('error_occurred')));
@@ -372,7 +372,7 @@ $view_data['has_all_permission'] =
     }
 
     function validate_import_items_file_data($check_on_submit = false) {
-        $this->validate_access_to_items();
+       //  $this->validate_access_to_items();
 
         $table_data = "";
         $error_message = "";
