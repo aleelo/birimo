@@ -1266,8 +1266,9 @@ $delete= '';
         $key = $this->request->getPost("q");
         $suggestion = array();
 
-        $items = $this->Invoice_items_model->get_item_suggestion($key);
-
+        $company_id = $this->login_user->department; 
+        $items = $this->Invoice_items_model->get_item_suggestion($key, "", $company_id);
+        
         foreach ($items as $item) {
             $suggestion[] = array("id" => $item->id, "text" => $item->title);
         }

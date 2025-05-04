@@ -543,8 +543,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         else{
             $delete ='';
         }
-        $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
-            . $edit
+        $row_data[] = $edit
             . $delete;
 
         return $row_data;
