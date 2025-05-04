@@ -455,7 +455,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     function estimate_list_data_of_client($client_id) {
         validate_numeric_value($client_id);
-        $this->access_only_allowed_members_or_client_contact($client_id);
+      //  $this->access_only_allowed_members_or_client_contact($client_id);
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -813,7 +813,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     /* delete or undo an estimate item */
 
     function delete_item() {
-        $this->access_only_allowed_members();
+      //  $this->access_only_allowed_members();
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -1023,7 +1023,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 app_redirect("forbidden");
             }
         } else {
-            $this->access_only_allowed_members();
+          ///  $this->access_only_allowed_members();
         }
     }
 
@@ -1083,7 +1083,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     function get_send_estimate_template($estimate_id = 0, $contact_id = 0, $return_type = "", $estimate_info = "", $contact_info = "") {
-        $this->access_only_allowed_members();
+      //  $this->access_only_allowed_members();
         $this->can_access_this_estimate($estimate_id);
 
         validate_numeric_value($estimate_id);
