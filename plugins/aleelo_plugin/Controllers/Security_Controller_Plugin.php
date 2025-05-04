@@ -444,8 +444,20 @@ protected function can_view_own_company_task() {
     }
     return false; 
 }
+//-----------------------------------------------------items-----------------------------------------------------
+protected function can_view_items() {
+    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "items") !== "no") {
+        return true; 
+    }
+    return false;
+}
 
-
+// protected function can_view_items() {
+//     if ($this->login_user->user_type == "staff" && ($this->login_user->is_admin|| get_array_value($this->login_user->permissions, "items") == "all"))    {
+//         return true; 
+//     }
+//     return false;
+// }
 
     protected function can_view_own_department_client() {
         if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" || get_array_value($this->login_user->permissions,"invoice") ==="own_company")){

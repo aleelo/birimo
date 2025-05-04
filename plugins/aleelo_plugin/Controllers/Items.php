@@ -32,7 +32,7 @@ class Items extends Security_Controller_Plugin {
     //load items list view
     function index() {
       
-        if (!$this->can_view_invoices()) {
+     if(!$this->can_view_items()) {
             app_redirect("forbidden");
         }
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
