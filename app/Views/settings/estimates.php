@@ -87,6 +87,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </div>
                             <div class="form-group">
                                 <div class="row">
                                     <label for="estimate_footer_pixel" class="col-md-2"><?php echo app_lang('estimate_footer_pixel') ?></label>
@@ -173,17 +174,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary"><span data-feather='check-circle' class="icon-16"></span> <?php echo app_lang('save'); ?></button>
                         </div>
+                        <?php echo form_close(); ?>
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="estimate-request-settings-tab"></div>
                     <div role="tabpanel" class="tab-pane fade" id="invoice-general-settings-tab"></div>
-
+                    <div role="tabpanel" class="tab-pane fade" id="invoice-reminder-settings-tab"></div>
                 </div>
             </div>
-            <?php echo form_close(); ?>
         </div>
     </div>
 </div>
@@ -206,7 +205,6 @@
 
         initWYSIWYGEditor("#estimate_footer_pixel");
         initWYSIWYGEditor("#estimate_footer_solution");
-        initWYSIWYGEditor("#estimate_footer");
 
         $(".cropbox-upload").change(function () {
             showCropBox(this);

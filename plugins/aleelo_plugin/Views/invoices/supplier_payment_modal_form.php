@@ -104,59 +104,58 @@
 <?php echo form_close(); ?>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#invoice-payment-form").appForm({
-            onSuccess: function (result) {
-                if (typeof RELOAD_VIEW_AFTER_UPDATE !== "undefined" && RELOAD_VIEW_AFTER_UPDATE) {
-                    location.reload();
-                } else {
-                    if ($("#invoice-status-bar").length) {
-                        //it's from invoice details view
-                        $("#invoice-payment-table").appTable({newData: result.data, dataId: result.id});
-                        $("#invoice-total-section").html(result.invoice_total_view);
-                        if (typeof updateInvoiceStatusBar == 'function') {
-                            updateInvoiceStatusBar(result.invoice_id);
-                        }
-                    }
-
-                    if ($("#invoice-payment-table").length) {
-                        //it's from invoices list view
-                        //update table data
-                        $("#" + $(".dataTable:visible").attr("id")).appTable({reload: true});
+  $(document).ready(function () {
+    $("#invoice-payment-form").appForm({
+        onSuccess: function (result) {
+            if (typeof RELOAD_VIEW_AFTER_UPDATE !== "undefined" && RELOAD_VIEW_AFTER_UPDATE) {
+                location.reload();
+            } else {
+                if ($("#invoice-status-bar").length) {
+                    $("#invoice-payment-table").appTable({ newData: result.data, dataId: result.id });
+                    $("#invoice-total-section").html(result.invoice_total_view);
+                    if (typeof updateInvoiceStatusBar == 'function') {
+                        updateInvoiceStatusBar(result.invoice_id);
                     }
                 }
+
+                if ($("#invoice-payment-table").length) {
+                    $("#" + $(".dataTable:visible").attr("id")).appTable({ reload: true });
+                }
             }
-        });
-
-        $("#invoice-payment-form .select2").select2();
-        $("#supplier_id .select2").select2();
-
-        setDatePicker("#invoice_payment_date");
-
-        //save the lastly selected payment method to cookie user-wise
-        $(".selected_payment_method").on("change", function () {
-            var paymentMethodId = $(this).val();
-            if (paymentMethodId) {
-                setCookie("user_" + "<?php echo $login_user->id; ?>" + "_payment_method", paymentMethodId);
-            }
-        });
-
-        //get due balance of selected invoice
-        $("#invoice_id").select2().on("change", function () {
-            var invoice_id = $(this).val();
-            if ($(this).val()) {
-                $.ajax({
-                    url: "<?php echo get_uri("invoice_payments/get_invoice_payment_amount_suggestion"); ?>" + "/" + invoice_id,
-                    cache: false,
-                    type: 'POST',
-                    dataType: "json",
-                    success: function (response) {
-                        if (response && response.success) {
-                            $("#invoice_payment_amount").val(response.invoice_total_summary.balance_due);
-                        }
-                    }
-                });
-            }
-        });
+        }
     });
+
+    $("#invoice-payment-form .select2").select2();
+    $("#supplier_id").select2(); // Corrected selector
+
+    setDatePicker("#invoice_payment_date");
+
+    $(".selected_payment_method").on("change", function () {
+        var paymentMethodId = $(this).val();
+        if (paymentMethodId) {
+            setCookie("user_" + "<?php echo $login_user->id; ?>" + "_payment_method", paymentMethodId);
+        }
+    });
+
+    // Get due balance of selected invoice
+    $("#supplier_id").select2().on("change", function () {
+        var invoice_id = $("#invoice_id").val();
+        var supplier_id = $("#supplier_id").val(); // Get supplier_id value
+        console.log("Selected Supplier ID:", supplier_id); // Debugging
+
+        if (invoice_id && supplier_id) {
+            $.ajax({
+                url: "<?php echo get_uri("invoice_payments/get_invoice_payment_amount_suggestion"); ?>" + "/" + invoice_id + "/" + supplier_id,
+                cache: false,
+                type: 'POST',
+                dataType: "json",
+                success: function (response) {
+                    if (response && response.success) {
+                        $("#invoice_payment_amount").val(12);
+                    }
+                }
+            });
+        }
+    });
+});
 </script>

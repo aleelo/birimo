@@ -4390,6 +4390,8 @@ $lang['client_payments']='client payments';
 $lang['supplier_invoice_payment_list']='supplier invoice payment list';
 $lang['add_invoice_payment']='add invoice payment';
 $lang['company_item']='company item';
+$lang['create_delivery_note']='create delivery note';
+$lang['edit_delivery_note']='edit delivery note';
 
 
 return $lang;

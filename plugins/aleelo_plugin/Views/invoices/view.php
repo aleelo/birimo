@@ -44,6 +44,13 @@
                                     <li role="presentation"><?php echo anchor(get_uri("invoices/preview/" . $invoice_info->id . "/1"), "<i data-feather='search' class='icon-16'></i> " . app_lang('preview'), array("title" => app_lang('preview'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
                                     <li role="presentation"><?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print'), array('title' => app_lang('print'), 'id' => 'print-invoice-btn', "class" => "dropdown-item")); ?> </li>
 
+                                    <?php if ($invoice_info->delivery_note ==null ) { ?>
+                                        <?php echo modal_anchor(get_uri("invoices/delivery_note/" . $invoice_info->id), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('create_delivery_note'), array("class" => "dropdown-item", "title" => app_lang('create_delivery_note'), "data-modal-fullscreen" => 1)); ?>
+
+                                    <?php } elseif ($invoice_info->delivery_note !==null ) { ?>
+                                        <?php echo modal_anchor(get_uri("invoices/delivery_note/" . $invoice_info->id), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('edit_delivery_note'), array("class" => "dropdown-item", "title" => app_lang('edit_delivery_note'), "data-modal-fullscreen" => 1)); ?>
+
+                                    <?php } ?>
                                     <?php if ($can_edit_invoices && $invoice_info->type == "invoice") { ?>
                                         <li role="presentation" class="dropdown-divider"></li>
 

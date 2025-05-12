@@ -134,6 +134,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     $view_data['model_info'] = $this->Invoice_payments_model->get_one($this->request->getPost('id'));
 
     $invoice_id = $this->request->getPost('invoice_id') ? $this->request->getPost('invoice_id') : $view_data['model_info']->invoice_id;
+    $supplier_id = $this->request->getPost('supplier_id'); // Read supplier_id from the dropdown
 
     if (!$invoice_id) {
         //prepare invoices dropdown
@@ -147,9 +148,9 @@ class Invoice_payments extends Security_Controller_Plugin {
         $view_data['invoices_dropdown'] = array("" => "-") + $invoices_dropdown;
     }
     $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
-    $amount = $view_data['model_info']->amount ? to_decimal_format($view_data['model_info']->amount) : "";
+    // $amount = $view_data['model_info']->amount ? to_decimal_format($view_data['model_info']->amount) : "";
     if (!$view_data['model_info']->amount && $invoice_id) {
-        $amount = to_decimal_format($this->Invoices_model->get_invoice_total_summary($invoice_id)->balance_due);
+        $amount = to_decimal_format($this->Invoices_model->get_invoice_total_summaryp($invoice_id, $supplier_id)->supplier_due);
     }
 
     $view_data["amount"] = $amount;
@@ -234,6 +235,8 @@ class Invoice_payments extends Security_Controller_Plugin {
         "created_at" => get_current_utc_time(),
         "created_by" => $this->login_user->id,
         "supplier_id" => $this->request->getPost('supplier_id'),
+        "account_id" => $account,
+        "supplier"=>1,
     );
 
     $invoice_payment_id = $this->Invoice_payments_model->ci_save($invoice_payment_data, $id);
@@ -610,12 +613,16 @@ class Invoice_payments extends Security_Controller_Plugin {
         echo json_encode(array("data" => $result));
     }
 
-    function get_invoice_payment_amount_suggestion($invoice_id) {
+    function get_invoice_payment_amount_suggestion($invoice_id, $supplier_id ) {
         validate_numeric_value($invoice_id);
-
-        $invoice_total_summary = $this->Invoices_model->get_invoice_total_summary($invoice_id);
+        validate_numeric_value($supplier_id);
+        log_message('debug', 'Received Invoice ID: ' . $invoice_id);
+        log_message('debug', 'Received Supplier ID: ' . $supplier_id);
+    
+        $invoice_total_summary = $this->Invoices_model->get_invoice_total_summaryp($invoice_id, $supplier_id);
         if ($invoice_total_summary) {
-            $invoice_total_summary->balance_due = $invoice_total_summary->balance_due ? to_decimal_format($invoice_total_summary->balance_due) : "";
+            $invoice_total_summary->supplier_due = $invoice_total_summary->supplier_due ? to_decimal_format($invoice_total_summary->supplier_due) : "";
+            
             echo json_encode(array("success" => true, "invoice_total_summary" => $invoice_total_summary));
         } else {
             echo json_encode(array("success" => false));

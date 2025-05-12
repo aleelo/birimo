@@ -45,13 +45,13 @@ class Invoice_payments_model extends Crud_model {
         $supplier_type = $this->_get_clean_value($options, "supplier_type");
 
         if ($supplier_type === "client") {
-            $where .= " AND $invoice_payments_table.supplier_id = 0";
+            $where .= " AND $invoice_payments_table.supplier = 0";
         } elseif ($supplier_type === "supplier") {
             $supplier_id = $this->_get_clean_value($options, "supplier_id");
             if ($supplier_id) {
-                $where .= " AND $invoice_payments_table.supplier_id != 0";
+                $where .= " AND $invoice_payments_table.supplier =1";
             } else {
-                $where .= " AND $invoice_payments_table.supplier_id != 0";
+                $where .= " AND $invoice_payments_table.supplier =1";
             }
         }
         

@@ -683,7 +683,41 @@ else{
         echo json_encode(array("data" => $result));
     }
 
+    function delivery_note($invoice_id)
+    {
+        if (!$this->can_view_invoices()) {
+            app_redirect("forbidden");
+        }
+
+        validate_numeric_value($invoice_id);
+
+        $view_data["model_info"] = $this->Invoices_model->get_one($invoice_id);
+        $view_data["invoice_id"] = $invoice_id;
+        return $this->template->view('aleelo_plugin\Views/invoices/delivery_note', $view_data);
+    }
+
+    function save_delivery_note(){
+        $id = $this->request->getPost('id');
+
+        $delivery_note=$this->request->getPost('delivery_note');
+        $value = decode_ajax_post_data($delivery_note);
+
+        $data= array(
+            "delivery_note" => $value
+            
+           
+        );
+        $save_id = $this->Invoices_model->ci_save($data, $id);
+        if ($save_id) {
+            echo json_encode(array("success" => true));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+        return "";
+
+    }
     /* list of invoice of a specific project, prepared for datatable  */
+
 
     function invoice_list_data_of_project($project_id, $client_id = 0) {
         if (!$this->can_view_invoices($client_id)) {
@@ -995,13 +1029,18 @@ $delete= '';
 
         // if (!$this->is_invoice_editable($invoice_id)) {
         //     app_redirect("forbidden");
-        // }
-
+        // 
+        $login_user = $this->login_user->department;
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
+        if($login_user !="0"){
+        $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id", array("company" => $login_user));
+    }
+    else{
         $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
 
+    }
         $view_data['model_info'] = $this->Invoice_items_model->get_one($this->request->getPost('id'));
         if (!$invoice_id) {
             $invoice_id = $view_data['model_info']->invoice_id;
@@ -1352,6 +1391,34 @@ $delete= '';
                 }
             } else {
                 prepare_invoice_pdf($invoice_data, $mode);
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    function download_pdf_delivery_note($invoice_id = 0, $mode = "download", $user_language = "") {
+        if ($invoice_id) {
+            validate_numeric_value($invoice_id);
+            $invoice_data = get_invoice_making_data_delivery_note($invoice_id);
+
+            if ($user_language) {
+                $language = Services::language();
+
+                $active_locale = $language->getLocale();
+
+                if ($user_language && $user_language !== $active_locale) {
+                    $language->setLocale($user_language);
+                }
+
+                prepare_invoice_pdf_delivery_note($invoice_data, $mode);
+
+                if ($user_language && $user_language !== $active_locale) {
+                    // Reset to active locale
+                    $language->setLocale($active_locale);
+                }
+            } else {
+                prepare_invoice_pdf_delivery_note($invoice_data, $mode);
             }
         } else {
             show_404();

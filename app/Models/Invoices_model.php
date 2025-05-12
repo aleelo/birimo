@@ -213,6 +213,32 @@ class Invoices_model extends Crud_model {
         return $result;
     }
 
+    function get_invoice_total_summaryp($invoice_id) {
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $clients_table = $this->db->prefixTable('clients');
+        $invoices_table = $this->db->prefixTable('invoices');
+
+        $invoice_id = $this->_get_clean_value($invoice_id);
+
+        $result = $this->get_invoice_total_metapayable($invoice_id);
+
+        $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency FROM $clients_table WHERE $clients_table.id=(SELECT $invoices_table.client_id FROM $invoices_table WHERE $invoices_table.id=$invoice_id LIMIT 1)";
+        $client = $this->db->query($client_sql)->getRow();
+
+        $result->currency_symbol = $client->currency_symbol ? $client->currency_symbol : get_setting("currency_symbol");
+        $result->currency = $client->currency ? $client->currency : get_setting("default_currency");
+
+        $payment_sql = "SELECT SUM($invoice_payments_table.amount) AS total_paid
+        FROM $invoice_payments_table
+        WHERE $invoice_payments_table.deleted=0 AND $invoice_payments_table.supplier=1 AND $invoice_payments_table.invoice_id=$invoice_id";
+        $payment = $this->db->query($payment_sql)->getRow();
+
+        $result->total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
+        $result->balance_due = number_format($result->invoice_total, 2, ".", "") - number_format($result->total_paid, 2, ".", "");
+
+        return $result;
+    }
+
     function invoice_statistics($options = array()) {
         $invoices_table = $this->db->prefixTable('invoices');
         $invoice_payments_table = $this->db->prefixTable('invoice_payments');
@@ -534,6 +560,117 @@ class Invoices_model extends Crud_model {
     }
 
     function get_invoice_total_meta($invoice_id) {
+        $id = $this->_get_clean_value($invoice_id);
+
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $info = $this->get_sales_total_meta($id, $invoices_table, $invoice_items_table);
+        return $info;
+    }
+    function get_invoice_total_metapayable($invoice_id) {
+        $id = $this->_get_clean_value($invoice_id);
+
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $info = $this->get_sales_total_metapayable($id, $invoices_table, $invoice_items_table);
+        return $info;
+    }
+    protected function get_sales_total_metapayable($id, $main_table, $items_table) {
+
+        //$main_table like as invoices table
+        //$items_table like as invoice_items_table
+        $taxes_table = $this->db->prefixTable('taxes');
+
+        $invoice_sql = "SELECT $main_table.id, $main_table.discount_amount, $main_table.discount_amount_type, $main_table.discount_type,
+                tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2, tax_table3.percentage AS tax_percentage3,
+                tax_table.title AS tax_name, tax_table2.title AS tax_name2, tax_table3.title AS tax_name3,
+                taxable_item.total_taxable, non_taxable_item.total_non_taxable
+                FROM $main_table
+                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table ON tax_table.id = $main_table.tax_id
+                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table2 ON tax_table2.id = $main_table.tax_id2
+                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table3 ON tax_table3.id = $main_table.tax_id3
+                LEFT JOIN (SELECT SUM($items_table.supplier_price) AS total_taxable, $items_table.invoice_id FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 1 GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
+                LEFT JOIN (SELECT SUM($items_table.supplier_price) AS total_non_taxable, $items_table.invoice_id  FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 0 GROUP BY $items_table.invoice_id) AS non_taxable_item ON non_taxable_item.invoice_id = $main_table.id
+                WHERE $main_table.deleted=0 AND $main_table.id = $id";
+
+        $invoice_info = $this->db->query($invoice_sql)->getRow();
+
+        if (!$invoice_info->id) {
+            return null;
+        }
+
+        $total_taxable = $invoice_info->total_taxable ? $invoice_info->total_taxable : 0;
+        $total_non_taxable = $invoice_info->total_non_taxable ? $invoice_info->total_non_taxable : 0;
+        $sub_total = $total_taxable + $total_non_taxable;
+        $discount_total = 0;
+        $invoice_total = 0;
+
+        if ($invoice_info->discount_amount_type == "percentage") {
+
+            $non_taxable_discount_value = $total_non_taxable * ($invoice_info->discount_amount / 100);
+
+            if ($invoice_info->discount_type == "before_tax") {
+                $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+                $total_taxable = $total_taxable - $taxable_discount_value; //apply discount before tax
+            }
+
+            $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+            $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+            $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+            $total_taxable = $total_taxable + $tax1 + $tax2 - $tax3;
+
+            $invoice_total = $total_taxable + $total_non_taxable - $non_taxable_discount_value; //deduct only non-taxable discount since the taxable discount already deducted 
+
+            if ($invoice_info->discount_type == "after_tax") {
+                $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+                $invoice_total = $total_taxable + $total_non_taxable - $taxable_discount_value - $non_taxable_discount_value;
+            }
+
+            $discount_total = $taxable_discount_value + $non_taxable_discount_value;
+        } else {
+            //discount_amount_type is fixed_amount
+
+            $discount_total = $invoice_info->discount_amount; //fixed amount 
+            //fixed amount discount. fixed amount can't be applied before tax when there are both taxable and non-taxable items.
+            //calculate all togather 
+
+            if ($invoice_info->discount_type == "before_tax" && $total_taxable > 0) {
+                $total_taxable = $total_taxable - $discount_total;
+            } else if ($invoice_info->discount_type == "before_tax" && $total_taxable == 0) {
+                $total_non_taxable = $total_non_taxable - $discount_total;
+            }
+
+
+            $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+            $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+            $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+            $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3; //discount before tax
+
+            if ($invoice_info->discount_type == "after_tax") {
+                $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3 - $discount_total;
+            }
+        }
+
+        $info = new \stdClass();
+        $info->invoice_total = number_format($invoice_total, 2, ".", "") * 1;
+        $info->invoice_subtotal = number_format($sub_total, 2, ".", "") * 1;
+        $info->discount_total = number_format($discount_total, 2, ".", "") * 1;
+
+        $info->tax_percentage = $invoice_info->tax_percentage;
+        $info->tax_percentage2 = $invoice_info->tax_percentage2;
+        $info->tax_percentage3 = $invoice_info->tax_percentage3;
+        $info->tax_name = $invoice_info->tax_name;
+        $info->tax_name2 = $invoice_info->tax_name2;
+        $info->tax_name3 = $invoice_info->tax_name3;
+
+        $info->tax = number_format($tax1, 2, ".", "") * 1;
+        $info->tax2 = number_format($tax2, 2, ".", "") * 1;
+        $info->tax3 = number_format($tax3, 2, ".", "") * 1;
+
+        $info->discount_type = $invoice_info->discount_type;
+        return $info;
+    }
+    function get_invoice_total_metapayple($invoice_id) {
         $id = $this->_get_clean_value($invoice_id);
 
         $invoices_table = $this->db->prefixTable('invoices');
