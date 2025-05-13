@@ -295,7 +295,7 @@ if (!function_exists('prepare_invoice_pdf_delivery_note')) {
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(150);
         
-        $pdf->SetAutoPageBreak(true, 10); // Remove automatic page breaks
+        $pdf->SetAutoPageBreak(true, 15); // Remove automatic page breaks
         $pdf->setInvoiceData($invoice_data); // 
 
         $pdf->AddPage();
