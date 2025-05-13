@@ -45,7 +45,7 @@ class Pdf extends \TCPDF {
                         font-weight: bold;
                         width: 100%;
                         padding: 1px 2px;
-                        line-height: 81px;
+                        line-height: 18px;
                         height: 42px;
                         
             padding: 100px;">
@@ -94,6 +94,7 @@ class Pdf extends \TCPDF {
             }
     
             $data = '
+            
             <div style="background-color: '.$color.';
                         color: white;
                         font-size: 24px;
