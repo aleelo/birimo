@@ -95,7 +95,8 @@ $style = get_setting("invoice_style");
 <tr > 
 <td style="width: 55%;  line-height: -0; vertical-align: top;">
         <div style="min-height: 35px; overflow: hidden;">
-      
+        <?php  
+         echo view('aleelo_plugin\Views/invoices/delivery_note_parts/company_logo'); ?>
     </div> </td> 
     <td style="width: 2.6%;"></td>
     <td style="width: 1%; vertical-align: top;">
