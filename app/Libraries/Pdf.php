@@ -39,7 +39,7 @@ class Pdf extends \TCPDF {
                 $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
             }
             $data = '
-            <div style="background-color: '.$color.';
+            <div style="background-color: red;
                         color: white;
                         font-size: 24px;
                         font-weight: bold;
@@ -94,6 +94,12 @@ class Pdf extends \TCPDF {
             }
     
             $data = '
+            <div style="background-color: '.$color.';
+                        height: 10px;
+                        width: 100%;">
+            </div>';
+            
+            $data2 = '
             
             <div style="background-color: '.$color.';
                         color: white;
@@ -104,16 +110,21 @@ class Pdf extends \TCPDF {
                         line-height: 51;
                         height: 2px;
                         
+                        
            ">
             </div>
             
             <br><br><br> 
             ';
     
-            $this->SetY(-5); 
+            $this->SetY(0); 
+            $this->setX(-0);
             
             $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
-            
+            $this->SetY(-5); 
+
+            $this->writeHTMLCell(0, 0, '', '', $data2, 0, 1, 0, true, '', true);
+
         } else {
             parent::Footer();
         }
