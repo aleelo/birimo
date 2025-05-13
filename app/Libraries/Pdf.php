@@ -45,8 +45,8 @@ class Pdf extends \TCPDF {
                         font-weight: bold;
                         width: 100%;
                         padding: 1px 2px;
-                        line-height: 1;
-                        height: 2px;
+                        line-height: 51px;
+                        height: 42px;
                         
             padding: 100px;">
             </div>
