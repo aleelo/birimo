@@ -1,49 +1,62 @@
-<strong style="color: <?php echo $color; ?>; font-size: 1.5em;"><?php echo "Delivery to"; ?></strong>
-<br/><br/>
+<table style="background-color: #f4f4f4; width: 45%; border-collapse: collapse;">
+<tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
+<tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
 
-<table style="background-color: #f4f4f4; width: 40%; border-collapse: collapse;">
-    <!-- TO -->
+
+    <?php if ($client_info->company_name) { ?>
+        <tr>
+    <td style="padding: 2px; width: 84px; white-space: nowrap;">
+        <strong style="font-size: 0.8em; color: <?php echo $color; ?>;">To:</strong>
+    </td>
+    <td style="padding: 2px;font-size: 0.8em;">
+        <?php echo $client_info->company_name; ?>
+    </td>
+</tr>
+
+    <?php } ?>
     <tr>
-        <td style="padding: 2px 0;">
-        <?php if ($client_info->company_name) { ?>
-           <strong style="color: <?php echo $color; ?>; font-size:     0.8em;"><?php echo "To"; ?>:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $client_info->company_name; ?>
-        <?php } ?>
+        <td style="padding: -10; line-height: 0.3em;">
+           <hr style="border-left: 1px solid #ddd; margin:4px 0;color: <?php echo $color; ?>; width: 39%;">
         </td>
     </tr>
-    
-    <!-- Horizontal Line -->
+    <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
+
+    <?php if ($client_info->address) { ?>
     <tr>
-        <td style="padding: -10;">
-           <hr style="border-left: 1px solid #ddd; margin:4px 0;color: <?php echo $color; ?>; width: 38%;">
+        <td style="padding: 5px;font-size: 0.8em;">
+            <strong style="color: <?php echo $color; ?>;">Address:</strong>
+        </td>
+        <td style="padding: 5px;font-size: 0.8em;">
+            <?php echo $client_info->address; ?>
         </td>
     </tr>
-    
-    <!-- ADDRESS -->
+    <?php } ?>
+    <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
+
+    <?php if ($client_info->phone) { ?>
     <tr>
-        <td style="padding: 2px 0;">
-        <?php if ($client_info->address) { ?>
-           <strong style="color: <?php echo $color; ?>; font-size:     0.8em;"><?php echo "Address"; ?>:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $client_info->address; ?>
-        <?php } ?>
+        <td style="padding: 5px;font-size: 0.8em;">
+            <strong style="color: <?php echo $color; ?>;">Phone:</strong>
+        </td>
+        <td style="padding: 5px;font-size: 0.8em;">
+            <?php echo $client_info->phone; ?>
         </td>
     </tr>
-    
-  
-    <!-- PHONE -->
+    <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
+
+    <?php } ?>
+
+    <?php if ($client_info->email) { ?>
     <tr>
-        <td style="padding: 2px 0;">
-        <?php if ($client_info->phone) { ?>
-           <strong style="color: <?php echo $color; ?>; font-size:     0.8em;"><?php echo "Phone"; ?>:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $client_info->phone; ?>
-        <?php } ?>
+        <td style="padding: 5px;font-size: 0.8em;">
+            <strong style="color: <?php echo $color; ?>;">Email:</strong>
+        </td>
+        <td style="padding: 5px;font-size: 0.8em;">
+            <?php echo $client_info->email; ?>
         </td>
     </tr>
-    
-   
-    <!-- EMAIL -->
-    <tr>
-        <td style="padding: 2px 0;">
-        <?php if ($client_info->email) { ?>
-           <strong style="color: <?php echo $color; ?>; font-size:     0.8em;"><?php echo "Email"; ?>:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $client_info->email; ?>
-        <?php } ?>
-        </td>
-    </tr>
+    <?php } ?>
+
+    <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
+
 </table>

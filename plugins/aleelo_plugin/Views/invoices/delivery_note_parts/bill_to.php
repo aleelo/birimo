@@ -1,6 +1,8 @@
 <?php if ($invoice_info->bill_date || $invoice_info->bill_date) { ?>
     <table style="width: 34%; ">
-    
+    <br/><br/>
+    <br/><br/>
+
         <tr>
             <td style="font-size: 0.8em; color: black; font-weight: bold;text-align: right;">
                 <?php echo ("DATE:"); ?>

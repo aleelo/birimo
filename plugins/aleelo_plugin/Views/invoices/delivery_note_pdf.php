@@ -120,7 +120,7 @@ $style = get_setting("invoice_style");
         "company_info" => $company_info,
         "color" => $color,
     );
-    echo view('aleelo_plugin\Views/invoices/delivery_note_parts/invoice_info', $data);
+    echo view('aleelo_plugin\Views/invoices/delivery_note_parts/delivery_info', $data);
     ?>
 </td>
     </tr>
@@ -150,7 +150,7 @@ $style = get_setting("invoice_style");
 
 <td style="width: 50%; vertical-align: top; text-align: left;">
     <?php echo view('aleelo_plugin\Views/invoices/delivery_note_parts/bill_from', $data); ?>
-</td>    <td style="width: 10%;"></td>
+</td>    <td style="width: 20%;"></td>
 
 <td style="width: 34%; vertical-align: top; text-align: left;">
     <?php echo view('aleelo_plugin\Views/invoices/delivery_note_parts/bill_to', $data); ?>
