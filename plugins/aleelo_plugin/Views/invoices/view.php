@@ -49,6 +49,9 @@
 
                                     <?php } elseif ($invoice_info->delivery_note !==null ) { ?>
                                         <?php echo modal_anchor(get_uri("invoices/delivery_note/" . $invoice_info->id), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('edit_delivery_note'), array("class" => "dropdown-item", "title" => app_lang('edit_delivery_note'), "data-modal-fullscreen" => 1)); ?>
+                                        <li role="presentation"><?php echo anchor(get_uri("invoices/download_pdf_delivery_note/" . $invoice_info->id), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_delivery_note'), array("title" => app_lang('download_delivery_note'), "class" => "dropdown-item")); ?> </li>
+                                        <li role="presentation"><?php echo anchor(get_uri("invoices/download_pdf_delivery_note/" . $invoice_info->id . "/view"), "<i data-feather='file-text' class='icon-16'></i> " . app_lang('view_delivery_note'), array("title" => app_lang('view_delivery_note'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
+
 
                                     <?php } ?>
                                     <?php if ($can_edit_invoices && $invoice_info->type == "invoice") { ?>
