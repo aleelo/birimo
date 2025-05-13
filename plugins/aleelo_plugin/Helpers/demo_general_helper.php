@@ -298,29 +298,6 @@ if (!function_exists('prepare_invoice_pdf_delivery_note')) {
         $pdf->setInvoiceData($invoice_data); // 
 
         $pdf->AddPage();
-
-        // 🟡 خلفية الهيدر
-        $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
-        $pdf->Image($img_file, 0, 0, 210, 50, '', '', '', false, 500, '', false, false, 0);
-        
-        // 🟣 محتوى الهيدر (مثلاً الشعار والنصوص)
-        $header_html = '
-            <div style="background-color:red;
-                        color: white;
-                        font-size: 24px;
-                        font-weight: bold;
-                        width: 100%;
-                        padding: 1px 2px;
-                        line-height: 81px;
-                        height: 42px;
-                        
-            padding: 100px;">
-            </div>
-            
-            <br><br><br> 
-';
-        $pdf->writeHTML($header_html, true, false, true, false, '');
-        
         
 
         // Get page width calculations
