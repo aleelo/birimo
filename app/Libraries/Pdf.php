@@ -54,7 +54,7 @@ class Pdf extends \TCPDF {
             <br><br><br> 
 ';
             
-            $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
+            // $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
         
             $break_margin = $this->getBreakMargin();
             $auto_page_break = $this->AutoPageBreak;
@@ -110,7 +110,28 @@ class Pdf extends \TCPDF {
             ';
     
             $this->SetY(-5); 
+            
             $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
+            $data2 = '
+            <div style="background-color: '.$color.';
+                        color: white;
+                        font-size: 24px;
+                        font-weight: bold;
+                        width: 100%;
+                        padding: 1px 2px;
+                        line-height: 51;
+                        height: 2px;
+                        
+            padding: 100px;">
+            </div>
+            
+            <br><br><br> 
+            ';
+    
+            $this->SetY(0); 
+            $this->setX(-1100);
+            
+            $this->writeHTMLCell(0, 0, '', '', $data2, 0, 1, 0, true, '', true);
         } else {
             parent::Footer();
         }
