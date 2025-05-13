@@ -305,21 +305,20 @@ if (!function_exists('prepare_invoice_pdf_delivery_note')) {
         
         // 🟣 محتوى الهيدر (مثلاً الشعار والنصوص)
         $header_html = '
-        <div style="padding: 20px 10px; color: black; font-size: 16px;">
-            <table width="100%">
-                <tr>
-                    <td width="50%">
-                        <img src="' . get_file_from_setting("invoice_logo", false) . '" height="40" />
-                    </td>
-                    <td align="right" width="50%">
-                        Ex-Amera Road, Hodan, Banadir, Mogadishu<br>
-                        611180212<br>
-                        info@aleelopixel.com
-                    </td>
-                </tr>
-            </table>
-        </div>
-        ';
+            <div style="background-color:red;
+                        color: white;
+                        font-size: 24px;
+                        font-weight: bold;
+                        width: 100%;
+                        padding: 1px 2px;
+                        line-height: 81px;
+                        height: 42px;
+                        
+            padding: 100px;">
+            </div>
+            
+            <br><br><br> 
+';
         $pdf->writeHTML($header_html, true, false, true, false, '');
         
         
