@@ -25,7 +25,7 @@ class Pdf extends \TCPDF {
         $this->SetAutoPageBreak(false, 0);
 
         $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
-        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 500, '', false, false, 0);
+       // $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 500, '', false, false, 0);
 
         // restore auto-page-break status
         $this->SetAutoPageBreak($auto_page_break, $break_margin);
