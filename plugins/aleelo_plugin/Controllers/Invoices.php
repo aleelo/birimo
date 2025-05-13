@@ -1071,6 +1071,7 @@ $delete= '';
 
         $id = $this->request->getPost('id');
         $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
+        $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
         $invoice_item_title = $this->request->getPost('invoice_item_title');
         $account_name = $this->request->getPost("estimate_item_account_id"); 
@@ -1125,7 +1126,8 @@ $delete= '';
             "account_id" =>$account_id,
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-            "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+            "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+            "supplier_price"=>$supplier_price * $quantity,
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
 
         );
