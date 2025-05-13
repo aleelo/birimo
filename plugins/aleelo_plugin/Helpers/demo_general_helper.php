@@ -298,6 +298,30 @@ if (!function_exists('prepare_invoice_pdf_delivery_note')) {
         $pdf->setInvoiceData($invoice_data); // 
 
         $pdf->AddPage();
+
+        // 🟡 خلفية الهيدر
+        $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
+        $pdf->Image($img_file, 0, 0, 210, 50, '', '', '', false, 500, '', false, false, 0);
+        
+        // 🟣 محتوى الهيدر (مثلاً الشعار والنصوص)
+        $header_html = '
+        <div style="padding: 20px 10px; color: black; font-size: 16px;">
+            <table width="100%">
+                <tr>
+                    <td width="50%">
+                        <img src="' . get_file_from_setting("invoice_logo", false) . '" height="40" />
+                    </td>
+                    <td align="right" width="50%">
+                        Ex-Amera Road, Hodan, Banadir, Mogadishu<br>
+                        611180212<br>
+                        info@aleelopixel.com
+                    </td>
+                </tr>
+            </table>
+        </div>
+        ';
+        $pdf->writeHTML($header_html, true, false, true, false, '');
+        
         
 
         // Get page width calculations

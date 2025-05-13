@@ -37,16 +37,7 @@ class Pdf extends \TCPDF {
             
             if (!$color) {
                 $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-            }    $break_margin = $this->getBreakMargin();
-            $auto_page_break = $this->AutoPageBreak;
-            $this->SetAutoPageBreak(false, 0);
-
-            $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
-            $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 500, '', false, false, 0);
-
-            // restore auto-page-break status
-            $this->SetAutoPageBreak($auto_page_break, $break_margin);
-            
+            }
             $data = '
             <div style="background-color: '.$color.';
                         color: white;
@@ -65,7 +56,16 @@ class Pdf extends \TCPDF {
             
             $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
         
-        
+            $break_margin = $this->getBreakMargin();
+            $auto_page_break = $this->AutoPageBreak;
+            $this->SetAutoPageBreak(false, 0);
+
+            $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
+            $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 500, '', false, false, 0);
+
+            // restore auto-page-break status
+            $this->SetAutoPageBreak($auto_page_break, $break_margin);
+            
         } else {
             // call the original Header method from the parent class
             parent::Header();
