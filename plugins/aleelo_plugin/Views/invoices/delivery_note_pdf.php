@@ -159,7 +159,7 @@ $style = get_setting("invoice_style");
 <tr>
     <td style="width: 5%;"></td>
 
-        <td style="width: 750;">
+        <td style="width: 750; line-height:-5px;">
         <?php
      echo $invoice_info->delivery_note; 
 ?>
