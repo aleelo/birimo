@@ -125,11 +125,10 @@ class Pdf extends \TCPDF {
 
 
 
-
-    public function Header2() {
+    public function Footer2() {
         if ($this->pdf_type == 'invoice') {
             $client_info = isset($this->invoice_data['client_info']) ? $this->invoice_data['client_info'] : null;
-
+    
             if (isset($client_info->company_id)) {
                 if ($client_info->company_id == 1) {
                     $color = get_setting("estimate_color_pixel");
@@ -141,34 +140,33 @@ class Pdf extends \TCPDF {
             } else {
                 $color = get_setting("estimate_color");
             }
-            
+    
             if (!$color) {
                 $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
             }
-       
-          
-            // restore auto-page-break status
+    
             $data = '
-            <div style="background-color: '.$color.';
+            <div style="background-color: red;
                         color: white;
                         font-size: 24px;
                         font-weight: bold;
                         width: 100%;
                         padding: 1px 2px;
-                        line-height: 81px;
-                        height: 42px;
+                        line-height: 51;
+                        height: 2px;
                         
             padding: 100px;">
             </div>
             
             <br><br><br> 
-';
+            ';
+    
+            $this->SetY(-5); 
             
             $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
-        
+            
         } else {
-            // call the original Header method from the parent class
-            parent::Header();
+            parent::Footer();
         }
     }
 }
