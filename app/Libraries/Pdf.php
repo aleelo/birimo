@@ -100,7 +100,7 @@ class Pdf extends \TCPDF {
                         font-weight: bold;
                         width: 100%;
                         padding: 1px 2px;
-                        line-height: 1;
+                        line-height: 51;
                         height: 2px;
                         
             padding: 100px;">
