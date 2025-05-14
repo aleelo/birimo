@@ -80,12 +80,16 @@ $style = get_setting("invoice_style");
    
 
     $discount_row = '<tr>
-                        <td colspan="4" style="text-align: right;">' . app_lang("discount") . '</td>
+                    <td style="width: 63%;"></td>
+
+                        <td  style="text-align: right;width: 20%;background-color: #f4f4f4; ">' . app_lang("discount") . '</td>
                         <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">' . to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
                     </tr>';
 
     $total_after_discount_row = '<tr>
-                                    <td colspan="4" style="text-align: right;">' . app_lang("total_after_discount") . '</td>
+                    <td style="width: 63%;"></td>
+
+                                    <td  style="text-align: right;width: 20%;background-color: #f4f4f4; ">' . app_lang("total_after_discount") . '</td>
                                     <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">' . to_currency($invoice_total_summary->invoice_subtotal - $invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
                                 </tr>';
     ?>
@@ -161,7 +165,7 @@ $style = get_setting("invoice_style");
 
         <td style="width: 750; line-height:-5px;">
         <?php
-     echo $invoice_info->delivery_note; 
+    //  echo $invoice_info->delivery_note; 
 ?>
         </td>
         <td style="width: 5%;"></td>
@@ -199,8 +203,9 @@ $style = get_setting("invoice_style");
         </tr>
     <?php } ?>
     <tr>
-        
-        <td colspan="4" style="text-align: right;"><?php echo app_lang("sub_total"); ?></td>
+                        <td style="width: 63%;"></td>
+
+        <td  style="text-align: right; width: 20%; background-color: #f4f4f4;"><?php echo app_lang("sub_total"); ?></td>
         <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: #f4f4f4;">
             <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
         </td>
@@ -232,20 +237,110 @@ $style = get_setting("invoice_style");
     }
     ?>
     <tr>
-        <td colspan="4" style="text-align: right;"><?php echo app_lang("total"); ?></td>
+                <td style="width: 63%;"></td>
+
+        <td  style="text-align: right;width: 20%; border-left: 1px solid #eee; border-right: 1px solid #eee;background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
         <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
             <?php echo to_currency($invoice_total_summary->invoice_total, $invoice_total_summary->currency_symbol); ?>
         </td>
     </tr>
 </table>
+<!--
 <?php if ($invoice_info->note) { ?>
     <br />
     <br />
     <div style="border-top: 1px solid #f2f4f6; color:#444; padding:0 0 20px 0;"><br /><?php echo custom_nl2br(process_images_from_content($invoice_info->note)); ?></div>
-<?php } else { ?><!-- use table to avoid extra spaces -->
-    <br /><br />
+<?php } else { ?>use table to avoid extra spaces -->
+    <!-- <br /><br />
 <?php } ?>
 
-<span style="color:#444; line-height: 14px;">
+<span style="color:#444; line-height: 14px;"> 
 
-</span>
+</span> -->
+
+
+
+<tr>
+    <td style="width: 15%;  vertical-align: top; padding: 0px;">
+  
+   </td>
+    <td style="width: 50%;">
+  
+  
+    <br/>
+    <br/><br/>
+    <br/>
+  
+    <?php if ($company_info->finance_manager_id) { ?>
+        <br/>
+        <?php if (!empty($finance_manager_info->job_title_en)) { ?>
+            <?php 
+
+
+// Try the first method
+if (!empty($finance_manager_info->signature)) {
+    $signature_data = @unserialize($finance_manager_info->signature);
+
+    if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+        // Handle serialized signature data
+        $signature_file_name = $signature_data[0]['file_name'];
+    } else {
+        // Handle direct file path
+        $signature_file_name = $finance_manager_info->signature;
+    }
+
+    // Construct the full path to the signature file
+    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+    // Check if the file exists
+    if (file_exists($signature_path)) {
+        // Display the signature image
+        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+    } else {
+        // File not found, try the second method
+        $signature_data = @unserialize($finance_manager_info->signature);
+
+        if (!empty($signature_data['file_name'])) {
+            $signature_file_name = $signature_data['file_name'];
+
+            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+            if (file_exists($signature_path)) {
+                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+            } else {
+                echo '<p>Signature file not found.</p>';
+            }
+        } else {
+            echo '<p>Signature file not found.</p>';
+        }
+    }
+} else {
+    echo '<p>No signature available.</p>';
+}}?>
+<br/>
+<br/>
+<br/>
+<br/>
+</td>
+    <td style="width: 40%; vertical-align: top; padding: 0px;">
+    <br/>
+    <br/><br/>
+    <br/>
+        <strong style="font-size:100%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
+<br/>
+
+        <?php if (!empty($users_info->job_title_en)) { ?>
+            <?php echo $users_info->first_name, " ",$users_info->last_name ,"  |  "; echo $users_info->job_title_en; ?>
+        <?php } ?>
+        <br/>
+        <?php     
+}
+?>
+    </td>
+ 
+
+
+
+
+
+</tr>
