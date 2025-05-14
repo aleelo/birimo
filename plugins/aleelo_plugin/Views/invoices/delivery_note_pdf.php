@@ -268,10 +268,10 @@ $style = get_setting("invoice_style");
   
   
     <br/>
-    <br/><br/>
     <br/>
+    
   
-    <?php if ($company_info->finance_manager_id) { ?>
+    <?php if ($company_info->Director_id) { ?>
         <br/>
         <?php if (!empty($finance_manager_info->job_title_en)) { ?>
             <?php 
@@ -324,7 +324,8 @@ if (!empty($finance_manager_info->signature)) {
 </td>
     <td style="width: 40%; vertical-align: top; padding: 0px;">
     <br/>
-    <br/><br/>
+    <br/>
+    <br/>
     <br/>
         <strong style="font-size:100%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
 <br/>
