@@ -337,10 +337,10 @@ $project = $ci->db->table('projects')
 $company_name = isset($invoice_info->company_name) ? $invoice_info->company_name : "Unknown Company";
 
 if ($project) {
-    $invoice_id = $invoice_info->display_id . " " . $company_name . " " . $project->title;
+    $invoice_id = " delivery_note " . $company_name . " " . $project->title;
 } else {
-    $invoice_id = $invoice_info->display_id . " " . $company_name;
-}            $pdf_file_name = preg_replace('/[^A-Za-z0-9\-]/', '-', $invoice_id) . ".pdf";
+    $invoice_id =  "delivery_note " . $company_name;
+}            $pdf_file_name =$invoice_id. ".pdf";
 
             if ($mode === "download") {
                 $pdf->Output($pdf_file_name, "D");
