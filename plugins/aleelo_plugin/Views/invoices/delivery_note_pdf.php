@@ -327,7 +327,7 @@ if (!empty($finance_manager_info->signature)) {
     <br/>
     <br/>
     <br/>
-        <strong style="font-size:100%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
+        <strong style="font-size:110%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
 <br/>
 
         <?php if (!empty($users_info->job_title_en)) { ?>
