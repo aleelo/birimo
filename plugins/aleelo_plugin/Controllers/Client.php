@@ -126,7 +126,7 @@ class Client extends Security_Controller_Plugin {
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
-            "company_name" => "required"
+            // "company_name" => "required"
         ));
 
         $company_name = $this->request->getPost('company_name');
