@@ -214,8 +214,14 @@ if (!function_exists('get_invoice_making_data_delivery_note')) {
             ->where('user_id', $data['company_info']->Director_id)
             ->get()
             ->getRow();
+             $project_id = $ci->db->table('projects')
+            ->select('*') // Select user_id and job_title_en
+    ->where('id', $invoice_info->project_id)
+            ->get()
+            ->getRow();
 
         $data['finance_manager_info'] = $finance_manager_info;
+        $data['project']=$project_id;
             $data['invoice_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "invoices", "show_in_invoice" => true, "related_to_id" => $invoice_id))->getResult();
             $data['client_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "clients", "show_in_invoice" => true, "related_to_id" => $data['invoice_info']->client_id))->getResult();
             return $data;
@@ -282,6 +288,8 @@ if (!function_exists('prepare_invoice_pdf')) {
 if (!function_exists('prepare_invoice_pdf_delivery_note')) {
     function prepare_invoice_pdf_delivery_note($invoice_data, $mode = "download") {
         $pdf = new Pdf("invoice");
+                $ci = new Security_Controller_Plugin();
+
         
         // Force no header/footer margins
         $pdf->setPrintHeader(true);
@@ -320,8 +328,19 @@ if (!function_exists('prepare_invoice_pdf_delivery_note')) {
             }
 
             $invoice_info = get_array_value($invoice_data, "invoice_info");
-            $invoice_id = $invoice_info->display_id;
-            $pdf_file_name = preg_replace('/[^A-Za-z0-9\-]/', '-', $invoice_id) . ".pdf";
+$project = $ci->db->table('projects')
+    ->select('*')
+    ->where('id', $invoice_info->project_id)
+    ->get()
+    ->getRow();
+
+$company_name = isset($invoice_info->company_name) ? $invoice_info->company_name : "Unknown Company";
+
+if ($project) {
+    $invoice_id = $invoice_info->display_id . " " . $company_name . " " . $project->title;
+} else {
+    $invoice_id = $invoice_info->display_id . " " . $company_name;
+}            $pdf_file_name = preg_replace('/[^A-Za-z0-9\-]/', '-', $invoice_id) . ".pdf";
 
             if ($mode === "download") {
                 $pdf->Output($pdf_file_name, "D");
