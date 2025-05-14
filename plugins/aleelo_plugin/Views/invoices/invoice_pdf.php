@@ -174,35 +174,18 @@
 
 <tr>
     <td style="width: 50%;  vertical-align: top; padding: 0px;">
-    <br /><br /> <strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Payment"); ?></strong> 
-    <br /><br /><?php echo app_lang("company"); ?>: <?php echo $company_info->name; ?>
-
-    <?php if ($company_info->bank_name) { ?>
-        <br /><br /> <?php echo app_lang("bank_name"); ?>: <?php echo $company_info->bank_name; ?>
-    <?php } ?>
-  
- 
-    <?php if ($company_info->account_no) { ?>
-        <br /><br /><?php echo app_lang("account_no"); ?>: <?php echo $company_info->account_no; ?>
-    <?php } ?>
-<br/>
-<br/>
-
-
-
-    <?php if ($company_info->we_accept) { ?>
-        <br /><br /><strong style="color: <?php echo $color; ?>;"><?php echo app_lang("we_accept"); ?>:</strong> <br/>
-        <br/>
-        <?php echo $company_info->we_accept; ?>
-    <?php } ?>
-    <br/>
+    <?php 
+    if($client_info->company_id == 1){
+    echo get_setting("estimate_footer_pixel"); 
+    }
+    else if($client_info->company_id == 2){
+    echo get_setting("estimate_footer_solution"); 
+    }
+    else{
+        echo get_setting("estimate_footer"); 
+    }
     
-
-    <?php if ($company_info->Condition_company) { ?>
-        <br /><br /><strong style="color: <?php echo $color; ?>;"><?php echo app_lang("Condition_company"); ?>:</strong> <br/>
-        <br/>
-        <?php echo $company_info->Condition_company; ?>
-    <?php } ?>
+    ?>
    </td>
     <td style="width: 15%;"></td>
     <td style="width: 40%; vertical-align: top; padding: 0px;">
@@ -278,6 +261,6 @@ if (!empty($finance_manager_info->signature)) {
 </tr>
 
 </table>
-    <?php echo get_setting("invoice_footer"); ?>
+    <?php //echo get_setting("invoice_footer"); ?>
 </span>
 
