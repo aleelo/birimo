@@ -1073,6 +1073,12 @@ $delete= '';
         $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
         $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
+        if($supplier_price){
+        $price=$supplier_price * $quantity;
+        }
+        else{
+            $price=0;
+        }
         $invoice_item_title = $this->request->getPost('invoice_item_title');
         $account_name = $this->request->getPost("estimate_item_account_id"); 
         if (class_exists('\Accounting\Models\Accounting_model')) {
@@ -1127,7 +1133,7 @@ $delete= '';
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-            "supplier_price"=>$supplier_price * $quantity,
+            "supplier_price"=>$price,
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
 
         );
