@@ -160,20 +160,12 @@ $style = get_setting("invoice_style");
     <?php echo view('aleelo_plugin\Views/invoices/delivery_note_parts/bill_to', $data); ?>
 </td>
 </tr>
-</table>
 
-<table>
 <tr>
-    <td style="width: 5%;"></td>
-
-        <td style="width: 750; line-height:-5px;">
-        <?php
-     echo $invoice_info->delivery_note; 
-?>
-        </td>
-        <td style="width: 5%;"></td>
-
-    </tr>
+    <td colspan="4" style="padding: 20px 30px; font-size: 13px; font-family: Arial, sans-serif;">
+        <?php echo html_entity_decode($invoice_info->delivery_note); ?>
+    </td>
+</tr>
 
     <tr>
                 <td style="width: 5%;"></td>
