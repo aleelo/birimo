@@ -160,6 +160,9 @@ $style = get_setting("invoice_style");
     <?php echo view('aleelo_plugin\Views/invoices/delivery_note_parts/bill_to', $data); ?>
 </td>
 </tr>
+</table>
+
+<table>
 <tr>
     <td style="width: 5%;"></td>
 
@@ -171,12 +174,17 @@ $style = get_setting("invoice_style");
         <td style="width: 5%;"></td>
 
     </tr>
+
+    <tr>
+                <td style="width: 5%;"></td>
+
+    </tr>
     
 </table>
-
+<!-- 
 <table>
    
-</table>
+</table> -->
 
 <table style="width: 50%; margin: 0 auto; border-collapse: collapse;">
 
