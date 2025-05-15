@@ -162,9 +162,14 @@ $style = get_setting("invoice_style");
 </tr>
 
 <tr>
+        <td style="width: 5%;"></td>
+
     <td colspan="4" style="padding: 20px 30px; font-size: 13px; font-family: Arial, sans-serif;">
         <?php echo html_entity_decode($invoice_info->delivery_note); ?>
     </td>
+
+        <td style="width: 5%;"></td>
+
 </tr>
 
     <tr>
