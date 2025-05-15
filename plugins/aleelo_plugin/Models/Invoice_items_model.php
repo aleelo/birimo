@@ -52,7 +52,7 @@ class Invoice_items_model extends Crud_model {
             $where .= " AND $items_table.show_in_client_portal=1";
         }
     
-        if ($company_id !== null) {
+        if ($company_id) {
             $where .= " AND $items_table.company_id=$company_id";
         }
     
