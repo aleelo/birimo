@@ -267,7 +267,7 @@ $style = get_setting("invoice_style");
 </span> -->
 
 
-
+<table>
 <tr>
     <td style="width: 15%;  vertical-align: top; padding: 0px;">
   
@@ -353,3 +353,5 @@ if (!empty($finance_manager_info->signature)) {
 
 
 </tr>
+</table>
+
