@@ -37,7 +37,7 @@
     $(document).ready(function () {
         $("#add-page-form").appForm({
             onSuccess: function (result) {
-                $("#pages-table").appTable({newData: result.data, dataId: result.id});
+                location.reload(); // Reload the page after saving
             }
         });
 
