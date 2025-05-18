@@ -21,21 +21,8 @@ function adjust_brightness($hex, $steps) {
 ?>
 <table >
 <?php
-if (isset($client_info->company_id)) {
-    if ($client_info->company_id == 1) {
-        $color = get_setting("estimate_color_pixel");
-    } elseif ($client_info->company_id == 2) {
-        $color = get_setting("estimate_color_solution");
-    } else {
-        $color = get_setting("estimate_color");
-    }
-} else {
-    $color = get_setting("estimate_color");
-}
+    $color = $company_info->invoice_color ? : "#2AA384";
 
-if (!$color) {
-    $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-}
 
 ?> 
     <tr class="invoice-preview-header-row"> <!-- Adjust the height as needed -->

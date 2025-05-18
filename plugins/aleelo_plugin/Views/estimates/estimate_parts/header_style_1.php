@@ -24,21 +24,8 @@ function adjust_brightness($hex, $steps) {
         <td style="width: 60%; vertical-align: top;">
             <?php echo view('aleelo_plugin\Views/estimates/estimate_parts/company_logo'); ?>
             <?php
-if (isset($client_info->company_id)) {
-    if ($client_info->company_id == 1) {
-        $color = get_setting("estimate_color_pixel");
-    } elseif ($client_info->company_id == 2) {
-        $color = get_setting("estimate_color_solution");
-    } else {
-        $color = get_setting("estimate_color");
-    }
-} else {
-    $color = get_setting("estimate_color");
-}
+    $color = $company_info->invoice_color ? : "#2AA384";
 
-if (!$color) {
-    $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-}
 
 ?>  </td> 
       <td style="width: 1%; vertical-align: top;">

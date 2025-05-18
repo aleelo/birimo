@@ -1,27 +1,13 @@
 <div >
-<?php
-if (isset($client_info->company_id)) {
-    if ($client_info->company_id == 1) {
-        $color = get_setting("estimate_color_pixel");
-    } elseif ($client_info->company_id == 2) {
-        $color = get_setting("estimate_color_solution");
-    } else {
-        $color = get_setting("estimate_color");
-    }
-} else {
-    $color = get_setting("estimate_color");
-}
+<?php    $color = $company_info->invoice_color ? : "#2AA384";
 
-if (!$color) {
-    $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-}
 
 $style = get_setting("invoice_style");
 ?>
     <?php
     $data = array(
         "client_info" => $client_info,
-        "color" => $color,
+        "color" => $company_info->invoice_color,
         "estimate_info" => $estimate_info,
         "company_info" => $company_info,
         "users_info" => $users_info,
@@ -34,7 +20,7 @@ $style = get_setting("invoice_style");
     } else {
         echo view('aleelo_plugin\Views/estimates/estimate_parts/header_style_1_pdf.php', $data);
     }
-    $item_background = get_setting("invoice_item_list_background");
+    $item_background =$company_info->invoice_item_list_background;
 
     $discount_row = '<tr>
     <td style=" width: 60%;"></td>

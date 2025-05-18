@@ -19,24 +19,12 @@
     }
 
 
-    if (isset($client_info->company_id)) {
-        if ($client_info->company_id == 1) {
-            $color = get_setting("estimate_color_pixel");
-        } elseif ($client_info->company_id == 2) {
-            $color = get_setting("estimate_color_solution");
-        } else {
-            $color = get_setting("estimate_color");
-        }
-    } else {
-        $color = get_setting("estimate_color");
-    }
-     if (!$color) {
-        $color = "#2AA384";
-    }
+      $color = $company_info->invoice_color ? : "#2AA384";
+
     $invoice_style = get_setting("invoice_style");
     $data = array(
         "client_info" => $client_info,
-        "color" => $color,
+        "color" => $company_info->invoice_color,
         "invoice_info" => $invoice_info,
         "company_info" => $company_info,
         "users_info" => $users_info,
@@ -50,7 +38,7 @@
         echo view('aleelo_plugin\Views/invoices/invoice_parts/header_style_1_pdf.php', $data);
     }
 
-    $item_background = get_setting("invoice_item_list_background");
+    $item_background =$company_info->invoice_item_list_background;
 
     $discount_row = '<tr>
         <td style=" width: 60%;"></td>
@@ -83,7 +71,7 @@
     <?php
     foreach ($invoice_items as $item) { ?>
 
-        <tr style="background-color: <?php echo $item_background; ?>;">
+        <tr style="background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
             <td style="width: 45%; border-right: 1px solid #9B9997; border-botton: 1px solid #fff; border-top: 1px solid #fff; padding: 10px;"><?php echo $item->title; ?>
                 <br />
                 <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ? $item->description : ""); ?></span>
@@ -111,8 +99,8 @@
     <?php if ($invoice_total_summary->tax) { ?>
         <tr>
             <td style="width: 60%;"></td>
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name; ?></td>
-            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;"><?php echo $invoice_total_summary->tax_name; ?></td>
+            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>
@@ -121,8 +109,8 @@
         <tr>
         <td style="width: 60%;"></td>
 
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name2; ?></td>
-            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;"><?php echo $invoice_total_summary->tax_name2; ?></td>
+            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax2, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>
@@ -131,8 +119,8 @@
         <tr>
         <td style="width: 60%;"></td>
 
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo $invoice_total_summary->tax_name3; ?></td>
-            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right;border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;"><?php echo $invoice_total_summary->tax_name3; ?></td>
+            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->tax3, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>
@@ -146,8 +134,8 @@
         <tr>
         <td style="width: 60%;"></td>
 
-            <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;"><?php echo app_lang("paid"); ?></td>
-            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $item_background; ?>;">
+            <td colspan="<?php echo $colspan; ?>" style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;"><?php echo app_lang("paid"); ?></td>
+            <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
                 <?php echo to_currency($invoice_total_summary->total_paid, $invoice_total_summary->currency_symbol); ?>
             </td>
         </tr>
