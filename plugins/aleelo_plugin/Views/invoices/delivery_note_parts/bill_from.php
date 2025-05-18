@@ -1,4 +1,4 @@
-<strong style="color: <?php echo $color; ?>; font-size: 1.5em;"><?php echo "Delivery to"; ?></strong>
+<!-- <strong style="color: <?php echo $color; ?>; font-size: 1.5em;"><?php echo "Delivery to"; ?></strong>
 <br/><br/>
 <table style="background-color: #f4f4f4; width: 45%; border-collapse: collapse;">
 <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
@@ -61,4 +61,4 @@
 
     <tr><td colspan="2" style="padding: 0; line-height: 5px;"></td></tr>
 
-</table>
+</table> -->
