@@ -158,7 +158,6 @@ function save_invoice_settings() {
     }
     // Prepare data for saving
     $company_data = array(
-        "logo" => $this->request->getPost('site_logo_file'),
         "invoice_color" => $this->request->getPost('invoice_color'),
         "invoice_item_list_background" => $this->request->getPost('invoice_item_list_background'),
         "invoice_footer" => $this->request->getPost('invoice_footer'),
