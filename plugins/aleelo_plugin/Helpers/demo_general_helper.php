@@ -61,6 +61,8 @@ if (!function_exists('prepare_estimate_pdf')) {
         $pdf->setPrintFooter(false);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
+                $pdf->setInvoiceData($estimate_data); // 
+
         $pdf->AddPage();
 
         if ($estimate_data) {
@@ -101,6 +103,8 @@ if (!function_exists('prepare_estimate_pdff')) {
         $pdf->setPrintFooter(false);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
+                $pdf->setInvoiceData($estimate_data); // 
+
         $pdf->AddPage();
 
         if ($estimate_data) {
@@ -236,12 +240,14 @@ if (!function_exists('prepare_invoice_pdf')) {
 
         //if setting is desable then don't show header
         if (!get_setting("enable_background_image_for_invoice_pdf")) {
-            $pdf->setPrintHeader(false);
+            $pdf->setPrintHeader(true);
         }
 
         $pdf->setPrintFooter(false);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
+        $pdf->setInvoiceData($invoice_data); 
+
         $pdf->AddPage();
 
         // Get the page width in user units (default is millimeters)
@@ -371,6 +377,8 @@ if (!function_exists('prepare_invoice_pdf_view')) {
         $pdf->setPrintFooter(false);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
+                $pdf->setInvoiceData($invoice_data); // 
+
         $pdf->AddPage();
 
         // Get the page width in user units (default is millimeters)
@@ -412,6 +420,79 @@ if (!function_exists('prepare_invoice_pdf_view')) {
                 return $html;
             }
         }
+    }
+}
+
+
+
+
+
+
+if (!function_exists("get_logo_url_company")) {
+
+    function get_logo_url_company($department_id) {
+        return get_file_from_setting_company($department_id);
+    }
+}
+
+//return site logo
+if (!function_exists("get_logo_urlsolution")) {
+
+    function get_logo_urlsolution() {
+        return get_file_from_setting("site_logo1");
+    }
+}
+if (!function_exists("get_logo_urlpixel")) {
+
+    function get_logo_urlpixel() {
+        return get_file_from_setting("site_logo");
+    }
+}
+
+if (!function_exists("get_file_from_setting")) {
+
+    function get_file_from_setting_company($department_id = "", $only_file_path_with_slash = false, $file_path = "", $company_id = null) {
+        if ($department_id) {
+            // Load the Company_model
+            $Company_model = model('App\Models\Company_model');
+            $company_info = $Company_model->get_one($department_id);
+            // Check if the company_id matches the department_id
+            if ($company_info && $company_info->id == $department_id) {
+                // Return the logo column if it exists
+                if ($company_info->logo) {
+                    $file = @unserialize($company_info->logo);
+                    if (is_array($file)) {
+                        return get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path_with_slash, $only_file_path_with_slash);
+                    }
+                }
+            }
+        }
+
+        // if (!$department_id) {
+        //     $setting_value = get_setting($department_id);
+        //     if ($setting_value) {
+        //         $file_path = $file_path ? $file_path : get_setting("system_file_path");
+
+        //         $file = @unserialize($setting_value);
+        //         if (is_array($file)) {
+
+        //             // Show full-size thumbnail for signin page background
+        //             $show_full_size_thumbnail = false;
+        //             if ($department_id == "signin_page_background") {
+        //                 $show_full_size_thumbnail = true;
+        //             }
+
+        //             return get_source_url_of_file($file, $file_path, "thumbnail", $only_file_path_with_slash, $only_file_path_with_slash, $show_full_size_thumbnail);
+        //         } else {
+        //             if ($only_file_path_with_slash) {
+        //                 return "/" . ($file_path . $setting_value);
+        //             } else {
+        //                 return get_file_uri($file_path . $setting_value);
+                        
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
 // if (!function_exists('prepare_estimate_pdf')) {

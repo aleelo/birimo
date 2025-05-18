@@ -22,45 +22,22 @@ class Pdf extends \TCPDF {
     public function Header() {
         if ($this->pdf_type == 'invoice') {
             $client_info = isset($this->invoice_data['client_info']) ? $this->invoice_data['client_info'] : null;
+            $company_info = isset($this->invoice_data['company_info']) ? $this->invoice_data['company_info'] : null;
 
-            if (isset($client_info->company_id)) {
-                if ($client_info->company_id == 1) {
-                    $color = get_setting("estimate_color_pixel");
-                } elseif ($client_info->company_id == 2) {
-                    $color = get_setting("estimate_color_solution");
-                } else {
-                    $color = get_setting("estimate_color");
-                }
-            } else {
-                $color = get_setting("estimate_color");
-            }
+
+        $company_id = isset($client_info->company_id) ? $client_info->company_id : null;
+
+        // Use company-specific settings
+        $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
+        $img_file = isset($company_info->invoice_pdf_background_image) ? WRITEPATH . $company_info->invoice_pdf_background_image : null;
+
+         
             
-            if (!$color) {
-                $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-            }
-            $data = '
-            <div style="background-color: red;
-                        color: white;
-                        font-size: 24px;
-                        font-weight: bold;
-                        width: 100%;
-                        padding: 1px 2px;
-                        line-height: 18px;
-                        height: 42px;
-                        
-            padding: 100px;">
-            </div>
-            
-            <br><br><br> 
-';
-            
-            $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
         
             $break_margin = $this->getBreakMargin();
             $auto_page_break = $this->AutoPageBreak;
             $this->SetAutoPageBreak(false, 0);
 
-            $img_file = get_file_from_setting("invoice_pdf_background_image", false, get_setting("timeline_file_path"));
             $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 500, '', false, false, 0);
 
             // restore auto-page-break status
@@ -76,22 +53,11 @@ class Pdf extends \TCPDF {
     public function Footer() {
         if ($this->pdf_type == 'invoice') {
             $client_info = isset($this->invoice_data['client_info']) ? $this->invoice_data['client_info'] : null;
+            $company_info = isset($this->invoice_data['company_info']) ? $this->invoice_data['company_info'] : null;
+
     
-            if (isset($client_info->company_id)) {
-                if ($client_info->company_id == 1) {
-                    $color = get_setting("estimate_color_pixel");
-                } elseif ($client_info->company_id == 2) {
-                    $color = get_setting("estimate_color_solution");
-                } else {
-                    $color = get_setting("estimate_color");
-                }
-            } else {
-                $color = get_setting("estimate_color");
-            }
-    
-            if (!$color) {
-                $color = get_setting("invoice_color") ? get_setting("invoice_color") : "#2AA384";
-            }
+                 $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
+
     
             $data = '
             <div style="background-color: '.$color.';
