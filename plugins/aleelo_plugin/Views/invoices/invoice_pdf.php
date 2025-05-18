@@ -163,15 +163,8 @@
 <tr>
     <td style="width: 50%;  vertical-align: top; padding: 0px;">
     <?php 
-    if($client_info->company_id == 1){
-    echo get_setting("estimate_footer_pixel"); 
-    }
-    else if($client_info->company_id == 2){
-    echo get_setting("estimate_footer_solution"); 
-    }
-    else{
-        echo get_setting("estimate_footer"); 
-    }
+     echo $company_info->invoice_footer;
+
     
     ?>
    </td>
