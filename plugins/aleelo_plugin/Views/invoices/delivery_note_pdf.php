@@ -254,8 +254,18 @@ $style = get_setting("invoice_style");
   
     <?php if ($company_info->Director_id) { ?>
         <br/>
+        <?php if (!empty($finance_manager_info->job_title_en)) { 
+
+            ?>
+                    <strong style="font-size:110%; color: black;"><?php echo "Delivered by: " ?></strong> <br/>
+
+
+             <strong style="font-size:110%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
+
         <?php if (!empty($finance_manager_info->job_title_en)) { ?>
-            <?php 
+            <?php echo $users_info->first_name, " ",$users_info->last_name ,"  |  "; echo $users_info->job_title_en; ?>
+        <?php } ?>
+        <br/>  <?php 
 
 
 // Try the first method
@@ -307,12 +317,10 @@ if (!empty($finance_manager_info->signature)) {
     <br/>
     <br/>
     <br/>
-    <br/>
-        <strong style="font-size:110%; color: black;"><?php echo "By:"; echo $company_info->name ?></strong> <br/>
-<br/>
+    
+        <strong style="font-size:110%; color: black;"><?php echo "Received and Confirmed " ?></strong> <br/>
 
         <?php if (!empty($users_info->job_title_en)) { ?>
-            <?php echo $users_info->first_name, " ",$users_info->last_name ,"  |  "; echo $users_info->job_title_en; ?>
         <?php } ?>
         <br/>
         <?php     
