@@ -28,7 +28,6 @@
                                          name="invoice_color"
                                          value="<?php echo $model_info->invoice_color;
                                           ?>" />
-                                        <span class="ml10"><?php echo anchor("company", app_lang("change_invoice_logo")); ?></span>
                                     </div>
                                 </div>
                             </div>

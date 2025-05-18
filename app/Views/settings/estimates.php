@@ -36,22 +36,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <label for="estimate_color" class=" col-md-2"><?php echo app_lang('estimate_color_pixel'); ?></label>
-                                    <div class=" col-md-10">
-                                        <input type="color" id="estimate_color_pixel" name="estimate_color_pixel" value="<?php echo get_setting("estimate_color_pixel"); ?>" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <label for="estimate_color" class=" col-md-2"><?php echo app_lang('estimate_color_solution'); ?></label>
-                                    <div class=" col-md-10">
-                                        <input type="color" id="estimate_color_solution" name="estimate_color_solution" value="<?php echo get_setting("estimate_color_solution"); ?>" />
-                                    </div>
-                                </div>
-                            </div>
+                        
+                            
                             <div class="form-group">
                                 <div class="row">
                                     <label for="send_estimate_bcc_to" class=" col-md-2"><?php echo app_lang('send_estimate_bcc_to'); ?></label>
@@ -88,42 +74,8 @@
                                 </div>
                             </div>
                             </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <label for="estimate_footer_pixel" class="col-md-2"><?php echo app_lang('estimate_footer_pixel') ?></label>
-                                    <div class="col-md-10">
-                                        <?php
-                                        echo form_textarea(array(
-                                            "id" => "estimate_footer_pixel",
-                                            "name" => "estimate_footer_pixel",
-                                            "value" => process_images_from_content(get_setting('estimate_footer_pixel'), false),
-                                            "class" => "form-control",
-                                            "data-toolbar" => "pdf_friendly_toolbar",
-                                            "data-height" => 100,
-                                            "data-encode_ajax_post_data" => "1"
-                                        ));
-                                        ?>
-                                    </div>
-                                </div>
-                            </div> 
-                            <div class="form-group">
-                                <div class="row">
-                                    <label for="estimate_footer_solution" class="col-md-2"><?php echo app_lang('estimate_footer_solution') ?></label>
-                                    <div class="col-md-10">
-                                        <?php
-                                        echo form_textarea(array(
-                                            "id" => "estimate_footer_solution",
-                                            "name" => "estimate_footer_solution",
-                                            "value" => process_images_from_content(get_setting('estimate_footer_solution'), false),
-                                            "class" => "form-control",
-                                            "data-toolbar" => "pdf_friendly_toolbar",
-                                            "data-height" => 100,
-                                            "data-encode_ajax_post_data" => "1"
-                                        ));
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
+                        
+                        
                             <div class="form-group">
                                 <div class="row">
                                     <label for="create_new_projects_automatically_when_estimates_gets_accepted" class="col-md-2"><?php echo app_lang("create_new_projects_automatically_when_estimates_gets_accepted"); ?></label>
