@@ -14,11 +14,11 @@
                         <div class="page-title clearfix">
                             <h4> <?php echo app_lang('company'); ?></h4>
                             <div class="title-button-group">
-                                <?php echo modal_anchor(get_uri("company/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_company'), array("class" => "btn btn-default", "title" => app_lang('add_role'))); ?>
+                                <?php echo modal_anchor(get_uri("company/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_company'), array("class" => "btn btn-default", "title" => app_lang('add_company'))); ?>
                             </div>
                         </div>
                         <div class="table-responsiv">
-                            <table id="role-table" class="display clickable no-thead b-b-only" cellspacing="0" width="100%">            
+                            <table id="company-table" class="display clickable no-thead b-b-only" cellspacing="0" width="100%">            
                             </table>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#role-table").appTable({
+        $("#company-table").appTable({
             source: '<?php echo_uri("company/list_data") ?>',
             columns: [
                 {title: "<?php echo app_lang('name'); ?>"},

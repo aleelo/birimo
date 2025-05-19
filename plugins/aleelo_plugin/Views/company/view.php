@@ -7,8 +7,8 @@
                     <li class="title-tab">
                         <h4 class="pl15 pt10 pr15"><?php echo app_lang("company_setting"); ?></h4>
                     </li>
-                    <li><a role="active" data-bs-toggle="tab" href="javascript:;" data-bs-target="#invoice-style-settings-tab"> <?php echo app_lang('invoice'); ?></a></li>
-                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("company/estimate_company"); ?>" data-bs-target="#invoice-reminder-settings-tab"><?php echo app_lang('other'); ?></a></li>
+                    <!-- <li><a role="active" data-bs-toggle="tab" href="javascript:;" data-bs-target="#invoice-style-settings-tab"> <?php echo app_lang('invoice'); ?></a></li>
+                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("company/estimate_company"); ?>" data-bs-target="#invoice-reminder-settings-tab"><?php echo app_lang('other'); ?></a></li> -->
                 </ul>
 
                 <div class="tab-content">
@@ -63,7 +63,7 @@
                                 <div class="float-start mr15">
                                     <img id="pdf-background-image-preview"
                                         style="max-width: 55px; max-height: 80px;"
-                                        src="<?php echo get_file_uri($model_info->invoice_pdf_background_image); ?>"
+                                        src="<?php echo get_file_from_setting($model_info->invoice_pdf_background_image); ?>"
                                         alt="PDF background image" />
                                 </div>
                             <?php } ?>
