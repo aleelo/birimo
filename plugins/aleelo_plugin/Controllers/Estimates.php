@@ -738,7 +738,14 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $account_name = $this->request->getPost("estimate_item_account_id"); 
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         $new_account = $this->request->getPost("new_account");
+        $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
 
+  if($supplier_price){
+        $price=$supplier_price * $quantity;
+        }
+        else{
+            $price=0;
+        }
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
             if ($new_account) {
@@ -790,7 +797,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "total" => $rate * $quantity,
             "account_id" => $account_id,
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-            "supplier_price"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+            "supplier_price"=>$price,
+            "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
 
         );

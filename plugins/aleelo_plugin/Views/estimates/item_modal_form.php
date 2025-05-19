@@ -156,7 +156,7 @@
                     echo form_input(array(
                         "id" => "supplier_price",
                         "name" => "supplier_price",
-                        "value" => $model_info->supplier_price ? to_decimal_format($model_info->supplier_price) : "",
+                        "value" => $model_info->supplier_quantity ? to_decimal_format($model_info->supplier_quantity) : "",
                         "class" => "form-control",
                         "placeholder" => app_lang('rate'),
                         
