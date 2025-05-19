@@ -13,39 +13,39 @@
     <div id="left-menu-language-dropdown" class="d-block d-sm-none dropdown float-end">
     </div>
 
-    <?php
+<?php
 $db = db_connect();
 $user_id = $login_user->id;
+
 $logo_url = get_logo_url(); 
 
-if ($user_id) {
-    $builder = $db->table('rise_team_member_job_info');
-    $builder->select('rise_team_member_job_info.company_id, rise_users.department')
-            ->join('rise_users', 'rise_users.id = rise_team_member_job_info.user_id', 'left') 
-            ->where('rise_users.id', $user_id);
-    $department = $builder->get()->getRow();
+$builder = $db->table('rise_users');
+$builder->select('company.logo')
+        ->join('company', 'company.id = rise_users.department', 'left')
+        ->where('rise_users.id', $user_id);
 
-    if ($department) {
-        if ($login_user->company_access == "all") {
-            $department_id = isset($department->department) ? $department->department : $department->department;
-        } else {
-            $department_id = isset($department->department) ? $department->department : null;
-        }
+$company = $builder->get()->getRow();
+$logo_url = get_logo_url(); 
 
-        if ($department_id == 1) {
-            $logo_url = get_logo_urlpixel();
-        } elseif ($department_id == 2) {
-            $logo_url = get_logo_urlsolution();
-        } else {
-            $logo_url = get_logo_urlpixel();
-        }
+if ($company && isset($company->logo)) {
+    $logo_file = @unserialize($company->logo);
+
+    if (is_array($logo_file)) {
+        $file_name = $logo_file[0]['file_name'];
+        $file_path = get_setting("system_file_path"); 
+        
+        $logo_url = base_url($file_path . $file_name);
     }
 }
+
 ?>
 
+
 <a class="sidebar-brand brand-logo" href="<?php echo $dashboard_link; ?>">
-    <img class="dashboard-image" src="<?php echo $logo_url; ?>" />
+    <img class="dashboard-image" src="<?php echo $logo_url; ?>" alt="Company Logo" />
 </a>
+
+
 <?php  ?>
     <a class="sidebar-brand brand-logo-mini" href="<?php echo $dashboard_link; ?>"><img class="dashboard-image" src="<?php echo get_favicon_url(); ?>" /></a>
 
