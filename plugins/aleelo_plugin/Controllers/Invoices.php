@@ -851,7 +851,7 @@ else{
         $row_data = array(
             $data->id,
             $invoice_url,
-            anchor(get_uri("clients/view/" . $data->client_id), $data->company_name),
+            anchor(get_uri("client/view/" . $data->client_id), $data->company_name),
             $data->project_title ? anchor(get_uri("projects/view/" . $data->project_id), $data->project_title) : "-",
             $data->bill_date,
             format_to_date($data->bill_date, false),
