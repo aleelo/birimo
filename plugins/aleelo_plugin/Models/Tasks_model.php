@@ -631,7 +631,71 @@ class Tasks_model extends Crud_model {
         if ($client_id) {
             $where .= " AND $projects_table.client_id=$client_id";
         }
+      $id = $this->_get_clean_value($options, "id");
+        if ($id) {
+            $where .= " AND $tasks_table.id=$id";
+        }
 
+        $project_id = $this->_get_clean_value($options, "project_id");
+        if ($project_id) {
+            $where .= " AND $tasks_table.project_id=$project_id";
+        }
+
+        $parent_task_id = $this->_get_clean_value($options, "parent_task_id");
+        if ($parent_task_id) {
+            $where .= " AND $tasks_table.parent_task_id=$parent_task_id";
+        }
+
+        $exclude_task_ids = $this->_get_clean_value($options, "exclude_task_ids");
+        if ($exclude_task_ids) {
+            $where .= " AND $tasks_table.id NOT IN($exclude_task_ids)";
+        }
+
+        $all_tasks = $this->_get_clean_value($options, "all_tasks");
+        if ($all_tasks) {
+            $where .= " AND $tasks_table.company_id = $all_tasks  ";
+        }
+        $can_view_all_tasks = $this->_get_clean_value($options, "can_view_all_tasks");
+        if ($can_view_all_tasks) {
+            $where .= " AND $tasks_table.company_id = $can_view_all_tasks  ";
+        }
+        
+        $can_view_own_company_tasks = $this->_get_clean_value($options, "can_view_own_company_tasks");
+        if ($can_view_own_company_tasks) {
+            $where .= " AND $tasks_table.company_id = $can_view_own_company_tasks OR $tasks_table.assigned_to = $users_table.id ";
+        }
+        
+        $can_view_own_tasks = $this->_get_clean_value($options, "can_view_own_tasks");
+        if ($can_view_own_tasks) {
+            $where .= " AND ($tasks_table.created_by = $can_view_own_tasks OR $tasks_table.assigned_to = $can_view_own_tasks)";
+        }
+        
+        
+
+        $status_ids = $this->_get_clean_value($options, "status_ids");
+        if ($status_ids) {
+            $where .= " AND FIND_IN_SET($tasks_table.status_id,'$status_ids')";
+        }
+
+        $task_ids = $this->_get_clean_value($options, "task_ids");
+        if ($task_ids) {
+            $where .= " AND $tasks_table.ID IN($task_ids)";
+        }
+
+        $exclude_status_id = $this->_get_clean_value($options, "exclude_status_id");
+        if ($exclude_status_id) {
+            $where .= " AND $tasks_table.status_id!=$exclude_status_id ";
+        }
+
+        $assigned_to = $this->_get_clean_value($options, "assigned_to");
+        if ($assigned_to) {
+            $where .= " AND $tasks_table.assigned_to=$assigned_to";
+        }
+
+        $client_id = $this->_get_clean_value($options, "client_id");
+        if ($client_id) {
+            $where .= " AND $tasks_table.client_id=$client_id";
+        }
 
         $status_id = $this->_get_clean_value($options, "status_id");
         if ($status_id) {

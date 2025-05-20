@@ -124,8 +124,8 @@
                 </div>
             </div>
 
-            <?php if ($login_user->is_admin && get_setting("module_order")) { ?>
-                <div class="form-group">
+            <?php // if ($login_user->is_admin && get_setting("module_order")) { ?>
+                <!-- <div class="form-group">
                     <div class="row">
                         <label for="show_in_client_portal" class=" col-md-3 col-xs-5 col-sm-4"><?php echo app_lang('show_in_client_portal'); ?></label>
                         <div class=" col-md-9 col-xs-7 col-sm-8">
@@ -134,8 +134,8 @@
                             ?>                       
                         </div>
                     </div>
-                </div>
-            <?php } ?>
+                </div> -->
+            <?php //} ?>
 
 <!--            <div class="form-group">
                 <div class="row">
