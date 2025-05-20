@@ -1735,7 +1735,7 @@ class Tasks extends Security_Controller_Plugin {
             app_redirect("forbidden");
         }
 
-        $context_id_key = ($model_info->context === "general") ? "" : ($model_info->context . "_id");
+        $context_id_key = ($model_info->context === "general") ? "" : ($model_info->context . "id");
         $context_id_value = $context_id_key ? $model_info->$context_id_key : "";
 
         $view_data = $this->_get_task_related_dropdowns($model_info->context, $context_id_value, true);

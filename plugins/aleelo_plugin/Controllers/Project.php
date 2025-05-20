@@ -968,7 +968,21 @@ class Project extends Security_Controller_Plugin {
         
         validate_numeric_value($project_id);
         $this->init_project_permission_checker($project_id);
+        $view_data = $this->_get_project_info_data($project_id);
 
+$project_info = $view_data["project_info"];
+
+if (!$project_info) {
+    show_404();
+    return;
+}
+
+$user_company_id = $this->login_user->department; // or from session if needed
+
+if ($project_info->company_id != $user_company_id) {
+app_redirect("project/all_projects") ;
+
+}
         // print_r($project_id);die;
         
         $view_data = $this->_get_project_info_data($project_id);
