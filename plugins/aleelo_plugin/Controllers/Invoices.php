@@ -1117,6 +1117,7 @@ $delete= '';
                 "account_id" =>$account_id,
                 "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
                 "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+                "company_id"=>$this->login_user->department,
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
         }

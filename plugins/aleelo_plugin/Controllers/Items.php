@@ -97,7 +97,8 @@ $view_data['has_all_permission'] =
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
-            "category_id" => "required",
+            "category_id" => "required", 
+            "company_id" => "required",
         ));
 
         $id = $this->request->getPost('id');
