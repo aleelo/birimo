@@ -97,8 +97,7 @@ class Client extends Security_Controller_Plugin {
 
         //prepare label suggestions
         $view_data['label_suggestions'] = $this->make_labels_dropdown("client", $view_data['model_info']->labels);
-        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
+        $view_data['has_all_permission'] = ( $this->login_user->department ==0  );
         
         //get custom fields
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("clients", $client_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();

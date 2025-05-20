@@ -23,11 +23,8 @@ class Invoice_payments extends Security_Controller_Plugin {
         app_redirect("forbidden");
 }
 
-        if (            $invoice_permission = get_array_value($this->login_user->permissions, "payment")
-        )
-     {
     
-            if ($this->login_user->is_admin || $invoice_permission === "all" || $invoice_permission === "own_company" || $invoice_permission === "read_only") {
+    
                 $view_data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
                 $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown();
                 $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("payments");
@@ -37,19 +34,19 @@ class Invoice_payments extends Security_Controller_Plugin {
                 $view_data['can_add_payment'] = $this->can_add_payment();
     
                 return $this->template->rander("aleelo_plugin\Views/invoices/payment_received", $view_data);
-            } else {
-                app_redirect("forbidden");
-            }
-        } else {
-            if (!($this->can_client_access("invoice") && $this->can_client_access("payment", false))) {
-                app_redirect("forbidden");
-            }
+            // } else {
+            //     app_redirect("forbidden");
+            // }
+        // } //else {
+        //     if (!($this->can_client_access("invoice") && $this->can_client_access("payment", false))) {
+        //         app_redirect("forbidden");
+        //     }
     
-            $view_data["client_info"] = $this->Clients_model->get_one($this->login_user->client_id);
-            $view_data['client_id'] = $this->login_user->client_id;
-            $view_data['page_type'] = "full";
-            return $this->template->rander("aleelo_plugin\Views/clients/payments/index", $view_data);
-        }
+        //     $view_data["client_info"] = $this->Clients_model->get_one($this->login_user->client_id);
+        //     $view_data['client_id'] = $this->login_user->client_id;
+        //     $view_data['page_type'] = "full";
+        //     return $this->template->rander("aleelo_plugin\Views/clients/payments/index", $view_data);
+        // }
     }
     function supplier_payments($invoice_id ,$supplier_id=0) {
         if (!$this->can_view_invoice()) {
