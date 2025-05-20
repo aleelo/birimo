@@ -63,12 +63,12 @@ class Company extends Security_Controller_Plugin {
             "vat_number" => $this->request->getPost('vat_number'),
             "is_default" => $is_default ? $is_default : 0,
             "gst_number" => $this->request->getPost('gst_number'),
-            "we_accept" => $this->request->getPost('we_accept'),
-            "account_no" => $this->request->getPost('account_no'),
-            "bank_name" => $this->request->getPost('bank_name'),
-            "Condition_company" => $this->request->getPost('Condition_company'),
+            // "we_accept" => $this->request->getPost('we_accept'),
+            // "account_no" => $this->request->getPost('account_no'),
+            // "bank_name" => $this->request->getPost('bank_name'),
+            // "Condition_company" => $this->request->getPost('Condition_company'),
             "finance_manager_id" => $this->request->getPost('finance_manager_id'),
-            "Director_id"=> $this->request->getPost('finance_manager_id'),
+            "Director_id"=> $this->request->getPost('Director_id'),
         );
 
         $id = $this->request->getPost('id');

@@ -86,7 +86,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <div class="row">
                     <label for="bank_name" class=" col-md-3"><?php echo app_lang('bank_name'); ?></label>
                     <div class=" col-md-9">
@@ -101,8 +101,8 @@
                         ?>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
+            </div> -->
+            <!-- <div class="form-group">
                 <div class="row">
                     <label for="account_no" class=" col-md-3"><?php echo app_lang('account_no'); ?></label>
                     <div class=" col-md-9">
@@ -117,9 +117,9 @@
                         ?>
                     </div>
                 </div>
-            </div>
+            </div> -->
            
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <div class="row">
                     <label for="we_accept" class=" col-md-3"><?php echo app_lang('we_accept'); ?></label>
                     <div class=" col-md-9">
@@ -134,8 +134,8 @@
                         ?>
                     </div>
                 </div>
-            </div>
-               <div class="form-group">
+            </div> -->
+               <!-- <div class="form-group">
                 <div class="row">
                     <label for="Condition_company" class=" col-md-3"><?php echo app_lang('Condition_company'); ?></label>
                     <div class=" col-md-9">
@@ -150,7 +150,7 @@
                         ?>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="form-group">
                 <div class="row">
                     <label for="finance_manager_id" class=" col-md-3"><?php echo app_lang('finance_manager'); ?></label>
@@ -167,6 +167,22 @@
                 </div>
             </div>
             </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="Director_id" class=" col-md-3"><?php echo app_lang('Director'); ?></label>
+                    <div class="col-md-9">
+                        <?php
+                        echo form_dropdown(array(
+                            "id" => "Director_id",
+                            "name" => "Director_id",
+                            "class" => "form-control select2",
+                            "placeholder" => 'Status',
+                            "autocomplete" => "off"
+                        ),$finance_manager_id,[$model_info->Director_id]);
+                        ?>
+                </div>
+            </div>
+            </div>            
             <div class="form-group">
                 <div class="row">
                     <label for="vat_number" class=" col-md-3"><?php echo app_lang('vat_number'); ?></label>

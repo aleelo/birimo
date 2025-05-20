@@ -4396,6 +4396,9 @@ $lang['download_delivery_note']='download delivery note';
 $lang['view_delivery_note']='view delivery note';
 $lang['delivery_note'] = 'delivery note';
 $lang['company_setting'] ='company setting';
+$lang['Director'] ='Director';
+$lang['select_a_company'] ='select a company';
+
 
 
 
