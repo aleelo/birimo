@@ -990,6 +990,14 @@ $delete= '';
         if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
+            $project_info = $this->Invoices_model->get_details(array("id" => $invoice_id))->getRow();
+            $client_info = $this->Clients_model->get_details(array("id" => $project_info->client_id))->getRow();
+            
+            $user_company_id = $this->login_user->department;
+
+            if ($user_company_id != 0 && $client_info->company_id != $user_company_id) {
+                app_redirect("invoices");
+            }
         if ($invoice_id) {
             validate_numeric_value($invoice_id);
             $view_data = get_invoice_making_data($invoice_id);

@@ -558,7 +558,14 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         validate_numeric_value($estimate_id);
         // //  $this->validate_estimate_access($estimate_id);
         $this->can_view_estimate();
+            $invoice_info = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
+            $client_info = $this->Clients_model->get_details(array("id" => $invoice_info->client_id))->getRow();
+            
+            $user_company_id = $this->login_user->department;
 
+            if ($user_company_id != 0 && $client_info->company_id != $user_company_id) {
+                app_redirect("invoices");
+            }
         if ($estimate_id) {
 
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");

@@ -145,7 +145,7 @@
 
         if (invoice_id && supplier_id) {
             $.ajax({
-                url: "<?php echo get_uri("invoice_payments/get_invoice_payment_amount_suggestion"); ?>" + "/" + invoice_id + "/" + supplier_id,
+                url: "<?php echo get_uri("invoice_payments/get_invoice_payment_amount_suggestion_supplier"); ?>" + "/" + invoice_id + "/" + supplier_id,
                 cache: false,
                 type: 'POST',
                 dataType: "json",

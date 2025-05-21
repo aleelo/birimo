@@ -354,6 +354,13 @@ $edit = "";
        // // $this->_validate_client_view_access($client_id);
         //$this->restrict_client_access();
         $this->can_view_client();
+            $client_info = $this->Clients_model->get_details(array("id" => $client_id))->getRow();
+            
+            $user_company_id = $this->login_user->department;
+
+            if ($user_company_id != 0 && $client_info->company_id != $user_company_id) {
+                app_redirect("invoices");
+            }
         if ($client_id) {
             $options = array("id" => $client_id);
             $client_info = $this->Clients_model->get_details($options)->getRow();

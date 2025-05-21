@@ -610,7 +610,19 @@ class Invoice_payments extends Security_Controller_Plugin {
         echo json_encode(array("data" => $result));
     }
 
-    function get_invoice_payment_amount_suggestion($invoice_id, $supplier_id ) {
+   function get_invoice_payment_amount_suggestion($invoice_id) {
+        validate_numeric_value($invoice_id);
+
+        $invoice_total_summary = $this->Invoices_model->get_invoice_total_summary($invoice_id);
+        if ($invoice_total_summary) {
+            $invoice_total_summary->balance_due = $invoice_total_summary->balance_due ? to_decimal_format($invoice_total_summary->balance_due) : "";
+            echo json_encode(array("success" => true, "invoice_total_summary" => $invoice_total_summary));
+        } else {
+            echo json_encode(array("success" => false));
+        }
+    }
+
+    function get_invoice_payment_amount_suggestion_supplier($invoice_id, $supplier_id ) {
         validate_numeric_value($invoice_id);
         validate_numeric_value($supplier_id);
         log_message('debug', 'Received Invoice ID: ' . $invoice_id);
@@ -625,7 +637,6 @@ class Invoice_payments extends Security_Controller_Plugin {
             echo json_encode(array("success" => false));
         }
     }
-
     /* list of invoice payments, prepared for datatable  */
 
     function payment_list_data_of_order($order_id, $client_id = 0) {

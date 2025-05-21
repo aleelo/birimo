@@ -150,13 +150,13 @@ class Users_models extends Crud_model {
 
 
         if ($own_company_members) {
-            $where .= " AND $team_member_job_info_table.company_id=$own_company_members";
+            $where .= " AND $users_table.department=$own_company_members";
         }
         if ($can_view_own_members) {
-            $where .= " AND $team_member_job_info_table.company_id=$can_view_own_members";
+            $where .= " AND $users_table.department=$can_view_own_members";
         }
          if ($can_view_all_members) {
-            $where .= " AND $team_member_job_info_table.company_id=$can_view_all_members";
+            $where .= " AND $users_table.department=$can_view_all_members";
         }
         if ($id) {
             $where .= " AND $users_table.id=$id";

@@ -560,7 +560,14 @@ class Team_member extends Security_Controller_Plugin {
                 app_redirect("forbidden");
             }
 
+        
+            $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
+            
+            $user_company_id = $this->login_user->department;
 
+            if ($user_company_id != 0 && $users_info->department != $user_company_id) {
+                app_redirect("team_member");
+            }
 
             //we have an id. view the team_member's profie
             $options = array("id" => $id, "user_type" => "staff");
