@@ -8,9 +8,13 @@
 
         <span class="invoice-meta text-default">
     <?php if ($invoice_info->bill_date) { ?>
-        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("DATE"); ?>:</strong> <?php echo $invoice_info->bill_date; ?>
+        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("DATE"); ?>:</strong> <?php echo $invoice_info->bill_date;
+        } ?>
+    
+          <?php if ($invoice_info->project_title) { ?>
+        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("Project"); ?>:</strong>                 <?php echo $invoice_info->project_title; ?>
 
-       
+
  
     <?php } ?>
 </span>

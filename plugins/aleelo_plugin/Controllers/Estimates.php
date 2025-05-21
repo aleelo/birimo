@@ -127,7 +127,28 @@ class Estimates extends Security_Controller_Plugin {
 
         return $this->template->view('aleelo_plugin\Views/estimates/modal_form', $view_data);
     }
+ private function _create_project_from_estimate($estimate_id) {
+    if ($estimate_id) {
+        //  $this->validate_estimate_access($estimate_id);
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
 
+        //don't create new project if there has already been created a new project with this estimate
+        if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+            $data = array(
+                "title" => get_estimate_id($estimate_info->id),
+                "client_id" => $estimate_info->client_id,
+                "start_date" => $estimate_info->estimate_date,
+                "deadline" => $estimate_info->valid_until,
+                "estimate_id" => $estimate_id
+            );
+            $save_id = $this->Projects_model->ci_save($data);
+
+            //save the project id
+            $data = array("project_id" => $save_id);
+            $this->Estimates_model->ci_save($data, $estimate_id);
+        }
+    }
+}
     /* add, edit or clone an estimate */
 
     function save() {
@@ -187,8 +208,29 @@ class Estimates extends Security_Controller_Plugin {
         }
 
         $estimate_id = $this->Estimates_model->ci_save($estimate_data, $id);
-        if ($estimate_id) {
+        $client_info = $this->Clients_model->get_one($client_id);
 
+        if ($estimate_id) {
+          $existing_project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id, "deleted" => 0]);
+
+        if ($existing_project && $existing_project->id) {
+            $save_id_project = $existing_project->id;
+        } else {
+            $data_project = array(
+                "title" => $this->request->getPost('project_id'),
+                "client_id" => $client_id,
+                "start_date" => $this->request->getPost('estimate_date'),
+                "deadline" => $this->request->getPost('valid_until'),
+                "estimate_id" => $estimate_id,
+                "company_id" => $client_info->company_id
+            );
+            $save_id_project = $this->Projects_model->ci_save($data_project);
+        }
+
+        if ($save_id_project) {
+            $data_project_id = array("project_id" => $save_id_project);
+$this->Estimates_model->ci_save($data_project_id, $estimate_id);
+        }
             if ($is_clone && $main_estimate_id) {
                 //add estimate items
 
@@ -296,15 +338,26 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         if ($status == "accepted") {
             log_notification("estimate_accepted", array("estimate_id" => $estimate_id));
 
-            //estimate accepted, create a new project
+            // estimate accepted, create a new project
             if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
-                $this->_create_project_from_estimate($estimate_id);
+                $this->create_project_from_estimate($estimate_id);
             }
+              $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
+            if ($project && $project->id) {
+            $data_project_status = array("status" => "open","status_id"=>1);
 
+            $this->Projects_model->ci_save($data_project_status, $project->id);
+            }
             if ($is_modal) {
                 echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
             }
         } else if ($status == "declined") {
+             $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
+        if ($project && $project->id) {
+        $data_project_status = array("status" => "canceled","status_id"=>4);
+
+        $this->Projects_model->ci_save($data_project_status, $project->id);
+    }
             log_notification("estimate_rejected", array("estimate_id" => $estimate_id));
         }
     } else {
@@ -323,27 +376,6 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             log_notification("estimate_sent", array("estimate_id" => $estimate_id));
         }
 
-} private function _create_project_from_estimate($estimate_id) {
-    if ($estimate_id) {
-        //  $this->validate_estimate_access($estimate_id);
-        $estimate_info = $this->Estimates_model->get_one($estimate_id);
-
-        //don't create new project if there has already been created a new project with this estimate
-        if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
-            $data = array(
-                "title" => get_estimate_id($estimate_info->id),
-                "client_id" => $estimate_info->client_id,
-                "start_date" => $estimate_info->estimate_date,
-                "deadline" => $estimate_info->valid_until,
-                "estimate_id" => $estimate_id
-            );
-            $save_id = $this->Projects_model->ci_save($data);
-
-            //save the project id
-            $data = array("project_id" => $save_id);
-            $this->Estimates_model->ci_save($data, $estimate_id);
-        }
-    }
 }
 
       function project ($estimate_id) {
@@ -360,42 +392,19 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     
     /* create new project from accepted estimate */
 
-     function create_project_from_estimate() {
-       $estimate_id = $this->request->getPost(index: 'estimate_id');
+     function create_project_from_estimate($estimate_id) {
+    //    $estimate_id = $this->request->getPost(index: 'estimate_id');
         if ($estimate_id) {
             //  $this->validate_estimate_access($estimate_id);
             $estimate_info = $this->Estimates_model->get_one($estimate_id);
-            $client_id = $estimate_info->client_id;
-            $client_info = $this->Clients_model->get_one($client_id);
-            $title=$this->request->getPost('title');
-            //don't create new project if there has already been created a new project with this estimate
-            if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
-                $data = array(
-                    "title" => $title,
-                    "company_id" => $client_info->company_id,
-                    "client_id" => $estimate_info->client_id,
-                    "start_date" => $estimate_info->estimate_date,
-                    "deadline" => $estimate_info->valid_until,
-                    "estimate_id" => $estimate_id
-                );
-                $estimate_data = array("status" => "accepted");
-                $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
-
-                $save_id = $this->Projects_model->ci_save($data);
-
-                //save the project id
-                if ($save_id) {
-                    // Save the project ID
-                    $data = array("project_id" => $save_id);
-                    $this->Estimates_model->ci_save($data, $estimate_id);
-    
-                    // Redirect to the project view page
-
+          if (!$this->Invoices_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+       
                     $invoice_client_id = $estimate_info->client_id; // Assuming client_id is available
-                    app_redirect("invoices/save_automatic/" . $estimate_id . "/". $invoice_client_id);                }
+                    app_redirect("invoices/save_automatic/" . $estimate_id . "/". $invoice_client_id);              
+                  }
             }
         }
-    }
+    
 
     /* delete or undo an estimate */
 
@@ -746,9 +755,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         $new_account = $this->request->getPost("new_account");
         $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
+        $days= unformat_currency($this->request->getPost('days'));
 
   if($supplier_price){
-        $price=$supplier_price * $quantity;
+        $price=$supplier_price * $quantity*$days;
         }
         else{
             $price=0;
@@ -801,12 +811,13 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             "quantity" => $quantity,
             "unit_type" => $this->request->getPost('estimate_unit_type'),
             "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
-            "total" => $rate * $quantity,
+            "total" => $rate * $quantity*$days,
             "account_id" => $account_id,
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_price"=>$price,
             "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+            "days"=>$days,
 
         );
 
@@ -892,6 +903,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         return array(
             $data->sort,
             $item,
+                        $data->days,
+
             to_decimal_format($data->quantity) . " " . $type,
             to_currency($data->rate, $data->currency_symbol),
             to_currency($data->total, $data->currency_symbol),

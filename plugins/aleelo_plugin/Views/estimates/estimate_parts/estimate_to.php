@@ -25,6 +25,14 @@
                 <?php echo format_to_date($estimate_info->valid_until); ?>
             </td>
         </tr>
+        <tr>
+            <td style="font-size: 1.1em; color: <?php echo $color; ?>; font-weight: bold;">
+                <?php echo ("Event name"); ?>
+            </td>
+            <td>
+                <?php echo $estimate_info->project_title; ?>
+            </td>
+        </tr>
         <?php } ?>
     </table>
 <?php } ?>

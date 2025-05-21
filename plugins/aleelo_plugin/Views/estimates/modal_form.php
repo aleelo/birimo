@@ -84,6 +84,27 @@
             </div>
         <?php } ?>
 
+                <div class="form-group">
+                <div class="row">
+                <label for="project_id" class=" col-md-3"><?php echo app_lang('event_name'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "project_id",
+                        "name" => "project_id",
+                        "value" => $model_info->project_id,
+                        "class" => "form-control",
+                        "placeholder" => app_lang('project_id'),
+                        "autocomplete" => "off",
+                        "data-rule-required" => true,
+                        "data-msg-required" => app_lang("field_required"),
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+
+
         <div class="form-group">
             <div class="row">
                 <label for="tax_id" class=" col-md-3"><?php echo app_lang('tax'); ?></label>

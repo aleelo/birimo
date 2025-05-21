@@ -32,7 +32,10 @@
                                     if ($estimate_status == "draft" || $estimate_status == "sent") {
                                         ?>
                                         
-                                        <li role="presentation"><?php echo modal_anchor(get_uri("estimates/project/" . $estimate_info->id), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item","title"=>"project name")); ?> </li>                                        <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                                    <li role="presentation"> <a href="<?php echo get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"); ?>" class="dropdown-item"><i data-feather="check-circle" class="icon-16"></i> <?php echo app_lang('mark_as_accepted'); ?></a>
+</li>
+                                        
+                                        <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
                                     <?php } else if ($estimate_status == "accepted") {
                                         ?>
                                         <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
@@ -121,6 +124,8 @@
             columns: [
                 {visible: false, searchable: false},
                 {title: "<?php echo app_lang("item") ?> ", sortable: false, "class": "all"},
+                                {title: '<?php echo app_lang(lang: "days") ?>', "class": "text-right w15p", sortable: false},
+
                 {title: "<?php echo app_lang("quantity") ?>", "class": "text-right w15p", sortable: false},
                 {title: "<?php echo app_lang("rate") ?>", "class": "text-right w15p", sortable: false},
                 {title: "<?php echo app_lang("total") ?>", "class": "text-right w15p all", sortable: false},

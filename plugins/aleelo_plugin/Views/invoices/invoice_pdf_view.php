@@ -39,6 +39,8 @@ $style = get_setting("invoice_style");
 
     <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;  ">
         <th style="width: 45%; border-right: 1px solid #eee;"> <?php echo app_lang("item"); ?> </th>
+        <th style="width: 12%; border-right: 1px solid #eee;"> <?php echo app_lang("days"); ?> </th>
+
         <th style="text-align: center;  width: 15%; border-right: 1px solid #eee;"> <?php echo app_lang("quantity"); ?></th>
         <th style="text-align: right;  width: 20%; border-right: 1px solid #eee;"> <?php echo app_lang("rate"); ?></th>
         <th style="text-align: right;  width: 20%; "> <?php echo app_lang("total"); ?></th>
@@ -50,6 +52,8 @@ $style = get_setting("invoice_style");
             <td style="width: 45%; border: 1px solid #fff; padding: 10px; hyphens: auto;"><?php echo $item->title; ?>
                 <br />
                 <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ? process_images_from_content($item->description) : ""); ?></span>
+            </td>
+            <td style="width: 12%; border-right: 1px solid #9B9997; border-botton: 1px solid #fff; border-top: 1px solid #fff; padding: 10px;"><?php echo $item->days; ?>
             </td>
             <td style="text-align: center; width: 15%; border: 1px solid #fff;"> <?php echo $item->quantity . " " . $item->unit_type; ?></td>
             <td style="text-align: right; width: 20%; border: 1px solid #fff;"> <?php echo to_currency($item->rate, $item->currency_symbol); ?></td>

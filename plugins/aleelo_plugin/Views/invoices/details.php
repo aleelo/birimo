@@ -137,6 +137,8 @@
             columns: [
                 {visible: false, searchable: false},
                 {title: '<?php echo app_lang("item") ?> ', sortable: false, "class": "all"},
+                {title: '<?php echo app_lang("days") ?>', "class": "text-right w15p", sortable: false},
+
                 {title: '<?php echo app_lang("quantity") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("rate") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},

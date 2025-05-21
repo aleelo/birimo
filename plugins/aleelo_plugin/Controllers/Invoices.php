@@ -403,6 +403,8 @@ else{
         $invoice_id = $this->Invoices_model->save_invoice_and_update_total($invoice_data);
     
         $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+        
+
         if (!$copy_items) {
             app_redirect("invoices/view/" . $invoice_id);
         }
@@ -423,6 +425,7 @@ else{
                 "supplier_price" => $data->supplier_price ?: 0,
             );
             $this->Invoice_items_model->ci_save($invoice_item_data);
+            
         }
     
         $this->Invoices_model->update_invoice_total_meta($invoice_id);
@@ -1081,8 +1084,10 @@ $delete= '';
         $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
         $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
+                $days= unformat_currency($this->request->getPost('days'));
+
         if($supplier_price){
-        $price=$supplier_price * $quantity;
+        $price=$supplier_price * $quantity*$days;
         }
         else{
             $price=0;
@@ -1137,13 +1142,15 @@ $delete= '';
             "quantity" => $quantity,
             "unit_type" => $this->request->getPost('invoice_unit_type'),
             "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-            "total" => $rate * $quantity,
+            "total" => $rate * $quantity *$days,
             "account_id" =>$account_id,
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
             "supplier_price"=>$price,
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+                        "days"=>$days,
+
 
         );
 
@@ -1278,6 +1285,7 @@ $delete= '';
         return array(
             $data->sort,
             $item,
+            $data->days,
             to_decimal_format($data->quantity) . " " . $type,
             to_currency($data->rate, $data->currency_symbol),
             $taxable,

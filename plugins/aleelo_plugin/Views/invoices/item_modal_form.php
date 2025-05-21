@@ -62,6 +62,23 @@
                 </div>
             </div>
         </div>
+
+         <div class="form-group">
+            <div class="row">
+                <label for="invoice_item_days" class="col-md-3"><?php echo app_lang('days'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "days",
+                        "name" => "days",
+                        "value" => $model_info->days ? $model_info->days : "",
+                        "class" => "form-control",
+                        "placeholder" => app_lang('days')
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
         <div class="form-group">
             <div class="row">
                 <label for="invoice_item_quantity" class=" col-md-3"><?php echo app_lang('quantity'); ?></label>
