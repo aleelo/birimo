@@ -979,9 +979,8 @@ if (!$project_info) {
 
 $user_company_id = $this->login_user->department; // or from session if needed
 
-if ($project_info->company_id != $user_company_id) {
-app_redirect("project/all_projects") ;
-
+if ($user_company_id != 0 && $project_info->company_id != $user_company_id) {
+    app_redirect("project/all_projects");
 }
         // print_r($project_id);die;
         
