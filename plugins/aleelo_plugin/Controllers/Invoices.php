@@ -1896,9 +1896,15 @@ $delete= '';
         }
 
         if ($invoice_id) {
+             validate_numeric_value($invoice_id);
+            $view_data = get_invoice_making_data($invoice_id);
+
             validate_numeric_value($invoice_id);
             $view_data["invoice_id"] = $invoice_id;
             $view_data["can_edit_invoices"] = $this->can_edit_invoice();
+               $view_data['invoice_status'] = $this->_get_invoice_status_label($view_data["invoice_info"], false);
+                $view_data["can_edit_invoices"] = $this->can_edit_invoice();
+                $view_data["is_invoice_editable"] = $this->is_invoice_editable($invoice_id);
 
             return $this->template->view("aleelo_plugin\Views/invoices/payments/index", $view_data);
         } else {

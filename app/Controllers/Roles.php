@@ -148,6 +148,9 @@ class Roles extends Security_Controller {
             $view_data['can_view_files'] = get_array_value($permissions, "can_view_files");
             $view_data['can_comment_on_projects'] = get_array_value($permissions, "can_comment_on_projects");
             $view_data['hide_invoice'] = get_array_value($permissions, "hide_invoice");
+            $view_data['show_sales'] = get_array_value($permissions, "show_sales");
+            $view_data['show_staff'] = get_array_value($permissions, "show_staff");
+
             $view_data['can_add_invoice'] = get_array_value($permissions, "can_add_invoice");
             $view_data['permissions'] = $permissions;
             $view_data['can_update_invoice'] = get_array_value($permissions, "can_update_invoice");
@@ -170,6 +173,8 @@ class Roles extends Security_Controller {
             $view_data['can_delete_supplier'] = get_array_value($permissions, "can_delete_supplier");
             $view_data['hide_expense'] = get_array_value($permissions, "hide_expense");
             $view_data['can_add_expense'] = get_array_value($permissions, "can_add_expense");
+            $view_data['can_Assign_expense'] = get_array_value($permissions, "can_Assign_expense");
+            
             $view_data['can_update_expense'] = get_array_value($permissions, "can_update_expense");
             $view_data['can_delete_expense'] = get_array_value($permissions, "can_delete_expense");
 
@@ -350,6 +355,10 @@ $can_add_invoice = $this->request->getPost('can_add_invoice');
 $can_update_invoice = $this->request->getPost('can_update_invoice');
 $can_delete_invoice = $this->request->getPost('can_delete_invoice');
 $hide_invoice = $this->request->getPost('hide_invoice');
+$show_sales = $this->request->getPost('show_sales');
+$show_staff = $this->request->getPost('show_staff');
+
+
 $can_delete_estimate = $this->request->getPost('can_delete_estimate');
 $can_update_estimate = $this->request->getPost('can_update_estimate');
 $hide_estimate = $this->request->getPost('hide_estimate');
@@ -371,6 +380,8 @@ $can_add_estimate = $this->request->getPost('can_add_estimate');
         $can_delete_supplier = $this->request->getPost('can_delete_supplier');
         $hide_expense = $this->request->getPost('hide_expense');
         $can_add_expense = $this->request->getPost('can_add_expense');
+                $can_Assign_expense = $this->request->getPost('can_Assign_expense');
+
         $can_update_expense = $this->request->getPost('can_update_expense');
         $can_delete_expense = $this->request->getPost('can_delete_expense');
         $hide_task = $this->request->getPost('hide_task');
@@ -453,6 +464,8 @@ $can_add_estimate = $this->request->getPost('can_add_estimate');
             "can_update_invoice" => $can_update_invoice,
             "can_delete_invoice" => $can_delete_invoice,
             "hide_invoice" => $hide_invoice,
+            "show_sales" => $show_sales,
+            "show_staff" => $show_staff,
             "can_add_estimate" => $can_add_estimate,
             "can_update_estimate" => $can_update_estimate,
             "can_delete_estimate" => $can_delete_estimate,
@@ -471,6 +484,7 @@ $can_add_estimate = $this->request->getPost('can_add_estimate');
             "can_delete_supplier" => $can_delete_supplier,
             "hide_expense" => $hide_expense,
             "can_add_expense" => $can_add_expense,
+            "can_Assign_expense" => $can_Assign_expense,
             "can_update_expense" => $can_update_expense,
             "can_delete_expense" => $can_delete_expense,
             "hide_task" => $hide_task,

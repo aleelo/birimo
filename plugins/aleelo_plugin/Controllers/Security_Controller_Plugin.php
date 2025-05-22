@@ -123,22 +123,15 @@ $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
     protected function get_clients_and_leads_dropdown($return_json = false) {
         $clients_dropdown = array("" => "-");
         $clients_json_dropdown = array(array("id" => "", "text" => "-"));
-       if($this->login_user->company_access == "all"){
        if( $company_id = $this->login_user->department==0){
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
        }
-       else{
-        $company_id = $this->login_user->department;
-        $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
-       }
-    }
-       else if(get_array_value($this->login_user->permissions, "client") === "own_company" || get_array_value($this->login_user->permissions, "invoice") === "own_invoice"){
+     
+       else if($this->login_user->department ==!0 ){
         $company_id = $this->login_user->department;
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0,"company_id"=>$company_id), 0, 0, "is_lead")->getResult();
          }
-         else{
-            $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
-         }
+        
         
       
         foreach ($clients as $client) {
@@ -161,21 +154,27 @@ $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
         return $this->login_user->department;
     }
     protected function can_view_own_company_project() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "can_view_own_company_project") === "1") {
-            return $this->login_user->department; 
-        }
-        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-            return $this->login_user->department;
-        }
+          $department= $this->login_user->department;
+          if($department==0){
         return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
 // ----------------------------------------------------invoice-----------------------------------------------------
     protected function can_view_invoice() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_invoice") !== "1") {
-            return true; 
-        }
-        return false; 
+        if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_invoice") !== "1" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
+    return false;
+}
 
 
     protected function can_edit_invoice() {
@@ -200,23 +199,29 @@ $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
         return null; 
     }
     protected function can_view_own_company_invoice() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "invoice") === "own_invoice") {
-            return $this->login_user->department; 
-        }
-        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-            return $this->login_user->department;
-        }
+          $department= $this->login_user->department;
+          if($department==0){
         return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
+    
 
     // ----------------------------------------------------estimate-----------------------------------------------------
     protected function can_view_estimate() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_estimate") !== "1") {
-            return true; 
-        }
-        
-        return app_redirect("forbidden"); 
+        if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_estimate") !== "1" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
+    return false;
+}
 
 
     protected function can_edit_estimate() {
@@ -241,19 +246,25 @@ $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
         return false; 
     }
     protected function can_view_own_company_estimate() {
-        if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "estimate") === "own_company") {
-            return $this->login_user->department; 
-        }
-        else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-            return $this->login_user->department;
-        }
+          $department= $this->login_user->department;
+          if($department==0){
         return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
    // ----------------------------------------------------payment-----------------------------------------------------
    protected function can_view_payment() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_payment") !== "1") {
-        return true; 
+     if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_payment") !== "1" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
     return false;
 }
 
@@ -280,20 +291,26 @@ protected function can_delete_payment() {
     return false; 
 }
 protected function can_view_own_company_payment() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "payment") === "own_company") {
-        return $this->login_user->department; 
+      $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
-    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-        return $this->login_user->department;
-    }
-    return false; 
-}
 
  // ----------------------------------------------------client-----------------------------------------------------
  protected function can_view_client() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_client") !== "1") {
-        return true; 
+   if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_client") !== "1" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
     return false;
 }
 
@@ -320,19 +337,25 @@ protected function can_delete_client() {
     return false; 
 }
 protected function can_view_own_company_client() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "client") === "own_company") {
-        return $this->login_user->department; 
+     $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
-    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-        return $this->login_user->department;
-    }
-    return false; 
-}
  // ----------------------------------------------------supplier-----------------------------------------------------
  protected function can_view_supplier() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_supplier") !== "1") {
-        return true; 
+   if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_supplier") !== "1" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
     return false;
 }
 
@@ -359,16 +382,16 @@ protected function can_delete_supplier() {
     return false; 
 }
 protected function can_view_own_company_supplier() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "supplier") === "own_company") {
-        return $this->login_user->department; 
+       $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
-    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-        return $this->login_user->department;
-    }
-    return false; 
-}
 
-// ----------------------------------------------------expense-----------------------------------------------------
+// ----------------------------------------------------expense-----------------------------------------------------hide_expense
 protected function can_view_expense() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_expense") !== "1") {
         return true; 
@@ -400,14 +423,14 @@ protected function can_delete_expense() {
     return false; 
 }
 protected function can_view_own_company_expense() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "expense") === "own_company") {
-        return $this->login_user->department; 
+       $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
-    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-        return $this->login_user->department;
-    }
-    return false; 
-}
 // ----------------------------------------------------task-----------------------------------------------------
 protected function can_view_task() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_task") !== "1") {
@@ -439,19 +462,25 @@ protected function can_delete_task() {
     return false; 
 }
 protected function can_view_own_company_task() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "task") === "own_company") {
-        return $this->login_user->department; 
+       $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
-    else if($this->login_user->user_type == "staff" && $this->login_user->company_access==="all"){
-        return $this->login_user->department;
-    }
-    return false; 
-}
 //-----------------------------------------------------items-----------------------------------------------------
 protected function can_view_items() {
-    if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "items") !== "no") {
-        return true; 
+  if ($this->login_user->is_admin) {
+        return true;
     }
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "items") !== "no" &&
+        get_array_value($this->login_user->permissions, "show_sales") == "1") {
+        return true;
+    }
+
     return false;
 }
 
@@ -463,10 +492,13 @@ protected function can_view_items() {
 // }
 
     protected function can_view_own_department_client() {
-        if ($this->login_user->company_access == "all" && ($this->login_user->user_type == "staff" || get_array_value($this->login_user->permissions,"invoice") ==="own_company")){
-        return $this->login_user->department; 
-    }
-    return null; 
+          $department= $this->login_user->department;
+          if($department==0){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->department;
+          }
     }
 
 

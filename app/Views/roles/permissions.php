@@ -11,7 +11,403 @@
         <div class="card-body">
 
             <ul class="permission-list">
+                
+                <?php if ($login_user->is_admin) { ?> <li>
+                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Settings permissions</h3>
+                </li>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("administration_permissions"); ?>:</h5>
+                        <div>
+                            <?php
+                            echo form_checkbox("can_manage_all_kinds_of_settings", "1", $can_manage_all_kinds_of_settings ? true : false, "id='can_manage_all_kinds_of_settings' class='form-check-input'");
+                            ?>
+                            <label for="can_manage_all_kinds_of_settings"><?php echo app_lang("can_manage_all_kinds_of_settings"); ?></label>
+                        </div>
+                        <div id="can_manage_user_role_and_permissions_container" class="<?php echo $can_manage_all_kinds_of_settings ? "" : "hide"; ?>">
+                            <?php
+                            echo form_checkbox("can_manage_user_role_and_permissions", "1", $can_manage_user_role_and_permissions ? true : false, "id='can_manage_user_role_and_permissions' class='form-check-input'");
+                            ?>
+                            <label for="can_manage_user_role_and_permissions"><?php echo app_lang("can_manage_user_role_and_permissions"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_checkbox("can_add_or_invite_new_team_members", "1", $can_add_or_invite_new_team_members ? true : false, "id='can_add_or_invite_new_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_add_or_invite_new_team_members"><?php echo app_lang("can_add_or_invite_new_team_members"); ?></label>
+                        </div>
+
+                        <div>
+                            <?php
+                            echo form_checkbox("can_activate_deactivate_team_members", "1", $can_activate_deactivate_team_members ? true : false, "id='can_activate_deactivate_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_activate_deactivate_team_members"><?php echo app_lang("can_activate_deactivate_team_members"); ?></label>
+                        </div>
+
+                        <div>
+                            <?php
+                            echo form_checkbox("can_delete_team_members", "1", $can_delete_team_members ? true : false, "id='can_delete_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_delete_team_members"><?php echo app_lang("can_delete_team_members"); ?></label>
+                        </div>
+
+                    </li>
+                <?php } ?>  
+
+   <li>
+                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">HR & Payroll Management</h3>
+                </li>
+                 <div>
+                        <?php
+                        echo form_checkbox("show_staff", "1", $show_staff ? true : false, "id='show_staff' class='form-check-input'");
+                        ?>
+                        <label for="show_staff"><?php echo app_lang("show_staff"); ?></label>
+                    </div>
+                <div id="show_staff_permission" class="<?php echo $show_staff ? "" : "hide"; ?>">
+
+                <li>
+                  
+                    <span data-feather="key" class="icon-14 ml-20"></span>
+                    <h5><?php echo app_lang("set_team_members_permission"); ?>:</h5>
+
+                    <div>
+                        <?php
+                        echo form_checkbox("hide_team_members_list", "1", $hide_team_members_list ? true : false, "id='hide_team_members_list' class='form-check-input'");
+                        ?>
+                        <label for="hide_team_members_list"><?php echo app_lang("hide_team_members_list"); ?></label>
+                    </div>
+
+                    <div id="individual_team_members_permission_area" class="<?php echo $hide_team_members_list ? "hide" : ""; ?>">
+                        <!-- <div>
+                            <?php
+                            echo form_checkbox("can_view_own_company_members", "1", $can_view_own_company_members ? true : false, "id='can_view_own_company_members' class='form-check-input'");
+                            ?>
+                            <label for="can_view_own_company_members"><?php echo app_lang("can_view_own_company_members"); ?></label>
+                        </div> -->
+                        <div>
+                            <?php
+                            echo form_checkbox("can_view_team_members_contact_info", "1", $can_view_team_members_contact_info ? true : false, "id='can_view_team_members_contact_info' class='form-check-input'");
+                            ?>
+                            <label for="can_view_team_members_contact_info"><?php echo app_lang("can_view_team_members_contact_info"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_checkbox("can_view_team_members_social_links", "1", $can_view_team_members_social_links ? true : false, "id='can_view_team_members_social_links' class='form-check-input'");
+                            ?>
+                            <label for="can_view_team_members_social_links"><?php echo app_lang("can_view_team_members_social_links"); ?></label>
+                        </div>
+
+                        <div>
+                            <label for="can_update_team_members_general_info_and_social_links"><?php echo app_lang("can_update_team_members_general_info_and_social_links"); ?></label>
+                            <div class="ml15">
+                                <div>
+                                    <?php
+                                    if (is_null($team_member_update_permission)) {
+                                        $team_member_update_permission = "";
+                                    }
+                                    echo form_radio(array(
+                                        "id" => "team_member_update_permission_no",
+                                        "name" => "team_member_update_permission",
+                                        "value" => "",
+                                        "class" => "team_member_update_permission toggle_specific form-check-input",
+                                    ), $team_member_update_permission, ($team_member_update_permission === "") ? true : false);
+                                    ?>
+                                    <label for="team_member_update_permission_no"><?php echo app_lang("no"); ?></label>
+                                </div>
+                                <div>
+                                    <?php
+                                    echo form_radio(array(
+                                        "id" => "team_member_update_permission_all",
+                                        "name" => "team_member_update_permission",
+                                        "value" => "all",
+                                        "class" => "team_member_update_permission toggle_specific form-check-input",
+                                    ), $team_member_update_permission, ($team_member_update_permission === "all") ? true : false);
+                                    ?>
+                                    <label for="team_member_update_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
+                                </div>
+                                <div class="form-group">
+                                    <?php
+                                    echo form_radio(array(
+                                        "id" => "team_member_update_permission_specific",
+                                        "name" => "team_member_update_permission",
+                                        "value" => "specific",
+                                        "class" => "team_member_update_permission toggle_specific form-check-input",
+                                    ), $team_member_update_permission, ($team_member_update_permission === "specific") ? true : false);
+                                    ?>
+                                    <label for="team_member_update_permission_specific"><?php echo app_lang("yes_specific_members_or_teams"); ?>:</label>
+                                    <div class="specific_dropdown">
+                                        <input type="text" value="<?php echo $team_member_update_permission_specific; ?>" name="team_member_update_permission_specific" id="team_member_update_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <?php
+                            echo form_checkbox("team_members_note_manage_permission", "all", $team_members_note_manage_permission == "all" ? true : false, "id='team_members_note_manage_permission' class='form-check-input'");
+                            ?>
+                            <label for="team_members_note_manage_permission"><?php echo app_lang("can_manage_team_members_notes"); ?></label>
+                        </div>
+                    </div>
+                                    </li>
+
+                    <?php if (get_setting("module_leave")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_manage_team_members_leave"); ?> <span class="help" data-bs-toggle="tooltip" title="Assign, approve or reject leave applications"><span data-feather="help-circle" class="icon-14"></span></span> </h5>
+                        <div>
+                            <?php
+                            if (is_null($leave)) {
+                                $leave = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "leave_permission_no",
+                                "name" => "leave_permission",
+                                "value" => "",
+                                "class" => "leave_permission toggle_specific form-check-input",
+                            ), $leave, ($leave === "") ? true : false);
+                            ?>
+                            <label for="leave_permission_no"><?php echo app_lang("no"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "leave_permission_all",
+                                "name" => "leave_permission",
+                                "value" => "all",
+                                "class" => "leave_permission toggle_specific form-check-input",
+                            ), $leave, ($leave === "all") ? true : false);
+                            ?>
+                            <label for="leave_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
+                        </div>
+                        <div class="form-group pb0 mb0 no-border">
+                            <?php
+                            echo form_radio(array(
+                                "id" => "leave_permission_specific",
+                                "name" => "leave_permission",
+                                "value" => "specific",
+                                "class" => "leave_permission toggle_specific form-check-input",
+                            ), $leave, ($leave === "specific") ? true : false);
+                            ?>
+                            <label for="leave_permission_specific"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_leaves") . ")"; ?>:</label>
+                            <div class="specific_dropdown">
+                                <input type="text" value="<?php echo $leave_specific; ?>" name="leave_permission_specific" id="leave_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <?php
+                                echo form_checkbox("can_delete_leave_application", "1", $can_delete_leave_application ? true : false, "id='can_delete_leave_application' class='form-check-input'");
+                                ?>
+                                <label for="can_delete_leave_application"><?php echo app_lang("can_delete_leave_application"); ?> <span class="help" data-bs-toggle="tooltip" title="Can delete based on his/her access permission"><i data-feather="help-circle" class="icon-14"></i></span></label>
+                            </div>
+                        </div>
+                    </li>
+                 <?php } ?>
+                     <?php if (get_setting("module_announcement")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_manage_announcements"); ?></h5>
+                        <div>
+                            <?php
+                            if (is_null($announcement)) {
+                                $announcement = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "announcement_no",
+                                "name" => "announcement_permission",
+                                "value" => "",
+                                "class" => "form-check-input",
+                            ), $announcement, ($announcement === "") ? true : false);
+                            ?>
+                            <label for="announcement_no"><?php echo app_lang("no"); ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "announcement_yes",
+                                "name" => "announcement_permission",
+                                "value" => "all",
+                                "class" => "form-check-input",
+                            ), $announcement, ($announcement === "all") ? true : false);
+                            ?>
+                            <label for="announcement_yes"><?php echo app_lang("yes"); ?></label>
+                        </div>
+                    </li>
+                <?php } ?>
+                 <li>
+                    <span data-feather="key" class="icon-14 ml-20"></span>
+                    <h5><?php echo app_lang("can_manage_team_members_job_information"); ?></h5>
+                    <div>
+                        <?php
+                        if (is_null($job_info_manage_permission)) {
+                            $job_info_manage_permission = "";
+                        }
+                        echo form_radio(array(
+                            "id" => "job_info_manage_permission_no",
+                            "name" => "job_info_manage_permission",
+                            "value" => "",
+                            "class" => "form-check-input",
+                        ), $job_info_manage_permission, ($job_info_manage_permission === "") ? true : false);
+                        ?>
+                        <label for="job_info_manage_permission_no"><?php echo app_lang("no"); ?> </label>
+                    </div>
+                    <div>
+                        <?php
+                        echo form_radio(array(
+                            "id" => "job_info_manage_permission_yes",
+                            "name" => "job_info_manage_permission",
+                            "value" => "all",
+                            "class" => "form-check-input",
+                        ), $job_info_manage_permission, ($job_info_manage_permission === "all") ? true : false);
+                        ?>
+                        <label for="job_info_manage_permission_yes"><?php echo app_lang("yes"); ?></label>
+                    </div>
+                 </li>
+                 <?php if (get_setting("module_attendance")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_manage_team_members_timecards"); ?> <span class="help" data-bs-toggle="tooltip" title="Add, edit and delete time cards"><i data-feather="help-circle" class="icon-14"></i></span></h5>
+                        <div>
+                            <?php
+                            if (is_null($attendance)) {
+                                $attendance = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "attendance_permission_no",
+                                "name" => "attendance_permission",
+                                "value" => "",
+                                "class" => "attendance_permission toggle_specific form-check-input",
+                            ), $attendance, ($attendance === "") ? true : false);
+                            ?>
+                            <label for="attendance_permission_no"><?php echo app_lang("no"); ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "attendance_permission_all",
+                                "name" => "attendance_permission",
+                                "value" => "all",
+                                "class" => "attendance_permission toggle_specific form-check-input",
+                            ), $attendance, ($attendance === "all") ? true : false);
+                            ?>
+                            <label for="attendance_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
+                        </div>
+                        <div class="form-group">
+                            <?php
+                            echo form_radio(array(
+                                "id" => "attendance_permission_specific",
+                                "name" => "attendance_permission",
+                                "value" => "specific",
+                                "class" => "attendance_permission toggle_specific form-check-input",
+                            ), $attendance, ($attendance === "specific") ? true : false);
+                            ?>
+                            <label for="attendance_permission_specific"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_time_cards") . ")"; ?>:</label>
+                            <div class="specific_dropdown">
+                                <input type="text" value="<?php echo $attendance_specific; ?>" name="attendance_permission_specific" id="attendance_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            </div>
+                        </div>
+
+                    </li>
+                 <?php } ?>
+                 <?php if (get_setting("module_project_timesheet")) { ?>
+                    <li>
+                        <span data-feather="key" class="icon-14 ml-20"></span>
+                        <h5><?php echo app_lang("can_manage_team_members_project_timesheet"); ?></h5>
+                        <div>
+                            <?php
+                            if (is_null($timesheet_manage_permission)) {
+                                $timesheet_manage_permission = "";
+                            }
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_no",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_no"><?php echo app_lang("no") . " (" . app_lang("can_add_own_timelogs_only") . ")"; ?> </label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_own",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "own",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_own"><?php echo app_lang("yes_only_own_timelogs"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_all",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "all",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "all") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_own_project_members",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "own_project_members",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own_project_members") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_own_project_members"><?php echo app_lang("yes_only_own_project_members"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_own_project_members_excluding_own",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "own_project_members_excluding_own",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own_project_members_excluding_own") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_own_project_members_excluding_own"><?php echo app_lang("yes_only_own_project_members") . " (" . app_lang("excluding_his_her_timelogs") . ")"; ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_specific",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "specific",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "specific") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_specific"><?php echo app_lang("yes_specific_members_or_teams"); ?>:</label>
+                            <div class="specific_dropdown">
+                                <input type="text" value="<?php echo $timesheet_manage_permission_specific; ?>" name="timesheet_manage_permission_specific" id="timesheet_manage_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <?php
+                            echo form_radio(array(
+                                "id" => "timesheet_manage_permission_specific_excluding_own",
+                                "name" => "timesheet_manage_permission",
+                                "value" => "specific_excluding_own",
+                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
+                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "specific_excluding_own") ? true : false);
+                            ?>
+                            <label for="timesheet_manage_permission_specific_excluding_own"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_timelogs") . ")"; ?>:</label>
+                            <div class="specific_dropdown">
+                                <input type="text" value="<?php echo $timesheet_manage_permission_specific; ?>" name="timesheet_manage_permission_specific_excluding_own" id="timesheet_manage_permission_specific_excluding_own_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
+                            </div>
+                        </div>
+                    </li>
+                 <?php } ?>
+                 </li>
+                                    </div>
+
             <li>
+                
                     <h3 style="color: <?php echo $color ?>; font-weight: bold;">project and Tasks Management</h3>
                 </li>
                 <li>
@@ -32,12 +428,12 @@
                             <label for="can_manage_all_projects"><?php echo app_lang("can_manage_all_projects"); ?></label>
                         </div>
 
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_checkbox("can_view_own_company_project", "1", $can_view_own_company_project ? true : false, "id='can_view_own_company_project' class='manage_project_section form-check-input'");
                             ?>
                             <label for="can_view_own_company_project"><?php echo app_lang("can_view_own_company_project"); ?></label>
-                        </div>
+                        </div> -->
 
                         <div id="individual_project_permission_area" class="<?php echo $can_manage_all_projects ? "hide" : ""; ?>">
                             <div>
@@ -158,7 +554,7 @@
                         <div id="task_permission" class="<?php echo $hide_task ? "hide" : ""; ?>">
                     
                         <div>
-                            <?php
+                            <!-- <?php
                             echo form_radio(array(
                                 "id" => "task_own_company",
                                 "name" => "task_permission",
@@ -167,7 +563,7 @@
                             ), $task, ($task === "own_company") ? true : false);
                             ?>
                             <label for="task_own_company"><?php echo app_lang("own_company"); ?></label>
-                        </div>
+                        </div> -->
                         <div>
                             <?php
                             echo form_radio(array(
@@ -179,12 +575,12 @@
                             ?>
                             <label for="task_own_tasks"><?php echo app_lang("own_tasks"); ?></label>
                         </div>
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array("id" => "task_yes","name" => "task_permission","value" => "all", "class" => "form-check-input", ), $task, ($task === "all") ? true : false);
                             ?>
                             <label for="task_yes"><?php echo app_lang("all_tasks"); ?></label>
-                        </div>
+                        </div> -->
                         <div>
                                 <?php
                                 echo form_checkbox("can_create_tasks", "1", $can_create_tasks ? true : false, "id='can_create_tasks' class='manage_project_section form-check-input'");
@@ -225,354 +621,7 @@
                     </li>
                 </li>
 
-                <?php if ($login_user->is_admin) { ?> <li>
-                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Settings permissions</h3>
-                </li>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("administration_permissions"); ?>:</h5>
-                        <div>
-                            <?php
-                            echo form_checkbox("can_manage_all_kinds_of_settings", "1", $can_manage_all_kinds_of_settings ? true : false, "id='can_manage_all_kinds_of_settings' class='form-check-input'");
-                            ?>
-                            <label for="can_manage_all_kinds_of_settings"><?php echo app_lang("can_manage_all_kinds_of_settings"); ?></label>
-                        </div>
-                        <div id="can_manage_user_role_and_permissions_container" class="<?php echo $can_manage_all_kinds_of_settings ? "" : "hide"; ?>">
-                            <?php
-                            echo form_checkbox("can_manage_user_role_and_permissions", "1", $can_manage_user_role_and_permissions ? true : false, "id='can_manage_user_role_and_permissions' class='form-check-input'");
-                            ?>
-                            <label for="can_manage_user_role_and_permissions"><?php echo app_lang("can_manage_user_role_and_permissions"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_checkbox("can_add_or_invite_new_team_members", "1", $can_add_or_invite_new_team_members ? true : false, "id='can_add_or_invite_new_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_add_or_invite_new_team_members"><?php echo app_lang("can_add_or_invite_new_team_members"); ?></label>
-                        </div>
-
-                        <div>
-                            <?php
-                            echo form_checkbox("can_activate_deactivate_team_members", "1", $can_activate_deactivate_team_members ? true : false, "id='can_activate_deactivate_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_activate_deactivate_team_members"><?php echo app_lang("can_activate_deactivate_team_members"); ?></label>
-                        </div>
-
-                        <div>
-                            <?php
-                            echo form_checkbox("can_delete_team_members", "1", $can_delete_team_members ? true : false, "id='can_delete_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_delete_team_members"><?php echo app_lang("can_delete_team_members"); ?></label>
-                        </div>
-
-                    </li>
-                <?php } ?>   <li>
-                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Staff Management</h3>
-                </li>
-                <li>
-                    <span data-feather="key" class="icon-14 ml-20"></span>
-                    <h5><?php echo app_lang("set_team_members_permission"); ?>:</h5>
-
-                    <div>
-                        <?php
-                        echo form_checkbox("hide_team_members_list", "1", $hide_team_members_list ? true : false, "id='hide_team_members_list' class='form-check-input'");
-                        ?>
-                        <label for="hide_team_members_list"><?php echo app_lang("hide_team_members_list"); ?></label>
-                    </div>
-
-                    <div id="individual_team_members_permission_area" class="<?php echo $hide_team_members_list ? "hide" : ""; ?>">
-                        <div>
-                            <?php
-                            echo form_checkbox("can_view_own_company_members", "1", $can_view_own_company_members ? true : false, "id='can_view_own_company_members' class='form-check-input'");
-                            ?>
-                            <label for="can_view_own_company_members"><?php echo app_lang("can_view_own_company_members"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_checkbox("can_view_team_members_contact_info", "1", $can_view_team_members_contact_info ? true : false, "id='can_view_team_members_contact_info' class='form-check-input'");
-                            ?>
-                            <label for="can_view_team_members_contact_info"><?php echo app_lang("can_view_team_members_contact_info"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_checkbox("can_view_team_members_social_links", "1", $can_view_team_members_social_links ? true : false, "id='can_view_team_members_social_links' class='form-check-input'");
-                            ?>
-                            <label for="can_view_team_members_social_links"><?php echo app_lang("can_view_team_members_social_links"); ?></label>
-                        </div>
-
-                        <div>
-                            <label for="can_update_team_members_general_info_and_social_links"><?php echo app_lang("can_update_team_members_general_info_and_social_links"); ?></label>
-                            <div class="ml15">
-                                <div>
-                                    <?php
-                                    if (is_null($team_member_update_permission)) {
-                                        $team_member_update_permission = "";
-                                    }
-                                    echo form_radio(array(
-                                        "id" => "team_member_update_permission_no",
-                                        "name" => "team_member_update_permission",
-                                        "value" => "",
-                                        "class" => "team_member_update_permission toggle_specific form-check-input",
-                                    ), $team_member_update_permission, ($team_member_update_permission === "") ? true : false);
-                                    ?>
-                                    <label for="team_member_update_permission_no"><?php echo app_lang("no"); ?></label>
-                                </div>
-                                <div>
-                                    <?php
-                                    echo form_radio(array(
-                                        "id" => "team_member_update_permission_all",
-                                        "name" => "team_member_update_permission",
-                                        "value" => "all",
-                                        "class" => "team_member_update_permission toggle_specific form-check-input",
-                                    ), $team_member_update_permission, ($team_member_update_permission === "all") ? true : false);
-                                    ?>
-                                    <label for="team_member_update_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
-                                </div>
-                                <div class="form-group">
-                                    <?php
-                                    echo form_radio(array(
-                                        "id" => "team_member_update_permission_specific",
-                                        "name" => "team_member_update_permission",
-                                        "value" => "specific",
-                                        "class" => "team_member_update_permission toggle_specific form-check-input",
-                                    ), $team_member_update_permission, ($team_member_update_permission === "specific") ? true : false);
-                                    ?>
-                                    <label for="team_member_update_permission_specific"><?php echo app_lang("yes_specific_members_or_teams"); ?>:</label>
-                                    <div class="specific_dropdown">
-                                        <input type="text" value="<?php echo $team_member_update_permission_specific; ?>" name="team_member_update_permission_specific" id="team_member_update_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <?php
-                            echo form_checkbox("team_members_note_manage_permission", "all", $team_members_note_manage_permission == "all" ? true : false, "id='team_members_note_manage_permission' class='form-check-input'");
-                            ?>
-                            <label for="team_members_note_manage_permission"><?php echo app_lang("can_manage_team_members_notes"); ?></label>
-                        </div>
-                    </div>
-                    <?php if (get_setting("module_leave")) { ?>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_manage_team_members_leave"); ?> <span class="help" data-bs-toggle="tooltip" title="Assign, approve or reject leave applications"><span data-feather="help-circle" class="icon-14"></span></span> </h5>
-                        <div>
-                            <?php
-                            if (is_null($leave)) {
-                                $leave = "";
-                            }
-                            echo form_radio(array(
-                                "id" => "leave_permission_no",
-                                "name" => "leave_permission",
-                                "value" => "",
-                                "class" => "leave_permission toggle_specific form-check-input",
-                            ), $leave, ($leave === "") ? true : false);
-                            ?>
-                            <label for="leave_permission_no"><?php echo app_lang("no"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "leave_permission_all",
-                                "name" => "leave_permission",
-                                "value" => "all",
-                                "class" => "leave_permission toggle_specific form-check-input",
-                            ), $leave, ($leave === "all") ? true : false);
-                            ?>
-                            <label for="leave_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
-                        </div>
-                        <div class="form-group pb0 mb0 no-border">
-                            <?php
-                            echo form_radio(array(
-                                "id" => "leave_permission_specific",
-                                "name" => "leave_permission",
-                                "value" => "specific",
-                                "class" => "leave_permission toggle_specific form-check-input",
-                            ), $leave, ($leave === "specific") ? true : false);
-                            ?>
-                            <label for="leave_permission_specific"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_leaves") . ")"; ?>:</label>
-                            <div class="specific_dropdown">
-                                <input type="text" value="<?php echo $leave_specific; ?>" name="leave_permission_specific" id="leave_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <div>
-                                <?php
-                                echo form_checkbox("can_delete_leave_application", "1", $can_delete_leave_application ? true : false, "id='can_delete_leave_application' class='form-check-input'");
-                                ?>
-                                <label for="can_delete_leave_application"><?php echo app_lang("can_delete_leave_application"); ?> <span class="help" data-bs-toggle="tooltip" title="Can delete based on his/her access permission"><i data-feather="help-circle" class="icon-14"></i></span></label>
-                            </div>
-                        </div>
-                    </li>
-                <?php } ?>
-                <li>
-                    <span data-feather="key" class="icon-14 ml-20"></span>
-                    <h5><?php echo app_lang("can_manage_team_members_job_information"); ?></h5>
-                    <div>
-                        <?php
-                        if (is_null($job_info_manage_permission)) {
-                            $job_info_manage_permission = "";
-                        }
-                        echo form_radio(array(
-                            "id" => "job_info_manage_permission_no",
-                            "name" => "job_info_manage_permission",
-                            "value" => "",
-                            "class" => "form-check-input",
-                        ), $job_info_manage_permission, ($job_info_manage_permission === "") ? true : false);
-                        ?>
-                        <label for="job_info_manage_permission_no"><?php echo app_lang("no"); ?> </label>
-                    </div>
-                    <div>
-                        <?php
-                        echo form_radio(array(
-                            "id" => "job_info_manage_permission_yes",
-                            "name" => "job_info_manage_permission",
-                            "value" => "all",
-                            "class" => "form-check-input",
-                        ), $job_info_manage_permission, ($job_info_manage_permission === "all") ? true : false);
-                        ?>
-                        <label for="job_info_manage_permission_yes"><?php echo app_lang("yes"); ?></label>
-                    </div>
-                </li>
-                <?php if (get_setting("module_attendance")) { ?>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_manage_team_members_timecards"); ?> <span class="help" data-bs-toggle="tooltip" title="Add, edit and delete time cards"><i data-feather="help-circle" class="icon-14"></i></span></h5>
-                        <div>
-                            <?php
-                            if (is_null($attendance)) {
-                                $attendance = "";
-                            }
-                            echo form_radio(array(
-                                "id" => "attendance_permission_no",
-                                "name" => "attendance_permission",
-                                "value" => "",
-                                "class" => "attendance_permission toggle_specific form-check-input",
-                            ), $attendance, ($attendance === "") ? true : false);
-                            ?>
-                            <label for="attendance_permission_no"><?php echo app_lang("no"); ?> </label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "attendance_permission_all",
-                                "name" => "attendance_permission",
-                                "value" => "all",
-                                "class" => "attendance_permission toggle_specific form-check-input",
-                            ), $attendance, ($attendance === "all") ? true : false);
-                            ?>
-                            <label for="attendance_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
-                        </div>
-                        <div class="form-group">
-                            <?php
-                            echo form_radio(array(
-                                "id" => "attendance_permission_specific",
-                                "name" => "attendance_permission",
-                                "value" => "specific",
-                                "class" => "attendance_permission toggle_specific form-check-input",
-                            ), $attendance, ($attendance === "specific") ? true : false);
-                            ?>
-                            <label for="attendance_permission_specific"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_time_cards") . ")"; ?>:</label>
-                            <div class="specific_dropdown">
-                                <input type="text" value="<?php echo $attendance_specific; ?>" name="attendance_permission_specific" id="attendance_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
-                            </div>
-                        </div>
-
-                    </li>
-                <?php } ?>
-                <?php if (get_setting("module_project_timesheet")) { ?>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_manage_team_members_project_timesheet"); ?></h5>
-                        <div>
-                            <?php
-                            if (is_null($timesheet_manage_permission)) {
-                                $timesheet_manage_permission = "";
-                            }
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_no",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_no"><?php echo app_lang("no") . " (" . app_lang("can_add_own_timelogs_only") . ")"; ?> </label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_own",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "own",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_own"><?php echo app_lang("yes_only_own_timelogs"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_all",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "all",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "all") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_all"><?php echo app_lang("yes_all_members"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_own_project_members",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "own_project_members",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own_project_members") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_own_project_members"><?php echo app_lang("yes_only_own_project_members"); ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_own_project_members_excluding_own",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "own_project_members_excluding_own",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "own_project_members_excluding_own") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_own_project_members_excluding_own"><?php echo app_lang("yes_only_own_project_members") . " (" . app_lang("excluding_his_her_timelogs") . ")"; ?></label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_specific",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "specific",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "specific") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_specific"><?php echo app_lang("yes_specific_members_or_teams"); ?>:</label>
-                            <div class="specific_dropdown">
-                                <input type="text" value="<?php echo $timesheet_manage_permission_specific; ?>" name="timesheet_manage_permission_specific" id="timesheet_manage_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <?php
-                            echo form_radio(array(
-                                "id" => "timesheet_manage_permission_specific_excluding_own",
-                                "name" => "timesheet_manage_permission",
-                                "value" => "specific_excluding_own",
-                                "class" => "timesheet_manage_permission toggle_specific form-check-input",
-                            ), $timesheet_manage_permission, ($timesheet_manage_permission === "specific_excluding_own") ? true : false);
-                            ?>
-                            <label for="timesheet_manage_permission_specific_excluding_own"><?php echo app_lang("yes_specific_members_or_teams") . " (" . app_lang("excluding_his_her_timelogs") . ")"; ?>:</label>
-                            <div class="specific_dropdown">
-                                <input type="text" value="<?php echo $timesheet_manage_permission_specific; ?>" name="timesheet_manage_permission_specific_excluding_own" id="timesheet_manage_permission_specific_excluding_own_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
-                            </div>
-                        </div>
-                    </li>
-                <?php } ?>
-                </li>
+             
                 <li>
                     <h3 style="color: <?php echo $color ?>; font-weight: bold;">Expenses Management</h3>
                 </li>
@@ -604,7 +653,7 @@
                         </div>
 
                         <div id="expense_permission" class="<?php echo $hide_expense ? "hide" : ""; ?>">
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "expense_own_company",
@@ -614,7 +663,7 @@
                             ), $expense, ($expense === "own_company") ? true : false);
                             ?>
                             <label for="expense_own_company"><?php echo app_lang("own_company"); ?></label>
-                        </div>
+                        </div> -->
                         <div>
                             <?php
                             echo form_radio(array(
@@ -626,7 +675,7 @@
                             ?>
                             <label for="expense_own_expenses"><?php echo ("own expenses"); ?></label>
                         </div>
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "expense_yes",
@@ -636,14 +685,19 @@
                             ), $expense, ($expense === "all") ? true : false);
                             ?>
                             <label for="expense_yes"><?php echo app_lang("all"); ?></label>
-                        </div>
+                        </div> -->
                             <div>
                                 <?php
                                 echo form_checkbox("can_add_expense", "1", $can_add_expense ? true : false, "id='can_add_expense' class='form-check-input'");
                                 ?>
                                 <label for="can_add_expense"><?php echo app_lang("can_add_expense"); ?></label>
                             </div>
-
+                            <div>
+                                <?php
+                                echo form_checkbox("can_Assign_expense", "1", $can_Assign_expense ? true : false, "id='can_Assign_expense' class='form-check-input'");
+                                ?>
+                                <label for="can_Assign_expense"><?php echo app_lang("can_Assign_expense"); ?></label>
+                            </div>
                             <div>
                                 <?php
                                 echo form_checkbox("can_update_expense", "1", $can_update_expense ? true : false, "id='can_update_expense' class='form-check-input'");
@@ -675,9 +729,18 @@
                     </li> -->
                 <?php } ?>
              
+               
                 <li>
                     <h3 style="color: <?php echo $color ?>; font-weight: bold;">Sales & CRM Management </h3>
+
                 </li>
+                 <div>
+                            <?php
+                            echo form_checkbox("show_sales", "1", $show_sales ? true : false, "id='show_sales' class='form-check-input'");
+                            ?>
+                            <label for="show_sales"><?php echo app_lang("Yes_Can_Manage_Sales_and_CRM"); ?></label>
+                        </div>
+                        <div id="sales_permission" class="<?php echo $show_sales ? "" : "hide"; ?>">
                 <?php if (get_setting("module_invoice")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
@@ -706,7 +769,7 @@
                         </div>
 
                         <div id="invoice_permission" class="<?php echo $hide_invoice ? "hide" : ""; ?>">
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "invoice_own_invoice",
@@ -716,8 +779,8 @@
                             ), $invoice, ($invoice === "own_invoice") ? true : false);
                             ?>
                             <label for="invoice_own_invoice"><?php echo app_lang("own_company"); ?></label>
-                        </div>
-                        <div>
+                        </div> -->
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "invoice_yes",
@@ -727,7 +790,7 @@
                             ), $invoice, ($invoice === "all") ? true : false);
                             ?>
                             <label for="invoice_yes"><?php echo app_lang("all"); ?></label>
-                        </div> 
+                        </div>  -->
 
                             <div>
                                 <?php
@@ -783,7 +846,7 @@
                         </div>
 
                         <div id="estimate_permission" class="<?php echo $hide_estimate ? "hide" : ""; ?>">
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "estimate_yes_own",
@@ -804,7 +867,7 @@
                             ), $estimate, ($estimate === "all") ? true : false);
                             ?>
                             <label for="estimate_yes"><?php echo app_lang("yes_all_estimates"); ?></label>
-                        </div>
+                        </div> -->
                         
                             <div>
                                 <?php
@@ -858,7 +921,7 @@
                         </div>
 
                         <div id="payment_permission" class="<?php echo $hide_payment ? "hide" : ""; ?>">
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "estimate_yes_own",
@@ -879,7 +942,7 @@
                             ), $payment, ($payment === "all") ? true : false);
                             ?>
                             <label for="estimate_yes"><?php echo app_lang("yes_all_payment"); ?></label>
-                        </div>
+                        </div> -->
                             <div>
                                 <?php
                                 echo form_checkbox("can_add_payment", "1", $can_add_payment ? true : false, "id='can_add_payment' class='form-check-input'");
@@ -930,7 +993,7 @@
                 </div>
 
                 <div id="client_permission" class="<?php echo $hide_client ? "hide" : ""; ?>">
-                <div>
+                <!-- <div>
                         <?php
                         echo form_radio(array(
                             "id" => "client_yes",
@@ -951,7 +1014,7 @@
                         ), $client, ($client === "own_company") ? true : false);
                         ?>
                         <label for="own_company"><?php echo app_lang("own_company"); ?></label>
-                    </div>
+                    </div> -->
                 <div>
                 <?php
                 echo form_checkbox("can_add_client", "1", $can_add_client ? true : false, "id='can_add_client' class='form-check-input'");
@@ -1038,7 +1101,7 @@
                     </div>
 
                     <div id="supplier_permission" class="<?php echo $hide_supplier ? "hide" : ""; ?>">
-                    <div>
+                    <!-- <div>
                         <?php
                         echo form_radio(array(
                             "id" => "supplier_yes",
@@ -1059,7 +1122,7 @@
                         ), $supplier, ($supplier === "own_company") ? true : false);
                         ?>
                         <label for="own_company"><?php echo app_lang("own_company"); ?></label>
-                    </div>
+                    </div> -->
                     <div>
                     <?php
                     echo form_checkbox("can_add_supplier", "1", $can_add_supplier ? true : false, "id='can_add_supplier' class='form-check-input'");
@@ -1112,7 +1175,8 @@
                             <label for="items_yes"><?php echo app_lang("yes"); ?></label>
                         </div>
                     </li>
-                    <li>
+                   
+                        </div>
                     <h3 style="color: <?php echo $color ?>; font-weight: bold;">message </h3>
                 </li>
                 <?php if (get_setting("module_message")) { ?>
@@ -1136,7 +1200,7 @@
                         </div>
                     </li>
                 <?php } ?>
-                    <h3 style="color: <?php echo $color ?>; font-weight: bold;">Others</h3>
+                    <!-- <h3 style="color: <?php echo $color ?>; font-weight: bold;">Others</h3>
                     <?php if (get_setting("module_contract")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
@@ -1243,7 +1307,7 @@
                             ?>
                             <label for="lead_yes_own"><?php echo app_lang("yes_only_own_leads"); ?></label>
                         </div>
-                    </li>
+                    </li> -->
                 <?php } ?>
 
 
@@ -1282,7 +1346,7 @@
                     </li> -->
 
                 <?php if (get_setting("module_ticket")) { ?>
-                    <li>
+                    <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_tickets"); ?></h5>
                         <div>
@@ -1335,43 +1399,13 @@
                                 <input type="text" value="<?php echo $ticket_specific; ?>" name="ticket_permission_specific" id="ticket_types_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_ticket_types'); ?>" />
                             </div>
                         </div>
-                    </li>
+                    </li> -->
                 <?php } ?>
-                <?php if (get_setting("module_announcement")) { ?>
-                    <li>
-                        <span data-feather="key" class="icon-14 ml-20"></span>
-                        <h5><?php echo app_lang("can_manage_announcements"); ?></h5>
-                        <div>
-                            <?php
-                            if (is_null($announcement)) {
-                                $announcement = "";
-                            }
-                            echo form_radio(array(
-                                "id" => "announcement_no",
-                                "name" => "announcement_permission",
-                                "value" => "",
-                                "class" => "form-check-input",
-                            ), $announcement, ($announcement === "") ? true : false);
-                            ?>
-                            <label for="announcement_no"><?php echo app_lang("no"); ?> </label>
-                        </div>
-                        <div>
-                            <?php
-                            echo form_radio(array(
-                                "id" => "announcement_yes",
-                                "name" => "announcement_permission",
-                                "value" => "all",
-                                "class" => "form-check-input",
-                            ), $announcement, ($announcement === "all") ? true : false);
-                            ?>
-                            <label for="announcement_yes"><?php echo app_lang("yes"); ?></label>
-                        </div>
-                    </li>
-                <?php } ?>
-                <li>
-                </li>
+            
+                <!-- <li>
+                </li> --> 
                 <?php if (get_setting("module_order")) { ?>
-                    <li>
+                    <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_orders"); ?></h5>
                         <div>
@@ -1401,10 +1435,10 @@
                         </div>
                     </li>
                 <?php } ?>
-             
+              -->
                    
                 <?php if (get_setting("module_help") || get_setting("module_knowledge_base")) { ?>
-                    <li>
+                    <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_manage_help_and_knowledge_base"); ?></h5>
                         <div>
@@ -1432,11 +1466,11 @@
                             ?>
                             <label for="help_yes"><?php echo app_lang("yes"); ?></label>
                         </div>
-                    </li>
+                    </li> -->
                 <?php } ?>
          
                 <?php if (get_setting("module_timeline")) { ?>
-                    <li>
+                    <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("set_timeline_permissions"); ?>:</h5>
                         <div>
@@ -1454,10 +1488,10 @@
                                 <input type="text" value="<?php echo $timeline_permission_specific; ?>" name="timeline_permission_specific" id="timeline_permission_specific_dropdown" class="w100p validate-hidden" data-rule-required="true" data-msg-required="<?php echo app_lang('field_required'); ?>" placeholder="<?php echo app_lang('choose_members_and_or_teams'); ?>" />
                             </div>
                         </div>
-                    </li>
+                    </li> -->
                 <?php } ?>
                 <?php if (get_setting("module_subscription")) { ?>
-                    <li>
+                    <!-- <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
                         <h5><?php echo app_lang("can_access_subscriptions"); ?></h5>
                         <div>
@@ -1496,7 +1530,7 @@
                             ?>
                             <label for="subscription_read_only"><?php echo app_lang("read_only"); ?></label>
                         </div>
-                    </li>
+                    </li> -->
                 <?php } ?>
 
 
@@ -1574,6 +1608,13 @@
                 $("#invoice_permission").addClass("hide");
             } else {
                 $("#invoice_permission").removeClass("hide");
+            }
+        });
+                $("#show_sales").click(function() {
+            if ($(this).is(":checked")) {
+                $("#sales_permission").removeClass("hide");
+            } else {
+                $("#sales_permission").addClass("hide");
             }
         });
         $("#hide_estimate").click(function() {
@@ -1707,6 +1748,14 @@
                 $("#individual_team_members_permission_area").addClass("hide");
             } else {
                 $("#individual_team_members_permission_area").removeClass("hide");
+            }
+        });
+        
+        $("#show_staff").click(function() {
+            if ($(this).is(":checked")) {
+                $("#show_staff_permission").removeClass("hide");
+            } else {
+                $("#show_staff_permission").addClass("hide");
             }
         });
         $("#hide_expenses_list").click(function() {

@@ -4,7 +4,7 @@
         <div class="title-button-group">
             <?php
             
-                echo modal_anchor(get_uri("invoice_payments/supplier_payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_invoice_payment'), array("class" => "btn btn-default", "title" => app_lang('add_invoice_payment'), "data-post-invoice_id" => $invoice_id, "data-post-supplier_id" => $supplier_id));
+                echo modal_anchor(get_uri("invoice_payments/supplier_payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_supplier_payment'), array("class" => "btn btn-default", "title" => app_lang('add_invoice_payment'), "data-post-invoice_id" => $invoice_id, "data-post-supplier_id" => $supplier_id));
             
             ?>
         </div>

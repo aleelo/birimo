@@ -94,7 +94,7 @@
                         "name" => "project_id",
                         "value" => $model_info->project_id,
                         "class" => "form-control",
-                        "placeholder" => app_lang('project_id'),
+                        "placeholder" => app_lang('event_name'),
                         "autocomplete" => "off",
                         "data-rule-required" => true,
                         "data-msg-required" => app_lang("field_required"),

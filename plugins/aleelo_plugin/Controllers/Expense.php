@@ -183,7 +183,7 @@ class Expense extends Security_Controller_Plugin {
         $view_data['is_clone'] = $is_clone;
         $view_data['company_id'] = $this->login_user->department;
 
-        $view_data['has_permission'] = ($this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
+        $view_data['has_permission'] = ( $this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_Assign_expense") == "1");
 
         $view_data['has_all_permission'] = ($this->login_user->department == 0) && ($this->login_user->is_admin || $this->login_user->company_access == "all" || get_array_value($this->login_user->permissions, "expense") == "all");
 

@@ -24,9 +24,7 @@
                         </h1>
 
                         <div class="title-button-group mr0">
-                            <?php if ($invoice_status !== "cancelled" && $invoice_info->status !== "credited" && $can_edit_invoices) { ?>
-                                <?php echo modal_anchor(get_uri("invoice_payments/payment_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_payment'), array("class" => "btn btn-default", "title" => app_lang('add_payment'), "data-post-invoice_id" => $invoice_info->id)); ?>
-                            <?php } ?>
+                           
                             <span class="dropdown inline-block">
                                 <button class="btn btn-info text-white dropdown-toggle caret" type="button" data-bs-toggle="dropdown" aria-expanded="true">
                                     <i data-feather="tool" class="icon-16"></i> <?php echo app_lang('actions'); ?>
@@ -68,7 +66,7 @@
 
 
                                         <?php if ($invoice_status == "draft" && $invoice_status !== "cancelled") { ?>
-                                            <li role="presentation"><?php echo ajax_anchor(get_uri("invoices/update_invoice_status/" . $invoice_info->id . "/not_paid"), "<i data-feather='check' class='icon-16'></i> " . app_lang('mark_invoice_as_not_paid'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                                            <li role="presentation"><?php echo ajax_anchor(get_uri("invoices/update_invoice_status/" . $invoice_info->id . "/not_paid"), "<i data-feather='check' class='icon-16'></i> " . app_lang('mark_invoice_as_confirm'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
                                         <?php } else if ($invoice_status == "not_paid" || $invoice_status == "overdue" || $invoice_status == "partially_paid") { ?>
                                             <li role="presentation"><?php echo js_anchor("<i data-feather='x' class='icon-16'></i> " . app_lang('mark_invoice_as_cancelled'), array('title' => app_lang('mark_invoice_as_cancelled'), "data-action-url" => get_uri("invoices/update_invoice_status/" . $invoice_info->id . "/cancelled"), "data-action" => "delete-confirmation", "data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
                                         <?php } ?>

@@ -471,7 +471,7 @@ $lang["edit"] = "Edit";
 $lang["close"] = "Close";
 $lang["cancel"] = "Cancel";
 $lang["save"] = "Save";
-$lang["delete"] = "Delete";
+$lang["Delete"] = "Delete";
 $lang["description"] = "Description";
 $lang["admin"] = "Admin";
 $lang["manager"] = "Manager";
@@ -547,7 +547,7 @@ $lang["enter_valid_email"] = "Please enter a valid email address.";
 $lang["enter_same_value"] = "Please enter the same value again.";
 $lang["record_saved"] = "The record has been saved.";
 $lang["record_updated"] = "The record has been updated.";
-$lang["record_cannot_be_deleted"] = "The record is in use, you can't delete the record!";
+$lang["record_cannot_be_deleted"] = "The record is in use, you can't Delete the record!";
 $lang["record_deleted"] = "The record has been deleted.";
 $lang["record_undone"] = "The record has been undone.";
 $lang["settings_updated"] = "The settings has been updated.";
@@ -928,7 +928,7 @@ $lang["mark_as_inactive_help_message"] = "The inactive users will not be able to
 
 $lang["invoice_id"] = "Invoice ID";
 $lang["payments"] = "Payments";
-$lang["invoice_sent_message"] = "The invoice has been sent!";
+$lang["invoice_sent_message"] = "The Invoice has been sent!";
 $lang["attached"] = "Attached";
 $lang["vat_number"] = "VAT Number";
 $lang["invite_an_user"] = "Invite an user for %s"; // Invite an user for {company name}
@@ -1109,9 +1109,9 @@ $lang["delete_payment_method"] = "Delete payment method";
 
 /* invoices */
 
-$lang["add_invoice"] = "Add invoice";
-$lang["edit_invoice"] = "Edit invoice";
-$lang["delete_invoice"] = "Delete invoice";
+$lang["add_invoice"] = "Add Invoice";
+$lang["edit_invoice"] = "Edit Invoice";
+$lang["delete_invoice"] = "Delete Invoice";
 $lang["invoice"] = "Invoice";
 $lang["invoices"] = "Invoices";
 $lang["bill_date"] = "Bill date";
@@ -1127,8 +1127,8 @@ $lang["partially_paid"] = "Partially paid";
 $lang["not_paid"] = "Not paid";
 $lang["overdue"] = "Overdue";
 $lang["invoice_items"] = "Invoice items";
-$lang["edit_invoice"] = "Edit invoice";
-$lang["delete_invoice"] = "Delete invoice";
+$lang["edit_invoice"] = "Edit Invoice";
+$lang["delete_invoice"] = "Delete Invoice";
 $lang["item"] = "Item";
 $lang["add_item"] = "Add item";
 $lang["create_new_item"] = "Create new item";
@@ -1142,7 +1142,7 @@ $lang["last_email_sent"] = "Last email sent";
 $lang["item_library"] = "Item library";
 $lang["add_payment"] = "Add payment";
 $lang["never"] = "Never";
-$lang["email_invoice_to_client"] = "Email invoice to client";
+$lang["email_invoice_to_client"] = "Email Invoice to client";
 $lang["download_pdf"] = "Download PDF";
 $lang["print"] = "Print";
 $lang["actions"] = "Actions";
@@ -1163,7 +1163,7 @@ $lang["login_info"] = "Login info";
 $lang["reset_password"] = "Reset password";
 $lang["team_member_invitation"] = "Employee invitation";
 $lang["client_contact_invitation"] = "Client contact invitation";
-$lang["send_invoice"] = "Send invoice";
+$lang["send_invoice"] = "Send Invoice";
 $lang["signature"] = "Signature";
 
 /* roles */
@@ -1188,8 +1188,8 @@ $lang["excluding_their_documents"] = "Excluding their own documents";
 $lang["can_manage_team_members_leave"] = "Can manage employee leaves?";
 $lang["can_manage_trainings"] = "Can manage Training?";
 $lang["can_manage_team_members_timecards"] = "Can manage employee time cards?";
-$lang["can_access_invoices"] = "Can access invoices?";
-$lang["can_access_expenses"] = "Can access expenses?";
+$lang["can_access_invoices"] = "Set Invoice Permission:";
+$lang["can_access_expenses"] = "Set Invoice Permission:";
 $lang["can_manage_payers"] = "Can manage Payers?";
 $lang["can_access_tickets"] = "Can access tickets?";
 $lang["can_manage_announcements"] = "Can manage announcements?";
@@ -1241,16 +1241,16 @@ $lang["client_can_comment_on_tasks"] = "Client can comment on tasks?";
 $lang["set_project_permissions"] = "Set project permissions";
 $lang["can_create_projects"] = "Can create projects";
 $lang["can_edit_projects"] = "Can edit projects";
-$lang["can_delete_projects"] = "Can delete projects";
+$lang["can_delete_projects"] = "Can Delete projects";
 $lang["can_create_tasks"] = "Can create tasks";
 $lang["can_edit_tasks"] = "Can edit tasks";
-$lang["can_delete_tasks"] = "Can delete tasks";
+$lang["can_delete_tasks"] = "Can Delete tasks";
 $lang["can_comment_on_tasks"] = "Can comment on tasks";
 $lang["can_create_milestones"] = "Can create milestones";
 $lang["can_edit_milestones"] = "Can edit milestones";
-$lang["can_delete_milestones"] = "Can delete milestones";
+$lang["can_delete_milestones"] = "Can Delete milestones";
 $lang["can_add_remove_project_members"] = "Can add/remove project members";
-$lang["can_delete_files"] = "Can delete files";
+$lang["can_delete_files"] = "Can Delete files";
 
 /* Version 1.2.2 */
 $lang["label"] = "Label";
@@ -1373,7 +1373,7 @@ $lang["mark_as_closed"] = "Mark as Closed";
 
 $lang["ticket_assignee"] = "Ticket assignee";
 
-$lang["estimate"] = "Quotation";
+$lang["Quotations"] = "Quotation";
 $lang["estimates"] = "Quotations";
 $lang["estimate_request"] = "Quotation Request";
 $lang["estimate_requests"] = "Quotation Requests";
@@ -1614,7 +1614,7 @@ $lang["project_timesheet"] = "Project timesheet";
 
 $lang["set_event_permissions"] = "Set event permissions";
 $lang["disable_event_sharing"] = "Disable event sharing";
-$lang["can_update_team_members_general_info_and_social_links"] = "Can update employee's general info and social links?";
+$lang["can_update_team_members_general_info_and_social_links"] = "Can Update employee's general info and social links?";
 $lang["can_manage_team_members_project_timesheet"] = "Can manage employee's project timesheet?";
 
 $lang["cron_job"] = "Cron Job";
@@ -1705,7 +1705,7 @@ $lang["notification_invoice_due_reminder_before_due_date"] = "Reminder: Invoice 
 $lang["notification_invoice_overdue_reminder"] = "Reminder: Invoice overdue";
 $lang["notification_recurring_invoice_creation_reminder"] = "An invoice will be generated soon.";
 
-$lang["can_delete_leave_application"] = "Can delete leave application?";
+$lang["can_delete_leave_application"] = "Can Delete leave application?";
 $lang["no_of_decimals"] = "No. of decimals";
 
 $lang["checklist"] = "Checklist";
@@ -1822,7 +1822,7 @@ $lang["enable_rich_text_editor"] = "Enable rich text editor in comments/descript
 
 $lang["show_assigned_tasks_only"] = "Show assigned tasks only";
 
-$lang["batch_update"] = "Batch update";
+$lang["batch_update"] = "Batch Update";
 $lang["cancel_selection"] = "Cancel selection";
 $lang["select_status"] = "Select status";
 
@@ -2325,7 +2325,7 @@ $lang["visible_to_clients_only"] = "Visible to clients only";
 
 $lang["open_in_new_tab"] = "Open in new tab";
 
-$lang["client_can_delete_own_files_in_project"] = "Client can delete own files in project";
+$lang["client_can_delete_own_files_in_project"] = "Client can Delete own files in project";
 
 $lang["enable_slack"] = "Enable slack";
 $lang["get_the_webhook_url_of_your_app_from_here"] = "Get the Webhook URL of your App from here:";
@@ -2338,7 +2338,7 @@ $lang["save_and_send_a_test_message"] = "Save & send a test message";
 
 $lang["copy_sub_tasks"] = "Copy sub tasks";
 
-$lang["can_update_only_assigned_tasks_status"] = "Can update only assigned tasks status";
+$lang["can_update_only_assigned_tasks_status"] = "Can Update only assigned tasks status";
 
 $lang["import_leads"] = "Import documents";
 $lang["import_lead_error_contact_name"] = "Contact first name and last name is both required to add a document contact.";
@@ -2691,7 +2691,7 @@ $lang["this_variable_is_unsupported"] = "This variable is unsupported";
 $lang["plugin_deletion_alert_message"] = "All records and files also will be deleted!";
 $lang["plugin_requires_at_least_error_message"] = "This plugin requires at least %s version.";
 $lang["plugin_supports_at_most_error_message"] = "This plugin supports at most %s version.";
-$lang["no_update_hook_found"] = "No update hook found!";
+$lang["no_update_hook_found"] = "No Update hook found!";
 $lang["indexed"] = "Indexed";
 
 $lang["save_and_continue"] = "Save & continue";
@@ -2838,7 +2838,7 @@ $lang["sign_contract"] = "Sign contract";
 $lang["remove_task_statuses"] = "Remove task statuses";
 $lang["task_statuses"] = "Task Statuses";
 
-$lang["file_delete_permission_error_message"] = "We can't delete some files since you don't have permission.";
+$lang["file_delete_permission_error_message"] = "We can't Delete some files since you don't have permission.";
 
 $lang["reject_estimate"] = "Reject Quotation";
 
@@ -2998,7 +2998,7 @@ $lang["total_after_discount"] = "Total After Discount";
 $lang["change_the_tasks_start_date_and_deadline_based_on_project_start_date"] = "Change the tasks start date and deadline based on project start date";
 
 $lang["can_edit_only_own_created_projects"] = "Can edit only own created projects";
-$lang["can_delete_only_own_created_projects"] = "Can delete only own created projects";
+$lang["can_delete_only_own_created_projects"] = "Can Delete only own created projects";
 
 $lang["checklist_status"] = "Checklist status";
 
@@ -3223,7 +3223,7 @@ $lang["conversion_date_wise"] = "Conversion date wise";
 $lang["ticket_statistics"] = "Ticket Statistics";
 
 $lang["can_activate_deactivate_team_members"] = "Can activate deactivate employees?";
-$lang["can_delete_team_members"] = "Can delete employees?";
+$lang["can_delete_team_members"] = "Can Delete employees?";
 $lang["remaining_days"] = "Remaining days";
 $lang["taken_days"] = "Taken days:";
 $lang["allowed_days"] = "Allowed days:";
@@ -3268,13 +3268,13 @@ $lang["bank_name"] = "bank name";
 $lang["Payment"] = "Payment";
 $lang["Upload_Signature_Image"] = "Upload Signature Image";
 $lang["digital_signature"] = "digital signature";
-$lang["estimate_color_solution"] = "estimate color solution";
-$lang["estimate_color_pixel"] = "estimate color pixel";
+$lang["estimate_color_solution"] = "Quotations color solution";
+$lang["estimate_color_pixel"] = "Quotations color pixel";
 
 $lang["district"] = "region";
 $lang["state"] = "state";
-$lang["estimate_footer_solution"] = "estimate footer solution";
-$lang["estimate_footer_pixel"] = "estimate footer pixel";
+$lang["estimate_footer_solution"] = "Quotations footer solution";
+$lang["estimate_footer_pixel"] = "Quotations footer pixel";
 $lang["items"] = "Items";
 
 
@@ -3314,7 +3314,7 @@ $lang['acc_accounts_receivable_note'] = 'Accounts receivable (also called A/R, D
 Each customer has a register, which functions like an Accounts receivable account for each customer.';
 $lang['acc_current_assets'] = 'Current assets';
 $lang['acc_allowance_for_bad_debts'] = 'Allowance for bad debts';
-$lang['acc_allowance_for_bad_debts_note'] = 'Use Allowance for bad debts to estimate the part of Accounts Receivable that you think you might not collect.
+$lang['acc_allowance_for_bad_debts_note'] = 'Use Allowance for bad debts to Quotations the part of Accounts Receivable that you think you might not collect.
 Use this only if you are keeping your books on the accrual basis.';
 $lang['acc_assets_available_for_sale'] = 'Assets available for sale';
 $lang['acc_assets_available_for_sale_note'] = 'Use Assets available for sale to track assets that are available for sale that are not expected to be held for a long period of time.';
@@ -3996,7 +3996,7 @@ $lang['general'] = 'General';
 $lang['total'] = 'Total';
 $lang['customer'] = 'Customer';
 $lang['reset_data'] = 'Reset data';
-$lang['accounting_reset_button_tooltip'] = 'It will delete all data related to the accounting module';
+$lang['accounting_reset_button_tooltip'] = 'It will Delete all data related to the accounting module';
 $lang['total_income'] = 'Total income';
 $lang['has_closed_the_book'] = 'Has closed the book';
 $lang['cash_method_note_1'] = '- When you use the cash method in reports:';
@@ -4010,14 +4010,14 @@ $lang['import_line_number'] = 'Line number entered';
 $lang['import_line_number_success'] = 'Number of lines successfully entered';
 $lang['import_line_number_failed'] = 'Line number entered was unsuccessful';
 $lang['hr_download_file_error'] = 'Download error file';
-$lang['cannot_delete_transaction_already_exists'] = 'Cannot delete an account when a transaction already exists';
+$lang['cannot_delete_transaction_already_exists'] = 'Cannot Delete an account when a transaction already exists';
 $lang['expense_default'] = 'Expense default';
 $lang['invoice_default_for_all_item'] = 'Invoice: Default for all item';
 $lang['item_automatic'] = 'Item automatic mapping';
 $lang['inventory_asset_account'] = 'Inventory asset account';
 $lang['acc_item'] = 'Item';
 $lang['mass_convert'] = 'Mass mapping';
-$lang['mass_delete_convert'] = 'Mass delete mapping';
+$lang['mass_delete_convert'] = 'Mass Delete mapping';
 $lang['total_converted'] = 'Total mapped: %s';
 $lang['total_convert_deleted'] = 'Total mapping deleted: %s';
 $lang['total_deleted'] = 'Total deleted: %s';
@@ -4080,7 +4080,7 @@ $lang['accrual_method_note_2'] = '+ Your report counts income and expenses as if
 $lang['accrual_method_note_3'] = '+ It includes income and expenses even if the money hasn’t changed hands yet';
 $lang['account_type_details'] = 'Account detail types';
 $lang['account_type_detail'] = 'Account detail type';
-$lang['cannot_delete_account_already_exists'] = 'Cannot delete an account detail type when a account already exists';
+$lang['cannot_delete_account_already_exists'] = 'Cannot Delete an account detail type when a account already exists';
 $lang['acc_export_excel'] = 'Export to excel';
 $lang['other_shareholder_equity'] = 'Other shareholder\'s equity';
 $lang['acc_preferred_payment_method'] = 'Preferred the payment method';
@@ -4146,7 +4146,7 @@ $lang['no_budget_has_been_created'] = 'No budget has been created, click "New" b
 $lang['no_budget_has_been_created_2'] = 'No budget has been created';
 $lang['accounting_transfer'] = 'Transfer';
 
-$lang['can_not_delete'] = 'Can not delete';
+$lang['can_not_delete'] = 'Can not Delete';
 $lang['import_account'] = 'Import Account';
 $lang['download_sample'] = 'Download Sample';
 $lang['file_xlsx_account'] = 'The column with the symbol "*" is required to enter; Column "Type", "Sub Type", "Sub Account of" can enter "ID" or Name;';
@@ -4177,7 +4177,7 @@ $lang['vertical'] = 'Vertical';
 $lang['horizontal'] = 'Horizontal';
 $lang['page_type'] = 'Page Type';
 $lang['reset_account_detail_types'] = 'Reset Account detail types';
-$lang['accounting_reset_account_detail_types_button_tooltip'] = 'It will delete all data in the account detail type table';
+$lang['accounting_reset_account_detail_types_button_tooltip'] = 'It will Delete all data in the account detail type table';
 $lang['import_accounts'] = 'Import accounts';
 $lang['from_date'] = 'From date';
 $lang['to_date'] = 'To date';
@@ -4334,71 +4334,81 @@ $lang['acc_setting'] = 'Setting';
 $lang['region']='region';
 $lang['create_new_account']='create new account';
 $lang['can_access_clients_&_Supplier_information']='can access clients & Supplier information';
-$lang['hide_supplier']='hide supplier';
-$lang['can_access_suppliers']='can access suppliers';
-$lang['can_access_clients']='can access clients';
+$lang['hide_supplier']='Hide supplier';
+$lang['can_access_suppliers']='Can access suppliers';
+$lang['can_access_clients']='Set Clients Permission:';
 $lang['yes_all_suppliers']='yes all suppliers';
 $lang['yes_all_clients']='yes all clients';
-$lang['can_add_suppliers']='can add suppliers';
-$lang['can_add_clients']='can add clients';
-$lang['can_edit_suppliers']='can edit suppliers';
-$lang['can_edit_clients']='can edit clients';
-$lang['can_delete_suppliers']='can delete suppliers';
-$lang['can_delete_clients']='can delete clients';
-$lang['can_view_suppliers']='can view suppliers';
-$lang['can_view_clients']='can view clients';
-$lang['can_view_own_suppliers']='can view own suppliers';
-$lang['can_view_own_clients']='can view own clients';
-$lang['can_update_supplier']='can update supplier';
-$lang['can_update_client']='can update client';
-$lang['can_delete_payment']='can delete payment';
-$lang['can_delete_invoice']='can delete invoice';
-$lang['can_delete_estimate']='can delete estimate';
-$lang['can_update_payment']='can update payment';
-$lang['can_update_invoice']='can update invoice';
-$lang['can_update_estimate']='can update estimate';
-$lang['can_view_payment']='can view payment';
-$lang['can_view_invoice']='can view invoice';
-$lang['can_view_estimate']='can view estimate';
-$lang['hide_invoice']='hide invoices';
-$lang['hide_payment']='hide payments';
-$lang['hide_estimate']='hide estimates';
-$lag['can_delete_expense']='can delete expense';
-$lang['can_update_expense']='can update expense';
-$lang['can_view_expense']='can view expense';
-$lang['can_add_expense']='can add expense';
-$lang['hide_expense']='hide expense';
-$lang['can_add_invoice']='can add invoice';
-$lang['can_add_estimate']='can add estimate';
-$lang['can_add_payment']='can add payment';
-$lang['can_delete_expense']='can delete expense';
-$lang['can_access_invoices']='can access invoices';
-$lang['can_access_payment']='can access payments';
-$lang['can_access_estimate']='can access estimates';
-$lang['hide_client']='hide clients';
+$lang['can_add_suppliers']='Can add suppliers';
+$lang['can_add_clients']='Can add clients';
+$lang['can_edit_suppliers']='Can edit suppliers';
+$lang['can_edit_clients']='Can edit clients';
+$lang['can_delete_suppliers']='Can Delete suppliers';
+$lang['can_delete_clients']='Can Delete clients';
+$lang['can_view_suppliers']='Can view suppliers';
+$lang['can_view_clients']='Can view clients';
+$lang['can_view_own_suppliers']='Can view own suppliers';
+$lang['can_view_own_clients']='Can view own clients';
+$lang['can_update_supplier']='Can Update supplier';
+$lang['can_update_client']='Can Update client';
+$lang['can_delete_payment']='Can Delete payment';
+$lang['can_delete_invoice']='Can Delete Invoice ';
+$lang['can_delete_estimate']='Can Delete Quotations';
+$lang['can_update_payment']='Can Update payment';
+$lang['can_update_invoice']='Can Update Invoice ';
+$lang['can_update_estimate']='Can Update Quotations';
+$lang['can_view_payment']='Can view payment';
+$lang['can_view_invoice']='Can View Invoice ';
+$lang['can_view_estimate']='Can View Quotations';
+$lang['hide_invoice']='Hide invoices';
+$lang['hide_payment']='Hide payments';
+$lang['hide_estimate']='Hide estimates';
+$lag['can_delete_expense']='Can Delete expense';
+$lang['can_update_expense']='Can Update expense';
+$lang['can_view_expense']='Can View expense';
+$lang['can_add_expense']='Can add expense';
+$lang['hide_expense']='Hide expense';
+$lang['can_add_invoice']='Can add Invoice ';
+$lang['can_add_estimate']='Can add Quotations';
+$lang['can_add_payment']='Can add payment';
+$lang['can_delete_expense']='can_delete_expense';
+$lang['can_access_invoices']='Set Invoice Permission:';
+$lang['can_access_payment']='Set payment Permission:';
+$lang['can_access_estimate']='Set Quatation Permission:';
+$lang['hide_client']='Hide clients';
 $lang['yes_all_payment']='yes all payments';
-$lang['can_add_client']='can add client';
-$lang['can_delete_client']='can delete client';
-$lang['can_add_supplier']='can add supplier';
-$lang['can_delete_supplier']='can delete supplier';
+$lang['can_add_client']='Can add client';
+$lang['can_delete_client']='Can Delete client';
+$lang['can_add_supplier']='Can add supplier';
+$lang['can_delete_supplier']='Can Delete supplier';
 $lang['Sales and crm']='Sales & CRM';
-$lang['hide_task']='hide tasks';
-$lang['can_access_invoices?']='can access invoices';
-$lang['can_access_all_companys']='can access all companys';
+$lang['hide_task']='Hide tasks';
+$lang['can_access_invoices?']='Set Invoice Permission:';
+$lang['can_access_all_companys']='Can access all companys';
 $lang['supplier_payments']='supplier payments';
 $lang['client_payments']='client payments';
-$lang['supplier_invoice_payment_list']='supplier invoice payment list';
-$lang['add_invoice_payment']='add invoice payment';
+$lang['supplier_invoice_payment_list']='supplier Invoice payment list';
+$lang['add_invoice_payment']='add Invoice payment';
+$lang['add_supplier_payment']='add Supplier payment';
+
 $lang['company_item']='company item';
 $lang['create_delivery_note']='create delivery note';
 $lang['edit_delivery_note']='edit delivery note';
 $lang['download_delivery_note']='download delivery note';
-$lang['view_delivery_note']='view delivery note';
+$lang['view_delivery_note']='View delivery note';
 $lang['delivery_note'] = 'delivery note';
 $lang['company_setting'] ='company setting';
 $lang['Director'] ='Director';
 $lang['select_a_company'] ='select a company';
 $lang['can_access_all_company'] ='Can access all company';
+
+$lang['mark_invoice_as_confirm'] ='mark as confirm';
+$lang['event_name'] ='Event Name';
+$lang['Yes_Can_Manage_Sales_and_CRM'] ='Yes, Can Manage Sales and CRM';
+$lang['can_Assign_expense'] ='Can Assign Expense';
+$lang['show_staff'] ='Yes, Can Manage HR & Payroll';
+
+
 
 
 

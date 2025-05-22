@@ -162,69 +162,26 @@ $style = get_setting("invoice_style");
 <table style="width: 50%; margin: 0 auto; border-collapse: collapse;">
 
     <tr style="font-weight: bold;  color: #fff;  ">
-        <th style="width: 8%;"></th> 
+        <th style="width: 25%;"></th> 
         <th style="width: 40%; border-left: 1px solid #eee; border-right: 1px solid #eee;background-color: <?php echo $color; ?>;"> <?php echo app_lang("item"); ?> </th>
         <th style="text-align: center;  width: 15%; border-right: 1px solid #eee;background-color: <?php echo $color; ?>;"> <?php echo app_lang("quantity"); ?></th>
-        <th style="text-align: right;  width: 20%; border-right: 1px solid #eee;background-color: <?php echo $color; ?>;"> <?php echo app_lang("rate"); ?></th>
-        <th style="text-align: right;  width: 20%;background-color: <?php echo $color; ?>; "> <?php echo app_lang("total"); ?></th>
     </tr>
     <?php
     foreach ($invoice_items as $item) {
     ?>
         <tr >
-        <td style="width: 8%;"></td>
+        <td style="width: 25%;"></td>
 
             <td style="width: 40%; border: 1px solid #fff; background-color: <?php echo $item_background?>;padding: 10px; hyphens: auto;"><?php echo $item->title; ?>
                 <br />
                 <span style="color: #888;background-color:<?php echo $item_background?>; font-size: 90%;"><?php echo custom_nl2br($item->description ? process_images_from_content($item->description) : ""); ?></span>
             </td>
             <td style="text-align: center; background-color: <?php echo $item_background?>; width: 15%; border: 1px solid #fff;"> <?php echo $item->quantity . " " . $item->unit_type; ?></td>
-            <td style="text-align: right;background-color: <?php echo $item_background?>; width: 20%; border: 1px solid #fff;"> <?php echo to_currency($item->rate, $item->currency_symbol); ?></td>
-            <td style="text-align: right;background-color: <?php echo $item_background?>; width: 20%; border: 1px solid #fff;"> <?php echo to_currency($item->total, $item->currency_symbol); ?></td>
         </tr>
     <?php } ?>
-    <tr>
-                        <td style="width: 63%;"></td>
 
-        <td  style="text-align: right; width: 20%; background-color: <?php echo $item_background?>;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background?>;">
-            <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
-        </td>
-    </tr>
-    <?php
-    if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") {
-        echo $discount_row . $total_after_discount_row;
-    }
-    ?>
-    <?php if ($invoice_total_summary->tax) { ?>
-        <tr>
-            <td colspan="4" style="text-align: right;"><?php echo $invoice_total_summary->tax_name; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background?>;">
-                <?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?>
-            </td>
-        </tr>
-    <?php } ?>
-    <?php if ($invoice_total_summary->tax2) { ?>
-        <tr>
-            <td colspan="4" style="text-align: right;"><?php echo $invoice_total_summary->tax_name2; ?></td>
-            <td style="text-align: right; width: 20%; border: 1px solid #fff; background-color: <?php echo $item_background?>;">
-                <?php echo to_currency($invoice_total_summary->tax2, $invoice_total_summary->currency_symbol); ?>
-            </td>
-        </tr>
-    <?php } ?>
-    <?php
-    if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "after_tax") {
-        echo $discount_row;
-    }
-    ?>
-    <tr>
-                <td style="width: 63%;"></td>
-
-        <td  style="text-align: right;width: 20%; border-left: 1px solid #eee; border-right: 1px solid #eee;background-color: <?php echo $color; ?>;"><?php echo app_lang("total"); ?></td>
-        <td style="text-align: right; width: 20%; background-color: <?php echo $color; ?>; color: #fff;">
-            <?php echo to_currency($invoice_total_summary->invoice_total, $invoice_total_summary->currency_symbol); ?>
-        </td>
-    </tr>
+ 
+  
 </table>
 <!--
 <?php if ($invoice_info->note) { ?>
