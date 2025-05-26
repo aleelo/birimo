@@ -53,16 +53,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="row">
-                    <label for="category_id" class=" col-md-3"><?php echo app_lang('category'); ?></label>
-                    <div class=" col-md-9">
-                        <?php
-                        echo form_dropdown("category_id", $categories_dropdown, $model_info->category_id, "class='select2 validate-hidden' id='category_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
-                        ?>
-                    </div>
-                </div>
-            </div>
+
             <div class="form-group">
                 <div class="row">
                     <label for="title" class=" col-md-3"><?php echo app_lang('amount'); ?></label>
@@ -141,6 +132,39 @@
                     <?php // } ?>
                 <?php //} ?> -->
 
+                 <div class="form-group">
+            <div class="row">
+                <label for="expense_type" class="col-md-3"><?php echo ('Expense type'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_dropdown(
+                        "expense_type",
+                        array(
+                            "" => app_lang("select_expense_type"),
+                            "client" => app_lang("client"),
+                            "supplier" => app_lang("supplier")
+                        ),
+                        $model_info->category_type ?? "",
+                        "class='form-control select2' id='expense_type' data-rule-required='true' data-msg-required='" . app_lang("field_required") . "'"
+                    );
+                    ?>
+                </div>
+            </div>
+        </div>
+
+
+<div id="expense_client" class="<?php echo $model_info->category_type=='client' ? '' : 'hide'; ?>">
+                <div class="form-group">
+                <div class="row">
+                    <label for="category_id_client" class=" col-md-3"><?php echo app_lang('category'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("category_id_client", $categories_dropdown_client, $model_info->category_id, "class='select2 validate-hidden' id='category_id_client' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        ?>
+                    </div>
+                </div>
+            </div>
+
                 <div class="form-group">
                     <div class="row">
                         <label for="expense_project_id" class=" col-md-3"><?php echo app_lang('project'); ?></label>
@@ -168,7 +192,33 @@
               <input type="hidden" name="expense_user_id" value="<?php echo $login_user->id; ?>">
             <?php } ?>
 
-            <?php if ($model_info->id) { ?>
+        
+</div>
+
+
+<div id="expense_supplier" class="<?php echo $model_info->category_type=='supplier' ? '' : 'hide'; ?>">
+                    <div class="form-group">
+                <div class="row">
+                    <label for="category_id_supplier" class=" col-md-3"><?php echo app_lang('category'); ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("category_id_supplier", $categories_dropdown_supplier, $model_info->category_id, "class='select2 validate-hidden' id='category_id_supplier' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        ?>
+                    </div>
+                </div>
+            </div>
+                    <div class="form-group">
+            <div class="row">
+                <label for="supplier_id" class=" col-md-3"><?php echo app_lang('supplier'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_dropdown("supplier_id", $suppliers_dropdown, $model_info->supplier_id, "class='select2 validate-hidden' id='supplier_id' data-rule-required='true' data-msg-required='" . app_lang('field_required') . "' ");
+                    ?>
+                </div>
+            </div>
+        </div>
+</div>
+    <?php if ($model_info->id) { ?>
             <div class="form-group">
                 <div class="row">
                     <label for="status" class=" col-md-3"><?php echo app_lang('status'); ?></label>
@@ -236,7 +286,7 @@
                             //     "class" => "form-control recurring_element",
                             //     "placeholder" => app_lang('repeat_every'),
                             //     "data-rule-required" => true,
-                            //     "data-msg-required" => app_lang("field_required")
+                            //     "data-msg-required" => app_lang("field_requiredb")
                             // ));
                             ?>
                         </div>
@@ -291,7 +341,7 @@
                             //     "placeholder" => app_lang('next_recurring_date'),
                             //     "autocomplete" => "off",
                             //     "data-rule-required" => true,
-                            //     "data-msg-required" => app_lang("field_required"),
+                            //     "data-msg-required" => app_lang("field_requiredm"),
                             // ));
                             ?>
                         </div>
@@ -367,6 +417,32 @@
                 }
             }
         });
+function toggleExpenseTypeFields() {
+    var selectedType = $("#expense_type").val();
+
+    if (selectedType === "client") {
+        $("#expense_client").removeClass("hide");
+        $("#expense_supplier").addClass("hide");
+        $("#category_id_client").attr("data-rule-required", true);
+        $("#category_id_supplier").removeAttr("data-rule-required");
+    } else if (selectedType === "supplier") {
+           $("#expense_supplier").removeClass("hide");
+        $("#expense_client").addClass("hide");
+        $("#category_id_supplier").attr("data-rule-required", true);
+        $("#category_id_client").removeAttr("data-rule-required");
+        $("#expense_project_id").removeAttr("data-rule-required");
+
+    } else {
+        $("#expense_supplier, #expense_client").addClass("hide");
+        $("#category_id_supplier, #category_id_client").removeAttr("data-rule-required");
+    }
+}
+
+$("#expense_type").change(function () {
+    toggleExpenseTypeFields();
+});
+
+toggleExpenseTypeFields();
 
         setDatePicker("#expense_date");
 

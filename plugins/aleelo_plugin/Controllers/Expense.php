@@ -40,7 +40,27 @@ class Expense extends Security_Controller_Plugin {
     }
 
     //get categories dropdown
-    private function _get_categories_dropdown() {
+    private function _get_categories_dropdown_client() {
+        $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0,"expense_type"=>"client"), 0, 0, "title")->getResult();
+
+        $categories_dropdown_client = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
+        foreach ($categories as $category) {
+            $categories_dropdown_client[] = array("id" => $category->id, "text" => $category->title);
+        }
+
+        return json_encode($categories_dropdown_client);
+    }
+        private function _get_categories_dropdown_supplier() {
+        $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0,"expense_type"=>"supplier"), 0, 0, "title")->getResult();
+
+        $categories_dropdown_supplier = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
+        foreach ($categories as $category) {
+            $categories_dropdown_supplier[] = array("id" => $category->id, "text" => $category->title);
+        }
+
+        return json_encode($categories_dropdown_supplier);
+    }
+        private function _get_categories_dropdown() {
         $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
 
         $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
@@ -138,7 +158,18 @@ class Expense extends Security_Controller_Plugin {
         $project_id = $this->request->getPost('project_id');
 
         $model_info = $this->Expenses_model->get_one($this->request->getPost('id'));
+      
+        if($this->login_user->department == 0){
         $view_data['categories_dropdown'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"));
+        $view_data['categories_dropdown_client'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"), "id", array("deleted" => 0,"expense_type"=>"client"));
+        $view_data['categories_dropdown_supplier'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"), "id", array("deleted" => 0,"expense_type"=>"supplier"));
+        }
+        else{
+        $view_data['categories_dropdown'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"));
+        $view_data['categories_dropdown_client'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"), "id", array("deleted" => 0,"expense_type"=>"client", "company_id" => $this->login_user->department));
+        $view_data['categories_dropdown_supplier'] = array("" => "-") +  $this->Expense_categories_model->get_dropdown_list(array("title"), "id", array("deleted" => 0,"expense_type"=>"supplier", "company_id" => $this->login_user->department));
+
+        }
         $view_data['company'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
 
         $members_dropdown = array();
@@ -173,7 +204,12 @@ class Expense extends Security_Controller_Plugin {
         $view_data['model_info'] = $model_info;
         $view_data['client_id'] = $client_id;
         $view_data['project_id'] = $project_id;
-
+    if($this->login_user->department == 0){
+    $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
+    }
+    else{
+            $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id", array("company" => $this->login_user->department));
+    }
         $view_data['can_access_expenses'] = $this->can_access_expenses();
         $view_data['can_access_clients'] = $this->can_access_clients();
         $department= $this->login_user->department;
@@ -202,7 +238,7 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
             "expense_date" => "required",
-            "category_id" => "required",
+            // "category_id" => "required",
             "amount" => "required",
             "company_id" =>"required"
 
@@ -221,13 +257,33 @@ class Expense extends Security_Controller_Plugin {
         $no_of_cycles = $this->request->getPost('no_of_cycles');
 
         $status =  $this->request->getPost('status');
+        $expense_type = $this->request->getPost('expense_type');
+        if($expense_type == "client") {
+                    $category_id = $this->request->getPost('category_id_client');
 
+        }
+        else if($expense_type == "supplier") {
+                    $category_id = $this->request->getPost('category_id_supplier');
+        } else {
+                    $category_id = 0;
+                }
+
+                if($category_id) {
+            $category_info = $this->Expense_categories_model->get_one($category_id);
+            $category_info->category_id = $category_id;
+            $account_id = $category_info->account_id ? $category_info->account_id : 0;
+
+                }
+                else{
+                    $account_id = 0;
+                }
 
         $data = array(
             "expense_date" => $expense_date,
             "title" => $this->request->getPost('title'),
             "description" => $this->request->getPost('description'),
-            "category_id" => $this->request->getPost('category_id'),
+            "category_type" => $expense_type,
+            "category_id" =>$category_id ,
             "company_id" => $this->request->getPost('company_id'),
             "amount" => unformat_currency($this->request->getPost('amount')),
             "client_id" => $this->request->getPost('expense_client_id') ? $this->request->getPost('expense_client_id') : 0,
@@ -240,6 +296,8 @@ class Expense extends Security_Controller_Plugin {
             "repeat_every" => $repeat_every ? $repeat_every : 0,
             "repeat_type" => $repeat_type ? $repeat_type : NULL,
             "no_of_cycles" => $no_of_cycles ? $no_of_cycles : 0,
+            "account_id" => $account_id,
+            "supplier_id"=> $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : 0,
         );
 
         $data["updated_at"] = get_current_utc_time();

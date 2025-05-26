@@ -33,6 +33,7 @@ class Security_Controller_Plugin extends Security_Controller {
     public $Invoice_items_model;
     public $Invoice_payments_model;
     public $Invoices_model;
+    public $Expense_categories_model;
 
 
     public function __construct($redirect = true) {
@@ -60,6 +61,8 @@ $this->Items_model = new \aleelo_plugin\Models\Items_model();
 $this->Invoice_items_model = new \aleelo_plugin\Models\Invoice_items_model();
 $this->Invoice_payments_model = new \aleelo_plugin\Models\Invoice_payments_model();
 $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
+$this->Expense_categories_model = new \aleelo_plugin\Models\Expense_categories_model();
+
 
 
 

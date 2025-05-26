@@ -36,6 +36,7 @@ class Invoices_model extends Crud_model {
         if ($client_id) {
             $where .= " AND $invoices_table.client_id=$client_id";
         }
+        
         $subscription_id = $this->_get_clean_value($options, "subscription_id");
         if ($subscription_id) {
             $where .= " AND $invoices_table.subscription_id=$subscription_id";
@@ -181,10 +182,10 @@ class Invoices_model extends Crud_model {
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $invoices_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $invoices_table.tax_id2
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table3 ON tax_table3.id = $invoices_table.tax_id3
-        LEFT JOIN (SELECT invoice_id, SUM(amount) AS payment_received FROM $invoice_payments_table WHERE deleted=0 GROUP BY invoice_id) AS payments_table ON payments_table.invoice_id = $invoices_table.id 
+        LEFT JOIN (SELECT invoice_id, SUM(amount) AS payment_received FROM $invoice_payments_table WHERE deleted=0 AND supplier_id=0 GROUP BY invoice_id) AS payments_table ON payments_table.invoice_id = $invoices_table.id 
         LEFT JOIN (SELECT invoice_id, SUM(total) AS invoice_value FROM $invoice_items_table WHERE deleted=0 GROUP BY invoice_id) AS items_table ON items_table.invoice_id = $invoices_table.id 
         $join_custom_fieds
-        WHERE $invoices_table.deleted=0 $where $custom_fields_where";
+        WHERE $invoices_table.deleted=0  $where $custom_fields_where";
         return $this->db->query($sql);
     }
 
@@ -205,7 +206,7 @@ class Invoices_model extends Crud_model {
 
         $payment_sql = "SELECT SUM($invoice_payments_table.amount) AS total_paid
         FROM $invoice_payments_table
-        WHERE $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id=$invoice_id";
+        WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id=$invoice_id";
         $payment = $this->db->query($payment_sql)->getRow();
 
         $result->total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
@@ -214,53 +215,64 @@ class Invoices_model extends Crud_model {
         return $result;
     }
 
-    function get_invoice_total_summaryp($invoice_id, $supplier_id) {
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $clients_table = $this->db->prefixTable('clients');
-    
-        $invoice_id = $this->_get_clean_value($invoice_id);
-        $supplier_id = $this->_get_clean_value($supplier_id);
-    
-        $items_sql = "SELECT SUM(supplier_price) AS invoice_total ,supplier_price AS in_supplier_price
-                      FROM $invoice_items_table 
-                      WHERE invoice_id = $invoice_id AND supplier_id = $supplier_id AND deleted = 0";
-        $items = $this->db->query($items_sql)->getRow();
-        $invoice_total = is_null($items->invoice_total) ? 0 : $items->invoice_total;
-    
-        $in_supplier_price = $items->in_supplier_price ? $items->in_supplier_price : 0;
-        $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency 
-                       FROM $clients_table 
-                       WHERE $clients_table.id=(SELECT $invoices_table.client_id 
-                                                FROM $invoices_table 
-                                                WHERE $invoices_table.id=$invoice_id LIMIT 1)";
-        $client = $this->db->query($client_sql)->getRow();
-    
-        $currency_symbol =  get_setting("currency_symbol");
-        $currency = get_setting("default_currency");
-    
-        $payment_sql = "SELECT SUM(amount) AS total_paid ,amount AS paid
-                        FROM $invoice_payments_table 
-                        WHERE deleted = 0 AND supplier = 1 AND invoice_id = $invoice_id AND supplier_id = $supplier_id";
-        $payment = $this->db->query($payment_sql)->getRow();
-        $total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
-        $paid=$payment->paid ? $payment->paid : 0;
-    
-        $balance_due = number_format($invoice_total, 2, ".", "") - number_format($paid, 2, ".", "");
-        $supplier_due = number_format($in_supplier_price, 2, ".", "") - number_format($paid, 2, ".", "");
-    
-        return (object)[
-            'invoice_total' => $invoice_total,
-            'total_paid' => $total_paid,
-            'balance_due' => $balance_due,
-            'currency_symbol' => $currency_symbol,
-            'currency' => $currency,
-            'paid' => $paid,
-            'in_supplier_price' => $in_supplier_price,
-            'supplier_due' => $supplier_due,
-        ];
+function get_invoice_total_summaryp($invoice_id, $supplier_id) {
+    $invoice_items_table = $this->db->prefixTable('invoice_items');
+    $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+    $invoices_table = $this->db->prefixTable('invoices');
+    $clients_table = $this->db->prefixTable('clients');
+
+    $invoice_id = $this->_get_clean_value($invoice_id);
+    $supplier_id = $this->_get_clean_value($supplier_id);
+
+    // Build the WHERE clause safely
+    $where = "invoice_id = $invoice_id AND deleted = 0";
+    if (!empty($supplier_id)) {
+        $where .= " AND supplier_id = $supplier_id";
     }
+
+    $items_sql = "SELECT SUM(supplier_price) AS invoice_total, supplier_price AS in_supplier_price
+                  FROM $invoice_items_table
+                  WHERE $where";
+    $items = $this->db->query($items_sql)->getRow();
+    $invoice_total = is_null($items->invoice_total) ? 0 : $items->invoice_total;
+
+    $in_supplier_price = $items->in_supplier_price ? $items->in_supplier_price : 0;
+    $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency 
+                   FROM $clients_table 
+                   WHERE $clients_table.id=(SELECT $invoices_table.client_id 
+                                            FROM $invoices_table 
+                                            WHERE $invoices_table.id=$invoice_id LIMIT 1)";
+    $client = $this->db->query($client_sql)->getRow();
+
+    $currency_symbol =  get_setting("currency_symbol");
+    $currency = get_setting("default_currency");
+
+    // Payment SQL
+    $payment_where = "deleted = 0 AND supplier = 1 AND invoice_id = $invoice_id";
+    if (!empty($supplier_id)) {
+        $payment_where .= " AND supplier_id = $supplier_id";
+    }
+    $payment_sql = "SELECT SUM(amount) AS total_paid, amount AS paid
+                    FROM $invoice_payments_table 
+                    WHERE $payment_where";
+    $payment = $this->db->query($payment_sql)->getRow();
+    $total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
+    $paid = $payment->paid ? $payment->paid : 0;
+
+    $balance_due = number_format($invoice_total, 2, ".", "") - number_format($paid, 2, ".", "");
+    $supplier_due = number_format($in_supplier_price, 2, ".", "") - number_format($total_paid, 2, ".", "");
+
+    return (object)[
+        'invoice_total' => $invoice_total,
+        'total_paid' => $total_paid,
+        'balance_due' => $balance_due,
+        'currency_symbol' => $currency_symbol,
+        'currency' => $currency,
+        'paid' => $paid,
+        'in_supplier_price' => $in_supplier_price,
+        'supplier_due' => $supplier_due,
+    ];
+}
      function get_invoice_total_metapayable($invoice_id) {
         $id = $this->_get_clean_value($invoice_id);
 
@@ -407,7 +419,7 @@ class Invoices_model extends Crud_model {
             $payments = "SELECT SUM($invoice_payments_table.amount) AS total, MONTH($invoice_payments_table.payment_date) AS month
             FROM $invoice_payments_table
             LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id    
-            WHERE $invoice_payments_table.deleted=0 AND YEAR($invoice_payments_table.payment_date)=$year AND $invoices_table.deleted=0 $where $payments_where
+            WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND YEAR($invoice_payments_table.payment_date)=$year AND $invoices_table.deleted=0 $where $payments_where
             GROUP BY MONTH($invoice_payments_table.payment_date)";
 
             $info->payments = $this->db->query($payments)->getResult();
@@ -462,7 +474,7 @@ class Invoices_model extends Crud_model {
             ) AS currency
             FROM $invoice_payments_table
             LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id    
-            WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where
+            WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where
             GROUP BY currency";
 
         $now = get_my_local_time("Y-m-d");
@@ -759,7 +771,7 @@ class Invoices_model extends Crud_model {
                 SUM(payments_table.payment_received) AS payment_received
             FROM $invoices_table
             LEFT JOIN $clients_table ON $clients_table.id = $invoices_table.client_id             
-            LEFT JOIN (SELECT SUM($invoice_payments_table.amount) AS payment_received, $invoice_payments_table.invoice_id FROM $invoice_payments_table WHERE $invoice_payments_table.deleted=0 GROUP BY $invoice_payments_table.invoice_id) AS payments_table ON payments_table.invoice_id = $invoices_table.id
+            LEFT JOIN (SELECT SUM($invoice_payments_table.amount) AS payment_received, $invoice_payments_table.invoice_id FROM $invoice_payments_table WHERE $invoice_payments_table.deleted=0 AND $invoice_payments_table.supplier_id=0 GROUP BY $invoice_payments_table.invoice_id) AS payments_table ON payments_table.invoice_id = $invoices_table.id
             WHERE $invoices_table.deleted=0 AND $invoices_table.status = 'not_paid' $where
             GROUP BY $invoices_table.client_id";
         $result = $this->db->query($sql);

@@ -1,4 +1,12 @@
-<?php echo form_open(get_uri("invoices/save_delivery_note"), array("id" => "add-page-form", "class" => "general-form bg-white", "role" => "form")); ?>
+<?php
+$delivery_note_content = "";
+if ($model_info->delivery_note) {
+    $delivery_note_content = process_images_from_content($model_info->delivery_note, false);
+} else {
+    $delivery_note_content = get_setting("estimate_footer_solution");
+}
+
+echo form_open(get_uri("invoices/save_delivery_note"), array("id" => "add-page-form", "class" => "general-form bg-white", "role" => "form")); ?>
 <div class="modal-body clearfix">
     <div class="container-fluid">
         <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
@@ -11,7 +19,7 @@
                     echo form_textarea(array(
                         "id" => "delivery_note",
                         "name" => "delivery_note",
-                        "value" => process_images_from_content($model_info->delivery_note, false),
+                        "value" => $delivery_note_content,
                         "class" => "form-control",
                         "data-toolbar" => "page_builder_toolbar",
                         "data-encode_ajax_post_data" => "1",

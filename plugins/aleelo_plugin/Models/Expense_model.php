@@ -127,7 +127,7 @@ class Expense_model extends Crud_model {
                 )
             ) AS currency
         FROM $invoice_payments_table
-        WHERE $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0) $where_income
+        WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0) $where_income
         GROUP BY currency";
         $income_result = $this->db->query($income_sql)->getResult();
 

@@ -568,6 +568,9 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         // //  $this->validate_estimate_access($estimate_id);
         $this->can_view_estimate();
             $invoice_info = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
+            if (!$invoice_info) {
+                show_404();
+            }
             $client_info = $this->Clients_model->get_details(array("id" => $invoice_info->client_id))->getRow();
             
             $user_company_id = $this->login_user->department;

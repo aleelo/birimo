@@ -115,7 +115,7 @@ class Invoice_payments_model extends Crud_model {
     LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
     LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
     LEFT JOIN rise_company as dp ON dp.id = cn.company_id
-    WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+    WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
 
@@ -143,7 +143,7 @@ class Invoice_payments_model extends Crud_model {
             ) AS currency
             FROM $payments_table
             LEFT JOIN $invoices_table ON $invoices_table.id=$payments_table.invoice_id
-            WHERE $payments_table.deleted=0 AND YEAR($payments_table.payment_date)= $year AND $invoices_table.deleted=0 $where
+            WHERE $payments_table.deleted=0 AND AND $payments_table.supplier_id=0 YEAR($payments_table.payment_date)= $year AND $invoices_table.deleted=0 $where
             GROUP BY MONTH($payments_table.payment_date), currency";
 
         return $this->db->query($payments)->getResult();
@@ -155,7 +155,7 @@ class Invoice_payments_model extends Crud_model {
         $projects_table = $this->db->prefixTable('projects');
         $expenses_table = $this->db->prefixTable('expenses');
 
-        $payments_where = "SELECT $invoices_table.project_id FROM $invoices_table WHERE $invoices_table.deleted=0 AND $invoices_table.project_id!=0 AND $invoices_table.id IN(SELECT $payments_table.invoice_id FROM $payments_table WHERE $payments_table.deleted=0 GROUP BY $payments_table.invoice_id) GROUP BY $invoices_table.project_id";
+        $payments_where = "SELECT $invoices_table.project_id FROM $invoices_table WHERE $invoices_table.deleted=0 AND $invoices_table.project_id!=0 AND $invoices_table.id IN(SELECT $payments_table.invoice_id FROM $payments_table WHERE $payments_table.deleted=0 AND $payments_table.supplier_id=0 GROUP BY $payments_table.invoice_id) GROUP BY $invoices_table.project_id";
         $expenses_where = "SELECT $expenses_table.project_id FROM $expenses_table WHERE $expenses_table.deleted=0 AND $expenses_table.project_id!=0 GROUP BY $expenses_table.project_id";
 
         $where = "";
@@ -205,7 +205,7 @@ class Invoice_payments_model extends Crud_model {
         FROM $payments_table
         LEFT JOIN $invoices_table ON $invoices_table.id=$payments_table.invoice_id
         LEFT JOIN $clients_table ON $clients_table.id=(SELECT $invoices_table.client_id FROM $invoices_table WHERE $invoices_table.id=$payments_table.invoice_id LIMIT 1)
-        WHERE $payments_table.deleted=0 $where
+        WHERE $payments_table.deleted=0 AND $payments_table.supplier_id=0  $where
         GROUP BY MONTH($payments_table.payment_date)";
 
         return $this->db->query($sql);
@@ -240,7 +240,7 @@ class Invoice_payments_model extends Crud_model {
         FROM $payments_table
         LEFT JOIN $invoices_table ON $invoices_table.id=$payments_table.invoice_id
         LEFT JOIN $clients_table ON $clients_table.id=(SELECT $invoices_table.client_id FROM $invoices_table WHERE $invoices_table.id=$payments_table.invoice_id LIMIT 1)
-        WHERE $payments_table.deleted=0 $where
+        WHERE $payments_table.deleted=0 AND $payments_table.supplier_id=0 $where
         GROUP BY $invoices_table.client_id";
 
         return $this->db->query($sql);

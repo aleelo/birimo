@@ -562,6 +562,9 @@ class Team_member extends Security_Controller_Plugin {
 
         
             $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
+            if (!$users_info) {
+                show_404();
+            }
             
             $user_company_id = $this->login_user->department;
 

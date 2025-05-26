@@ -85,6 +85,10 @@ $routes = service('routes');
     $routes->get('supplier/(:any)', 'Supplier::$1');
     $routes->post('supplier/(:any)', 'Supplier::$1');
 
+    $routes->get('expense_categories', 'Expense_categories::index');
+    $routes->get('expense_categories/(:any)', 'Expense_categories::$1');
+    $routes->post('expense_categories/(:any)', 'Expense_categories::$1');
+
  });
 //add admin setting menu item
 app_hooks()->add_filter('app_filter_admin_settings_menu', function ($settings_menu) {

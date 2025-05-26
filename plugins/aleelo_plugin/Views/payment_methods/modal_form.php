@@ -21,6 +21,8 @@
                 </div>
             </div>
         </div>
+                  <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
+
         <div class="form-group">
             <div class="row">
                 <label for="account_id" class="col-md-4"><?php echo app_lang('account'); ?></label>
@@ -39,6 +41,8 @@
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+
         <div class="form-group">
             <div class="row">
                 <label for="description" class="col-md-4"><?php echo app_lang('description'); ?></label>

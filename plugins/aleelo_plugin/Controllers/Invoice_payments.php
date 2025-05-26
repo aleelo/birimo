@@ -144,8 +144,13 @@ class Invoice_payments extends Security_Controller_Plugin {
 
         $view_data['invoices_dropdown'] = array("" => "-") + $invoices_dropdown;
     }
+    if($this->login_user->department == 0){
     $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
-    // $amount = $view_data['model_info']->amount ? to_decimal_format($view_data['model_info']->amount) : "";
+    }
+    else{
+            $view_data['suppliers_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id", array("company" => $this->login_user->department));
+    }
+        $amount = $view_data['model_info']->amount ? to_decimal_format($view_data['model_info']->amount) : "";
     if (!$view_data['model_info']->amount && $invoice_id) {
         $amount = to_decimal_format($this->Invoices_model->get_invoice_total_summaryp($invoice_id, $supplier_id)->supplier_due);
     }

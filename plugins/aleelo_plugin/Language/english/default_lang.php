@@ -4407,6 +4407,9 @@ $lang['event_name'] ='Event Name';
 $lang['Yes_Can_Manage_Sales_and_CRM'] ='Yes, Can Manage Sales and CRM';
 $lang['can_Assign_expense'] ='Can Assign Expense';
 $lang['show_staff'] ='Yes, Can Manage HR & Payroll';
+$lang['estimate'] = 'Quatation';
+$lang['select_expense_type'] = 'select expense type';
+$lang['expense_type'] = 'Expense type';
 
 
 

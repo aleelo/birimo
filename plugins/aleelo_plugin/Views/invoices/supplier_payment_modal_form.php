@@ -22,7 +22,7 @@
                 <label for="supplier_id" class=" col-md-3"><?php echo app_lang('supplier'); ?></label>
                 <div class="col-md-9">
                     <?php
-                    echo form_dropdown("supplier_id", $suppliers_dropdown, "", "class='select2 validate-hidden' id='supplier_id' data-rule-required='true' data-msg-required='" . app_lang('field_required') . "' ");
+                    echo form_dropdown("supplier_id", $suppliers_dropdown, $model_info->supplier_id, "class='select2 validate-hidden' id='supplier_id' data-rule-required='true' data-msg-required='" . app_lang('field_required') . "' ");
                     ?>
                 </div>
             </div>
