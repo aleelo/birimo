@@ -254,7 +254,7 @@ class Invoice_payments extends Security_Controller_Plugin {
         }
         //get payment data
         $options = array("id" => $invoice_payment_id);
-        $item_info = $this->Invoice_payments_model->get_details($options)->getRow();
+        $item_info = $this->Invoice_payments_model->get_details_supplier($options)->getRow();
         echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_payment_row($item_info), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_payment_id, 'message' => app_lang('record_saved')));
     } else {
         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
@@ -347,7 +347,7 @@ class Invoice_payments extends Security_Controller_Plugin {
 "supplier_type" => "supplier",
 "supplier_id" => 13,        );
 
-        $list_data = $this->Invoice_payments_model->get_details($options)->getResult();
+        $list_data = $this->Invoice_payments_model->get_details_supplier($options)->getResult();
         
         $result = array();
         foreach ($list_data as $data) {

@@ -1152,7 +1152,7 @@ $delete= '';
             "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
             "supplier_price"=>$price,
             "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
-                        "days"=>$days,
+            "days"=>$days,
 
 
         );

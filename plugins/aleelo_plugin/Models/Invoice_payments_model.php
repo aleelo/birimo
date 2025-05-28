@@ -118,7 +118,112 @@ class Invoice_payments_model extends Crud_model {
     WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
+    function get_details_supplier($options = array(),$option = array()) {
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $payment_methods_table = $this->db->prefixTable('payment_methods');
+        $clients_table = $this->db->prefixTable('clients');
 
+        $where = "";
+
+        $id = $this->_get_clean_value($options, "id");
+        if ($id) {
+            $where .= " AND $invoice_payments_table.id=$id";
+        }
+
+        $invoice_id = $this->_get_clean_value($options, "invoice_id");
+        if ($invoice_id) {
+            $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
+        }
+ $invoice_id = $this->_get_clean_value($option, "invoice_id");
+        if ($invoice_id) {
+            $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
+        }
+        $order_id = $this->_get_clean_value($options, "order_id");
+        if ($order_id) {
+            $where .= " AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0 AND $invoices_table.order_id=$order_id)";
+        }
+        // $supplier = $this->_get_clean_value($options, "supplier");
+        // if ($supplier) {
+        //     $where .= " AND $invoice_payments_table.supplier_id= 0";
+        // }
+        
+        $supplier_type = $this->_get_clean_value($options, "supplier_type");
+
+        if ($supplier_type === "client") {
+            $where .= " AND $invoice_payments_table.supplier = 0";
+        } elseif ($supplier_type === "supplier") {
+            $supplier_id = $this->_get_clean_value($options, "supplier_id");
+            if ($supplier_id) {
+                $where .= " AND $invoice_payments_table.supplier =1";
+            } else {
+                $where .= " AND $invoice_payments_table.supplier =1";
+            }
+        }
+        
+        $client_id = $this->_get_clean_value($options, "client_id");
+        if ($client_id) {
+            $where .= " AND $invoices_table.client_id=$client_id";
+        }
+
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND dp.id=$company_id";
+        }
+        
+        // $supplier_id = $this->_get_clean_value($option, "supplier_id");
+        // if ($supplier_id) {
+        //     $where .= " AND $invoice_payments_table.supplier_id !=0";
+        // }
+        $company_id_department = $this->_get_clean_value($options, "company_id_department");
+        if ($company_id_department) {
+            $where .= " AND dp.id=$company_id_department";
+        }
+
+         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        if ($can_view_all_invoice) {
+            $where .= " AND dp.id=$can_view_all_invoice";
+        }
+
+        $project_id = $this->_get_clean_value($options, "project_id");
+        if ($project_id) {
+            $where .= " AND $invoices_table.project_id=$project_id";
+        }
+
+        $payment_method_id = $this->_get_clean_value($options, "payment_method_id");
+        if ($payment_method_id) {
+            $where .= " AND $invoice_payments_table.payment_method_id=$payment_method_id";
+        }
+        // print_r($payment_method_id);die;
+
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where .= " AND ($invoice_payments_table.payment_date BETWEEN '$start_date' AND '$end_date') ";
+        }
+
+        $currency = $this->_get_clean_value($options, "currency");
+        if ($currency) {
+            $where .= $this->_get_clients_of_currency_query($currency, $invoices_table, $clients_table);
+        }
+
+        $sql = "SELECT 
+        $invoice_payments_table.*, 
+        $invoices_table.client_id, 
+        $invoices_table.display_id, 
+        (SELECT $clients_table.currency_symbol FROM $clients_table WHERE $clients_table.id=$invoices_table.client_id LIMIT 1) AS currency_symbol, 
+        $payment_methods_table.title AS payment_method_title, 
+        pp.supplier_name AS supplier_name, 
+        pp.id AS supplier_id
+    FROM $invoice_payments_table
+    LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
+    LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
+    LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+    LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
+    LEFT JOIN rise_company as dp ON dp.id = cn.company_id
+    WHERE  $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+        return $this->db->query($sql);
+    }
     function get_yearly_payments_chart($year, $currency = "", $project_id = 0) {
         $payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
@@ -143,7 +248,7 @@ class Invoice_payments_model extends Crud_model {
             ) AS currency
             FROM $payments_table
             LEFT JOIN $invoices_table ON $invoices_table.id=$payments_table.invoice_id
-            WHERE $payments_table.deleted=0 AND AND $payments_table.supplier_id=0 YEAR($payments_table.payment_date)= $year AND $invoices_table.deleted=0 $where
+            WHERE $payments_table.deleted=0 AND $payments_table.supplier_id=0 YEAR($payments_table.payment_date)= $year AND $invoices_table.deleted=0 $where
             GROUP BY MONTH($payments_table.payment_date), currency";
 
         return $this->db->query($payments)->getResult();
