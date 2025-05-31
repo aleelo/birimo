@@ -801,7 +801,7 @@ if (!$signature_path) {
         );
         $view_data['user_info'] = $this->Users_models->get_one($user_id);
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-        $view_data['company']=array("" => " -- Choose Company -- ") +$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company']=array("0" => " -- all -- ") +$this->Company_model->get_dropdown_list(array("name"), "id");
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
         $add_user_type=$this->request->getPost('add_user_type');
         $view_data['add_user_type']=$add_user_type;
@@ -853,17 +853,19 @@ if (!$signature_path) {
         // Process the company access value
         if ($can_access_all) {
             $cc = "all";
-            $cid=0;
+            $cid=$post_user_id;
         } else {
             $cc =0;
             $cid =$post_user_id;
         }
-    
+            $status_ids = $this->request->getPost('department_ids') ? implode(",", $this->request->getPost('department_ids')) : "";
+
         // Prepare data for saving
         $user_data = array(
             "company_access" => $cc,
             "department"=>$cid,
-            "department_id"=>"1,2",
+            "department_id"=> $status_ids,
+            
         );
     
         // Save data

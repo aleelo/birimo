@@ -57,7 +57,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             validate_numeric_value($invoice_id);
             $view_data["invoice_id"] = $invoice_id;
             $view_data["supplier_id"] = $supplier_id;
-            $view_data["can_edit_invoices"] = $this->can_edit_invoice();
+            $view_data["can_edit_invoice"] = $this->can_edit_invoice();
 
             return $this->template->view("aleelo_plugin\Views/invoices/payments/supplier_payments", $view_data);
         } else {
@@ -65,7 +65,7 @@ class Invoice_payments extends Security_Controller_Plugin {
         }
     }
     function get_payment_method_dropdown() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
         $payment_methods = $this->Payment_methods_model->get_all_where(array("deleted" => 0))->getResult();
@@ -288,6 +288,32 @@ class Invoice_payments extends Security_Controller_Plugin {
             }
         }
     }
+    function delete_payment_supplier() {
+        if (!$this->can_delete_payment()) {
+            app_redirect("forbidden");
+        }
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $id = $this->request->getPost('id');
+        if ($this->request->getPost('undo')) {
+            if ($this->Invoice_payments_model->delete($id, true)) {
+                $options = array("id" => $id);
+                $item_info = $this->Invoice_payments_model->get_details_supplier($options)->getRow();
+                echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_supplier_payment_row($item_info), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), "message" => app_lang('record_undone')));
+            } else {
+                echo json_encode(array("success" => false, app_lang('error_occurred')));
+            }
+        } else {
+            if ($this->Invoice_payments_model->delete($id)) {
+                $item_info = $this->Invoice_payments_model->get_one($id);
+                echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'message' => app_lang('record_deleted')));
+            } else {
+                echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
+            }
+        }
+    }
 
     /* list of invoice payments, prepared for datatable  */
 
@@ -359,7 +385,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* list of invoice payments, prepared for datatable  */
 
     function payment_list_data_of_client($client_id = 0) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 
@@ -391,7 +417,7 @@ class Invoice_payments extends Security_Controller_Plugin {
 
     private function _make_payment_row($data) {
         $invoice_url = "";
-        if (!$this->can_view_invoices($data->client_id)) {
+        if (!$this->can_view_invoice($data->client_id)) {
             app_redirect("forbidden");
         }
 
@@ -420,7 +446,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     }
     private function _make_supplier_payment_row($data) {
         $invoice_url = "";
-        // if (!$this->can_view_invoices($data->client_id)) {
+        // if (!$this->can_view_invoice($data->client_id)) {
         //     app_redirect("forbidden");
         // }
 
@@ -435,7 +461,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             $edit= modal_anchor(get_uri(uri: "invoice_payments/supplier_payment_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_payment'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id,));
         }
         if ($this->can_delete_payment()) {
-        $delete= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment"), "data-action" => "delete"));
+        $delete= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoice_payments/delete_payment_supplier"), "data-action" => "delete"));
         }
         return array(
             
@@ -455,11 +481,11 @@ class Invoice_payments extends Security_Controller_Plugin {
     private function _get_invoice_total_view($invoice_id = 0) {
         $view_data["invoice_total_summary"] = $this->Invoices_model->get_invoice_total_summary($invoice_id);
         $view_data["invoice_id"] = $invoice_id;
-        $can_edit_invoices = false;
-        if ($this->can_edit_invoices() && $this->is_invoice_editable($invoice_id)) {
-            $can_edit_invoices = true;
+        $can_edit_invoice = false;
+        if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
+            $can_edit_invoice = true;
         }
-        $view_data["can_edit_invoices"] = $can_edit_invoices;
+        $view_data["can_edit_invoice"] = $can_edit_invoice;
         return $this->template->view('aleelo_plugin\Views/invoices/invoice_total_section', $view_data);
     }
 
@@ -535,7 +561,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     }
 
     function payments_summary() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -546,7 +572,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     }
 
     function yearly_payment_summary_list_data() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -645,7 +671,7 @@ class Invoice_payments extends Security_Controller_Plugin {
     /* list of invoice payments, prepared for datatable  */
 
     function payment_list_data_of_order($order_id, $client_id = 0) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 

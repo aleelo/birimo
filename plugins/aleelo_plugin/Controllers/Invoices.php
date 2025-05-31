@@ -563,7 +563,7 @@ else{
     /* delete or undo an invoice */
 
     function delete() {
-        if (!$this->can_edit_invoice()) {
+        if (!$this->can_delete_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -626,7 +626,7 @@ else{
     /* list of invoice of a specific client, prepared for datatable  */
 
     function invoice_list_data_of_client($client_id) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 
@@ -660,7 +660,7 @@ else{
     /* list of invoice of a specific subscription, prepared for datatable  */
 
     function invoice_list_data_of_subscription($subscription_id, $client_id = 0) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 
@@ -688,7 +688,7 @@ else{
 
     function delivery_note($invoice_id)
     {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -723,7 +723,7 @@ else{
 
 
     function invoice_list_data_of_project($project_id, $client_id = 0) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 
@@ -753,7 +753,7 @@ else{
     /* show sub invoices tab  */
 
     function sub_invoices($recurring_invoice_id) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
         validate_numeric_value($recurring_invoice_id);
@@ -765,7 +765,7 @@ else{
 
     function sub_invoices_list_data($recurring_invoice_id) {
         validate_numeric_value($recurring_invoice_id);
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -914,7 +914,7 @@ $delete= '';
 
     // list of recurring invoices, prepared for datatable
     function recurring_list_data() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1247,7 +1247,7 @@ $delete= '';
     function item_list_data($invoice_id = 0) {
         validate_numeric_value($invoice_id);
 
-        if (!($invoice_id && $this->can_view_invoices())) {
+        if (!($invoice_id && $this->can_view_invoice())) {
             app_redirect("forbidden");
         }
 
@@ -1291,7 +1291,7 @@ $delete= '';
             $data->days,
             to_decimal_format($data->quantity) . " " . $type,
             to_currency($data->rate, $data->currency_symbol),
-            $taxable,
+            // $taxable,
             to_currency($data->total, $data->currency_symbol),
             modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_invoice'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoices/delete_item"), "data-action" => "delete"))
@@ -1466,7 +1466,7 @@ $delete= '';
                 app_redirect("forbidden");
             }
         } else {
-            if (!$this->can_view_invoices()) {
+            if (!$this->can_view_invoice()) {
                 app_redirect("forbidden");
             }
         }
@@ -1710,7 +1710,7 @@ $delete= '';
     }
 
     function get_invoice_status_bar($invoice_id = 0) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1809,7 +1809,7 @@ $delete= '';
     }
 
     function load_statistics_of_selected_currency($currency = "", $currency_symbol = "") {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1850,7 +1850,7 @@ $delete= '';
     }
 
     function load_invoice_overview_statistics_of_selected_currency() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1870,7 +1870,7 @@ $delete= '';
 
     //load invoice details section
     function details($invoice_id) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1894,7 +1894,7 @@ $delete= '';
 
     //load invoice payments section
     function payments($invoice_id) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1918,7 +1918,7 @@ $delete= '';
     /* load tasks tab  */
 
     function tasks($invoice_id) {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 
@@ -1935,7 +1935,7 @@ $delete= '';
     /* list of invoice of a specific order, prepared for datatable  */
 
     function invoice_list_data_of_order($order_id, $client_id = 0) {
-        if (!$this->can_view_invoices($client_id)) {
+        if (!$this->can_view_invoice($client_id)) {
             app_redirect("forbidden");
         }
 
@@ -2050,7 +2050,7 @@ $delete= '';
     }
 
     function invoices_summary() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
         $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown(false);
@@ -2058,7 +2058,7 @@ $delete= '';
     }
 
     function monthly_invoices_summary() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
         $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown(false);
@@ -2066,7 +2066,7 @@ $delete= '';
     }
 
     function custom_invoices_summary() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
         $view_data["currencies_dropdown"] = $this->_get_currencies_dropdown(false);
@@ -2074,7 +2074,7 @@ $delete= '';
     }
 
     function invoices_summary_list_data() {
-        if (!$this->can_view_invoices()) {
+        if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
         }
 

@@ -141,7 +141,7 @@
 
                 {title: '<?php echo app_lang("quantity") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("rate") ?>', "class": "text-right w15p", sortable: false},
-                {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},
+                // {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("total") ?>', "class": "text-right w15p all", sortable: false},
                 {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", sortable: false, visible: optionVisibility}
             ],

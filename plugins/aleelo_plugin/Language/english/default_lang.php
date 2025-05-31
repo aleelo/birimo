@@ -4410,6 +4410,8 @@ $lang['show_staff'] ='Yes, Can Manage HR & Payroll';
 $lang['estimate'] = 'Quatation';
 $lang['select_expense_type'] = 'select expense type';
 $lang['expense_type'] = 'Expense type';
+$lang['select_company'] = 'Select company';
+$lang['can_access_some_company'] = 'Can access some companies';
 
 
 
