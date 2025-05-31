@@ -57,7 +57,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             validate_numeric_value($invoice_id);
             $view_data["invoice_id"] = $invoice_id;
             $view_data["supplier_id"] = $supplier_id;
-            $view_data["can_edit_invoice"] = $this->can_edit_invoice();
+            $view_data["can_edit_invoices"] = $this->can_edit_invoice();
 
             return $this->template->view("aleelo_plugin\Views/invoices/payments/supplier_payments", $view_data);
         } else {
@@ -485,7 +485,7 @@ class Invoice_payments extends Security_Controller_Plugin {
         if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
             $can_edit_invoice = true;
         }
-        $view_data["can_edit_invoice"] = $can_edit_invoice;
+        $view_data["can_edit_invoices"] = $can_edit_invoice;
         return $this->template->view('aleelo_plugin\Views/invoices/invoice_total_section', $view_data);
     }
 
