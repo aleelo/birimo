@@ -238,7 +238,6 @@ class Expense extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric",
             "expense_date" => "required",
-            // "category_id" => "required",
             "amount" => "required",
             "company_id" =>"required"
 
@@ -283,7 +282,7 @@ class Expense extends Security_Controller_Plugin {
             "title" => $this->request->getPost('title'),
             "description" => $this->request->getPost('description'),
             "category_type" => $expense_type,
-            "category_id" =>$category_id ,
+            "category_id" =>$this->request->getPost('category_id') ,
             "company_id" => $this->request->getPost('company_id'),
             "amount" => unformat_currency($this->request->getPost('amount')),
             "client_id" => $this->request->getPost('expense_client_id') ? $this->request->getPost('expense_client_id') : 0,
