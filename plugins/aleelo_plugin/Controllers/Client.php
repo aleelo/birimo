@@ -48,7 +48,7 @@ class Client extends Security_Controller_Plugin {
 
     private function _validate_view_file_access() {
         if ($this->login_user->user_type == "staff") {
-            $this->access_only_allowed_members();
+            $this->can_view_client();
         } else {
             if (!get_setting("client_can_view_files")) {
                 app_redirect("forbidden");
@@ -58,7 +58,7 @@ class Client extends Security_Controller_Plugin {
 
     private function _validate_add_file_access() {
         if ($this->login_user->user_type == "staff") {
-            $this->access_only_allowed_members();
+            $this->can_view_client();
         } else {
             if (!get_setting("client_can_add_files")) {
                 app_redirect("forbidden");
@@ -1750,7 +1750,7 @@ $edit = "";
     }
 
     function validate_import_clients_file() {
-        $this->access_only_allowed_members();
+        $this->can_view_client();
 
         $file_name = $this->request->getPost("file_name");
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -1767,7 +1767,7 @@ $edit = "";
     }
 
     function validate_import_clients_file_data($check_on_submit = false) {
-        $this->access_only_allowed_members();
+        $this->can_view_client();
 
         $table_data = "";
         $error_message = "";
@@ -1930,7 +1930,7 @@ $edit = "";
     }
 
     function download_sample_excel_file() {
-        $this->access_only_allowed_members();
+        $this->can_view_client();
         return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-clients-sample.xlsx"))));
     }
 
@@ -2053,7 +2053,7 @@ $edit = "";
 
     function contracts($client_id) {
         validate_numeric_value($client_id);
-        $this->access_only_allowed_members();
+        $this->can_view_client();
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
@@ -2067,7 +2067,7 @@ $edit = "";
     }
 
     function clients_list() {
-        $this->access_only_allowed_members();
+        $this->can_view_client();
 
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("clients", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data['see_company_dropdown'] = $this->login_user->user_type === "staff" && $this->login_user->company_access ==="all" && $this->login_user->department ==0;
@@ -2116,7 +2116,7 @@ $edit = "";
 
     function proposals($client_id) {
         validate_numeric_value($client_id);
-        $this->access_only_allowed_members();
+        $this->can_view_client();
 
         if ($client_id) {
             $view_data["client_info"] = $this->Clients_model->get_one($client_id);
