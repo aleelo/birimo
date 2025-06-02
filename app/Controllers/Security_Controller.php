@@ -249,10 +249,12 @@ class Security_Controller extends App_Controller {
             if (get_array_value($this->login_user->permissions, "hide_team_members_list") == "1") {
                 return false;
             }
-    
-            if (get_array_value($this->login_user->permissions, "can_view_team_members") == "1") {
-                return true;
-            }
+    // else{
+    //             return true;
+    // }
+            // if (get_array_value($this->login_user->permissions, "can_view_team_members") == "1") {
+            //     return true;
+            // }
     
             $user_company_id = $this->login_user->department;
             if ($user_company_id) {
@@ -261,7 +263,7 @@ class Security_Controller extends App_Controller {
             }
         }
     
-        return false;
+        return true;
     }
 
     //access team members and clients
@@ -687,15 +689,15 @@ protected function can_view_all_tasks() {
     }
     return null; // Deny access if company_access is not "all"
 }
-    protected function can_view_own_company_tasks() {
-        if (
+    // protected function can_view_own_company_tasks() {
+    //     if (
             
-            get_array_value($this->login_user->permissions, "task") === "own_company"
-        ) {
-            return $this->login_user->department;
-        }
-        return null;
-    }
+    //         get_array_value($this->login_user->permissions, "task") === "all_tasks" 
+    //     ) {
+    //         return $this->login_user->department;
+    //     }
+    //     return null;
+    // }
     protected function can_view_own_tasks() {
         if (
             ($this->login_user->user_type == "staff" ) &&
@@ -1010,7 +1012,7 @@ protected function can_view_all_tasks() {
     }
 
     protected function has_all_projects_restricted_role() {
-        if ($this->login_user->user_type === "staff" && !$this->login_user->is_admin && get_array_value($this->login_user->permissions, "do_not_show_projects") == "1") {
+        if ($this->login_user->user_type === "staff" && !$this->login_user->is_admin && get_array_value($this->login_user->permissions, "do_not_show_projects") == "13") {
             return true;
         }
     }
