@@ -2700,4 +2700,5 @@ $lang["own_tasks"] = "own tasks";
 $lang["can_access_tasks"] = "can access tasks";
 $lang["can_accsess_all_company"] = "can accsess all company";
 $lang["Condition_company"] = "Condition";
+$lang["mark_invoice_as_draft"] = "Mark invoice as draft";
 return $lang;
