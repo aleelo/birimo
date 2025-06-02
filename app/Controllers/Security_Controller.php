@@ -249,19 +249,21 @@ class Security_Controller extends App_Controller {
             if (get_array_value($this->login_user->permissions, "hide_team_members_list") == "1") {
                 return false;
             }
-    // else{
-    //             return true;
-    // }
+
+    else{
+                return true;
+    }
             // if (get_array_value($this->login_user->permissions, "can_view_team_members") == "1") {
             //     return true;
             // }
     
+        
+        }
             $user_company_id = $this->login_user->department;
             if ($user_company_id) {
                 $team_members = $this->Users_model->get_details(["company_id" => $user_company_id]);
                 return $team_members;
             }
-        }
     
         return true;
     }
