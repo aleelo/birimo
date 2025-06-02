@@ -79,24 +79,24 @@ if (!function_exists("make_project_tabs_data")) {
                                 $project_tabs["milestones"] = "project/milestones/" . $project_info->id;
                             }
 
-                            if ($show_gantt_info) {
-                                $project_tabs["gantt"] = "tasks/gantt/" . $project_info->id;
-                            }
+                            // if ($show_gantt_info) {
+                            //     $project_tabs["gantt"] = "tasks/gantt/" . $project_info->id;
+                            // }
 
-                            if ($show_note_info) {
-                                $project_tabs["notes"] = "project/notes/" . $project_info->id;
-                            }
+                            // if ($show_note_info) {
+                            //     $project_tabs["notes"] = "project/notes/" . $project_info->id;
+                            // }
 
                             $project_tabs["files"] = "project/files/" . $project_info->id;
-                            $project_tabs["comments"] = "project/comments/" . $project_info->id;
+                            // $project_tabs["comments"] = "project/comments/" . $project_info->id;
 
-                            if ($project_info->project_type === "client_project" && $show_customer_feedback) {
-                                $project_tabs["customer_feedback"] = "project/customer_feedback/" . $project_info->id;
-                            }
+                            // if ($project_info->project_type === "client_project" && $show_customer_feedback) {
+                            //     $project_tabs["customer_feedback"] = "project/customer_feedback/" . $project_info->id;
+                            // }
 
-                            if ($show_timesheet_info) {
-                                $project_tabs["timesheets"] = "project/timesheets/" . $project_info->id;
-                            }
+                            // if ($show_timesheet_info) {
+                            //     $project_tabs["timesheets"] = "project/timesheets/" . $project_info->id;
+                            // }
 
                             if ($show_invoice_info && $project_info->project_type === "client_project") {
                                 $project_tabs["invoices"] = "project/invoices/" . $project_info->id;
@@ -137,7 +137,7 @@ if (!function_exists("make_project_tabs_data")) {
                                 $project_tabs["files"] = "project/files/" . $project_info->id;
                             }
 
-                            $project_tabs["comments"] = "project/customer_feedback/" . $project_info->id;
+                            // $project_tabs["comments"] = "project/customer_feedback/" . $project_info->id;
 
                             if ($show_milestone_info) {
                                 $project_tabs["milestones"] = "project/milestones/" . $project_info->id;
