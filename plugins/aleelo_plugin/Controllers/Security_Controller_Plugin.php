@@ -170,13 +170,14 @@ $this->Expense_categories_model = new \aleelo_plugin\Models\Expense_categories_m
         if ($this->login_user->is_admin) {
         return true;
     }
-        if ($this->login_user->user_type == "staff" &&
-        get_array_value($this->login_user->permissions, "hide_invoice") !== "1" &&
+        if ($this->login_user->user_type == "staff" ){
+        if(get_array_value($this->login_user->permissions, "hide_invoice") !== "1" &&
         get_array_value($this->login_user->permissions, "show_sales") == "1") {
         return true;
     }
 
     return false;
+}
 }
 
 
