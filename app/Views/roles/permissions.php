@@ -575,12 +575,12 @@
                             ?>
                             <label for="task_own_tasks"><?php echo app_lang("own_tasks"); ?></label>
                         </div>
-                        <!-- <div>
+                        <div>
                             <?php
                             echo form_radio(array("id" => "task_yes","name" => "task_permission","value" => "all", "class" => "form-check-input", ), $task, ($task === "all") ? true : false);
                             ?>
                             <label for="task_yes"><?php echo app_lang("all_tasks"); ?></label>
-                        </div> -->
+                        </div>
                         <div>
                                 <?php
                                 echo form_checkbox("can_create_tasks", "1", $can_create_tasks ? true : false, "id='can_create_tasks' class='manage_project_section form-check-input'");
@@ -675,7 +675,7 @@
                             ?>
                             <label for="expense_own_expenses"><?php echo ("own expenses"); ?></label>
                         </div>
-                        <!-- <div>
+                        <div>
                             <?php
                             echo form_radio(array(
                                 "id" => "expense_yes",
@@ -685,7 +685,7 @@
                             ), $expense, ($expense === "all") ? true : false);
                             ?>
                             <label for="expense_yes"><?php echo app_lang("all"); ?></label>
-                        </div> -->
+                        </div>
                             <div>
                                 <?php
                                 echo form_checkbox("can_add_expense", "1", $can_add_expense ? true : false, "id='can_add_expense' class='form-check-input'");
