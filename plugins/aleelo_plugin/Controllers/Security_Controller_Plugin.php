@@ -487,8 +487,7 @@ protected function can_view_own_company_task() {
         protected function can_view_own_company_tasks() {
         if (
             
-            get_array_value($this->login_user->permissions, "task") === "all_tasks" ||
-        ) {
+            get_array_value($this->login_user->permissions, "task") === "all_tasks"  ) {
             return $this->login_user->department;
         }
         return null;
