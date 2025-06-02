@@ -13,7 +13,7 @@ class Team_member extends Security_Controller_Plugin {
 
     function __construct() {
         parent::__construct();
-        $this->access_only_team_members();
+        // $this->access_only_team_members();
     }
     function upload_file()
     {
