@@ -57,7 +57,7 @@
            
           ?>
               <?php } ?>
-              <?php if ($show_general_info) { ?>
+            <?php if ($user_info->user_type === "staff" && ($login_user->is_admin || (!$user_info->is_admin && get_array_value($login_user->permissions, "can_manage_user_role_and_permissions") && $login_user->id !== $user_info->id))) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/company_access/" . $user_info->id); ?>" data-bs-target="#tab-company-access"> <?php echo app_lang('company_access'); ?></a></li>
         <?php } ?>
         <?php if ($show_account_settings) { ?>
