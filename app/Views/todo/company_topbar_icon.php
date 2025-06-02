@@ -4,8 +4,10 @@
 $db = \Config\Database::connect();
 $user_id = session()->get('user_id'); 
 $user_query = $db->query("SELECT department_id FROM rise_users WHERE id = ?", [$user_id]);
-$user_department_ids = $user_query->getRow()->department_id;
+$is_admin = $db->query("SELECT is_admin FROM rise_users WHERE id = ?", [$user_id]);
 
+$user_department_ids = $user_query->getRow()->department_id;
+$is_admin = $is_admin->getRow()->is_admin;
 // Convert department_id to an array if it contains multiple IDs (e.g., "2,3")
 $department_ids_array = explode(',', $user_department_ids);
 
@@ -15,7 +17,7 @@ $placeholders = implode(',', array_fill(0, count($department_ids_array), '?'));
 $query = $db->query("SELECT id, name FROM rise_company WHERE id IN ($placeholders)", $department_ids_array);
 
 $companies = $query->getResultArray();
-if (in_array("0", $department_ids_array)) {
+if (in_array("0", $department_ids_array ) || $is_admin) {
     $companies[] = array('id' => '0', 'name' => 'all');
 }
 // // Prepare the dropdown options
