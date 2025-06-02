@@ -170,14 +170,13 @@ $this->Expense_categories_model = new \aleelo_plugin\Models\Expense_categories_m
         if ($this->login_user->is_admin) {
         return true;
     }
-        if ($this->login_user->user_type == "staff" ){
-        if(get_array_value($this->login_user->permissions, "hide_invoice") !== "1" &&
+        if ($this->login_user->user_type == "staff" &&
+        get_array_value($this->login_user->permissions, "hide_invoice") !== "1" &&
         get_array_value($this->login_user->permissions, "show_sales") == "1") {
         return true;
     }
 
     return false;
-}
 }
 
 
@@ -486,15 +485,11 @@ protected function can_view_own_company_task() {
     }
 
         protected function can_view_own_company_tasks() {
-                    $department = $this->login_user->department;
-
-            if (get_array_value($this->login_user->permissions, "task") === "all_tasks") {
-                 if($department == 0) {
-                return null; 
-            }
-            else{
-                return $department;
-            }
+        if (
+            
+            get_array_value($this->login_user->permissions, "task") === "all_tasks" ||
+        ) {
+            return $this->login_user->department;
         }
         return null;
     }
