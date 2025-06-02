@@ -115,8 +115,8 @@ class Security_Controller extends App_Controller {
 
     //only allowed to access for team members 
     protected function access_only_team_members() {
-        $task_permission = get_array_value($this->login_user->permissions, "task");
-        if (!$this->login_user->is_admin && !$task_permission) {
+        $task_permission = get_array_value($this->login_user->permissions, "hide_team_members_list") =="1";
+        if (!$this->login_user->is_admin && get_array_value($this->login_user->permissions, "hide_team_members_list") != "1" ) {
             app_redirect("forbidden");
         }
     }
