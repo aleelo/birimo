@@ -434,6 +434,16 @@ protected function can_view_own_company_expense() {
           return  $department= $this->login_user->department;
           }
     }
+protected function can_view_own_expense() {
+          if(     get_array_value($this->login_user->permissions, "expense") === "own_expenses"
+        ){
+        return null; 
+          }
+          else{
+          return  $department= $this->login_user->id;
+          }
+    }
+    
 // ----------------------------------------------------task-----------------------------------------------------
 protected function can_view_task() {
     if ($this->login_user->user_type == "staff" && get_array_value($this->login_user->permissions, "hide_task") !== "1") {
@@ -472,6 +482,29 @@ protected function can_view_own_company_task() {
           else{
           return  $department= $this->login_user->department;
           }
+    }
+
+        protected function can_view_own_company_tasks() {
+                    $department = $this->login_user->department;
+
+            if (get_array_value($this->login_user->permissions, "task") === "all_tasks") {
+                 if($department == 0) {
+                return null; 
+            }
+            else{
+                return $department;
+            }
+        }
+        return null;
+    }
+    protected function can_view_own_tasks() {
+        if (
+            ($this->login_user->user_type == "staff" ) &&
+            get_array_value($this->login_user->permissions, "task") === "own_tasks"
+        ) {
+            return $this->login_user->id;
+        }
+        return null;
     }
 //-----------------------------------------------------items-----------------------------------------------------
 protected function can_view_items() {

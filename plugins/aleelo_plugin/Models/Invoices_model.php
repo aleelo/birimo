@@ -46,6 +46,10 @@ class Invoices_model extends Crud_model {
         if ($exclude_draft) {
             $where .= " AND $invoices_table.status!='draft' ";
         }
+        $client_id = $this->_get_clean_value($options, "client_id");
+        if ($client_id) {
+            $where .= " AND $invoices_table.client_id=$client_id";
+        }
 
         $project_id = $this->_get_clean_value($options, "project_id");
         if ($project_id) {

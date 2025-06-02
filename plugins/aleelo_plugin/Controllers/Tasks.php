@@ -3482,7 +3482,7 @@ class Tasks extends Security_Controller_Plugin {
             "quick_filter" => $quick_filter,
             "label_id" => $this->request->getPost('label_id'),
             "custom_field_filter" => $this->prepare_custom_field_filter_values("tasks", $this->login_user->is_admin, $this->login_user->user_type),
-              "can_view_all_tasks"=>$this->can_view_all_tasks(),
+            //   "can_view_all_tasks"=>$this->can_view_all_tasks(),
               "can_view_own_tasks"=>$this->can_view_own_tasks(),
               "can_view_own_company_tasks"=>$this->can_view_own_company_tasks(),
               "all_tasks"=>$this->request->getPost("all_tasks"),

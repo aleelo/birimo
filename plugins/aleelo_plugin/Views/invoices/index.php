@@ -47,7 +47,7 @@
             idColumnClass = "";
         }
 
-        var RangeButtonSelectedOption = 'monthly';
+        var RangeButtonSelectedOption = 'yearly';
         var tab = "<?php echo $tab; ?>";
         if (tab === "custom") {
             var ignoreSavedFilter = true;
@@ -74,9 +74,8 @@
             rangeRadioButtons: [{name: "range_radio_button", selectedOption: RangeButtonSelectedOption, options: ['monthly', 'yearly', 'custom', 'dynamic'], dynamicRanges:['this_month', 'last_month', 'next_month', 'this_year', 'last_year']}],
             filterDropdown: [
             {name: "type", class: "w150", options: <?php echo $types_dropdown; ?>},
-            {name: "status", class: "w150", options: invoice_statuses_dropdown}
-           
-           
+            {name: "status", class: "w150", options: invoice_statuses_dropdown},
+            {name: "client_id", class: "w200", options: <?php echo $clients_dropdown;?>}
            <?php if ((get_array_value($login_user->permissions, "company") === "all") && $login_user->department== "0") 
  { ?>
            , {name: "can_view_all_invoice", class: "w200 ", options: <?php echo $company; ?>}

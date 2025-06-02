@@ -18,6 +18,24 @@ class Invoices extends Security_Controller_Plugin {
 
     /* load invoice list view */
 
+       function get_client_dropdown() {
+        if (!$this->can_view_invoice()) {
+            app_redirect("forbidden");
+        }
+        $department = $this->login_user->department;
+        if($department == 0) {
+            $clients = $this->Clients_model->get_all_where(array("deleted" => 0, "is_lead" => 0))->getResult();
+        } else {
+            $clients = $this->Clients_model->get_all_where(array("deleted" => 0, "is_lead" => 0, "company_id" => $department))->getResult();
+        }
+
+        $payment_method_dropdown = array(array("id" => "", "text" => "- " . app_lang("clients") . " -"));
+        foreach ($clients as $value) {
+            $payment_method_dropdown[] = array("id" => $value->id, "text" => $value->company_name);
+        }
+
+        return json_encode($payment_method_dropdown);
+    }
     function index($tab = "", $status = "", $selected_currency = "") {
         if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
@@ -46,6 +64,7 @@ class Invoices extends Security_Controller_Plugin {
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
             $view_data['can_add_payment'] = $this->can_add_payment();
 
+            $view_data['clients_dropdown'] =$this->get_client_dropdown();
             return $this->template->rander("aleelo_plugin\Views/invoices/index", $view_data);
         } else {
         
@@ -53,6 +72,7 @@ class Invoices extends Security_Controller_Plugin {
             $view_data["client_info"] = $this->Clients_model->get_one($this->login_user->client_id);
             $view_data['client_id'] = $this->login_user->client_id;
             $view_data['page_type'] = "full";
+
             return $this->template->rander("aleelo_plugin\Views/clients/invoices/index", $view_data);
         }
     }
@@ -612,6 +632,7 @@ else{
             "custom_field_filter" => $this->prepare_custom_field_filter_values("invoices", $this->login_user->is_admin, $this->login_user->user_type),
             // "company_id_department" => $this->can_view_own_company_invoice(),
             "can_view_all_invoice" => $this->request->getPost("can_view_all_invoice"),
+            "client_id" => $this->request->getPost("client_id"),
         );
 
         $list_data = $this->Invoices_model->get_details($options)->getResult();

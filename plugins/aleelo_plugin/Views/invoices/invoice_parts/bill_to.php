@@ -12,7 +12,8 @@
         } ?>
     
           <?php if ($invoice_info->project_title) { ?>
-        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("Project"); ?>:</strong>                 <?php echo $invoice_info->project_title; ?>
+        <br /> <strong style="font-size: 1.1em; color: <?php echo $color; ?>;"><?php echo ("Project"); ?>:</strong>                           <?php echo anchor(get_uri("projects/view/" . $invoice_info->project_id), $invoice_info->project_title); ?>
+
 
 
  

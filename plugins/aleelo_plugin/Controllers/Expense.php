@@ -281,7 +281,7 @@ class Expense extends Security_Controller_Plugin {
             "expense_date" => $expense_date,
             "title" => $this->request->getPost('title'),
             "description" => $this->request->getPost('description'),
-            "category_type" => $expense_type,
+            // "category_type" => $expense_type,
             "category_id" =>$this->request->getPost('category_id') ,
             "company_id" => $this->request->getPost('company_id'),
             "amount" => unformat_currency($this->request->getPost('amount')),

@@ -632,7 +632,7 @@ class Invoice_payments extends Security_Controller_Plugin {
             $currency_symbol = $data->currency_symbol ? $data->currency_symbol : $default_currency_symbol;
 
             $result[] = array(
-                anchor(get_uri("clients/view/" . $data->client_id), $data->client_name),
+                anchor(get_uri("clients/view/" . $data->client_id), $data->client_name? $data->client_name : "-"),
                 $data->payment_count,
                 to_currency($data->amount, $currency_symbol)
             );

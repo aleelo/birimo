@@ -3,7 +3,7 @@ $delivery_note_content = "";
 if ($model_info->delivery_note) {
     $delivery_note_content = process_images_from_content($model_info->delivery_note, false);
 } else {
-    $delivery_note_content = get_setting("estimate_footer_solution");
+    $delivery_note_content = get_setting("invoice_footer");
 }
 
 echo form_open(get_uri("invoices/save_delivery_note"), array("id" => "add-page-form", "class" => "general-form bg-white", "role" => "form")); ?>

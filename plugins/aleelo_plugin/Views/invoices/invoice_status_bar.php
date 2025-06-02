@@ -10,11 +10,35 @@
             <?php echo anchor(get_uri("projects/view/" . $invoice_info->project_id), $invoice_info->project_title); ?>
         </div>
     <?php } ?>
-    <?php if ($invoice_info->type == "invoice") { ?>
-        <div class="col-md-12 mb15">
-            <strong><?php echo app_lang('status') . ": "; ?></strong><?php echo $invoice_status_label; ?>
-        </div>
-    <?php } ?>
+<?php if ($invoice_info->type == "invoice") { ?>
+    <div class="col-md-12 mb15">
+        <strong><?php echo app_lang('status') . ": "; ?></strong><?php echo $invoice_status_label; ?>
+        
+        <?php if ($invoice_info->status === "draft") { ?>
+            <?php echo ajax_anchor(
+                get_uri("invoices/update_invoice_status/" . $invoice_info->id . "/not_paid"),
+                "<i data-feather='check' class='icon-16'></i> " . app_lang('mark_invoice_as_confirm'),
+                array(
+                    "data-reload-on-success" => "1",
+                    "class" => "btn btn-primary btn-sm mt-2"
+                )
+            ); ?>
+        <?php 
+    }
+    else{
+        echo ajax_anchor(
+            get_uri("invoices/update_invoice_status/" . $invoice_info->id . "/draft"),
+            "<i data-feather='edit' class='icon-16'></i> " . app_lang('mark_invoice_as_draft'),
+            array(
+                "data-reload-on-success" => "1",
+                "class" => "btn btn-primary btn-sm mt-2"
+            )
+        );
+    } ?>
+
+    </div>
+<?php } ?>
+
     <?php if ($invoice_info->labels_list) { ?>
         <div class="col-md-12 mb15">
             <strong><?php echo app_lang('label') . ": "; ?></strong><?php echo make_labels_view_data($invoice_info->labels_list, "", true); ?>
