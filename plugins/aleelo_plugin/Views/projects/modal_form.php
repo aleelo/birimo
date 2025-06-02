@@ -26,7 +26,7 @@
             </div>
         </div> 
         <?php } else{ ?>
-            <input type="hidden" name="department_id" value="<?php echo $login_user->department; ?>">
+            <input type="hidden" id="department_id" name="department_id" value="<?php echo $login_user->department; ?>">
             <?php } ?>
 
 
