@@ -261,9 +261,9 @@ class Project extends Security_Controller_Plugin {
         $view_data['departments'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
         $view_data['screen_sizes'] = array("" => " -- choose screen size -- ") + $this->Screen_size_model->get_dropdown_list(array("screen_size"), "id");
         // $view_data['departments_dropdown'] = array("" => " -- All Companies -- ") + $this->Departments_model->get_dropdown_list(array("nameSo"), "id");
-        $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
-        ($this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "company") == "all"));
-         
+         $view_data['has_all_permission'] = ( $this->login_user->is_admin && $this->login_user->company_access ==="all" && $this->login_user->department ==0 || 
+            ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
+            
         $view_data['hide_clients_dropdown'] = false;
 
         if (!$this->login_user->is_admin && !get_array_value($this->login_user->permissions, "client") && !get_array_value($this->login_user->permissions, "client_specific")) {
