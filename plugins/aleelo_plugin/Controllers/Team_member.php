@@ -595,7 +595,7 @@ class Team_member extends Security_Controller_Plugin {
                 $show_leave = false;
 
                 $expense_access_info = $this->get_access_info("expense");
-                $view_data["show_expense_info"] = (get_setting("module_expense") == "1" && $expense_access_info->access_type == "all") ? true : false;
+                $view_data["show_expense_info"] =$this->can_view_expense();;
 
                 //admin can access all members attendance and leave
                 //none admin users can only access to his/her own information 

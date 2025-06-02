@@ -452,6 +452,45 @@ else  if ($this->login_user->company_access === "all" || (get_array_value($this-
         
         echo json_encode(array("data" => $result));
     }
+        function list_data_team_member($user_id) {
+        if (!$this->can_view_expense()) {
+            app_redirect("forbidden");
+        }
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+        $category_id = $this->request->getPost('category_id');
+        $project_id = $this->request->getPost('project_id');
+        $user_id = $user_id;
+        $company_id_company= $this->request->getPost('company_id_company');
+        // $company= $this->can_view_own_company_expense();
+        
+        
+    
+
+        $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
+
+        $options = array(
+            "start_date" => $start_date,
+            "created_by_user"=>$this->can_view_own_expense(),
+        "end_date" => $end_date, 
+        "category_id" => $category_id,
+         "project_id" => $project_id,
+         "company_id_company"=>$company_id_company,
+          "user_id" => $user_id,
+           "custom_fields" => $custom_fields,
+             "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses",
+              $this->login_user->is_admin, $this->login_user->user_type
+            ));
+        $list_data = $this->Expenses_model->get_details($options)->getResult();
+
+        $result = array();
+        foreach ($list_data as $data) {
+            $result[] = $this->_make_row($data, $custom_fields);
+            
+        }
+        
+        echo json_encode(array("data" => $result));
+    }
 
     //get a row of expnese list
     private function _row_data($id) {

@@ -15,26 +15,25 @@
         $EXPENSE_TABLE = $("#expense-table");
 
         $EXPENSE_TABLE.appTable({
-            source: '<?php echo_uri("expense/list_data/") ?>',
+            source: '<?php echo_uri("expense/list_data_team_member/" . $user_id) ?>',
             filterParams: {user_id: "<?php echo $user_id; ?>"},
             order: [[0, "asc"]],
             columns: [
                 {visible: false, searchable: false},
                 {title: '<?php echo app_lang("date") ?>', "class": "all", "iDataSort": 0},
-                {title: '<?php echo app_lang("category") ?>'},
+                {title: '<?php echo app_lang("company") ?>'},
+                {title: '<?php echo app_lang("created_by") ?>'},
                 {title: '<?php echo app_lang("title") ?>'},
                 {title: '<?php echo app_lang("description") ?>'},
-                {title: '<?php echo app_lang("file") ?>'},
+                {title: '<?php echo app_lang("category") ?>', "class": "w10p"},
                 {title: '<?php echo app_lang("amount") ?>', "class": "text-right"},
-                {title: '<?php echo app_lang("tax") ?>', "class": "text-right"},
-                {title: '<?php echo app_lang("second_tax") ?>', "class": "text-right"},
                 {title: '<?php echo app_lang("total") ?>', "class": "text-right all"}
 <?php echo $custom_field_headers; ?>,
                 {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
             ],
             printColumns: combineCustomFieldsColumns([1, 2, 3, 4, 6, 7, 8, 9], '<?php echo $custom_field_headers; ?>'),
             xlsColumns: combineCustomFieldsColumns([1, 2, 3, 4, 6, 7, 8, 9], '<?php echo $custom_field_headers; ?>'),
-            summation: [{column: 6, dataType: 'currency'}, {column: 7, dataType: 'currency'}, {column: 8, dataType: 'currency'}, {column: 9, dataType: 'currency'}]
+            summation: [ {column: 7, dataType: 'currency'}]
         });
     });
 </script>
