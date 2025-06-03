@@ -71,7 +71,7 @@ class Client extends Security_Controller_Plugin {
     function modal_form() {
         $client_id = $this->request->getPost('id');
         validate_numeric_value($client_id);
-        // $this->_validate_client_manage_access($client_id);
+        // //$this->_validate_client_manage_access($user_info->client_id);($client_id);
         if (!$this->can_add_client() && !$this->can_edit_client()) {
             app_redirect("forbidden");
         }
@@ -121,7 +121,7 @@ class Client extends Security_Controller_Plugin {
 
     function save() {
         $client_id = $this->request->getPost('id');
-        // $this->_validate_client_manage_access($client_id);
+        // //$this->_validate_client_manage_access($user_info->client_id);($client_id);
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -217,7 +217,7 @@ class Client extends Security_Controller_Plugin {
 
     function delete() {
         $id = $this->request->getPost('id');
-       // $this->_validate_client_manage_access($id);
+       // //$this->_validate_client_manage_access($user_info->client_id);($id);
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -623,7 +623,7 @@ $edit = "";
             $client_id = $this->request->getPost('context_id');
         }
 
-        $this->_validate_client_manage_access($client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($client_id);
 
         $view_data['client_id'] = $client_id;
         $view_data['folder_id'] = $this->request->getPost('folder_id');
@@ -906,14 +906,14 @@ $edit = "";
     /* contact add modal */
 
     function add_new_contact_modal_form() {
-        $this->_validate_client_manage_access();
+        //$this->_validate_client_manage_access($user_info->client_id);();
 
         $view_data['model_info'] = $this->Users_models->get_one(0);
         $view_data['model_info']->client_id = $this->request->getPost('client_id');
 
         $view_data['add_type'] = $this->request->getPost('add_type');
 
-        $this->_validate_client_manage_access($view_data['model_info']->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($view_data['model_info']->client_id);
 
         $view_data["available_menus"] = get_available_menus_for_clients_dropdown();
 
@@ -1006,7 +1006,7 @@ $edit = "";
     function save_contact() {
         $contact_id = $this->request->getPost('contact_id');
         $client_id = $this->request->getPost('client_id');
-        $this->_validate_client_manage_access($client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($client_id);
 
         $this->access_only_allowed_members_or_contact_personally($contact_id);
 
@@ -1114,7 +1114,7 @@ $edit = "";
         $this->access_only_allowed_members_or_contact_personally($contact_id);
 
         $contact_info = $this->Users_models->get_one($contact_id);
-        $this->_validate_client_manage_access($contact_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($contact_info->client_id);
 
         $id = 0;
 
@@ -1152,7 +1152,7 @@ $edit = "";
         $this->access_only_allowed_members_or_contact_personally($user_id);
 
         $contact_info = $this->Users_models->get_one($user_id);
-        $this->_validate_client_manage_access($contact_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($contact_info->client_id);
 
         $this->validate_submitted_data(array(
             "email" => "required|valid_email"
@@ -1215,7 +1215,7 @@ $edit = "";
         validate_numeric_value($user_id);
         $this->access_only_allowed_members_or_contact_personally($user_id);
         $user_info = $this->Users_models->get_one($user_id);
-        $this->_validate_client_manage_access($user_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($user_info->client_id);
 
         //process the the file which has uploaded by dropzone
         $profile_image = str_replace("~", ":", $this->request->getPost("profile_image"));
@@ -1270,7 +1270,7 @@ $edit = "";
         $id = $this->request->getPost('id');
 
         $contact_info = $this->Users_models->get_one($id);
-        $this->_validate_client_manage_access($contact_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($contact_info->client_id);
 
         if ($this->request->getPost('undo')) {
             if ($this->Users_models->delete($id, true)) {
@@ -1403,7 +1403,7 @@ $edit = "";
         ));
 
         $client_id = $this->request->getPost('client_id');
-        $this->_validate_client_manage_access($client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($client_id);
 
         $view_data["client_info"] = $this->Clients_model->get_one($client_id);
 
@@ -1421,7 +1421,7 @@ $edit = "";
         }
 
         $client_id = $this->request->getPost('client_id');
-        $this->_validate_client_manage_access($client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($client_id);
 
         $email = trim($this->request->getPost('email'));
 
@@ -1496,7 +1496,7 @@ $edit = "";
 
 
     function import_clients_modal_form() {
-        // $this->_validate_client_manage_access();
+        // //$this->_validate_client_manage_access($user_info->client_id);();
 
         return $this->template->view("aleelo_plugin\Views/clients/import_clients_modal_form");
     }
@@ -1579,7 +1579,7 @@ $edit = "";
     }
 
     function save_client_from_excel_file() {
-        $this->_validate_client_manage_access();
+        //$this->_validate_client_manage_access($user_info->client_id);();
 
         if (!$this->validate_import_clients_file_data(true)) {
             echo json_encode(array('success' => false, 'message' => app_lang('error_occurred')));
@@ -2188,7 +2188,7 @@ $edit = "";
         validate_numeric_value($contact_id);
 
         $user_info = $this->Users_models->get_one($contact_id);
-        $this->_validate_client_manage_access($user_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($user_info->client_id);
         $view_data["available_menus"] = get_available_menus_for_clients_dropdown();
         $view_data["user_info"] = $user_info;
         $view_data['label_column'] = "col-md-2";
@@ -2200,7 +2200,7 @@ $edit = "";
         validate_numeric_value($contact_id);
 
         $user_info = $this->Users_models->get_one($contact_id);
-        $this->_validate_client_manage_access($user_info->client_id);
+        //$this->_validate_client_manage_access($user_info->client_id);($user_info->client_id);
 
         $primary_contact = $this->Clients_model->get_primary_contact($user_info->client_id);
 
@@ -2244,7 +2244,7 @@ $edit = "";
     function contact_permissions_modal_form() {
         $contact_id = $this->request->getPost('id');
         $user_info = $this->Users_models->get_one($contact_id);
-        $this->_validate_client_manage_access($user_info->client_id);
+        ////$this->_validate_client_manage_access($user_info->client_id);($user_info->client_id);($user_info->client_id);
         $view_data["available_menus"] = get_available_menus_for_clients_dropdown();
         $view_data["user_info"] = $user_info;
         $view_data['label_column'] = "col-md-3";
@@ -2330,7 +2330,7 @@ $edit = "";
             app_redirect("forbidden");
         }
 
-        $this->_validate_client_manage_access($info->client_id);
+        ////$this->_validate_client_manage_access($user_info->client_id);($user_info->client_id);($info->client_id);
 
         if ($this->General_files_model->delete($id)) {
             delete_app_files(get_general_file_path("client", $info->client_id), array(make_array_of_file($info)));
@@ -2418,7 +2418,7 @@ $edit = "";
             return false;
         }
         if ($this->login_user->user_type == "staff") {
-            $this->_validate_client_manage_access($context_id);
+            //$this->_validate_client_manage_access($user_info->client_id);($context_id);
         }
 
         return true;
