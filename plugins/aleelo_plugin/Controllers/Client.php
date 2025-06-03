@@ -935,7 +935,7 @@ $edit = "";
             
             $view_data['label_column'] = "col-md-2";
             $view_data['field_column'] = "col-md-10";
-            $view_data['can_edit_clients'] = $this->can_edit_clients($view_data['model_info']->client_id);
+            $view_data['can_edit_clients'] = $this->can_edit_client();
             return $this->template->view('aleelo_plugin\Views/clients/contacts/contact_general_info_tab', $view_data);
         }
     }

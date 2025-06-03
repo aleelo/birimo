@@ -61,7 +61,7 @@
                         <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/payments/" . $client_info->id); ?>" data-bs-target="#client-payments"> <?php echo app_lang('payments'); ?></a></li>
                     <?php } ?>
                     <?php if ($show_estimate_info) { ?>
-                        <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/estimates/" . $client_info->id); ?>" data-bs-target="#client-estimates"> <?php echo app_lang('estimates'); ?></a></li> -->
+                        <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/estimates/" . $client_info->id); ?>" data-bs-target="#client-estimates"> <?php echo app_lang('estimates'); ?></a></li>
                     <?php } ?>
                     <?php if ($show_estimate_request_info) { ?>
                         <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/estimate_requests/" . $client_info->id); ?>" data-bs-target="#client-estimate-requests"> <?php echo app_lang('estimate_requests'); ?></a></li> -->

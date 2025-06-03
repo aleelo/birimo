@@ -584,18 +584,20 @@ class Team_member extends Security_Controller_Plugin {
 
                 $view_data['show_general_info'] = $can_update_team_members_info;
                 $view_data['show_job_info'] = false;
+                $view_data["show_expense_info"] = false;
 
                 if ($this->login_user->is_admin || $user_info->id === $this->login_user->id || $this->has_job_info_manage_permission()) {
                     $view_data['show_job_info'] = true;
                 }
-
+                if ($this->login_user->is_admin || $user_info->id === $this->login_user->id || $this->can_view_expense()) {
+                $view_data["show_expense_info"] = true;
+                }
                 $view_data['show_account_settings'] = false;
 
                 $show_attendance = false;
                 $show_leave = false;
 
                 $expense_access_info = $this->get_access_info("expense");
-                $view_data["show_expense_info"] =$this->can_view_expense();
 
                 //admin can access all members attendance and leave
                 //none admin users can only access to his/her own information 
