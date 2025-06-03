@@ -1496,7 +1496,7 @@ $edit = "";
 
 
     function import_clients_modal_form() {
-        $this->_validate_client_manage_access();
+        // $this->_validate_client_manage_access();
 
         return $this->template->view("aleelo_plugin\Views/clients/import_clients_modal_form");
     }

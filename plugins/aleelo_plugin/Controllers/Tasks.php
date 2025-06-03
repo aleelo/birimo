@@ -668,7 +668,7 @@ class Tasks extends Security_Controller_Plugin {
 
         $view_data['has_checklist'] = $this->Checklist_items_model->get_details(array("task_id" => $id))->resultID->num_rows;
         $view_data['has_sub_task'] = count($this->Tasks_model->get_all_where(array("parent_task_id" => $id, "deleted" => 0))->getResult());
- $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
+        $view_data['has_all_permission'] = ( $this->login_user->is_admin && $this->login_user->company_access ==="all" && $this->login_user->department ==0 || 
             ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
             
         $view_data["project_deadline"] = $this->_get_project_deadline_for_task(get_array_value($view_data, "project_id"));
