@@ -1705,7 +1705,8 @@ $edit = "";
             "vat_number",
             "client_groups",
             "currency",
-            "currency_symbol"
+            "currency_symbol",
+            "company_id"
         );
     }
 
