@@ -375,7 +375,7 @@ $edit = "";
                 $view_data["show_event_info"] = (get_setting("module_event")) ? true : false;
 
                 $access_info = $this->get_access_info("expense");
-                $view_data["show_expense_info"] = (get_setting("module_expense") && $access_info->access_type == "all") ? true : false;
+                $view_data["show_expense_info"] = $this->can_view_expense();
 
                 $view_data['client_info'] = $client_info;
 
@@ -515,7 +515,8 @@ $edit = "";
 
             return $this->template->view("aleelo_plugin\Views/clients/estimates/estimates", $view_data);
         }
-    }
+
+}
 
     /* load orders tab  */
 
@@ -790,7 +791,7 @@ $edit = "";
         $this->_validate_client_view_access($view_data['user_info']->client_id);
         $view_data['client_info'] = $this->Clients_model->get_one($view_data['user_info']->client_id);
         $view_data['tab'] = clean_data($tab);
-        $view_data['can_edit_clients'] = $this->can_edit_clients();
+        $view_data['can_edit_clients'] = $this->can_edit_client();
         if ($view_data['user_info']->user_type === "client") {
 
             $view_data['show_cotact_info'] = true;
@@ -807,7 +808,7 @@ $edit = "";
         validate_numeric_value($contact_id);
         $this->access_only_allowed_members_or_contact_personally($contact_id);
         $view_data['user_info'] = $this->Users_models->get_one($contact_id);
-        $view_data['can_edit_clients'] = $this->can_edit_clients();
+        $view_data['can_edit_clients'] = $this->can_edit_client();
         $this->_validate_client_view_access($view_data['user_info']->client_id);
         return $this->template->view("users/account_settings", $view_data);
     }
@@ -898,7 +899,7 @@ $edit = "";
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("client_contacts", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("client_contacts", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $view_data['can_edit_clients'] = $this->can_edit_clients();
+        $view_data['can_edit_clients'] = $this->can_edit_client();
 
         return $this->template->view("aleelo_plugin\Views/clients/contacts/index", $view_data);
     }
@@ -972,7 +973,9 @@ $edit = "";
             
             $view_data['label_column'] = "col-md-2";
             $view_data['field_column'] = "col-md-10";
-            $view_data['can_edit_clients'] = $this->can_edit_clients($client_id);
+            // $view_data['can_edit_clients'] = $this->can_edit_clients($client_id);
+            $view_data['can_edit_clients'] = $this->can_edit_client();
+
 
             $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
             $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
@@ -996,7 +999,7 @@ $edit = "";
             $view_data['user_id'] = clean_data($contact_id);
             $view_data['user_type'] = "client";
             $view_data['model_info'] = $this->Social_links_model->get_one($contact_id);
-            $view_data['can_edit_clients'] = $this->can_edit_clients();
+            $view_data['can_edit_clients'] = $this->can_edit_client();
             return $this->template->view('users/social_links', $view_data);
         }
     }
@@ -1176,7 +1179,7 @@ $edit = "";
         }
 
         //only admin can disable other users login permission
-        if ($this->login_user->is_admin || $this->can_edit_clients()) {
+        if ($this->login_user->is_admin || $this->can_edit_client()) {
             $account_data['disable_login'] = $this->request->getPost('disable_login');
         }
 
@@ -1259,7 +1262,7 @@ $edit = "";
     /* delete or undo a contact */
 
     function delete_contact() {
-        if (!$this->can_edit_clients()) {
+        if (!$this->can_edit_client()) {
             app_redirect("forbidden");
         }
 
@@ -2076,11 +2079,11 @@ $edit = "";
         $view_data['companies_dropdown'] =$this->_get_company();
 
         $access_info = $this->get_access_info("invoice");
-        $view_data["show_invoice_info"] = (get_setting("module_invoice") && $access_info->access_type == "all") ? true : false;
+        $view_data["show_invoice_info"] = $this->can_view_invoice();
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
 
         $view_data['groups_dropdown'] = json_encode($this->_get_groups_dropdown_select2_data(true));
-        $view_data['can_edit_clients'] = $this->can_edit_clients();
+        $view_data['can_edit_clients'] = $this->can_edit_client();
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown(true);
         $view_data['labels_dropdown'] = json_encode($this->make_labels_dropdown("client", "", true));
 
@@ -2090,10 +2093,12 @@ $edit = "";
     private function make_access_permissions_view_data() {
 
         $access_invoice = $this->get_access_info("invoice");
-        $view_data["show_invoice_info"] = (get_setting("module_invoice") && $access_invoice->access_type == "all") ? true : false;
+        $view_data["show_invoice_info"] = $this->can_view_invoice();
+        $view_data["show_payment_info"] = $this->can_view_payment();
+
 
         $access_estimate = $this->get_access_info("estimate");
-        $view_data["show_estimate_info"] = (get_setting("module_estimate") && $access_estimate->access_type == "all") ? true : false;
+        $view_data["show_estimate_info"] = $this->can_view_estimate();
 
         $view_data["show_estimate_request_info"] = (get_setting("module_estimate_request") && $access_estimate->access_type == "all") ? true : false;
 
@@ -2163,7 +2168,7 @@ $edit = "";
      //   $this->restrict_client_access();
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
-        $view_data["can_create_task"] = $this->can_edit_clients();
+        $view_data["can_create_task"] = $this->can_edit_client();
 
         $view_data['client_id'] = clean_data($client_id);
         return $this->template->view("aleelo_plugin\Views/clients/tasks/index", $view_data);

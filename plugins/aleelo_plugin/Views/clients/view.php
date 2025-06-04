@@ -58,6 +58,8 @@
 
                     <?php if ($show_invoice_info) { ?>
                         <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/invoices/" . $client_info->id); ?>" data-bs-target="#client-invoices"> <?php echo app_lang('invoices'); ?></a></li>
+                    <?php } ?>
+                    <?php if ($show_payment_info) { ?>
                         <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("client/payments/" . $client_info->id); ?>" data-bs-target="#client-payments"> <?php echo app_lang('payments'); ?></a></li>
                     <?php } ?>
                     <?php if ($show_estimate_info) { ?>
