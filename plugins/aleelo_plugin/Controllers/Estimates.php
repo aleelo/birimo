@@ -24,7 +24,9 @@ class Estimates extends Security_Controller_Plugin {
 
     function index() {
         $this->check_module_availability("module_invoice");
-        $this->can_view_estimate();
+       if (!$this->can_view_estimate()) {
+            app_redirect("forbidden");
+        }
 
         $view_data['can_request_estimate'] = false;
 

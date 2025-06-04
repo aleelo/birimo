@@ -43,7 +43,7 @@
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/social_links/" . $user_info->id); ?>" data-bs-target="#tab-social-links"> <?php echo app_lang('social_links'); ?></a></li>
         <?php } ?>
 
-        <?php if ($show_job_info) { ?>
+        <?php if ($show_general_info) { ?>
           
           <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/job_info/" . $user_info->id); ?>" data-bs-target="#tab-job-info"> <?php echo app_lang('job_info'); ?></a></li>
               <?php
@@ -75,7 +75,7 @@
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/files/" . $user_info->id); ?>" data-bs-target="#tab-files"> <?php echo app_lang('files'); ?></a></li>
         <?php } ?>
 
-        <?php if ($show_notes) { ?>
+        <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/notes/" . $user_info->id); ?>" data-bs-target="#tab-notes"> <?php echo app_lang('notes'); ?></a></li>
         <?php } ?>
 
@@ -94,7 +94,7 @@
         <?php if ($show_leave) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/leave_info/" . $user_info->id); ?>" data-bs-target="#tab-leave-info"><?php echo app_lang('leaves'); ?></a></li>
         <?php } ?>
-        <?php if ($show_expense_info) { ?>
+        <?php if ($show_general_info) { ?>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("team_member/expense_info/" . $user_info->id); ?>" data-bs-target="#tab-expense-info"><?php echo app_lang('expenses'); ?></a></li>
         <?php } ?>
 
@@ -181,11 +181,10 @@
 
         setTimeout(function() {
             var tab = "<?php echo $tab; ?>";
-            if (tab === "gevvneral") {
+            if (tab === "general") {
                 $("[data-bs-target='#tab-general-info']").trigger("click");
-            } else if (tab === "general") {
-                $("[data-bs-target='#tab-education-info']").trigger("click");
-            } else if (tab === "account") {
+            } 
+              else if (tab === "account") {
                 $("[data-bs-target='#tab-account-settings']").trigger("click");
             } else if (tab === "social") {
                 $("[data-bs-target='#tab-social-links']").trigger("click");

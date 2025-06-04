@@ -39,7 +39,15 @@ class Team_member extends Security_Controller_Plugin {
             }
         }
     }
-
+   private function can_edit_team_members() {
+        if ($this->login_user->user_type == "staff") {
+            if ($this->login_user->is_admin) {
+                return true;
+            } else if (get_array_value($this->login_user->permissions, "can_edit_team_members") == "1") {
+                return true;
+            }
+        }
+    }
     private function update_only_allowed_members($user_id) {
         if ($this->can_update_team_members_info($user_id)) {
             return true; //own profile
@@ -55,7 +63,7 @@ class Team_member extends Security_Controller_Plugin {
     //none admin users can only change his/her own info
     //allowed members can update other members info    
     private function can_update_team_members_info($user_id) {
-        $access_info = $this->get_access_info("team_member_update_permission");
+        $access_info = $this->get_access_info("can_edit_team_members");
 
         if ($this->login_user->id === $user_id) {
             return true; //own profile
@@ -583,15 +591,7 @@ class Team_member extends Security_Controller_Plugin {
                 $can_update_team_members_info = $this->can_update_team_members_info($id);
 
                 $view_data['show_general_info'] = $can_update_team_members_info;
-                $view_data['show_job_info'] = false;
-                $view_data["show_expense_info"] = false;
-
-                if ($this->login_user->is_admin || $user_info->id === $this->login_user->id || $this->has_job_info_manage_permission()) {
-                    $view_data['show_job_info'] = true;
-                }
-                if ($this->login_user->is_admin || $user_info->id === $this->login_user->id || $this->can_view_expense()) {
-                $view_data["show_expense_info"] = true;
-                }
+            
                 $view_data['show_account_settings'] = false;
 
                 $show_attendance = false;
@@ -627,11 +627,12 @@ class Team_member extends Security_Controller_Plugin {
                 //check contact info view permissions
                 $show_cotact_info = $this->can_view_team_members_contact_info();
                 $show_social_links = $this->can_view_team_members_social_links();
-
+                $can_edit_team_members = $this->can_edit_team_members();
                 //own info is always visible
                 if ($id == $this->login_user->id) {
                     $show_cotact_info = true;
                     $show_social_links = true;
+                    $can_edit_team_members = true;
                 }
 
                 $view_data['show_cotact_info'] = $show_cotact_info;
@@ -659,10 +660,7 @@ class Team_member extends Security_Controller_Plugin {
                 }
                 $view_data['hide_send_message_button'] = $hide_send_message_button;
 
-                $view_data["show_notes"] = false;
-                if ($this->can_access_team_members_note($user_info->id)) {
-                    $view_data["show_notes"] = true;
-                }
+               
 
                 $view_data["show_timesheets"] = false;
                 $access_timesheets = $this->get_access_info("timesheet_manage_permission");
@@ -711,6 +709,7 @@ class Team_member extends Security_Controller_Plugin {
         $view_data['user_id'] = $user_id;
         $view_data['job_info'] = $this->Users_models->get_job_info($user_id);
         $view_data['job_info']->job_title = $user_info->job_title;
+        $view_data['can_access_user_settings'] = $this->can_access_user_settings($user_id);
 
         $view_data['can_manage_team_members_job_information'] = $this->has_job_info_manage_permission();
 
@@ -718,7 +717,7 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     private function has_job_info_manage_permission() {
-        return get_array_value($this->login_user->permissions, "job_info_manage_permission");
+        return get_array_value($this->login_user->permissions, "can_edit_team_members");
     }
 
     //save job information of a team member
