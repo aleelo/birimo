@@ -429,12 +429,12 @@
                     </div>
 
                     <div id="project_permission_details_area" class="form-group <?php echo $do_not_show_projects ? "hide" : ""; ?>">
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_checkbox("can_manage_all_projects", "1", $can_manage_all_projects ? true : false, "id='can_manage_all_projects' class='manage_project_section form-check-input'");
                             ?>
                             <label for="can_manage_all_projects"><?php echo app_lang("can_manage_all_projects"); ?></label>
-                        </div>
+                        </div> -->
 
                         <!-- <div>
                             <?php
