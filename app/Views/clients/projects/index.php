@@ -92,7 +92,7 @@ if (isset($page_type) && $page_type === 'dashboard') {
             filterDropdown: filters,
             columns: [
                 {title: '<?php echo app_lang("id") ?>', "class": "w50"},
-                {title: '<?php echo app_lang("title") ?>', "class": "all"},
+                {title: '<?php echo app_lang("title client") ?>', "class": "all"},
                 {targets: [2], visible: false, searchable: false},
                 {title: '<?php echo app_lang("price") ?>', "class": "w10p"},
                 {visible: false, searchable: false},
