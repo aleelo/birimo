@@ -30,27 +30,7 @@
                             ?>
                             <label for="can_manage_user_role_and_permissions"><?php echo app_lang("can_manage_user_role_and_permissions"); ?></label>
                         </div>
-                        <div>
-                            <?php
-                            echo form_checkbox("can_add_or_invite_new_team_members", "1", $can_add_or_invite_new_team_members ? true : false, "id='can_add_or_invite_new_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_add_or_invite_new_team_members"><?php echo app_lang("can_add_or_invite_new_team_members"); ?></label>
-                        </div>
-
-                        <div>
-                            <?php
-                            echo form_checkbox("can_activate_deactivate_team_members", "1", $can_activate_deactivate_team_members ? true : false, "id='can_activate_deactivate_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_activate_deactivate_team_members"><?php echo app_lang("can_activate_deactivate_team_members"); ?></label>
-                        </div>
-
-                        <div>
-                            <?php
-                            echo form_checkbox("can_delete_team_members", "1", $can_delete_team_members ? true : false, "id='can_delete_team_members' class='form-check-input'");
-                            ?>
-                            <label for="can_delete_team_members"><?php echo app_lang("can_delete_team_members"); ?></label>
-                        </div>
-
+                       
                     </li>
                 <?php } ?>  
 
@@ -78,28 +58,56 @@
                     </div>
 
                     <div id="individual_team_members_permission_area" class="<?php echo $hide_team_members_list ? "hide" : ""; ?>">
-                        <!-- <div>
+                     
+                    
+                     <div>
+                            <?php
+                            echo form_checkbox("can_add_or_invite_new_team_members", "1", $can_add_or_invite_new_team_members ? true : false, "id='can_add_or_invite_new_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_add_or_invite_new_team_members"><?php echo app_lang("can_add_or_invite_new_team_members"); ?></label>
+                        </div>
+
+                        <div>
+                            <?php
+                            echo form_checkbox("can_activate_deactivate_team_members", "1", $can_activate_deactivate_team_members ? true : false, "id='can_activate_deactivate_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_activate_deactivate_team_members"><?php echo app_lang("can_activate_deactivate_team_members"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_checkbox("can_edit_team_members", "1", $can_edit_team_members ? true : false, "id='can_edit_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_edit_team_members"><?php echo app_lang("can_edit_team_members"); ?></label>
+                        </div>
+                        <div>
+                            <?php
+                            echo form_checkbox("can_delete_team_members", "1", $can_delete_team_members ? true : false, "id='can_delete_team_members' class='form-check-input'");
+                            ?>
+                            <label for="can_delete_team_members"><?php echo app_lang("can_delete_team_members"); ?></label>
+                        </div>
+
+                    <!-- <div>
                             <?php
                             echo form_checkbox("can_view_own_company_members", "1", $can_view_own_company_members ? true : false, "id='can_view_own_company_members' class='form-check-input'");
                             ?>
                             <label for="can_view_own_company_members"><?php echo app_lang("can_view_own_company_members"); ?></label>
                         </div> -->
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_checkbox("can_view_team_members_contact_info", "1", $can_view_team_members_contact_info ? true : false, "id='can_view_team_members_contact_info' class='form-check-input'");
                             ?>
                             <label for="can_view_team_members_contact_info"><?php echo app_lang("can_view_team_members_contact_info"); ?></label>
-                        </div>
-                        <div>
+                        </div> -->
+                        <!-- <div>
                             <?php
                             echo form_checkbox("can_view_team_members_social_links", "1", $can_view_team_members_social_links ? true : false, "id='can_view_team_members_social_links' class='form-check-input'");
                             ?>
                             <label for="can_view_team_members_social_links"><?php echo app_lang("can_view_team_members_social_links"); ?></label>
-                        </div>
+                        </div> -->
 
-                        <div>
-                            <label for="can_update_team_members_general_info_and_social_links"><?php echo app_lang("can_update_team_members_general_info_and_social_links"); ?></label>
-                            <div class="ml15">
+                        <!-- <div> -->
+                            <!-- <label for="can_update_team_members_general_info_and_social_links"><?php echo app_lang("can_update_team_members_general_info_and_social_links"); ?></label> -->
+                            <!-- <div class="ml15">
                                 <div>
                                     <?php
                                     if (is_null($team_member_update_permission)) {
@@ -140,14 +148,14 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div>
+                        <!-- <div>
                             <?php
                             echo form_checkbox("team_members_note_manage_permission", "all", $team_members_note_manage_permission == "all" ? true : false, "id='team_members_note_manage_permission' class='form-check-input'");
                             ?>
                             <label for="team_members_note_manage_permission"><?php echo app_lang("can_manage_team_members_notes"); ?></label>
-                        </div>
+                        </div> -->
                     </div>
                                     </li>
 
@@ -236,8 +244,8 @@
                         </div>
                     </li>
                 <?php } ?>
-                 <li>
-                    <span data-feather="key" class="icon-14 ml-20"></span>
+                 <!-- <li> -->
+                    <!-- <span data-feather="key" class="icon-14 ml-20"></span>
                     <h5><?php echo app_lang("can_manage_team_members_job_information"); ?></h5>
                     <div>
                         <?php
@@ -263,8 +271,8 @@
                         ), $job_info_manage_permission, ($job_info_manage_permission === "all") ? true : false);
                         ?>
                         <label for="job_info_manage_permission_yes"><?php echo app_lang("yes"); ?></label>
-                    </div>
-                 </li>
+                    </div> -->
+                 <!-- </li> -->
                  <?php if (get_setting("module_attendance")) { ?>
                     <li>
                         <span data-feather="key" class="icon-14 ml-20"></span>
