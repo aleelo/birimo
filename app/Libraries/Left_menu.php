@@ -106,7 +106,7 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
             if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "hide_supplier") !== "1") {
     $sidebar_menu["supplier"] = array("name" => "supplier", "url" => "supplier", "class" => "briefcase");
             }
-            if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "hide_client") !== "1") {
+            if  ($this->ci->login_user->is_admin ||get_array_value($this->ci->login_user->permissions,"show_sales") =="1" && get_array_value($this->ci->login_user->permissions, "hide_client") !== "1") {
     $sidebar_menu["clients"] = array("name" => "clients", "url" => "clients", "class" => "briefcase");
             }
             if (get_setting("module_order") == "1" && ($this->ci->login_user->is_admin || $access_order)) {
@@ -114,7 +114,7 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
                 $sidebar_menu[] = array("name" => "store", "url" => "store", "class" => "list");
             }
 
-            if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "hide_payment") !== "1") {
+            if  ($this->ci->login_user->is_admin ||get_array_value($this->ci->login_user->permissions,"show_sales") =="1" && get_array_value($this->ci->login_user->permissions, "hide_payment") !== "1") {
                 $sidebar_menu[] = array("name" => "invoice_payments", "url" => "invoice_payments", "class" => "compass");
                 $show_payments_menu = true;
             }
@@ -249,8 +249,7 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
                 $show_expenses_menu = true;
             }
 
-            if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "hide_expense") !== "1"|| get_array_value($this->ci->login_user->permissions, "hide_payment") !== "1"|| get_array_value($this->ci->login_user->permissions, "hide_invoice") !== "1"|| get_array_value($this->ci->login_user->permissions, "hide_estimate") !== "1"
-            || get_array_value($this->ci->login_user->permissions, "hide_client") !== "1"|| get_array_value($this->ci->login_user->permissions, "hide_supplier") !== "1"|| $access_items) {
+            if ($this->ci->login_user->is_admin ||get_array_value($this->ci->login_user->permissions,"show_sales") =="1" ){
                 $sidebar_menu["Sales and crm"] = array("name" => "Sales and crm", "url" => "gg", "class" => "menu");
                 $show_expenses_menu = true;
             }
