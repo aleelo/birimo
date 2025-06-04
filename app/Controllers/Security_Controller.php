@@ -292,7 +292,7 @@ class Security_Controller extends App_Controller {
     }
 
     protected function can_manage_all_projects() {
-        if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_manage_all_projects") == "1") {
+        if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "do_not_show_projects") !== "1") {
             return true;
         }
     }
