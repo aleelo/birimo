@@ -678,11 +678,11 @@ class Security_Controller extends App_Controller {
     protected function can_view_own_members() {
         if (
             
-            $this->login_user->company_access= "all" 
+            $this->login_user->department == 0
         ) {
             return $this->login_user->department;
         }
-        return null;
+            return $this->login_user->department;
     }
  
 protected function can_view_all_tasks() {
