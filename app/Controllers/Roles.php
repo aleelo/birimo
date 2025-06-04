@@ -136,6 +136,8 @@ class Roles extends Security_Controller {
             $view_data['can_add_or_invite_new_team_members'] = get_array_value($permissions, "can_add_or_invite_new_team_members");
             $view_data['can_activate_deactivate_team_members'] = get_array_value($permissions, "can_activate_deactivate_team_members");
             $view_data['can_delete_team_members'] = get_array_value($permissions, "can_delete_team_members");
+            $view_data['can_edit_team_members'] = get_array_value($permissions, "can_edit_team_members");
+
 
             $view_data['timeline_permission'] = get_array_value($permissions, "timeline_permission");
             $view_data['timeline_permission_specific'] = get_array_value($permissions, "timeline_permission_specific");
@@ -314,6 +316,8 @@ class Roles extends Security_Controller {
             $can_add_or_invite_new_team_members = $this->request->getPost('can_add_or_invite_new_team_members');
             $can_activate_deactivate_team_members = $this->request->getPost('can_activate_deactivate_team_members');
             $can_delete_team_members = $this->request->getPost('can_delete_team_members');
+            $can_edit_team_members = $this->request->getPost('can_edit_team_members');
+            
         } else {
             //is not an admin user, fetch data
             $role_info = $this->Roles_model->get_one($id);
@@ -324,6 +328,8 @@ class Roles extends Security_Controller {
             $can_add_or_invite_new_team_members = get_array_value($permissions, "can_add_or_invite_new_team_members");
             $can_activate_deactivate_team_members = get_array_value($permissions, "can_activate_deactivate_team_members");
             $can_delete_team_members = get_array_value($permissions, "can_delete_team_members");
+            $can_edit_team_members = $this->request->getPost('can_edit_team_members');
+            
         }
 
         $message_permission = "";
@@ -351,18 +357,18 @@ class Roles extends Security_Controller {
         $client_feedback_access_permission = $this->request->getPost('client_feedback_access_permission');
 
         $team_members_note_manage_permission = $this->request->getPost('team_members_note_manage_permission');
-$can_add_invoice = $this->request->getPost('can_add_invoice');
-$can_update_invoice = $this->request->getPost('can_update_invoice');
-$can_delete_invoice = $this->request->getPost('can_delete_invoice');
-$hide_invoice = $this->request->getPost('hide_invoice');
-$show_sales = $this->request->getPost('show_sales');
-$show_staff = $this->request->getPost('show_staff');
+        $can_add_invoice = $this->request->getPost('can_add_invoice');
+        $can_update_invoice = $this->request->getPost('can_update_invoice');
+        $can_delete_invoice = $this->request->getPost('can_delete_invoice');
+        $hide_invoice = $this->request->getPost('hide_invoice');
+        $show_sales = $this->request->getPost('show_sales');
+        $show_staff = $this->request->getPost('show_staff');
 
 
-$can_delete_estimate = $this->request->getPost('can_delete_estimate');
-$can_update_estimate = $this->request->getPost('can_update_estimate');
-$hide_estimate = $this->request->getPost('hide_estimate');
-$can_add_estimate = $this->request->getPost('can_add_estimate');
+        $can_delete_estimate = $this->request->getPost('can_delete_estimate');
+        $can_update_estimate = $this->request->getPost('can_update_estimate');
+        $hide_estimate = $this->request->getPost('hide_estimate');
+        $can_add_estimate = $this->request->getPost('can_add_estimate');
         $can_upload_and_edit_files = $this->request->getPost('can_upload_and_edit_files');
         $can_view_files = $this->request->getPost('can_view_files');
         $can_comment_on_projects = $this->request->getPost('can_comment_on_projects');
@@ -453,6 +459,7 @@ $can_add_estimate = $this->request->getPost('can_add_estimate');
             "can_add_or_invite_new_team_members" => $can_add_or_invite_new_team_members,
             "can_activate_deactivate_team_members" => $can_activate_deactivate_team_members,
             "can_delete_team_members" => $can_delete_team_members,
+            "can_edit_team_members" => $can_edit_team_members,
             "timeline_permission" => $timeline_permission,
             "timeline_permission_specific" => $timeline_permission_specific,
             "client_feedback_access_permission" => $client_feedback_access_permission,
