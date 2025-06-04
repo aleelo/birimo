@@ -477,7 +477,7 @@ class Team_member extends Security_Controller_Plugin {
             "user_type" => "staff",
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("team_members", $this->login_user->is_admin, $this->login_user->user_type),
-            "own_company_members" => $this->can_view_own_company_members(),
+            // "own_company_members" => $this->can_view_own_company_members(),
             "can_view_own_members" => $this->can_view_own_members(),
             "can_view_all_members"=>$this->request->getPost("can_view_all_members"),
 
@@ -569,16 +569,16 @@ class Team_member extends Security_Controller_Plugin {
             }
 
         
-            $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
-            if (!$users_info) {
-                show_404();
-            }
+            // $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
+            // if (!$users_info) {
+            //     show_404();
+            // }
             
-            $user_company_id = $this->login_user->department;
+            // $user_company_id = $this->login_user->department;
 
-            if ($user_company_id != 0 && $users_info->department != $user_company_id) {
-                app_redirect("team_member");
-            }
+            // if ($user_company_id != 0 && $users_info->department != $user_company_id) {
+            //     app_redirect("team_member");
+            // }
 
             //we have an id. view the team_member's profie
             $options = array("id" => $id, "user_type" => "staff");
