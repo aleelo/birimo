@@ -509,13 +509,18 @@ class Team_member extends Security_Controller_Plugin {
         $image_url = get_avatar($data->image);
         $user_avatar = "<span class='avatar avatar-xs'><img src='$image_url' alt='...'></span>";
         $full_name = $data->first_name . " " . $data->last_name . " ";
-
+        $name ="";
+            if($this->login_user->is_admin || $this->can_edit_team_members()) {
+           $name= get_team_member_profile_link($data->id, $full_name);
+            } else {
+              $name=  $full_name;
+            }       
         //check contact info view permissions
         $show_cotact_info = $this->can_view_team_members_contact_info();
 
         $row_data = array(
             $user_avatar,
-            get_team_member_profile_link($data->id, $full_name),
+            $name,
             $data->job_title,
             $show_cotact_info ? $data->email : "",
             $show_cotact_info && $data->phone ? $data->phone : "-"
