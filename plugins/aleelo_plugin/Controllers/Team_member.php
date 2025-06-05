@@ -67,7 +67,7 @@ class Team_member extends Security_Controller_Plugin {
 
         if ($this->login_user->id === $user_id) {
             return true; //own profile
-        } else if ($access_info->access_type == "all") {
+        } else if ( $this->login_user->is_admin ||get_array_value($this->login_user->permissions, "can_edit_team_members" )) {
             return true; //has access to change all user's profile
         } else if ($user_id && in_array($user_id, $access_info->allowed_members)) {
             return true; //has permission to update this user's profile
@@ -569,16 +569,16 @@ class Team_member extends Security_Controller_Plugin {
             }
 
         
-            // $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
-            // if (!$users_info) {
-            //     show_404();
-            // }
+            $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
+            if (!$users_info) {
+                show_404();
+            }
             
-            // $user_company_id = $this->login_user->department;
+            $user_company_id = $this->login_user->department;
 
-            // if ($user_company_id != 0 && $users_info->department != $user_company_id) {
-            //     app_redirect("team_member");
-            // }
+            if ($user_company_id != 0 && $users_info->company_id != $user_company_id) {
+                app_redirect("team_member");
+            }
 
             //we have an id. view the team_member's profie
             $options = array("id" => $id, "user_type" => "staff");
@@ -652,6 +652,7 @@ class Team_member extends Security_Controller_Plugin {
                 $view_data['tab'] = clean_data($tab); //selected tab
                 $view_data['user_info'] = $user_info;
                 $view_data['social_link'] = $this->Social_links_model->get_one($id);
+                $view_data['can_edit_team_members'] = $can_edit_team_members;
 
                 $hide_send_message_button = true;
                 $this->init_permission_checker("message_permission");
@@ -794,7 +795,7 @@ if (!$signature_path) {
     }
     function company_access($user_id) {
         validate_numeric_value($user_id);
-        $this->update_only_allowed_members($user_id);
+        $this->can_access_user_settings($user_id);
         $id = $this->request->getPost('id');
 
         $options = array(
