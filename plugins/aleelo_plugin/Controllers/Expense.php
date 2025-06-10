@@ -374,10 +374,10 @@ class Expense extends Security_Controller_Plugin {
             $now = get_current_utc_time();
             $user_id = $this->login_user->id; // Get the currently logged-in user ID
         
-            $data = [
-                // "deleted_at" => $now,
-                "deleted_by" => $user_id
-            ];
+            // $data = [
+            //     // "deleted_at" => $now,
+            //     // "deleted_by" => $user_id
+            // ];
             $save_id = $this->Expenses_model->ci_save($data, $id);
 
             if ($expense_info->files) {
