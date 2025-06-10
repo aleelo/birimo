@@ -115,7 +115,7 @@ class Invoice_payments_model extends Crud_model {
     LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
     LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
     LEFT JOIN rise_company as dp ON dp.id = cn.company_id
-    WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+    WHERE $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
     function get_details_supplier($options = array(),$option = array()) {
