@@ -287,7 +287,8 @@ class Project extends Security_Controller_Plugin {
 
         if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "client")) {
             $access_client = $this->get_access_info("client");
-            $clients = $this->Clients_model->get_details(array("show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(), "client_groups" => $access_client->allowed_client_groups))->getResult();
+           $department= $this->login_user->department;
+            $clients = $this->Clients_model->get_details(array("show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(), "client_groups" => $access_client->allowed_client_groups,"department_id"=>$department))->getResult();
             foreach ($clients as $client) {
                 $clients_dropdown[$client->id] = $client->company_name;
             }

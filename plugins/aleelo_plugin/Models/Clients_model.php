@@ -61,6 +61,12 @@ class Clients_model extends Crud_model {
         if ($company_id) {
             $where .= " AND $clients_table.company_id=$company_id";
         }
+
+         $department_id = $this->_get_clean_value($options, "department_id");
+        if ($department_id) {
+            $where .= " AND $clients_table.company_id=$department_id";
+        }
+
         $created_by = $this->_get_clean_value($options, "created_by");
         if ($created_by) {
             $where .= " AND $clients_table.created_by=$created_by";
