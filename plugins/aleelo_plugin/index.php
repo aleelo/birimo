@@ -5,7 +5,7 @@ defined('PLUGINPATH') or exit('No direct script access allowed');
 /*
   Plugin Name: aleelo plugin
   Description: It's a aleelo plugin plugin.
-  Version: 1.0
+  Version: 1.1.0
   Requires at least: 3.0
   Author: aleelo
   Author URL: https://author_url.demo
