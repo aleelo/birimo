@@ -139,7 +139,7 @@ foreach ($task_statuses as $status) {
             }
             filterDropdown.push(<?php echo $custom_field_filters; ?>);
             $("#task-table").appTable({
-                source: '<?php echo_uri("tasks/list_data/project/" . $project_id) ?>',
+                source: '<?php echo_uri("tasks/list_data_project_tasks/project/" . $project_id) ?>',
                 serverSide: true,
                 order: [[1, "desc"]],
                 smartFilterIdentity: "project_tasks_list", //a to z and _ only. should be unique to avoid conflicts 

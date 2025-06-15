@@ -1351,6 +1351,78 @@ class Tasks extends Security_Controller_Plugin {
         echo json_encode($result);
     }
 
+    function list_data_project_tasks($context = "", $context_id = 0) {
+        validate_numeric_value($context_id);
+        if (!$this->can_view_tasks($context, $context_id)) {
+            app_redirect("forbidden");
+        }
+        $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
+
+        $milestone_id = $this->request->getPost('milestone_id');
+
+        $quick_filter = $this->request->getPost('quick_filter');
+        if ($quick_filter) {
+            $status = "";
+        } else {
+            $status = $this->request->getPost('status_id') ? implode(",", $this->request->getPost('status_id')) : "";
+        }
+
+        $show_time_with_task = (get_setting("show_time_with_task_start_date_and_deadline")) ? true : false;
+
+        $options = array(
+            "assigned_to" => $this->request->getPost('assigned_to'),
+            "deadline" => $this->request->getPost('deadline'),
+            "status_ids" => $status,
+            "milestone_id" => $milestone_id,
+            "priority_id" => $this->request->getPost('priority_id'),
+            "custom_fields" => $custom_fields,
+            "unread_status_user_id" => $this->login_user->id,
+            "quick_filter" => $quick_filter,
+            "label_id" => $this->request->getPost('label_id'),
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("tasks", $this->login_user->is_admin, $this->login_user->user_type),
+            "can_view_own_department_client" => $this->can_view_own_company_task(),
+
+         
+
+
+        );
+
+        //add the context data like $options["client_id"] = 2;
+        $context_id_pairs = $this->get_context_id_pairs();
+        $pair_key = array_keys(array_column($context_id_pairs, 'context'), $context);
+        $pair_key = get_array_value($pair_key, 0);
+        $pair = get_array_value($context_id_pairs, $pair_key);
+        $options[get_array_value($pair, "id_key")] = $context_id;
+
+        if ($context === "project") {
+            $options["show_assigned_tasks_only_user_id"] = $this->show_assigned_tasks_only_user_id();
+        }
+
+        $all_options = append_server_side_filtering_commmon_params($options);
+
+        $result = $this->Tasks_model->get_details($all_options);
+
+        //by this, we can handel the server side or client side from the app table prams.
+        if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
+
+        $tasks_edit_permissions = $this->_get_tasks_edit_permissions($list_data);
+        $tasks_status_edit_permissions = $this->_get_tasks_status_edit_permissions($list_data, $tasks_edit_permissions);
+
+        $result_data = array();
+        foreach ($list_data as $data) {
+            $result_data[] = $this->_make_row_project_tasks($data, $custom_fields, $show_time_with_task, $tasks_edit_permissions, $tasks_status_edit_permissions);
+        }
+
+        $result["data"] = $result_data;
+
+        echo json_encode($result);
+    }
+
     /* return a row of task list table */
 
     private function _row_data($id) {
@@ -1370,6 +1442,192 @@ class Tasks extends Security_Controller_Plugin {
     /* prepare a row of task list table */
 
     private function _make_row($data, $custom_fields, $show_time_with_task, $tasks_edit_permissions, $tasks_status_edit_permissions) {
+        $unread_comments_class = "";
+        $icon = "";
+        if (isset($data->unread) && $data->unread && $data->unread != "0") {
+            $unread_comments_class = "unread-comments-of-tasks";
+            $icon = "<i data-feather='message-circle' class='icon-16 ml5 unread-comments-of-tasks-icon'></i>";
+        }
+
+        $title = "";
+        $main_task_id = "#" . $data->id;
+        $sub_task_search_column = "#" . $data->id;
+
+        if ($data->parent_task_id) {
+            $sub_task_search_column = "#" . $data->parent_task_id;
+            //this is a sub task
+            $title = "<span class='sub-task-icon mr5' title='" . app_lang("sub_task") . "'><i data-feather='git-merge' class='icon-14'></i></span>";
+        }
+
+        $toggle_sub_task_icon = "";
+
+        if ($data->has_sub_tasks) {
+            $toggle_sub_task_icon = "<span class='filter-sub-task-button clickable ml5' title='" . app_lang("show_sub_tasks") . "' main-task-id= '$main_task_id'><i data-feather='filter' class='icon-16'></i></span>";
+        }
+
+        $title .= modal_anchor(get_uri("tasks/view"), $data->title . $icon, array("title" => app_lang('task_info') . " #$data->id", "data-post-id" => $data->id, "data-search" => $sub_task_search_column, "class" => $unread_comments_class, "data-modal-lg" => "1"));
+
+        $task_point = "";
+        if ($data->points > 1) {
+            $task_point .= "<span class='badge badge-light clickable mt0' title='" . app_lang('points') . "'>" . $data->points . "</span> ";
+        }
+        $title .= "<span class='float-end ml5'>" . $task_point . "</span>";
+
+        if ($data->priority_id) {
+            $title .= "<span class='float-end' title='" . app_lang('priority') . ": " . $data->priority_title . "'>
+                            <span class='sub-task-icon priority-badge' style='background: $data->priority_color'><i data-feather='$data->priority_icon' class='icon-14'></i></span> $toggle_sub_task_icon
+                      </span>";
+        } else {
+            $title .= "<span class='float-end'>" . $toggle_sub_task_icon . "</span>";
+        }
+
+        $task_labels = make_labels_view_data($data->labels_list, true);
+
+        $title .= "<span class='float-end mr5'>" . $task_labels . "</span>";
+
+        $context_title = "";
+        if ($data->project_id) {
+            $context_title = anchor(get_uri("projects/view/" . $data->project_id), $data->project_title ? $data->project_title : "");
+        } else if ($data->client_id) {
+            $context_title = anchor(get_uri("clients/view/" . $data->client_id), $data->company_name ? $data->company_name : "");
+        } else if ($data->lead_id) {
+            $context_title = anchor(get_uri("leads/view/" . $data->lead_id), $data->company_name ? $data->company_name : "");
+        } else if ($data->invoice_id) {
+            $context_title = anchor(get_uri("invoices/view/" . $data->invoice_id), $data->invoice_display_id);
+        } else if ($data->estimate_id) {
+            $context_title = anchor(get_uri("estimates/view/" . $data->estimate_id), get_estimate_id($data->estimate_id));
+        } else if ($data->order_id) {
+            $context_title = anchor(get_uri("orders/view/" . $data->order_id), get_order_id($data->order_id));
+        } else if ($data->contract_id) {
+            $context_title = anchor(get_uri("contracts/view/" . $data->contract_id), $data->contract_title ? $data->contract_title : "");
+        } else if ($data->proposal_id) {
+            $context_title = anchor(get_uri("proposals/view/" . $data->proposal_id), get_proposal_id($data->proposal_id));
+        } else if ($data->subscription_id) {
+            $context_title = anchor(get_uri("subscriptions/view/" . $data->subscription_id), $data->subscription_title ? $data->subscription_title : "");
+        } else if ($data->expense_id) {
+            $context_title = modal_anchor(get_uri("expenses/expense_details"), ($data->expense_title ? $data->expense_title : format_to_date($data->expense_date, false)), array("title" => app_lang("expense_details"), "data-post-id" => $data->expense_id, "data-modal-lg" => "1"));
+        } else if ($data->ticket_id) {
+            $context_title = anchor(get_uri("tickets/view/" . $data->ticket_id), $data->ticket_title ? $data->ticket_title : "");
+        }
+
+        $milestone_title = "-";
+        if ($data->milestone_title) {
+            $milestone_title = $data->milestone_title;
+        }
+
+        $assigned_to = "-";
+
+        if ($data->assigned_to) {
+            $image_url = get_avatar($data->assigned_to_avatar);
+            $assigned_to_user = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span> $data->assigned_to_user";
+            $assigned_to = get_team_member_profile_link($data->assigned_to, $assigned_to_user);
+
+            if ($data->user_type != "staff") {
+                $assigned_to = get_client_contact_profile_link($data->assigned_to, $assigned_to_user);
+            }
+        }
+
+
+        $collaborators = $this->_get_collaborators($data->collaborator_list);
+
+        if (!$collaborators) {
+            $collaborators = "-";
+        }
+
+
+        $checkbox_class = "checkbox-blank";
+        if ($data->status_key_name === "done") {
+            $checkbox_class = "checkbox-checked";
+        }
+
+        if (get_array_value($tasks_status_edit_permissions, $data->id)) {
+            //show changeable status checkbox and link to team members
+            $check_status = js_anchor("<span class='$checkbox_class mr15 float-start'></span>", array('title' => "", "class" => "js-selection-id", "data-id" => $data->id, "data-value" => $data->status_key_name === "done" ? "1" : "3", "data-act" => "update-task-status-checkbox")) . $data->id;
+            $status = js_anchor($data->status_key_name ? app_lang($data->status_key_name) : $data->status_title, array('title' => "", "class" => "", "data-id" => $data->id, "data-value" => $data->status_id, "data-act" => "update-task-status"));
+        } else {
+            //don't show clickable checkboxes/status to client
+            if ($checkbox_class == "checkbox-blank") {
+                $checkbox_class = "checkbox-un-checked";
+            }
+            $check_status = "<span class='$checkbox_class mr15 float-start'></span> " . $data->id;
+            $status = $data->status_key_name ? app_lang($data->status_key_name) : $data->status_title;
+        }
+
+
+
+        $deadline_text = "-";
+        if ($data->deadline && is_date_exists($data->deadline)) {
+
+            if ($show_time_with_task) {
+                if (date("H:i:s", strtotime($data->deadline)) == "00:00:00") {
+                    $deadline_text = format_to_date($data->deadline, false);
+                } else {
+                    $deadline_text = format_to_relative_time($data->deadline, false, false, true);
+                }
+            } else {
+                $deadline_text = format_to_date($data->deadline, false);
+            }
+
+            if (get_my_local_time("Y-m-d") > $data->deadline && $data->status_id != "3") {
+                $deadline_text = "<span class='text-danger'>" . $deadline_text . "</span> ";
+            } else if (format_to_date(get_my_local_time(), false) == format_to_date($data->deadline, false) && $data->status_id != "3") {
+                $deadline_text = "<span class='text-warning'>" . $deadline_text . "</span> ";
+            }
+        }
+
+
+        $start_date = "-";
+        if (is_date_exists($data->start_date)) {
+            if ($show_time_with_task) {
+                if (date("H:i:s", strtotime($data->start_date)) == "00:00:00") {
+                    $start_date = format_to_date($data->start_date, false);
+                } else {
+                    $start_date = format_to_relative_time($data->start_date, false, false, true);
+                }
+            } else {
+                $start_date = format_to_date($data->start_date, false);
+            }
+        }
+
+        $options = "";
+
+        if ($this->can_edit_task()) {
+            $options .= modal_anchor(get_uri("tasks/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_task'), "data-post-id" => $data->id));
+        }
+        if ($this->can_delete_task()) {
+            $options .= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_task'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("tasks/delete"), "data-action" => "delete-confirmation"));
+        }
+
+        $row_data = array(
+            $data->status_color,
+            $check_status,
+            $title,
+            $data->title,
+            $task_labels,
+            $data->priority_title,
+            $data->points,
+            $data->start_date,
+            $start_date,
+            $data->deadline,
+            $deadline_text,
+            $milestone_title,
+            $context_title,
+            $assigned_to,
+            $collaborators,
+            $status
+        );
+
+        foreach ($custom_fields as $field) {
+            $cf_id = "cfv_" . $field->id;
+            $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
+        }
+
+        $row_data[] = $options;
+
+        return $row_data;
+    }
+
+    private function _make_row_project_tasks($data, $custom_fields, $show_time_with_task, $tasks_edit_permissions, $tasks_status_edit_permissions) {
         $unread_comments_class = "";
         $icon = "";
         if (isset($data->unread) && $data->unread && $data->unread != "0") {
