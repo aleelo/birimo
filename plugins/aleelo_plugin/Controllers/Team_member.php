@@ -107,8 +107,23 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     public function index() {
-              $this->access_only_team_members();
+if($this->        $this->access_only_team_members()
+){
+            app_redirect("forbidden");
+        }
 
+
+        $view_data = array();
+        $view_data["can_view_team_members_list"] = $this->can_view_team_members_list();
+        $view_data["can_add_or_invite_new_team_members"] = $this->can_add_or_invite_new_team_members();
+        $view_data["can_edit_team_members"] = $this->can_edit_team_members();
+        $view_data["can_update_team_members_info"] = $this->can_update_team_members_info(0);
+        $view_data["can_access_user_settings"] = $this->can_access_user_settings(0);
+        $view_data["show_social_links"] = $this->can_view_team_members_social_links();
+
+        if ($this->login_user->is_admin) {
+            $view_data['roles_dropdown'] = $this->_get_roles_dropdown();
+}
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
         $view_data["company"] = $this->_get_company();
