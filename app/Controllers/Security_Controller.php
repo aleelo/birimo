@@ -114,17 +114,12 @@ class Security_Controller extends App_Controller {
     }
 
     //only allowed to access for team members 
-protected function access_only_team_members() {
-    if (!$this->login_user->is_admin) {
-        $hide_team_members = get_array_value($this->login_user->permissions, "hide_team_members_list") == "1";
-        $show_staff = get_array_value($this->login_user->permissions, "show_staff") == "1";
-
-        if ($hide_team_members || !$show_staff) {
+    protected function access_only_team_members() {
+        $task_permission = get_array_value($this->login_user->permissions, "hide_team_members_list") =="1";
+        if (!$this->login_user->is_admin && get_array_value($this->login_user->permissions, "hide_team_members_list") == "1" ) {
             app_redirect("forbidden");
         }
     }
-}
-
 
     //only allowed to access for admin users
     protected function access_only_admin() {
