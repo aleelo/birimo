@@ -107,7 +107,7 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     public function index() {
-if($this->        $this->access_only_team_members()
+if($this->access_only_team_members()
 ){
             app_redirect("forbidden");
         }
