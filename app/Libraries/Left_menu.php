@@ -163,7 +163,10 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
             ){
             $sidebar_menu["project"] = array("name" => "project", "url" => "project/all_projects", "class" => "command","position" => 9,);
             }
-            if (get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1" || get_array_value($this->ci->login_user->permissions, "show_staff") == "1") {
+            if (
+                ($this->ci->login_user->user_type === "staff" || $this->ci->login_user->is_admin) 
+                && get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1" && get_array_value($this->ci->login_user->permissions, "show_staff") == "1"
+            ){
 
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
             }
