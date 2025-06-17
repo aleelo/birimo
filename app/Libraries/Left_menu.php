@@ -167,6 +167,7 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
                 ($this->ci->login_user->user_type === "staff" || $this->ci->login_user->is_admin) 
                 && get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1" && get_array_value($this->ci->login_user->permissions, "show_staff") == "1"
             ){
+            $sidebar_menu["staff"] = array("name" => "staff", "url" => "", "class" => "users","position" => 10,);
 
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
             }
