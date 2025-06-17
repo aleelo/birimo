@@ -106,10 +106,20 @@ class Team_member extends Security_Controller_Plugin {
         return false;
     }
 
+    private function show_staff(){
+        if ($this->login_user->user_type == "staff") {
+            if ($this->login_user->is_admin) {
+                return true;
+            } else if (get_array_value($this->login_user->permissions, "show_staff") == "1") {
+                return true;
+            }
+        }
+    }
     public function index() {
-        // if (!$this->can_view_team_members_list()) {
-        //     app_redirect("forbidden");
-        // }
+        if(!$this->show_staff()){
+            app_redirect("forbidden");
+        }
+    
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
         $view_data["company"] = $this->_get_company();
