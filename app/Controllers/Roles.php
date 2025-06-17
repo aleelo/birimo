@@ -305,6 +305,8 @@ class Roles extends Security_Controller {
         $disable_event_sharing = $this->request->getPost('disable_event_sharing');
 
         $hide_team_members_list = $this->request->getPost('hide_team_members_list');
+        $hide_team_members_list = $this->request->getPost('show_staff_list') ? "0" : $hide_team_members_list;
+
         $can_view_own_company_members = $this->request->getPost('can_view_own_company_members');
 
         $can_delete_leave_application = $this->request->getPost('can_delete_leave_application');
@@ -445,7 +447,8 @@ class Roles extends Security_Controller {
             "timesheet_manage_permission" => $timesheet_manage_permission,
             "timesheet_manage_permission_specific" => $timesheet_manage_permission_specific,
             "disable_event_sharing" => $disable_event_sharing,
-                        "hide_team_members_list" => $hide_team_members_list,
+            "hide_team_members_list" => $hide_team_members_list,
+
             "can_view_own_company_members" => $can_view_own_company_members,
 
             "can_delete_leave_application" => $can_delete_leave_application,
