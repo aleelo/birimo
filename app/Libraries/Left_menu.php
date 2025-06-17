@@ -167,7 +167,7 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
                 ($this->ci->login_user->user_type === "staff" || $this->ci->login_user->is_admin) 
                 && get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1" && get_array_value($this->ci->login_user->permissions, "show_staff") == "1"
             ){
-            $sidebar_menu["staff"] = array("name" => "staff", "url" => "", "class" => "users","position" => 10,);
+            $sidebar_menu["staff"] = array("name" => "team member", "url" => "", "class" => "users","position" => 10,);
 
             $sidebar_menu["staff"] = array("name" => "staff", "url" => "team_member", "class" => "users","position" => 10,);
             }
@@ -193,9 +193,9 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
 
             $team_submenu = array();
 
-            if (get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1") {
-                $team_submenu["team_members"] = array("name" => "team_members", "url" => "team_members", "class" => "users");
-            }
+            // if (get_array_value($this->ci->login_user->permissions, "hide_team_members_list") != "1") {
+            //     $team_submenu["team_members"] = array("name" => "team_members", "url" => "team_members", "class" => "users");
+            // }
 
 
             if (get_setting("module_attendance") == "1" && ($this->ci->login_user->is_admin || $access_timecard)) {
