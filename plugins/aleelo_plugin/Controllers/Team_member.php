@@ -107,9 +107,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     public function index() {
-        // if (!$this->can_view_team_members_list()) {
-        //     app_redirect("forbidden");
-        // }
+              $this->access_only_team_members();
+
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
         $view_data["company"] = $this->_get_company();
