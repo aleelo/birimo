@@ -107,10 +107,9 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     public function index() {
-if($this->access_only_team_members()
-){
-            app_redirect("forbidden");
-        }
+        // if (!$this->can_view_team_members_list()) {
+        //     app_redirect("forbidden");
+        // }
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
         $view_data["company"] = $this->_get_company();
@@ -695,7 +694,7 @@ if($this->access_only_team_members()
     function job_info($user_id) {
 
         validate_numeric_value($user_id);
-        if (!($this->login_user->is_admin || $this->login_user->id === $user_id || $this->can_view_team_members_list())) {
+        if (!($this->login_user->is_admin || $this->login_user->id === $user_id || $this->has_job_info_manage_permission())) {
             app_redirect("forbidden");
         }
         $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
