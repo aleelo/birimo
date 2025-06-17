@@ -468,7 +468,7 @@ class Dashboard extends Security_Controller {
             $columns[] = array("clock_in_out");
         }
 
-        $columns[] = array("my_open_tasks");
+        // $columns[] = array("my_open_tasks");
 
         if (get_array_value($widgets, "events_today")) {
             $columns[] = array("events_today");
@@ -499,9 +499,9 @@ class Dashboard extends Security_Controller {
             $columns[] = array("total_hours_worked");
         }
 
-        if (count($columns) < 4 && get_array_value($widgets, "open_projects")) {
-            $columns[] = array("open_projects");
-        }
+        // if (count($columns) < 4 && get_array_value($widgets, "open_projects")) {
+        //     $columns[] = array("open_projects");
+        // }
 
 
         $ratio = "3-3-3-3";
@@ -521,13 +521,13 @@ class Dashboard extends Security_Controller {
     private function _get_second_and_third_row_of_admin_and_team_dashboard_widget_columns($widgets) {
         $columns = array();
 
-        if (get_array_value($widgets, "projects_overview")) {
-            if (get_array_value($widgets, "next_reminder")) {
-                $columns[] = array("projects_overview", "next_reminder");
-            } else {
-                $columns[] = array("projects_overview");
-            }
-        }
+        // if (get_array_value($widgets, "projects_overview")) {
+        //     if (get_array_value($widgets, "next_reminder")) {
+        //         $columns[] = array("projects_overview", "next_reminder");
+        //     } else {
+        //         $columns[] = array("projects_overview");
+        //     }
+        // }
 
 
         if (get_array_value($widgets, "invoice_overview")) {
@@ -539,9 +539,9 @@ class Dashboard extends Security_Controller {
         }
 
 
-        if (get_array_value($widgets, "all_tasks_overview")) {
-            $columns[] = array("all_tasks_overview");
-        }
+        // if (get_array_value($widgets, "all_tasks_overview")) {
+        //     $columns[] = array("all_tasks_overview");
+        // }
 
         if (get_array_value($widgets, "team_members_overview")) {
             if (get_array_value($widgets, "last_announcement")) {
@@ -630,12 +630,12 @@ class Dashboard extends Security_Controller {
         $row = array();
         $columns = array();
 
-        $columns[] = array("project_timeline");
-        if (get_array_value($widgets, "events") && get_array_value($widgets, "open_projects_list")) {
-            $columns[] = array("events", "open_projects_list");
-        } else if (get_array_value($widgets, "open_projects_list") && get_array_value($widgets, "starred_projects")) {
-            $columns[] = array("open_projects_list", "starred_projects");
-        }
+        // $columns[] = array("project_timeline");
+        // if (get_array_value($widgets, "events") && get_array_value($widgets, "open_projects_list")) {
+        //     $columns[] = array("events", "open_projects_list");
+        // } else if (get_array_value($widgets, "open_projects_list") && get_array_value($widgets, "starred_projects")) {
+        //     $columns[] = array("open_projects_list", "starred_projects");
+        // }
 
         $columns[] = array("todo_list");
 
