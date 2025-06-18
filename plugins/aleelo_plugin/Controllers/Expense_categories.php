@@ -34,7 +34,8 @@ class Expense_categories extends Security_Controller_Plugin {
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
             $accounts = $accounting_model->get_accounts("", array("account_type_id" => 14), $key);
-    
+        $suggestion = []; // Initialize the variable
+
             foreach ($accounts as $account) {
                 $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
             }
