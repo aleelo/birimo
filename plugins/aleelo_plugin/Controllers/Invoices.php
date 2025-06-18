@@ -1231,8 +1231,11 @@ $delete= '';
         $key = $this->request->getPost("c");
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
-            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11,"company_id"=>$this->login_user->department), $key);
-    
+        if ($this->login_user->department != 0) {
+    $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11, "company_id" => $this->login_user->department), $key);
+}else{
+        $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
+}    
             foreach ($accounts as $account) {
                 $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
             }
