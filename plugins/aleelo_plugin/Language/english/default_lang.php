@@ -4413,6 +4413,7 @@ $lang['select_expense_type'] = 'select expense type';
 $lang['expense_type'] = 'Expense type';
 $lang['select_company'] = 'Select company';
 $lang['can_access_some_company'] = 'Can access some companies';
+$lang['team members'] = 'Team members';
 
 
 
