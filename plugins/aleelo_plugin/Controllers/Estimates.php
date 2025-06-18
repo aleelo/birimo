@@ -927,7 +927,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             log_message('error', 'Accounting plugin is not available.');
         }
         
-        $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
+            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11,"company_id"=>$this->login_user->department), $key);
     
         foreach ($accounts as $account) {
             $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
