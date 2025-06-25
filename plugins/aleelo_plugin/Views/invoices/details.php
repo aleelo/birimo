@@ -42,6 +42,9 @@
                                 <div class="float-start mt20 ml15">
                                     <?php echo modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-primary text-white add-item-btn", "title" => app_lang('add_item'), "data-post-invoice_id" => $invoice_info->id)); ?>
                                 </div>
+                                <div class="float-start mt20 ml15">
+                                    <?php echo modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_section'), array("class" => "btn btn-primary text-white add-item-btn", "title" => app_lang('add_section'), "data-post-invoice_id" => $invoice_info->id)); ?>
+                                </div>
                             <?php } ?>
                             <div class="float-end pr15" id="invoice-total-section">
                                 <?php echo view("aleelo_plugin\Views/invoices/invoice_total_section", array("invoice_id" => $invoice_info->id, "can_edit_invoices" => $can_edit_invoices)); ?>

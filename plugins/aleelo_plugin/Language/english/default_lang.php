@@ -70,6 +70,8 @@ $lang["-----------"] = "_________________________";
 
 //Aleelo Solutions:
 $lang["solutions"] = "Aleelo Solutions";
+$lang["add_section"] = "Add Section";
+$lang["section_name"] = "Section Name";
 
 
 //Clients
