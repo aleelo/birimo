@@ -30,9 +30,9 @@
 
     $total_after_discount_row = '<tr>
     <td style=" width: 60%;"></td>
-                                    <td colspan="3" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997; border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . app_lang("total_after_discount") . '</td>
-                                    <td style="text-align: right; width: 20%; border: 1px solid #fff;  border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . to_currency($estimate_total_summary->estimate_subtotal - $estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
-                                </tr>';
+        <td colspan="3" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997; border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . app_lang("total_after_discount") . '</td>
+        <td style="text-align: right; width: 20%; border: 1px solid #fff;  border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . to_currency($estimate_total_summary->estimate_subtotal - $estimate_total_summary->discount_total, $estimate_total_summary->currency_symbol) . '</td>
+    </tr>';
     ?>
 </div>
 

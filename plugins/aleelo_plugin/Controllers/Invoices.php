@@ -398,6 +398,7 @@ class Invoices extends Security_Controller_Plugin
             "due_date" => $estimate_info->valid_until,
             "tax_id" => $estimate_info->tax_id,
             "tax_id2" => $estimate_info->tax_id2,
+            // "is_section" => $estimate_info->is_section,
             "note" => $estimate_info->note ?: "",
             "estimate_id" => $estimate_info->id,
             "discount_amount" => $estimate_info->discount_amount ?: 0,
@@ -443,6 +444,7 @@ class Invoices extends Security_Controller_Plugin
                 "total" => $data->total ?: 0,
                 "account_id" => $data->account_id ?: 0,
                 "taxable" => 1,
+                "is_section" => $data->is_section,
                 "supplier_id" => $data->supplier_id ?: 0,
                 "supplier" => $data->supplier ?: "",
                 "supplier_price" => $data->supplier_price ?: 0,
@@ -1494,7 +1496,7 @@ class Invoices extends Security_Controller_Plugin
     private function _make_item_row($data, $is_ediable) {
         $move_icon = "";
         $desc_style = "";
-        
+
         if ($is_ediable) {
             $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
             $desc_style = "style='margin-left:30px'";

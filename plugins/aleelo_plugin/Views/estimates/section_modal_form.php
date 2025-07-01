@@ -39,8 +39,8 @@
     $(document).ready(function () {
         $("#invoice-item-form").appForm({
             onSuccess: function (result) {
-                $("#invoice-item-table").appTable({newData: result.data, dataId: result.id});
-                $("#invoice-total-section").html(result.invoice_total_view);
+                $("#estimate-item-table").appTable({newData: result.data, dataId: result.id});
+                $("#estimate-total-section").html(result.invoice_total_view);
                 if (typeof updateInvoiceStatusBar == 'function') {
                     updateInvoiceStatusBar(result.invoice_id);
                 }
