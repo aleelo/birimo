@@ -1,20 +1,24 @@
 <?php
 
 namespace aleelo_plugin\Controllers;
+
 use Accounting\Models\Accounting_model;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 
 use Config\Services;
 
-class Estimates extends Security_Controller_Plugin {
+class Estimates extends Security_Controller_Plugin
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->init_permission_checker("estimate");
     }
 
-    private function validate_estimate_access($estimate_id = 0, $check_client = false) {
+    private function validate_estimate_access($estimate_id = 0, $check_client = false)
+    {
         if (!$this->can_access_this_estimate($estimate_id, $check_client)) {
             app_redirect("forbidden");
         }
@@ -22,9 +26,10 @@ class Estimates extends Security_Controller_Plugin {
 
     /* load estimate list view */
 
-    function index() {
+    function index()
+    {
         $this->check_module_availability("module_invoice");
-       if (!$this->can_view_estimate()) {
+        if (!$this->can_view_estimate()) {
             app_redirect("forbidden");
         }
 
@@ -33,7 +38,7 @@ class Estimates extends Security_Controller_Plugin {
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("estimates", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data['can_edit_estimates'] = $this->can_add_estimate();
-        if ($this->login_user->user_type === "staff") {  
+        if ($this->login_user->user_type === "staff") {
             $view_data['company'] = $this->_get_company();
 
             $view_data["conversion_rate"] = $this->get_conversion_rate_with_currency_symbol();
@@ -58,12 +63,13 @@ class Estimates extends Security_Controller_Plugin {
 
     /* load new estimate modal */
 
-    function modal_form() {
+    function modal_form()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric",
             "client_id" => "numeric"
         ));
-     
+
 
 
         $id = $this->request->getPost('id');
@@ -107,7 +113,7 @@ class Estimates extends Security_Controller_Plugin {
         }
 
         $view_data['model_info'] = $model_info;
-     
+
         $estimate_request_id = $this->request->getPost('estimate_request_id');
         $view_data['estimate_request_id'] = $estimate_request_id;
 
@@ -129,31 +135,33 @@ class Estimates extends Security_Controller_Plugin {
 
         return $this->template->view('aleelo_plugin\Views/estimates/modal_form', $view_data);
     }
- private function _create_project_from_estimate($estimate_id) {
-    if ($estimate_id) {
-        //  $this->validate_estimate_access($estimate_id);
-        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+    private function _create_project_from_estimate($estimate_id)
+    {
+        if ($estimate_id) {
+            //  $this->validate_estimate_access($estimate_id);
+            $estimate_info = $this->Estimates_model->get_one($estimate_id);
 
-        //don't create new project if there has already been created a new project with this estimate
-        if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
-            $data = array(
-                "title" => get_estimate_id($estimate_info->id),
-                "client_id" => $estimate_info->client_id,
-                "start_date" => $estimate_info->estimate_date,
-                "deadline" => $estimate_info->valid_until,
-                "estimate_id" => $estimate_id
-            );
-            $save_id = $this->Projects_model->ci_save($data);
+            //don't create new project if there has already been created a new project with this estimate
+            if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+                $data = array(
+                    "title" => get_estimate_id($estimate_info->id),
+                    "client_id" => $estimate_info->client_id,
+                    "start_date" => $estimate_info->estimate_date,
+                    "deadline" => $estimate_info->valid_until,
+                    "estimate_id" => $estimate_id
+                );
+                $save_id = $this->Projects_model->ci_save($data);
 
-            //save the project id
-            $data = array("project_id" => $save_id);
-            $this->Estimates_model->ci_save($data, $estimate_id);
+                //save the project id
+                $data = array("project_id" => $save_id);
+                $this->Estimates_model->ci_save($data, $estimate_id);
+            }
         }
     }
-}
     /* add, edit or clone an estimate */
 
-    function save() {
+    function save()
+    {
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -213,26 +221,26 @@ class Estimates extends Security_Controller_Plugin {
         $client_info = $this->Clients_model->get_one($client_id);
 
         if ($estimate_id) {
-          $existing_project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id, "deleted" => 0]);
+            $existing_project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id, "deleted" => 0]);
 
-        if ($existing_project && $existing_project->id) {
-            $save_id_project = $existing_project->id;
-        } else {
-            $data_project = array(
-                "title" => $this->request->getPost('project_id'),
-                "client_id" => $client_id,
-                "start_date" => $this->request->getPost('estimate_date'),
-                "deadline" => $this->request->getPost('valid_until'),
-                "estimate_id" => $estimate_id,
-                "company_id" => $client_info->company_id
-            );
-            $save_id_project = $this->Projects_model->ci_save($data_project);
-        }
+            if ($existing_project && $existing_project->id) {
+                $save_id_project = $existing_project->id;
+            } else {
+                $data_project = array(
+                    "title" => $this->request->getPost('project_id'),
+                    "client_id" => $client_id,
+                    "start_date" => $this->request->getPost('estimate_date'),
+                    "deadline" => $this->request->getPost('valid_until'),
+                    "estimate_id" => $estimate_id,
+                    "company_id" => $client_info->company_id
+                );
+                $save_id_project = $this->Projects_model->ci_save($data_project);
+            }
 
-        if ($save_id_project) {
-            $data_project_id = array("project_id" => $save_id_project);
-$this->Estimates_model->ci_save($data_project_id, $estimate_id);
-        }
+            if ($save_id_project) {
+                $data_project_id = array("project_id" => $save_id_project);
+                $this->Estimates_model->ci_save($data_project_id, $estimate_id);
+            }
             if ($is_clone && $main_estimate_id) {
                 //add estimate items
 
@@ -264,7 +272,8 @@ $this->Estimates_model->ci_save($data_project_id, $estimate_id);
         }
     }
 
-    private function _copy_related_items_to_estimate($copy_items_from_proposal, $copy_items_from_contract, $copy_items_from_order, $estimate_id) {
+    private function _copy_related_items_to_estimate($copy_items_from_proposal, $copy_items_from_contract, $copy_items_from_order, $estimate_id)
+    {
         if (!($copy_items_from_proposal || $copy_items_from_contract || $copy_items_from_order)) {
             return false;
         }
@@ -298,89 +307,91 @@ $this->Estimates_model->ci_save($data_project_id, $estimate_id);
     }
 
     //update estimate status
-function update_estimate_status($estimate_id, $status, $is_modal = false) {
-    if (!($estimate_id && $status)) {
-        show_404();
-    }
-
-    validate_numeric_value($estimate_id);
-    //  $this->validate_estimate_access($estimate_id, true);
-    $estimate_info = $this->Estimates_model->get_one($estimate_id);
-
-    // Allow "sent" status to be updated by team members
-    if ($this->login_user->user_type == "staff") {
-        if (!in_array($status, ["accepted", "declined", "sent"])) {
+    function update_estimate_status($estimate_id, $status, $is_modal = false)
+    {
+        if (!($estimate_id && $status)) {
             show_404();
         }
 
-        $estimate_data = array("status" => $status);
-        if ($is_modal) {
-            if (!get_setting("add_signature_option_on_accepting_estimate") || $status !== "accepted") {
+        validate_numeric_value($estimate_id);
+        //  $this->validate_estimate_access($estimate_id, true);
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+
+        // Allow "sent" status to be updated by team members
+        if ($this->login_user->user_type == "staff") {
+            if (!in_array($status, ["accepted", "declined", "sent"])) {
                 show_404();
             }
 
-            $this->validate_submitted_data(array(
-                "signature" => "required"
-            ));
-
-            $meta_data = array();
-            $signature = $this->request->getPost("signature");
-            $signature = explode(",", $signature);
-            $signature = get_array_value($signature, 1);
-            $signature = base64_decode($signature);
-            $signature = serialize(move_temp_file("signature.jpg", get_setting("timeline_file_path"), "estimate", NULL, "", $signature));
-
-            $meta_data["signature"] = $signature;
-            $meta_data["signed_date"] = get_current_utc_time();
-
-            $estimate_data["meta_data"] = serialize($meta_data);
-            $estimate_data["accepted_by"] = $this->login_user->id;
-        }
-        $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
-        if ($status == "accepted") {
-            log_notification("estimate_accepted", array("estimate_id" => $estimate_id));
-
-            // estimate accepted, create a new project
-            if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
-                $this->create_project_from_estimate($estimate_id);
-            }
-              $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
-            if ($project && $project->id) {
-            $data_project_status = array("status" => "open","status_id"=>1);
-
-            $this->Projects_model->ci_save($data_project_status, $project->id);
-            }
+            $estimate_data = array("status" => $status);
             if ($is_modal) {
-                echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
+                if (!get_setting("add_signature_option_on_accepting_estimate") || $status !== "accepted") {
+                    show_404();
+                }
+
+                $this->validate_submitted_data(array(
+                    "signature" => "required"
+                ));
+
+                $meta_data = array();
+                $signature = $this->request->getPost("signature");
+                $signature = explode(",", $signature);
+                $signature = get_array_value($signature, 1);
+                $signature = base64_decode($signature);
+                $signature = serialize(move_temp_file("signature.jpg", get_setting("timeline_file_path"), "estimate", NULL, "", $signature));
+
+                $meta_data["signature"] = $signature;
+                $meta_data["signed_date"] = get_current_utc_time();
+
+                $estimate_data["meta_data"] = serialize($meta_data);
+                $estimate_data["accepted_by"] = $this->login_user->id;
             }
-        } else if ($status == "declined") {
-             $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
-        if ($project && $project->id) {
-        $data_project_status = array("status" => "canceled","status_id"=>4);
+            $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
+            if ($status == "accepted") {
+                log_notification("estimate_accepted", array("estimate_id" => $estimate_id));
 
-        $this->Projects_model->ci_save($data_project_status, $project->id);
-    }
-            log_notification("estimate_rejected", array("estimate_id" => $estimate_id));
-        }
-    } else {
-        //updating by team members
-        if (!($status == "accepted" || $status == "declined")) {
-            show_404();
-        }   $estimate_data = array("status" => $status);
-        $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
+                // estimate accepted, create a new project
+                if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
+                    $this->create_project_from_estimate($estimate_id);
+                }
+                $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
+                if ($project && $project->id) {
+                    $data_project_status = array("status" => "open", "status_id" => 1);
 
-        //estimate accepted, create a new project
-        if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted") && $status == "accepted") {
-            $this->_create_project_from_estimate($estimate_id);
+                    $this->Projects_model->ci_save($data_project_status, $project->id);
+                }
+                if ($is_modal) {
+                    echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
+                }
+            } else if ($status == "declined") {
+                $project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id]);
+                if ($project && $project->id) {
+                    $data_project_status = array("status" => "canceled", "status_id" => 4);
+
+                    $this->Projects_model->ci_save($data_project_status, $project->id);
+                }
+                log_notification("estimate_rejected", array("estimate_id" => $estimate_id));
+            }
+        } else {
+            //updating by team members
+            if (!($status == "accepted" || $status == "declined")) {
+                show_404();
+            }
+            $estimate_data = array("status" => $status);
+            $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
+
+            //estimate accepted, create a new project
+            if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted") && $status == "accepted") {
+                $this->_create_project_from_estimate($estimate_id);
+            }
         }
-    }
         if ($status == "sent") {
             log_notification("estimate_sent", array("estimate_id" => $estimate_id));
         }
+    }
 
-}
-
-      function project ($estimate_id) {
+    function project($estimate_id)
+    {
         //  $this->validate_estimate_access($estimate_id, true);
         $estimate_info = $this->Estimates_model->get_one($estimate_id);
         $project_id = $this->request->getPost('id');
@@ -389,28 +400,29 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $view_data['model_info'] = $this->Projects_model->get_one($project_id);
 
         return $this->template->view('aleelo_plugin\Views/estimates/project', $view_data);
-
     }
-    
+
     /* create new project from accepted estimate */
 
-     function create_project_from_estimate($estimate_id) {
-    //    $estimate_id = $this->request->getPost(index: 'estimate_id');
+    function create_project_from_estimate($estimate_id)
+    {
+        //    $estimate_id = $this->request->getPost(index: 'estimate_id');
         if ($estimate_id) {
             //  $this->validate_estimate_access($estimate_id);
             $estimate_info = $this->Estimates_model->get_one($estimate_id);
-          if (!$this->Invoices_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
-       
-                    $invoice_client_id = $estimate_info->client_id; // Assuming client_id is available
-                    app_redirect("invoices/save_automatic/" . $estimate_id . "/". $invoice_client_id);              
-                  }
+            if (!$this->Invoices_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+
+                $invoice_client_id = $estimate_info->client_id; // Assuming client_id is available
+                app_redirect("invoices/save_automatic/" . $estimate_id . "/" . $invoice_client_id);
             }
         }
-    
+    }
+
 
     /* delete or undo an estimate */
 
-    function delete() {
+    function delete()
+    {
         $this->can_delete_estimate();
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -436,7 +448,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* list of estimates, prepared for datatable  */
 
-    function list_data() {
+    function list_data()
+    {
         if (!$this->can_view_estimate()) {
             app_redirect("forbidden");
         }
@@ -464,9 +477,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* list of estimate of a specific client, prepared for datatable  */
 
-    function estimate_list_data_of_client($client_id) {
+    function estimate_list_data_of_client($client_id)
+    {
         validate_numeric_value($client_id);
-      //  $this->access_only_allowed_members_or_client_contact($client_id);
+        //  $this->access_only_allowed_members_or_client_contact($client_id);
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -493,7 +507,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* return a row of estimate list table */
 
-    private function _row_data($id) {
+    private function _row_data($id)
+    {
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
 
         $options = array("id" => $id, "custom_fields" => $custom_fields);
@@ -503,7 +518,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* prepare a row of estimate list table */
 
-    private function _make_row($data, $custom_fields) {
+    private function _make_row($data, $custom_fields)
+    {
         $estimate_url = "";
         if ($this->login_user->user_type == "staff") {
             $estimate_url = anchor(get_uri("estimates/view/" . $data->id), get_estimate_id($data->id));
@@ -539,18 +555,16 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
 
-        $delete='';
+        $delete = '';
         if ($this->can_edit_estimate()) {
             $edit = modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id));
-        }else{
-            $edit ='';
-
+        } else {
+            $edit = '';
         }
-        if ($this->can_delete_estimate()){
-        $delete=  js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
-        }
-        else{
-            $delete ='';
+        if ($this->can_delete_estimate()) {
+            $delete =  js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
+        } else {
+            $delete = '';
         }
         $row_data[] = $edit
             . $delete;
@@ -559,27 +573,29 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     //prepare estimate status label 
-    private function _get_estimate_status_label($estimate_info, $return_html = true) {
+    private function _get_estimate_status_label($estimate_info, $return_html = true)
+    {
         return get_estimate_status_label($estimate_info, $return_html);
     }
 
     /* load estimate details view */
 
-    function view($estimate_id = 0) {
+    function view($estimate_id = 0)
+    {
         validate_numeric_value($estimate_id);
         // //  $this->validate_estimate_access($estimate_id);
         $this->can_view_estimate();
-            $invoice_info = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
-            if (!$invoice_info) {
-                show_404();
-            }
-            $client_info = $this->Clients_model->get_details(array("id" => $invoice_info->client_id))->getRow();
-            
-            $user_company_id = $this->login_user->department;
+        $invoice_info = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
+        if (!$invoice_info) {
+            show_404();
+        }
+        $client_info = $this->Clients_model->get_details(array("id" => $invoice_info->client_id))->getRow();
 
-            if ($user_company_id != 0 && $client_info->company_id != $user_company_id) {
-                app_redirect("invoices");
-            }
+        $user_company_id = $this->login_user->department;
+
+        if ($user_company_id != 0 && $client_info->company_id != $user_company_id) {
+            app_redirect("invoices");
+        }
         if ($estimate_id) {
 
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");
@@ -591,22 +607,22 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             );
             $view_data['comments'] = $this->Estimate_comments_model->get_details($comments_options)->getResult();
             $view_data["sort_as_decending"] = $sort_as_decending;
-            $project_id= $this->Estimates_model->get_one($estimate_id)->id;
+            $project_id = $this->Estimates_model->get_one($estimate_id)->id;
             $view_data['project_info'] = $this->Projects_model->get_one($project_id);
             $view_data["task_statuses"] = $this->Tasks_model->get_task_statistics(array("project_id" => $project_id))->task_statuses;
-    
+
             $view_data['project_id'] = $project_id;
             $offset = 0;
             $view_data['offset'] = $offset;
             $view_data['activity_logs_params'] = array("log_for" => "estimate", "log_for_id" => $project_id, "limit" => 20, "offset" => $offset);
-    
+
             $view_data["can_access_clients"] = $this->can_access_clients(true);
-    
+
             $view_data['custom_fields_list'] = $this->Custom_fields_model->get_combined_details("projects", $project_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-    
+
             //count total worked hours
             $options = array("project_id" => $project_id);
-    
+
             //get allowed member ids
             $members = $this->_get_members_to_manage_timesheet();
             if ($members != "all") {
@@ -634,7 +650,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* estimate total section */
 
-    private function _get_estimate_total_view($estimate_id = 0) {
+    private function _get_estimate_total_view($estimate_id = 0)
+    {
         $view_data["estimate_total_summary"] = $this->Estimates_model->get_estimate_total_summary($estimate_id);
         $view_data["estimate_id"] = $estimate_id;
         $view_data["is_estimate_editable"] = $this->_is_estimate_editable($estimate_id);
@@ -643,7 +660,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* load discount modal */
 
-    function discount_modal_form() {
+    function discount_modal_form()
+    {
 
         $this->validate_submitted_data(array(
             "estimate_id" => "required|numeric"
@@ -662,7 +680,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* save discount */
 
-    function save_discount() {
+    function save_discount()
+    {
 
         $this->validate_submitted_data(array(
             "estimate_id" => "required|numeric",
@@ -695,7 +714,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* load item modal */
 
-    function item_modal_form() {
+    function item_modal_form()
+    {
 
         $this->validate_submitted_data(array(
             "id" => "numeric"
@@ -706,6 +726,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         // if (!$this->_is_estimate_editable($estimate_id)) {
         //     app_redirect("forbidden");
         // }
+
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
             $accounts = $accounting_model->get_accounts('', ['account_type_id' => 11]);
@@ -718,15 +739,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 ];
             }
             $view_data['accounts_dropdown'] = $accounts_dropdown;
-    
         } else {
             log_message('error', 'Accounting plugin is not available.');
         }
-        
-    
-    
-        
-    
+
         $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
 
         $view_data['model_info'] = $this->Estimate_items_model->get_one($this->request->getPost('id'));
@@ -734,12 +750,45 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             $estimate_id = $view_data['model_info']->estimate_id;
         }
         $view_data['estimate_id'] = $estimate_id;
-        return $this->template->view('aleelo_plugin\Views/estimates/item_modal_form', $view_data);
+
+        if ($view_data['model_info']->is_section) {
+            return $this->template->view(
+                'aleelo_plugin\Views/estimates/section_modal_form',
+                $view_data
+            );
+        } else {
+            return $this->template->view(
+                'aleelo_plugin\Views/estimates/item_modal_form',
+                $view_data
+            );
+        }
+        // return $this->template->view('aleelo_plugin\Views/estimates/item_modal_form', $view_data);
+    }
+
+    function section_modal_form()
+    {
+        $estimate_id = $this->request->getPost('estimate_id');
+        $login_user = $this->login_user->department;
+        $this->validate_submitted_data(array(
+            "id" => "numeric"
+        ));
+        if ($login_user != "0") {
+            $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id", array("company" => $login_user));
+        } else {
+            $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
+        }
+        $view_data['model_info'] = $this->Invoice_items_model->get_one($this->request->getPost('id'));
+        if (!$estimate_id) {
+            $estimate_id = $view_data['model_info']->estimate_id;
+        }
+        $view_data['estimate_id'] = $estimate_id;
+        return $this->template->view('aleelo_plugin\Views/estimates/section_modal_form', $view_data);
     }
 
     /* add or edit an estimate item */
 
-    function save_item() {
+    function save_item()
+    {
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
@@ -756,17 +805,18 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         $rate = unformat_currency($this->request->getPost('estimate_item_rate'));
         $quantity = unformat_currency($this->request->getPost('estimate_item_quantity'));
         $estimate_item_title = $this->request->getPost('estimate_item_title');
-        $account_name = $this->request->getPost("estimate_item_account_id"); 
+        $account_name = $this->request->getPost("estimate_item_account_id");
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+        $is_section = $this->request->getPost('is_section'); // "1" or null
+        $section_name = $this->request->getPost('section_name');
         $new_account = $this->request->getPost("new_account");
-        $supplier_price=$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
-        $days= unformat_currency($this->request->getPost('days'));
+        $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
+        $days = unformat_currency($this->request->getPost('days'));
 
-  if($supplier_price){
-        $price=$supplier_price * $quantity*$days;
-        }
-        else{
-            $price=0;
+        if ($supplier_price) {
+            $price = $supplier_price * $quantity * $days;
+        } else {
+            $price = 0;
         }
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
@@ -774,21 +824,19 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 $account_data = array(
                     "name" => $account_name,
                     "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
-                   
+
                 );
-            
-                         $accounting_model->db->table("acc_accounts")->insert($account_data);
-            
+
+                $accounting_model->db->table("acc_accounts")->insert($account_data);
+
                 $account_id = $accounting_model->db->insertID();
-            } 
-            else {
+            } else {
                 $account_id = $this->request->getPost("estimate_item_account_id");
-            }       
-    
+            }
         } else {
             $account_id = "0";
-        } 
-       
+        }
+
         $item_id = 0;
 
         if (!$id) {
@@ -802,35 +850,53 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 "title" => $estimate_item_title,
                 "description" => $this->request->getPost('estimate_item_description'),
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
-                "account_id" =>$account_id,
+                "account_id" => $account_id,
                 "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
-                "company_id"=>$this->login_user->department,
+                "company_id" => $this->login_user->department,
             );
             $item_id = $this->Items_model->ci_save($library_item_data);
         }
 
-        $estimate_item_data = array(
-            "estimate_id" => $estimate_id,
-            "title" => $this->request->getPost('estimate_item_title'),
-            "description" => $this->request->getPost('estimate_item_description'),
-            "quantity" => $quantity,
-            "unit_type" => $this->request->getPost('estimate_unit_type'),
-            "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
-            "total" => $rate * $quantity*$days,
-            "account_id" => $account_id,
-            "supplier"=> $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-            "supplier_price"=>$price,
-            "supplier_quantity"=>$this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-            "supplier_id"=>$this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
-            "days"=>$days,
+        if ($is_section) {
 
-        );
+            $estimate_item_data = array(
+                "estimate_id" => $estimate_id,
+                "title" => $section_name,
+                "is_section" => 1,
+                "total" => 0,
+                "rate" => 0,
+                "quantity" => 0,
+                "unit_type" => "",
+            );
 
-        if ($item_id) {
-            $estimate_item_data["item_id"] = $item_id;
+            $estimate_item_id = $this->Estimate_items_model->ci_save($estimate_item_data, $id);
+
+
+        } else {
+
+            $estimate_item_data = array(
+                "estimate_id" => $estimate_id,
+                "title" => $this->request->getPost('estimate_item_title'),
+                "description" => $this->request->getPost('estimate_item_description'),
+                "quantity" => $quantity,
+                "unit_type" => $this->request->getPost('estimate_unit_type'),
+                "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
+                "total" => $rate * $quantity * $days,
+                "account_id" => $account_id,
+                "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+                "supplier_price" => $price,
+                "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+                "supplier_id" => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+                "days" => $days,
+
+            );
+
+            if ($item_id) {
+                $estimate_item_data["item_id"] = $item_id;
+            }
+
+            $estimate_item_id = $this->Estimate_items_model->ci_save($estimate_item_data, $id);
         }
-
-        $estimate_item_id = $this->Estimate_items_model->ci_save($estimate_item_data, $id);
         if ($estimate_item_id) {
             $options = array("id" => $estimate_item_id);
             $item_info = $this->Estimate_items_model->get_details($options)->getRow();
@@ -839,12 +905,13 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
- 
-    
+
+
     /* delete or undo an estimate item */
 
-    function delete_item() {
-      //  $this->access_only_allowed_members();
+    function delete_item()
+    {
+        //  $this->access_only_allowed_members();
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -876,7 +943,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* list of estimate items, prepared for datatable  */
 
-    function item_list_data($estimate_id = 0) {
+    function item_list_data($estimate_id = 0)
+    {
         validate_numeric_value($estimate_id);
         //  $this->validate_estimate_access($estimate_id);
 
@@ -890,7 +958,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* prepare a row of estimate item list table */
 
-    private function _make_item_row($data) {
+    private function _make_item_row($data)
+    {
         $move_icon = "";
         $desc_style = "";
 
@@ -905,21 +974,33 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
         $type = $data->unit_type ? $data->unit_type : "";
 
+        if ($data->is_section) {
+            $days     = "";   
+            $quantity = "";  
+            $rate     = "";    
+            $total    = "";     
+        } else {
+            $days     = $data->days;
+            $quantity = to_decimal_format($data->quantity) . " " . $type;
+            $rate     = to_currency($data->rate, $data->currency_symbol);
+            $total    = to_currency($data->total, $data->currency_symbol);
+        }
+
         return array(
             $data->sort,
             $item,
-                        $data->days,
-
-            to_decimal_format($data->quantity) . " " . $type,
-            to_currency($data->rate, $data->currency_symbol),
-            to_currency($data->total, $data->currency_symbol),
+            $days,
+            $quantity,
+            $rate,
+            $total,
             modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id, "data-post-estimate_id" => $data->estimate_id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete_item"), "data-action" => "delete"))
         );
     }
 
     /* prepare suggestion of estimate item */
-    function get_estimate_account_suggestion() {
+    function get_estimate_account_suggestion()
+    {
         $key = $this->request->getPost("c");
         if (class_exists('\Accounting\Models\Accounting_model')) {
             $accounting_model = new Accounting_model();
@@ -927,28 +1008,29 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             log_message('error', 'Accounting plugin is not available.');
         }
         if ($this->login_user->department != 0) {
-    $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11, "company_id" => $this->login_user->department), $key);
-}else{
-        $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
-}
+            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11, "company_id" => $this->login_user->department), $key);
+        } else {
+            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 11), $key);
+        }
         foreach ($accounts as $account) {
             $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
         }
-    
+
         $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_account"));
-    
+
         echo json_encode($suggestion);
     }
-   
-    
-    function get_estimate_item_suggestion() {
+
+
+    function get_estimate_item_suggestion()
+    {
         $key = $this->request->getPost("q");
         $company_id = $this->login_user->department;
-        $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id"),"company_id" => $company_id));
-        
-        $company_id = $this->login_user->department; 
+        $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id"), "company_id" => $company_id));
+
+        $company_id = $this->login_user->department;
         $items = $this->Invoice_items_model->get_item_suggestion($key, "", $company_id);
-        
+
         foreach ($items as $item) {
             $suggestion[] = array("id" => $item->id, "text" => $item->title);
         }
@@ -957,9 +1039,10 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
         echo json_encode($suggestion);
     }
-  
 
-    function get_estimate_item_info_suggestion() {
+
+    function get_estimate_item_info_suggestion()
+    {
         $item = $this->Invoice_items_model->get_item_info_suggestion(array("item_id" => $this->request->getPost("item_id")));
         if ($item) {
             $item->rate = $item->rate ? to_decimal_format($item->rate) : "";
@@ -973,7 +1056,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     //view html is accessable to client only.
-    function preview($estimate_id = 0, $show_close_preview = false) {
+    function preview($estimate_id = 0, $show_close_preview = false)
+    {
 
         $view_data = array();
 
@@ -983,7 +1067,7 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
             //  $this->validate_estimate_access($estimate_id, true);
 
             $estimate_data = get_estimate_making_data($estimate_id);
-           // $this->_check_estimate_access_permission($estimate_data);
+            // $this->_check_estimate_access_permission($estimate_data);
 
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");
 
@@ -1011,12 +1095,13 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
     }
 
-    function download_pdf($estimate_id = 0, $mode = "download", $user_language = "") {
+    function download_pdf($estimate_id = 0, $mode = "download", $user_language = "")
+    {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
             //  $this->validate_estimate_access($estimate_id, true);
             $estimate_data = get_estimate_making_data($estimate_id);
-           // $this->_check_estimate_access_permission($estimate_data);
+            // $this->_check_estimate_access_permission($estimate_data);
 
             if (@ob_get_length())
                 @ob_clean();
@@ -1045,7 +1130,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
     }
 
-    private function _check_estimate_access_permission($estimate_data) {
+    private function _check_estimate_access_permission($estimate_data)
+    {
         //check for valid estimate
         if (!$estimate_data) {
             show_404();
@@ -1058,11 +1144,12 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
                 app_redirect("forbidden");
             }
         } else {
-          ///  $this->access_only_allowed_members();
+            ///  $this->access_only_allowed_members();
         }
     }
 
-    function get_estimate_status_bar($estimate_id = 0) {
+    function get_estimate_status_bar($estimate_id = 0)
+    {
         validate_numeric_value($estimate_id);
         //  $this->validate_estimate_access($estimate_id);
 
@@ -1071,7 +1158,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         return $this->template->view('aleelo_plugin\Views/estimates/estimate_status_bar', $view_data);
     }
 
-    function send_estimate_modal_form($estimate_id) {
+    function send_estimate_modal_form($estimate_id)
+    {
         validate_numeric_value($estimate_id);
         //  $this->validate_estimate_access($estimate_id);
 
@@ -1117,8 +1205,9 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
     }
 
-    function get_send_estimate_template($estimate_id = 0, $contact_id = 0, $return_type = "", $estimate_info = "", $contact_info = "") {
-      //  $this->access_only_allowed_members();
+    function get_send_estimate_template($estimate_id = 0, $contact_id = 0, $return_type = "", $estimate_info = "", $contact_info = "")
+    {
+        //  $this->access_only_allowed_members();
         $this->can_access_this_estimate($estimate_id);
 
         validate_numeric_value($estimate_id);
@@ -1168,7 +1257,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         }
     }
 
-    function send_estimate() {
+    function send_estimate()
+    {
 
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
@@ -1232,7 +1322,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     //update the sort value for estimate item
-    function update_item_sort_values($id = 0) {
+    function update_item_sort_values($id = 0)
+    {
 
         $sort_values = $this->request->getPost("sort_values");
         if ($sort_values) {
@@ -1258,7 +1349,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* save estimate comments */
 
-    function save_comment() {
+    function save_comment()
+    {
         $estimate_id = $this->request->getPost('estimate_id');
         validate_numeric_value($estimate_id);
 
@@ -1298,7 +1390,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* delete estimate comments */
 
-    function delete_comment($id = 0) {
+    function delete_comment($id = 0)
+    {
         validate_numeric_value($id);
         if (!$id) {
             exit();
@@ -1328,13 +1421,15 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* download files by zip */
 
-    function download_comment_files($id) {
+    function download_comment_files($id)
+    {
         validate_numeric_value($id);
         $files = $this->Estimate_comments_model->get_one($id)->files;
         return $this->download_app_files(get_setting("timeline_file_path"), $files);
     }
 
-    function comment_modal_form() {
+    function comment_modal_form()
+    {
         $this->validate_submitted_data(array(
             "estimate_id" => "numeric|required"
         ));
@@ -1360,7 +1455,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
         return $this->template->view('aleelo_plugin\Views/estimates/comment_form', $view_data);
     }
 
-    function load_statistics_of_selected_currency($currency = "") {
+    function load_statistics_of_selected_currency($currency = "")
+    {
         if ($currency) {
             $statistics = estimate_sent_statistics_widget(array("currency" => $currency));
 
@@ -1373,12 +1469,13 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     //print estimate
-    function print_estimate($estimate_id = 0) {
+    function print_estimate($estimate_id = 0)
+    {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
             $view_data = get_estimate_making_data($estimate_id);
 
-           // $this->_check_estimate_access_permission($view_data);
+            // $this->_check_estimate_access_permission($view_data);
 
             $view_data['estimate_preview'] = prepare_estimate_pdf($view_data, "html");
 
@@ -1390,7 +1487,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
 
     /* load tasks tab  */
 
-    function tasks($estimate_id) {
+    function tasks($estimate_id)
+    {
         validate_numeric_value($estimate_id);
         //  $this->validate_estimate_access($estimate_id);
 
@@ -1401,7 +1499,8 @@ function update_estimate_status($estimate_id, $status, $is_modal = false) {
     }
 
     //prevent editing of estimate after certain state
-    private function _is_estimate_editable($_estimate, $is_clone = 0) {
+    private function _is_estimate_editable($_estimate, $is_clone = 0)
+    {
         if (get_setting("enable_estimate_lock_state")) {
             $estimate_info = is_object($_estimate) ? $_estimate : $this->Estimates_model->get_one($_estimate);
             if (!$estimate_info->id || $is_clone) {

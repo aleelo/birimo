@@ -51,6 +51,11 @@ $style = get_setting("invoice_style");
     <?php
     foreach ($estimate_items as $item) {
     ?>
+    <?php if ($item->is_section) { ?>
+            <tr style="background-color: <?php echo $color; ?>; color: #fff; font-weight: bold;">
+                <td colspan="5" style="padding: 6px;"><?php echo $item->title; ?></td>
+            </tr>
+        <?php } else { ?>
         <tr style="background-color:<?php echo $item_background; ?>; ">
             <td style="width: 39%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; padding: 10px; hyphens: auto;"><?php echo $item->title; ?>
                 <br />
@@ -63,6 +68,8 @@ $style = get_setting("invoice_style");
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff;"> <?php echo to_currency($item->rate, $item->currency_symbol); ?></td>
             <td style="text-align: right; width: 20%; border-right: 1px solid #9B9997;border-top: 1px solid #fff;"> <?php echo to_currency($item->total, $item->currency_symbol); ?></td>
         </tr>
+        <?php } ?>
+
     <?php } ?>
     <tr>
         <td style=" width: 60%;"></td>

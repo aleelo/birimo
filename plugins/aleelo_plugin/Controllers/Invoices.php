@@ -1494,6 +1494,7 @@ class Invoices extends Security_Controller_Plugin
     private function _make_item_row($data, $is_ediable) {
         $move_icon = "";
         $desc_style = "";
+        
         if ($is_ediable) {
             $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
             $desc_style = "style='margin-left:30px'";

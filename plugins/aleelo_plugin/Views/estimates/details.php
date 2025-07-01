@@ -39,7 +39,7 @@
                             </div>
 
                             <div class="table-responsive mt15 pl15 pr15">
-                                <table id="estimate-item-table" class="display" width="100%">            
+                                <table id="estimate-item-table" class="display" width="100%">
                                 </table>
                             </div>
 
@@ -47,6 +47,9 @@
                                 <?php if ($is_estimate_editable) { ?>
                                     <div class="float-start mt20 ml15">
                                         <?php echo modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-primary text-white add-item-btn", "title" => app_lang('add_item'), "data-post-estimate_id" => $estimate_info->id)); ?>
+                                    </div>
+                                    <div class="float-start mt20 ml15">
+                                        <?php echo modal_anchor(get_uri("estimates/section_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_section'), array("class" => "btn btn-primary text-white add-item-btn", "title" => app_lang('add_section'), "data-post-estimate_id" => $estimate_info->id)); ?>
                                     </div>
                                 <?php } ?>
                                 <div class="float-end pr15" id="estimate-total-section">
@@ -99,9 +102,9 @@
                             $signature_file = @unserialize(get_array_value($signer_info, "signature"));
                             $signature_file_name = get_array_value($signature_file, "file_name");
                             $signature_file = get_source_url_of_file($signature_file, get_setting("timeline_file_path"), "thumbnail");
-                            ?>
+                        ?>
                             <div><strong><?php echo app_lang("signature"); ?>: </strong><br /><img class="signature-image" src="<?php echo $signature_file; ?>" alt="<?php echo $signature_file_name; ?>" /></div>
-                            <?php } ?>
+                        <?php } ?>
                     </div>
                 </div>
             <?php } ?>
