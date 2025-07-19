@@ -271,7 +271,7 @@ $data = array(
 <table style="width: 100%; margin-bottom: 10px;">
   <tr>
     <td style="width: 12%;">
-     <?php                 echo get_company_icon($invoice_info->company_id, "");
+     <?php                 echo get_company_icon($estimate_info->company_id, "");
 ?>
     </td>
     <td style="width: 22%;">
