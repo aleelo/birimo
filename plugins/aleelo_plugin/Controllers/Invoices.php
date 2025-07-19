@@ -176,8 +176,8 @@ class Invoices extends Security_Controller_Plugin
             $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
         }
 
-        $view_data['terms_dropdown'] = array(""=>"-","Immediate Payment" => "Immediate Payment","15 Days" => "15 Days", "21Days" => "21 Days","31Days"=>"31 Days","Over30Days"=>"Over 30 Days");
-       
+        $view_data['terms_dropdown'] = array("" => "-", "Immediate Payment" => "Immediate Payment", "15 Days" => "15 Days", "21Days" => "21 Days", "31Days" => "31 Days", "Over30Days" => "Over 30 Days");
+
 
         $projects = $this->Projects_model->get_dropdown_list(array("title"), "id", array("client_id" => $project_client_id, "project_type" => "client_project"));
         $suggestion = array(array("id" => "", "text" => "-"));
@@ -289,8 +289,8 @@ class Invoices extends Security_Controller_Plugin
             "note" => $this->request->getPost('invoice_note'),
             "labels" => $this->request->getPost('labels'),
             "estimate_id" => $estimate_id ? $estimate_id : 0,
-            "description"=>$this->request->getPost('description'),
-            "terms"=>$this->request->getPost('invoice_terms'),
+            "description" => $this->request->getPost('description'),
+            "terms" => $this->request->getPost('invoice_terms'),
         );
 
         $invoice_data = array_merge($_invoice_data, $this->_get_recurring_data($id));
@@ -326,15 +326,15 @@ class Invoices extends Security_Controller_Plugin
         if (!$id) {
             $invoice_data = array_merge($invoice_data, prepare_invoice_display_id_data($invoice_due_date, $invoice_bill_date));
         }
-                $data_before = $id ? (array) $this->Invoices_model->get_one($id) : [];
+        $data_before = $id ? (array) $this->Invoices_model->get_one($id) : [];
 
         $invoice_id = $this->Invoices_model->save_invoice_and_update_total($invoice_data, $id);
 
         if ($invoice_id) {
-                $action_type = $id ? "updated" : "created";
-                $data_after = (array) $this->Invoices_model->get_one($invoice_id);
+            $action_type = $id ? "updated" : "created";
+            $data_after = (array) $this->Invoices_model->get_one($invoice_id);
 
-                // $this->log_activity_only_with_changes_custom("invoice", $invoice_id, $data_before, $data_after, $action_type);
+            // $this->log_activity_only_with_changes_custom("invoice", $invoice_id, $data_before, $data_after, $action_type);
 
             if ($is_clone && $main_invoice_id) {
                 //add invoice items
@@ -399,7 +399,7 @@ class Invoices extends Security_Controller_Plugin
             "tax_id" => $estimate_info->tax_id,
             "tax_id2" => $estimate_info->tax_id2,
             "note" => $estimate_info->note ?: "",
-            "description"=>$estimate_info->description?:"",
+            "description" => $estimate_info->description ?: "",
             "estimate_id" => $estimate_info->id,
             "discount_amount" => $estimate_info->discount_amount ?: 0,
         );
@@ -590,10 +590,8 @@ class Invoices extends Security_Controller_Plugin
             $copy_items = $this->Order_items_model->get_details(array("order_id" => $copy_items_from_order))->getResult();
         }
 
-        if (!$copy_items) {
-            return false;
-        }
-        if (!$copy_section) {
+
+        if (!$copy_items && !$copy_section) {
             return false;
         }
 
@@ -1097,7 +1095,7 @@ class Invoices extends Security_Controller_Plugin
             $view_data = get_invoice_making_data($invoice_id);
             $offset = 0;
             $view_data['offset'] = $offset;
-            $view_data['activity_logs_params'] = array("log_for" => "invoice","limit" => 20,"log_for_id" => $invoice_id, "offset" => $offset);
+            $view_data['activity_logs_params'] = array("log_for" => "invoice", "limit" => 20, "log_for_id" => $invoice_id, "offset" => $offset);
 
             if ($view_data) {
                 $view_data['invoice_status'] = $this->_get_invoice_status_label($view_data["invoice_info"], false);
