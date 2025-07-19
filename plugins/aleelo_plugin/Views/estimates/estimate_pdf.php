@@ -418,7 +418,7 @@ $data = array(
 <div class="signature-block">
     <?php if($users_info->first_name){?>
     <h5 class="signature-name"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
-    <?php } if($finance_manager_info->job_title_en){?>
+    <?php } if(!empty($finance_manager_info->job_title_en)){?>
     <h5 class="signature-title"><?php echo $finance_manager_info->job_title_en; ?></h5>
     <?php } ?>
 </div>
