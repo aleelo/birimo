@@ -2,6 +2,7 @@
 <div id="invoices-dropzone" class="post-dropzone">
     <div class="modal-body clearfix">
         <div class="container-fluid">
+            <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
 
             <?php if ($is_clone || $estimate_id || $order_id || $contract_id || $proposal_id) { ?>
                 <?php if ($is_clone) { ?>
@@ -53,7 +54,7 @@
                 </div>
             </div>
 
-        
+
 
             <?php if ($client_id && !$project_id) { ?>
                 <input type="hidden" name="invoice_client_id" value="<?php echo $client_id; ?>" />
@@ -92,6 +93,25 @@
 
             <div class="form-group">
                 <div class="row">
+                    <label for="description" class=" col-md-3"><?php echo app_lang('description'); ?></label>
+                    <div class="col-md-9">
+                        <?php
+                        echo form_input(array(
+                            "id" => "description",
+                            "name" => "description",
+                            "value" => $model_info->description,
+                            "class" => "form-control",
+                            "placeholder" => app_lang('description'),
+                            "autocomplete" => "off",
+                            "data-rule-required" => true,
+                            "data-msg-required" => app_lang("field_required"),
+                        ));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
                     <label for="tax_id" class=" col-md-3"><?php echo app_lang('tax'); ?></label>
                     <div class="col-md-9">
                         <?php
@@ -122,6 +142,17 @@
             </div> -->
 
             <!-- <?php echo view("aleelo_plugin\Views/invoices/recurring_fields"); ?> -->
+
+            <div class="form-group">
+                <div class="row">
+                    <label for="invoice_terms" class=" col-md-3"><?php echo app_lang('terms'); ?></label>
+                    <div class="col-md-9">
+                        <?php
+                        echo form_dropdown("invoice_terms", $terms_dropdown, $model_info->terms, "class='select2 tax-select2 validate-hidden' id='invoice_terms' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        ?>
+                    </div>
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="row">
@@ -157,7 +188,7 @@
                 </div>
             </div>
 
-            <?php echo view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?> 
+            <?php echo view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?>
 
 
             <?php if ($estimate_id) { ?>
@@ -168,7 +199,7 @@
                             <input type="hidden" name="copy_items_from_estimate" value="<?php echo $estimate_id; ?>" />
                             <?php
                             echo form_checkbox("estimate_id_checkbox", $estimate_id, true, " class='float-start form-check-input' disabled='disabled'");
-                            ?>    
+                            ?>
                             <span class="float-start ml15"> <?php echo app_lang('include_all_items_of_this_estimate'); ?> </span>
                         </label>
                     </div>
@@ -182,7 +213,7 @@
                             <input type="hidden" name="copy_items_from_order" value="<?php echo $order_id; ?>" />
                             <?php
                             echo form_checkbox("order_id_checkbox", $order_id, true, " class='float-start form-check-input' disabled='disabled'");
-                            ?>    
+                            ?>
                             <span class="float-start ml15"> <?php echo app_lang('include_all_items_of_this_order'); ?> </span>
                         </label>
                     </div>
@@ -197,7 +228,7 @@
                             <input type="hidden" name="copy_items_from_contract" value="<?php echo $contract_id; ?>" />
                             <?php
                             echo form_checkbox("contract_id_checkbox", $contract_id, true, " class='float-start form-check-input' disabled='disabled'");
-                            ?>    
+                            ?>
                             <span class="float-start ml15"> <?php echo app_lang('include_all_items_of_this_contract'); ?> </span>
                         </label>
                     </div>
@@ -212,7 +243,7 @@
                             <input type="hidden" name="copy_items_from_proposal" value="<?php echo $proposal_id; ?>" />
                             <?php
                             echo form_checkbox("proposal_id_checkbox", $proposal_id, true, " class='float-start form-check-input' disabled='disabled'");
-                            ?>    
+                            ?>
                             <span class="float-start ml15"> <?php echo app_lang('include_all_items_of_this_proposal'); ?> </span>
                         </label>
                     </div>
@@ -222,20 +253,20 @@
             <?php if ($is_clone) { ?>
                 <div class="form-group">
                     <div class="row">
-                        <label for="copy_items"class=" col-md-12">
+                        <label for="copy_items" class=" col-md-12">
                             <?php
                             echo form_checkbox("copy_items", "1", true, "id='copy_items' disabled='disabled' class='form-check-input float-start mr15'");
-                            ?>    
+                            ?>
                             <?php echo app_lang('copy_items'); ?>
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
-                        <label for="copy_discount"class=" col-md-12">
+                        <label for="copy_discount" class=" col-md-12">
                             <?php
                             echo form_checkbox("copy_discount", "1", true, "id='copy_discount' disabled='disabled' class='form-check-input float-start mr15'");
-                            ?>    
+                            ?>
                             <?php echo app_lang('copy_discount'); ?>
                         </label>
                     </div>
@@ -253,30 +284,30 @@
             <?php echo view("includes/dropzone_preview"); ?>
         </div>
     </div>
-    </div>
+</div>
 
-    <div class="modal-footer">
-        <?php echo view("includes/upload_button"); ?>
-        <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
-        <button type="submit" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
+<div class="modal-footer">
+    <?php echo view("includes/upload_button"); ?>
+    <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
+    <button type="submit" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
 </div>
 <?php echo form_close(); ?>
 
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
         if ("<?php echo $estimate_id; ?>" || "<?php echo $proposal_id; ?>" || "<?php echo $order_id; ?>" || "<?php echo $contract_id; ?>") {
             RELOAD_VIEW_AFTER_UPDATE = false; //go to related page
         }
 
         $("#invoice-form").appForm({
-            onSuccess: function (result) {
+            onSuccess: function(result) {
                 if (typeof RELOAD_VIEW_AFTER_UPDATE !== "undefined" && RELOAD_VIEW_AFTER_UPDATE) {
                     location.reload();
                 } else {
                     window.location = "<?php echo site_url('invoices/view'); ?>/" + result.id;
                 }
             },
-            onAjaxSuccess: function (result) {
+            onAjaxSuccess: function(result) {
                 if (!result.success && result.next_recurring_date_error) {
                     $("#next_recurring_date").val(result.next_recurring_date_value);
                     $("#next_recurring_date_container").removeClass("hide");
@@ -288,39 +319,49 @@
             }
         });
         $("#invoice-form .tax-select2").select2();
+        $("#invoice_terms .tax-select2").select2();
 
-        $("#invoice_labels").select2({multiple: true, data: <?php echo json_encode($label_suggestions); ?>});
-       // $("#company_id").select2({data: </?php// echo json_encode($companies_dropdown); ?>});
+        $("#invoice_labels").select2({
+            multiple: true,
+            data: <?php echo json_encode($label_suggestions); ?>
+        });
+        // $("#company_id").select2({data: </?php// echo json_encode($companies_dropdown); ?>});
 
         setDatePicker("#invoice_bill_date, #invoice_due_date");
 
         //load all projects of selected client
-        $("#invoice_client_id").select2().on("change", function () {
+        $("#invoice_client_id").select2().on("change", function() {
             var client_id = $(this).val();
             if ($(this).val()) {
                 $('#invoice_project_id').select2("destroy");
                 $("#invoice_project_id").hide();
-                appLoader.show({container: "#invoice-porject-dropdown-section"});
+                appLoader.show({
+                    container: "#invoice-porject-dropdown-section"
+                });
                 $.ajax({
                     url: "<?php echo get_uri("invoices/get_project_suggestion") ?>" + "/" + client_id,
                     dataType: "json",
-                    success: function (result) {
+                    success: function(result) {
                         $("#invoice_project_id").show().val("");
-                        $('#invoice_project_id').select2({data: result});
+                        $('#invoice_project_id').select2({
+                            data: result
+                        });
                         appLoader.hide();
                     }
                 });
             }
         });
 
-        $('#invoice_project_id').select2({data: <?php echo json_encode($projects_suggestion); ?>});
+        $('#invoice_project_id').select2({
+            data: <?php echo json_encode($projects_suggestion); ?>
+        });
 
         if ("<?php echo $project_id; ?>") {
             $("#invoice_client_id").select2("readonly", true);
         }
 
         //show/hide recurring fields
-        $("#invoice_recurring").click(function () {
+        $("#invoice_recurring").click(function() {
             if ($(this).is(":checked")) {
                 $("#recurring_fields").removeClass("hide");
             } else {
@@ -339,7 +380,7 @@
         //disable this operation in edit mode
         if (defaultDue && !id) {
             //for auto fill the due date based on bill date
-            setDefaultDueDate = function () {
+            setDefaultDueDate = function() {
                 var dateFormat = getJsDateFormat().toUpperCase();
 
                 var billDate = $('#invoice_bill_date').val();
@@ -348,7 +389,7 @@
 
             };
 
-            $("#invoice_bill_date").change(function () {
+            $("#invoice_bill_date").change(function() {
                 setDefaultDueDate();
             });
 

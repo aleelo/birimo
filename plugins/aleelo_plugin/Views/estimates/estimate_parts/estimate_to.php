@@ -27,10 +27,10 @@
         </tr>
         <tr>
             <td style="font-size: 1.1em; color: <?php echo $color; ?>; font-weight: bold;">
-                <?php echo ("Event name"); ?>
+                <?php echo ("description"); ?>
             </td>
             <td>
-                <?php echo $estimate_info->project_title; ?>
+                <?php echo $estimate_info->description; ?>
             </td>
         </tr>
         <?php } ?>

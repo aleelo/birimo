@@ -1,18 +1,22 @@
 <?php
 
 namespace aleelo_plugin\Models;
+
 use App\Models\Crud_model;
 
-class Invoice_payments_model extends Crud_model {
+class Invoice_payments_model extends Crud_model
+{
 
     protected $table = null;
 
-    function __construct() {
+    function __construct()
+    {
         $this->table = 'invoice_payments';
         parent::__construct($this->table);
     }
 
-    function get_details($options = array(),$option = array()) {
+    function get_details($options = array(), $option = array())
+    {
         $invoice_payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $payment_methods_table = $this->db->prefixTable('payment_methods');
@@ -29,7 +33,7 @@ class Invoice_payments_model extends Crud_model {
         if ($invoice_id) {
             $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
         }
- $invoice_id = $this->_get_clean_value($option, "invoice_id");
+        $invoice_id = $this->_get_clean_value($option, "invoice_id");
         if ($invoice_id) {
             $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
         }
@@ -41,7 +45,7 @@ class Invoice_payments_model extends Crud_model {
         // if ($supplier) {
         //     $where .= " AND $invoice_payments_table.supplier_id= 0";
         // }
-        
+
         $supplier_type = $this->_get_clean_value($options, "supplier_type");
 
         if ($supplier_type === "client") {
@@ -54,7 +58,7 @@ class Invoice_payments_model extends Crud_model {
                 $where .= " AND $invoice_payments_table.supplier =1";
             }
         }
-        
+
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
             $where .= " AND $invoices_table.client_id=$client_id";
@@ -64,7 +68,7 @@ class Invoice_payments_model extends Crud_model {
         if ($company_id) {
             $where .= " AND dp.id=$company_id";
         }
-        
+
         // $supplier_id = $this->_get_clean_value($option, "supplier_id");
         // if ($supplier_id) {
         //     $where .= " AND $invoice_payments_table.supplier_id !=0";
@@ -74,7 +78,7 @@ class Invoice_payments_model extends Crud_model {
             $where .= " AND dp.id=$company_id_department";
         }
 
-         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
         if ($can_view_all_invoice) {
             $where .= " AND dp.id=$can_view_all_invoice";
         }
@@ -109,16 +113,56 @@ class Invoice_payments_model extends Crud_model {
         $payment_methods_table.title AS payment_method_title, 
         pp.supplier_name AS supplier_name, 
         pp.id AS supplier_id
-    FROM $invoice_payments_table
-    LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
-    LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
-    LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
-    LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
-    LEFT JOIN rise_company as dp ON dp.id = cn.company_id
-    WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+        FROM $invoice_payments_table
+        LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
+        LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
+        LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
+        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
+        WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
-    function get_details_supplier($options = array(),$option = array()) {
+    public function log_deletion($invoice_id,$item_id)
+    {
+        $payment = $this->get_one($item_id);
+        $type_label = ($payment->supplier == "1") ? "supplier" : "client";
+
+        $log_data = [
+            "created_at"     => date("Y-m-d H:i:s"),
+            "created_by"     => session()->get("user_id"),
+            "action"         => "deleted",
+            "log_type"       => 'payment',
+            "log_for"        => 'invoice',
+            "log_for_id"     => $invoice_id,
+            "log_type_title" => $type_label,
+            "log_type_id"    => $item_id,
+            "changes"        => ""
+        ];
+
+        $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
+    }
+
+    public function log_restoration($invoice_id, $item_id): void
+    {
+        $payment = $this->get_one($item_id);
+        $type_label = ($payment->supplier == "1") ? "supplier" : "client";
+
+        $log_data = [
+            "created_at"     => date("Y-m-d H:i:s"),
+            "created_by"     => session()->get("user_id"),
+            "action"         => "restored",
+            "log_type"       => 'payment',
+            "log_for"        => 'invoice',
+            "log_for_id"     => $invoice_id,
+            "log_type_title" => $type_label,
+            "log_type_id"    => $item_id,
+            "changes"        => ""
+        ];
+
+        $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
+    }
+    function get_details_supplier($options = array(), $option = array())
+    {
         $invoice_payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $payment_methods_table = $this->db->prefixTable('payment_methods');
@@ -135,7 +179,7 @@ class Invoice_payments_model extends Crud_model {
         if ($invoice_id) {
             $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
         }
- $invoice_id = $this->_get_clean_value($option, "invoice_id");
+        $invoice_id = $this->_get_clean_value($option, "invoice_id");
         if ($invoice_id) {
             $where .= " AND $invoice_payments_table.invoice_id=$invoice_id";
         }
@@ -147,7 +191,7 @@ class Invoice_payments_model extends Crud_model {
         // if ($supplier) {
         //     $where .= " AND $invoice_payments_table.supplier_id= 0";
         // }
-        
+
         $supplier_type = $this->_get_clean_value($options, "supplier_type");
 
         if ($supplier_type === "client") {
@@ -160,7 +204,7 @@ class Invoice_payments_model extends Crud_model {
                 $where .= " AND $invoice_payments_table.supplier =1";
             }
         }
-        
+
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
             $where .= " AND $invoices_table.client_id=$client_id";
@@ -170,7 +214,7 @@ class Invoice_payments_model extends Crud_model {
         if ($company_id) {
             $where .= " AND dp.id=$company_id";
         }
-        
+
         // $supplier_id = $this->_get_clean_value($option, "supplier_id");
         // if ($supplier_id) {
         //     $where .= " AND $invoice_payments_table.supplier_id !=0";
@@ -180,7 +224,7 @@ class Invoice_payments_model extends Crud_model {
             $where .= " AND dp.id=$company_id_department";
         }
 
-         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
         if ($can_view_all_invoice) {
             $where .= " AND dp.id=$can_view_all_invoice";
         }
@@ -215,16 +259,17 @@ class Invoice_payments_model extends Crud_model {
         $payment_methods_table.title AS payment_method_title, 
         pp.supplier_name AS supplier_name, 
         pp.id AS supplier_id
-    FROM $invoice_payments_table
-    LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
-    LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
-    LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
-    LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
-    LEFT JOIN rise_company as dp ON dp.id = cn.company_id
-    WHERE  $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
+        FROM $invoice_payments_table
+        LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_payments_table.invoice_id
+        LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $invoice_payments_table.payment_method_id
+        LEFT JOIN rise_clients as cn ON cn.id = rise_invoices.client_id 
+        LEFT JOIN rise_supplier as pp ON $invoice_payments_table.supplier_id = pp.id
+        LEFT JOIN rise_company as dp ON dp.id = cn.company_id
+        WHERE  $invoice_payments_table.deleted=0 AND $invoices_table.deleted=0 $where";
         return $this->db->query($sql);
     }
-    function get_yearly_payments_chart($year, $currency = "", $project_id = 0) {
+    function get_yearly_payments_chart($year, $currency = "", $project_id = 0)
+    {
         $payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $clients_table = $this->db->prefixTable('clients');
@@ -253,8 +298,61 @@ class Invoice_payments_model extends Crud_model {
 
         return $this->db->query($payments)->getResult();
     }
+    function save_activity($result_id, $id, $invoice_id, $data_before)
+    {
+        $saved_item = (array)$this->get_one($result_id);
 
-    function get_used_projects($type) {
+        $saved_item = (array)$this->get_one($result_id);
+        $fields_changed = [];
+        if ($id) {
+            // Updating — log only changed fields
+            foreach ($saved_item as $field => $new_value) {
+                if (isset($data_before[$field]) && $data_before[$field] != $new_value) {
+                    $from = $data_before[$field];
+                    $to = $new_value;
+
+                    if ($field === "supplier_id") {
+                        $projects_model = model("aleelo_plugin\Models\Supplier_model");
+                        $from = $from ? $projects_model->get_one($from)->supplier_name : "N/A";
+                        $to   = $to ? $projects_model->get_one($to)->supplier_name : "N/A";
+                    }
+                    $pretty_key = preg_replace('/_id\d*$/', '', $field);
+                    $fields_changed[$pretty_key] = ["from" => $from, "to" => $to];
+                }
+            }
+        } else {
+            // Creating — log all fields as "to"
+            foreach ($saved_item as $field => $new_value) {
+                $fields_changed[$field] = [
+                    "from" => null,
+                    "to"   => $new_value,
+                ];
+            }
+        }
+        $payment = $this->get_one($result_id);
+        $type_label = ($payment->supplier == "1") ? "supplier" : "client";
+
+        $log_action = $id ? 'updated' : 'created';
+
+        // Prepare the log data
+        $log_data = [
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => session()->get('user_id'),
+            'action'     => $log_action,
+            'log_type'   => 'payment',
+            'log_type_id' => $result_id,
+            'log_for'    => 'invoice',
+            'log_for_id' => $invoice_id,
+            'log_type_title' => $type_label,
+            'changes'    => serialize($fields_changed),
+        ];
+
+        $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
+
+        return $result_id;
+    }
+    function get_used_projects($type)
+    {
         $payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $projects_table = $this->db->prefixTable('projects');
@@ -280,7 +378,8 @@ class Invoice_payments_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function get_yearly_summary_details($options = array()) {
+    function get_yearly_summary_details($options = array())
+    {
         $payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $clients_table = $this->db->prefixTable('clients');
@@ -301,7 +400,7 @@ class Invoice_payments_model extends Crud_model {
         $selected_currency = get_array_value($options, "currency");
         $default_currency = get_setting("default_currency");
         $currency = $selected_currency ? $selected_currency : get_setting("default_currency");
-        
+
         $currency = $this->_get_clean_value(array("currency" => $currency), "currency");
 
         $where .= ($currency == $default_currency) ? " AND ($clients_table.currency='$default_currency' OR $clients_table.currency='' OR $clients_table.currency IS NULL)" : " AND $clients_table.currency='$currency'";
@@ -316,7 +415,8 @@ class Invoice_payments_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function get_clients_summary_details($options = array()) {
+    function get_clients_summary_details($options = array())
+    {
         $payments_table = $this->db->prefixTable('invoice_payments');
         $invoices_table = $this->db->prefixTable('invoices');
         $clients_table = $this->db->prefixTable('clients');
@@ -350,5 +450,4 @@ class Invoice_payments_model extends Crud_model {
 
         return $this->db->query($sql);
     }
-
 }

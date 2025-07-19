@@ -7,7 +7,8 @@
  */
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
-use App\Libraries\Pdf; // Adjust the namespace based on your project structure
+use app\Controllers\App_Controller;
+use aleelo_plugin\Libraries\Pdf; // Adjust the namespace based on your project structure
 
 if (!function_exists('get_demo_setting')) {
 
@@ -157,11 +158,11 @@ if (!function_exists('prepare_estimate_pdff')) {
 
     function prepare_estimate_pdff($estimate_data, $mode = "download")
     {
-        $pdf = new Pdf("invoice");
+        $pdf = new Pdf("invoice_pdf");
         if (!get_setting("enable_background_image_for_invoice_pdf")) {
             $pdf->setPrintHeader(false);
         }
-        $pdf->setPrintFooter(false);
+        $pdf->setPrintFooter(true);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
         $pdf->setInvoiceData($estimate_data); // 
@@ -244,17 +245,17 @@ if (!function_exists('get_invoice_making_data')) {
         if ($invoice_info) {
             $data['invoice_info'] = $invoice_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['invoice_info']->client_id);
-            $data['invoice_items'] = $ci->Invoice_items_model->get_details(array("invoice_id" => $invoice_id))->getResult();
+            $data['invoice_items'] = $ci->Invoice_items_model->get_details_with_sections(array("invoice_id" => $invoice_id))->getResult();
             $data['invoice_status_label'] = get_invoice_status_label($invoice_info);
             $data["invoice_total_summary"] = $ci->Invoices_model->get_invoice_total_summary($invoice_id);
             $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
             $data['users_info'] = $ci->Users_models->get_one($data['company_info']->finance_manager_id);
+            $data['signature'] = get_signature_image_html($data['company_info']->finance_manager_id);
             $finance_manager_info = $ci->db->table('team_member_job_info')
                 ->select('*') // Select user_id and job_title_en
                 ->where('user_id', $data['company_info']->finance_manager_id)
                 ->get()
                 ->getRow();
-
             $data['finance_manager_info'] = $finance_manager_info;
             $data['invoice_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "invoices", "show_in_invoice" => true, "related_to_id" => $invoice_id))->getResult();
             $data['client_info']->custom_fields = $ci->Custom_field_values_model->get_details(array("related_to_type" => "clients", "show_in_invoice" => true, "related_to_id" => $data['invoice_info']->client_id))->getResult();
@@ -297,18 +298,19 @@ if (!function_exists('get_invoice_making_data_delivery_note')) {
     }
 }
 
+
 if (!function_exists('prepare_invoice_pdf')) {
 
     function prepare_invoice_pdf($invoice_data, $mode = "download")
     {
-        $pdf = new Pdf("invoice");
+        $pdf = new Pdf("invoice_pdf");
 
         //if setting is desable then don't show header
         if (!get_setting("enable_background_image_for_invoice_pdf")) {
             $pdf->setPrintHeader(true);
         }
 
-        $pdf->setPrintFooter(false);
+        $pdf->setPrintFooter(true);
         $pdf->SetCellPadding(1.5);
         $pdf->setImageScale(1.42);
         $pdf->setInvoiceData($invoice_data);
@@ -354,6 +356,67 @@ if (!function_exists('prepare_invoice_pdf')) {
                 return $html;
             }
         }
+    }
+}
+if (!function_exists('get_signature_image_html')) {
+    /**
+     * Load and render a signature image HTML from a user ID.
+     *
+     * @param int $user_id
+     * @param string $style CSS inline style (optional)
+     * @return string HTML img tag or empty string
+     */
+    function get_signature_image_html($user_id, $style = "max-width: 150px;")
+    {
+        $db = \Config\Database::connect();
+
+        // Get job_info for the user
+        $finance_manager = $db->table('team_member_job_info')
+            ->where('user_id', $user_id)
+            ->get()
+            ->getRow();
+
+        if (!$finance_manager || empty($finance_manager->signature)) {
+            return "";
+        }
+
+        $signature_file_name = null;
+        $raw_signature = $finance_manager->signature;
+
+        $first = @unserialize($raw_signature);
+
+        if ($first !== false && is_string($first)) {
+            $second = @unserialize($first);
+            if (is_array($second)) {
+                if (isset($second[0]['file_name'])) {
+                    $signature_file_name = $second[0]['file_name'];
+                } elseif (isset($second['file_name'])) {
+                    $signature_file_name = $second['file_name'];
+                }
+            }
+        }
+
+        if (!$signature_file_name && is_array($first)) {
+            if (isset($first[0]['file_name'])) {
+                $signature_file_name = $first[0]['file_name'];
+            } elseif (isset($first['file_name'])) {
+                $signature_file_name = $first['file_name'];
+            }
+        }
+
+        if (!$signature_file_name && is_string($raw_signature) && !str_contains($raw_signature, '{')) {
+            $signature_file_name = $raw_signature;
+        }
+
+        if ($signature_file_name) {
+            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+            if (file_exists($signature_path)) {
+                $signature_url = base_url('files/signature/' . $signature_file_name);
+                return "<img src='" . $signature_url . "' alt='Signature' style='" . $style . "'>";
+            }
+        }
+
+        return "";
     }
 }
 if (!function_exists('prepare_invoice_pdf_delivery_note')) {

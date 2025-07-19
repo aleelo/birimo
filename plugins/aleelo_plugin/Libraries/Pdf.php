@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Libraries;
+namespace aleelo_plugin\Libraries;
 
 require_once APPPATH . "ThirdParty/tcpdf/tcpdf.php";
 
@@ -21,30 +21,32 @@ class Pdf extends \TCPDF
 
     protected $invoice_data;
 
-    public function setInvoiceData($data) {
+    public function setInvoiceData($data)
+    {
         $this->invoice_data = $data;
     }
-public function setQrContent($url)
-{
-    $this->qrContent = $url;
-}
+    public function setQrContent($url)
+    {
+        $this->qrContent = $url;
+    }
 
 
-    public function Header() {
-        if ($this->pdf_type == 'invoicfe') {
+    public function Header()
+    {
+        if ($this->pdf_type == 'invoice') {
             $client_info = isset($this->invoice_data['client_info']) ? $this->invoice_data['client_info'] : null;
             $company_info = isset($this->invoice_data['company_info']) ? $this->invoice_data['company_info'] : null;
 
 
-        $company_id = isset($client_info->company_id) ? $client_info->company_id : null;
+            $company_id = isset($client_info->company_id) ? $client_info->company_id : null;
 
-        // Use company-specific settings
-        $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
-        $img_file = isset($company_info->invoice_pdf_background_image) ? WRITEPATH . $company_info->invoice_pdf_background_image : null;
+            // Use company-specific settings
+            $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
+            $img_file = isset($company_info->invoice_pdf_background_image) ? WRITEPATH . $company_info->invoice_pdf_background_image : null;
 
-         
-            
-        
+
+
+
             $break_margin = $this->getBreakMargin();
             $auto_page_break = $this->AutoPageBreak;
             $this->SetAutoPageBreak(false, 0);
@@ -53,32 +55,29 @@ public function setQrContent($url)
 
             // restore auto-page-break status
             $this->SetAutoPageBreak($auto_page_break, $break_margin);
-            
-        } else {
-            // call the original Header method from the parent class
-            parent::Header();
         }
     }
 
 
-    public function Footer() {
+    public function Footer()
+    {
         if ($this->pdf_type == 'invoice') {
             $client_info = isset($this->invoice_data['client_info']) ? $this->invoice_data['client_info'] : null;
             $company_info = isset($this->invoice_data['company_info']) ? $this->invoice_data['company_info'] : null;
 
-    
-                 $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
 
-    
+            $color = isset($company_info->invoice_color) ? $company_info->invoice_color : "#2AA384";
+
+
             $data = '
-            <div style="background-color: '.$color.';
+            <div style="background-color: ' . $color . ';
                         height: 10px;
                         width: 100%;">
             </div>';
-            
+
             $data2 = '
             
-            <div style="background-color: '.$color.';
+            <div style="background-color: ' . $color . ';
                         color: white;
                         font-size: 24px;
                         font-weight: bold;
@@ -93,16 +92,34 @@ public function setQrContent($url)
             
             <br><br><br> 
             ';
-    
-            $this->SetY(0); 
+
+            $this->SetY(0);
             $this->setX(-0);
-            
+
             $this->writeHTMLCell(0, 0, '', '', $data, 0, 1, 0, true, '', true);
-            $this->SetY(-5); 
+            $this->SetY(-5);
 
             $this->writeHTMLCell(0, 0, '', '', $data2, 0, 1, 0, true, '', true);
+        } elseif ($this->pdf_type == 'invoice_pdf') {
+            $lineY = $this->getPageHeight() - 20;
 
-        } else {
+            $this->SetDrawColor(0, 0, 0);
+            $this->SetLineWidth(0.2);
+            $this->Line(10, $lineY, $this->getPageWidth() - 10, $lineY);
+            $company_info = isset($this->invoice_data['company_info']) ? $this->invoice_data['company_info'] : null;
+
+            $phone = $company_info->phone;
+            $email = $company_info->email;
+
+            $footer_html = '
+        <div style="text-align: center; font-size: 11px; color: #555;">
+            ' . $phone . ' &nbsp;|&nbsp; ' . $email . '
+        </div>
+    ';
+            $this->SetY(-15);
+            $this->writeHTMLCell(0, 0, '', '', $footer_html, 0, 1, 0, true, '', true);
+        }
+        else{
             parent::Footer();
         }
     }
@@ -177,42 +194,42 @@ public function setQrContent($url)
         //}
         return $content;
     }
-//   public function Footer()
-// {
-//     $lineY = $this->getPageHeight() - 30;
-//     $linex = $this->getPageHeight() - 260;
+    //   public function Footer()
+    // {
+    //     $lineY = $this->getPageHeight() - 30;
+    //     $linex = $this->getPageHeight() - 260;
 
-//     $this->SetDrawColor(0, 0, 0);
-//     $this->SetLineWidth(0.2);
-//     $this->Line(10, $lineY, $this->getPageWidth() - 10, $lineY);
-//     // $this->Line(10, $linex, $this->getPageWidth() - 10, $linex);
+    //     $this->SetDrawColor(0, 0, 0);
+    //     $this->SetLineWidth(0.2);
+    //     $this->Line(10, $lineY, $this->getPageWidth() - 10, $lineY);
+    //     // $this->Line(10, $linex, $this->getPageWidth() - 10, $linex);
 
-//     $this->SetMargins(10, 10, 10);
-//     $this->SetAutoPageBreak(true, 35);
-//     $this->SetY(-20);
-//     $this->SetFont('helvetica', 'I', 8);
-//     $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, 0, 'C');
+    //     $this->SetMargins(10, 10, 10);
+    //     $this->SetAutoPageBreak(true, 35);
+    //     $this->SetY(-20);
+    //     $this->SetFont('helvetica', 'I', 8);
+    //     $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, 0, 'C');
 
-//     // DEBUG OUTPUT
-//     $qr = $this->qrContent;
-//     if (!$qr) {
-//         $this->SetY(-30);
-//         $this->SetTextColor(255, 0, 0);
-//         $this->Cell(0, 10, 'QR not set!', 0, 0, 'C');
-//         return;
-//     }
+    //     // DEBUG OUTPUT
+    //     $qr = $this->qrContent;
+    //     if (!$qr) {
+    //         $this->SetY(-30);
+    //         $this->SetTextColor(255, 0, 0);
+    //         $this->Cell(0, 10, 'QR not set!', 0, 0, 'C');
+    //         return;
+    //     }
 
-//     $style = array(
-//         'border' => 0,
-//         'padding' => 1,
-//         'fgcolor' => array(0, 0, 0),
-//         'bgcolor' => false
-//     );
+    //     $style = array(
+    //         'border' => 0,
+    //         'padding' => 1,
+    //         'fgcolor' => array(0, 0, 0),
+    //         'bgcolor' => false
+    //     );
 
-//     $qrX = $this->getPageWidth() - 30;
-//     $qrY = $this->getPageHeight() - 28;
-//     $this->write2DBarcode($qr, 'QRCODE,H', $qrX, $qrY, 20, 20, $style, 'N');
-// }
+    //     $qrX = $this->getPageWidth() - 30;
+    //     $qrY = $this->getPageHeight() - 28;
+    //     $this->write2DBarcode($qr, 'QRCODE,H', $qrX, $qrY, 20, 20, $style, 'N');
+    // }
 
 
 

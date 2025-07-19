@@ -175,17 +175,9 @@ class Invoices extends Security_Controller_Plugin
         } else {
             $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
         }
-        // if (get_array_value($this->login_user->permissions, "company")) {
-        //     if($departments = $this->Companyy_model->get_access_info($this->login_user->id)){
-        //         $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0, "company_id" => $departments));
-        // }
-        // else{
-        //     $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0));
-        // }
 
-        // } else {
-        //     $view_data['clients_dropdown'] = array("" => "-") + $this->Clients_model->get_dropdown_list(array("company_name"), "id", array("is_lead" => 0, "company_id" => $department));
-        // }
+        $view_data['terms_dropdown'] = array(""=>"-","Immediate Payment" => "Immediate Payment","15 Days" => "15 Days", "21Days" => "21 Days","31Days"=>"31 Days","Over30Days"=>"Over 30 Days");
+       
 
         $projects = $this->Projects_model->get_dropdown_list(array("title"), "id", array("client_id" => $project_client_id, "project_type" => "client_project"));
         $suggestion = array(array("id" => "", "text" => "-"));
@@ -296,7 +288,9 @@ class Invoices extends Security_Controller_Plugin
             "company_id" => $company_id,
             "note" => $this->request->getPost('invoice_note'),
             "labels" => $this->request->getPost('labels'),
-            "estimate_id" => $estimate_id ? $estimate_id : 0
+            "estimate_id" => $estimate_id ? $estimate_id : 0,
+            "description"=>$this->request->getPost('description'),
+            "terms"=>$this->request->getPost('invoice_terms'),
         );
 
         $invoice_data = array_merge($_invoice_data, $this->_get_recurring_data($id));
@@ -332,9 +326,15 @@ class Invoices extends Security_Controller_Plugin
         if (!$id) {
             $invoice_data = array_merge($invoice_data, prepare_invoice_display_id_data($invoice_due_date, $invoice_bill_date));
         }
+                $data_before = $id ? (array) $this->Invoices_model->get_one($id) : [];
 
         $invoice_id = $this->Invoices_model->save_invoice_and_update_total($invoice_data, $id);
+
         if ($invoice_id) {
+                $action_type = $id ? "updated" : "created";
+                $data_after = (array) $this->Invoices_model->get_one($invoice_id);
+
+                // $this->log_activity_only_with_changes_custom("invoice", $invoice_id, $data_before, $data_after, $action_type);
 
             if ($is_clone && $main_invoice_id) {
                 //add invoice items
@@ -398,8 +398,8 @@ class Invoices extends Security_Controller_Plugin
             "due_date" => $estimate_info->valid_until,
             "tax_id" => $estimate_info->tax_id,
             "tax_id2" => $estimate_info->tax_id2,
-            // "is_section" => $estimate_info->is_section,
             "note" => $estimate_info->note ?: "",
+            "description"=>$estimate_info->description?:"",
             "estimate_id" => $estimate_info->id,
             "discount_amount" => $estimate_info->discount_amount ?: 0,
         );
@@ -426,13 +426,16 @@ class Invoices extends Security_Controller_Plugin
         $invoice_data["files"] = serialize($new_files);
         $invoice_id = $this->Invoices_model->save_invoice_and_update_total($invoice_data);
 
-        $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+        $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $estimate_id, "is_section" => 4))->getResult();
+        $copy_section = $this->Estimate_items_model->get_all_where(["estimate_id" => $estimate_id, "is_section" => 1])->getResult();
 
 
         if (!$copy_items) {
             app_redirect("invoices/view/" . $invoice_id);
         }
-
+        if (!$copy_section) {
+            app_redirect("invoices/view/" . $invoice_id);
+        }
         foreach ($copy_items as $data) {
             $invoice_item_data = array(
                 "invoice_id" => $invoice_id,
@@ -451,7 +454,25 @@ class Invoices extends Security_Controller_Plugin
             );
             $this->Invoice_items_model->ci_save($invoice_item_data);
         }
-
+        foreach ($copy_section as $data_section) {
+            $invoice_item_data = array(
+                "invoice_id" => $invoice_id,
+                "title" => $data_section->title ? $data_section->title : "",
+                "description" => $data_section->description ? $data_section->description : "",
+                "quantity" => $data_section->quantity ? $data_section->quantity : 0,
+                "unit_type" => $data_section->unit_type ? $data_section->unit_type : "",
+                "rate" => $data_section->rate ? $data_section->rate : 0,
+                "total" => $data_section->total ? $data_section->total : 0,
+                "item_id" => $data_section->item_id ? $data_section->item_id : 0,
+                "taxable" => 1,
+                "supplier" => $data_section->supplier ? $data_section->supplier : "0",
+                "supplier_price" => $data_section->supplier_price ? $data_section->supplier_price : 0,
+                "supplier_quantity" => $data_section->supplier_quantity ? $data_section->supplier_quantity : 0,
+                "supplier_id" => $data_section->supplier_id ? $data_section->supplier_id : 0,
+                "is_section" => $data_section->is_section ? $data_section->is_section : 0,
+            );
+            $this->db->table($this->db->prefixTable('items_section'))->insert($invoice_item_data);
+        }
         $this->Invoices_model->update_invoice_total_meta($invoice_id);
         app_redirect("invoices/view/" . $invoice_id);
     }
@@ -559,7 +580,8 @@ class Invoices extends Security_Controller_Plugin
 
         $copy_items = null;
         if ($copy_items_from_estimate) {
-            $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $copy_items_from_estimate))->getResult();
+            $copy_items = $this->Estimate_items_model->get_details(array("estimate_id" => $copy_items_from_estimate, "is_section" => 4))->getResult();
+            $copy_section = $this->Estimate_items_model->get_all_where(["estimate_id" => $copy_items_from_estimate, "is_section" => 1])->getResult();
         } else if ($copy_items_from_contract) {
             $copy_items = $this->Contract_items_model->get_details(array("contract_id" => $copy_items_from_contract))->getResult();
         } else if ($copy_items_from_proposal) {
@@ -569,6 +591,9 @@ class Invoices extends Security_Controller_Plugin
         }
 
         if (!$copy_items) {
+            return false;
+        }
+        if (!$copy_section) {
             return false;
         }
 
@@ -584,6 +609,25 @@ class Invoices extends Security_Controller_Plugin
                 "taxable" => 1
             );
             $this->Invoice_items_model->ci_save($invoice_item_data);
+        }
+        foreach ($copy_section as $data_section) {
+            $invoice_item_data = array(
+                "invoice_id" => $invoice_id,
+                "title" => $data_section->title ? $data_section->title : "",
+                "description" => $data_section->description ? $data_section->description : "",
+                "quantity" => $data_section->quantity ? $data_section->quantity : 0,
+                "unit_type" => $data_section->unit_type ? $data_section->unit_type : "",
+                "rate" => $data_section->rate ? $data_section->rate : 0,
+                "total" => $data_section->total ? $data_section->total : 0,
+                "item_id" => $data_section->item_id ? $data_section->item_id : 0,
+                "taxable" => 1,
+                "supplier" => $data_section->supplier ? $data_section->supplier : "0",
+                "supplier_price" => $data_section->supplier_price ? $data_section->supplier_price : 0,
+                "supplier_quantity" => $data_section->supplier_quantity ? $data_section->supplier_quantity : 0,
+                "supplier_id" => $data_section->supplier_id ? $data_section->supplier_id : 0,
+                "is_section" => $data_section->is_section ? $data_section->is_section : 0,
+            );
+            $this->db->table($this->db->prefixTable('items_section'))->insert($invoice_item_data);
         }
         $this->Invoices_model->update_invoice_total_meta($invoice_id);
     }
@@ -1051,6 +1095,9 @@ class Invoices extends Security_Controller_Plugin
             }
             validate_numeric_value($invoice_id);
             $view_data = get_invoice_making_data($invoice_id);
+            $offset = 0;
+            $view_data['offset'] = $offset;
+            $view_data['activity_logs_params'] = array("log_for" => "invoice","limit" => 20,"log_for_id" => $invoice_id, "offset" => $offset);
 
             if ($view_data) {
                 $view_data['invoice_status'] = $this->_get_invoice_status_label($view_data["invoice_info"], false);
@@ -1097,36 +1144,29 @@ class Invoices extends Security_Controller_Plugin
         }
         $view_data['invoice_id'] = $invoice_id;
 
-        if ($view_data['model_info']->is_section) {
-            return $this->template->view(
-                'aleelo_plugin\Views/invoices/section_modal_form',
-                $view_data
-            );
-        } else {
-            return $this->template->view(
-                'aleelo_plugin\Views/invoices/item_modal_form',
-                $view_data
-            );
-        }
+
+        return $this->template->view('aleelo_plugin\Views/invoices/item_modal_form', $view_data);
+
         // return $this->template->view('aleelo_plugin\Views/invoices/item_modal_form', $view_data);
     }
 
     function section_modal_form()
     {
         $invoice_id = $this->request->getPost('invoice_id');
-        $login_user = $this->login_user->department;
+        $id = $this->request->getPost('id');
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
-        if ($login_user != "0") {
-            $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id", array("company" => $login_user));
-        } else {
-            $view_data['supplier_id'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
-        }
-        $view_data['model_info'] = $this->Invoice_items_model->get_one($this->request->getPost('id'));
+        $view_data['supplier_dropdown'] = array("" => "-") + $this->Supplier_model->get_dropdown_list(array("supplier_name"), "id");
+
+        $view_data['model_info'] = $this->db->table('rise_items_section')
+            ->where('id', $id)
+            ->get()
+            ->getRow();
         if (!$invoice_id) {
             $invoice_id = $view_data['model_info']->invoice_id;
         }
+        $view_data["id"] = $this->request->getPost('id');
         $view_data['invoice_id'] = $invoice_id;
         return $this->template->view('aleelo_plugin\Views/invoices/section_modal_form', $view_data);
     }
@@ -1143,8 +1183,6 @@ class Invoices extends Security_Controller_Plugin
         $invoice_id = $this->request->getPost('invoice_id');
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         $new_account = $this->request->getPost("new_account");
-        $is_section = $this->request->getPost('is_section'); // "1" or null
-        $section_name = $this->request->getPost('section_name');
 
         $invoice_item_data = [];
 
@@ -1168,25 +1206,6 @@ class Invoices extends Security_Controller_Plugin
             $price = 0;
         }
         $invoice_item_title = $this->request->getPost('invoice_item_title');
-        $account_name = $this->request->getPost("estimate_item_account_id");
-        if (class_exists('\Accounting\Models\Accounting_model')) {
-            $accounting_model = new Accounting_model();
-            if ($new_account) {
-                $account_data = array(
-                    "name" => $account_name,
-                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
-
-                );
-
-                $accounting_model->db->table("acc_accounts")->insert($account_data);
-
-                $account_id = $accounting_model->db->insertID();
-            } else {
-                $account_id = $this->request->getPost("estimate_item_account_id");
-            }
-        } else {
-            $account_id = "0";
-        }
         $item_id = 0;
 
         if (!$id) {
@@ -1200,7 +1219,6 @@ class Invoices extends Security_Controller_Plugin
                 "title" => $invoice_item_title,
                 "description" => $this->request->getPost('invoice_item_description'),
                 "unit_type" => $this->request->getPost('invoice_unit_type'),
-                "account_id" => $account_id,
                 "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
                 "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
                 "company_id" => $this->login_user->department,
@@ -1208,126 +1226,7 @@ class Invoices extends Security_Controller_Plugin
             $item_id = $this->Items_model->ci_save($library_item_data);
         }
 
-        if ($is_section) {
-            $invoice_item_data = array(
-                "invoice_id" => $invoice_id,
-                "title" => $section_name,
-                "is_section" => 1,
-                "total" => 0,
-                "rate" => 0,
-                "quantity" => 0,
-                "unit_type" => "",
-                "taxable" => 0,
-            );
 
-            // Save section
-            $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
-        } else {
-
-            $invoice_item_data = array(
-                "invoice_id" => $invoice_id,
-                "title" => $this->request->getPost('invoice_item_title'),
-                "description" => $this->request->getPost('invoice_item_description'),
-                "quantity" => $quantity,
-                "unit_type" => $this->request->getPost('invoice_unit_type'),
-                "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-                "total" => $rate * $quantity * $days,
-                "account_id" => $account_id,
-                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-                "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-                "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-                "supplier_price" => $price,
-                "supplier_id" => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
-                "days" => $days,
-
-
-            );
-
-            if ($item_id) {
-                $invoice_item_data["item_id"] = $item_id;
-            }
-
-            $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
-        }
-        if ($invoice_item_id) {
-            $options = array("id" => $invoice_item_id);
-            $item_info = $this->Invoice_items_model->get_details($options)->getRow();
-            echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_item_row($item_info, true), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_item_id, 'message' => app_lang('record_saved')));
-        } else {
-            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
-        }
-    }
-
-    function save_section()
-    {
-        $this->validate_submitted_data(array(
-            "id" => "numeric",
-            "invoice_id" => "required|numeric"
-        ));
-
-        $invoice_id = $this->request->getPost('invoice_id');
-        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
-        $new_account = $this->request->getPost("new_account");
-
-        if (!$this->can_edit_invoice()) {
-            app_redirect("forbidden");
-        }
-
-        if (!$this->is_invoice_editable($invoice_id)) {
-            app_redirect("forbidden");
-        }
-
-        $id = $this->request->getPost('id');
-        $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
-        $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
-        $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
-        $days = unformat_currency($this->request->getPost('days'));
-
-        if ($supplier_price) {
-            $price = $supplier_price * $quantity * $days;
-        } else {
-            $price = 0;
-        }
-        $invoice_item_title = $this->request->getPost('invoice_item_title');
-        $account_name = $this->request->getPost("estimate_item_account_id");
-        if (class_exists('\Accounting\Models\Accounting_model')) {
-            $accounting_model = new Accounting_model();
-            if ($new_account) {
-                $account_data = array(
-                    "name" => $account_name,
-                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
-
-                );
-
-                $accounting_model->db->table("acc_accounts")->insert($account_data);
-
-                $account_id = $accounting_model->db->insertID();
-            } else {
-                $account_id = $this->request->getPost("estimate_item_account_id");
-            }
-        } else {
-            $account_id = "0";
-        }
-        $item_id = 0;
-
-        if (!$id) {
-            //on adding item for the first time, get the id to store
-            $item_id = $this->request->getPost('item_id');
-        }
-
-        //check if the add_new_item flag is on, if so, add the item to libary. 
-        if ($add_new_item_to_library) {
-            $library_item_data = array(
-                "title" => $invoice_item_title,
-                "description" => $this->request->getPost('invoice_item_description'),
-                "unit_type" => $this->request->getPost('invoice_unit_type'),
-                "account_id" => $account_id,
-                "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-                "company_id" => $this->login_user->department,
-            );
-            $item_id = $this->Items_model->ci_save($library_item_data);
-        }
 
         $invoice_item_data = array(
             "invoice_id" => $invoice_id,
@@ -1337,7 +1236,6 @@ class Invoices extends Security_Controller_Plugin
             "unit_type" => $this->request->getPost('invoice_unit_type'),
             "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
             "total" => $rate * $quantity * $days,
-            "account_id" => $account_id,
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
@@ -1353,6 +1251,7 @@ class Invoices extends Security_Controller_Plugin
         }
 
         $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+
         if ($invoice_item_id) {
             $options = array("id" => $invoice_item_id);
             $item_info = $this->Invoice_items_model->get_details($options)->getRow();
@@ -1361,7 +1260,6 @@ class Invoices extends Security_Controller_Plugin
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
-
     /* delete or undo an invoice item */
 
     function delete_item()
@@ -1385,12 +1283,14 @@ class Invoices extends Security_Controller_Plugin
             if ($this->Invoice_items_model->delete_item_and_update_invoice($id, true)) {
                 $options = array("id" => $id);
                 $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+                $this->Invoice_items_model->log_restoration($item_info->invoice_id, $item_info->title, $item_info->id);
                 echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_item_row($item_info, true), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), "message" => app_lang('record_undone')));
             } else {
                 echo json_encode(array("success" => false, app_lang('error_occurred')));
             }
         } else {
             if ($this->Invoice_items_model->delete_item_and_update_invoice($id)) {
+                $this->Invoice_items_model->log_deletion($item_info->invoice_id, $item_info->title, $item_info->id);
                 $item_info = $this->Invoice_items_model->get_one($id);
                 echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'message' => app_lang('record_deleted')));
             } else {
@@ -1398,6 +1298,43 @@ class Invoices extends Security_Controller_Plugin
             }
         }
     }
+
+    public function delete_section()
+    {
+        $id = $this->request->getPost("id");
+
+        if (!$id) {
+            echo json_encode(["success" => false, 'message' => app_lang('error_occurred')]);
+            return;
+        }
+
+        $section = $this->db->table('items_section')->where('id', $id)->get()->getRow();
+
+        if (!$section) {
+            echo json_encode(["success" => false, 'message' => app_lang('not_found')]);
+            return;
+        }
+
+        $this->db->table('items_section')->where('id', $id)->delete();
+
+        // ✅ Log section deletion
+        $log_data = [
+            "created_at"     => date("Y-m-d H:i:s"),
+            "created_by"     => session()->get("user_id"),
+            "action"         => "deleted",
+            "log_type"       => "section",
+            "log_for"        => "invoice",
+            "log_for_id"     => $section->invoice_id,
+            "log_type_title" => $section->title,
+            "log_type_id"    => $section->id,
+            "changes"        => ""
+        ];
+
+        $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
+
+        echo json_encode(["success" => true, 'message' => app_lang('record_deleted')]);
+    }
+
     function get_estimate_account_suggestion()
     {
         $key = $this->request->getPost("c");
@@ -1441,59 +1378,29 @@ class Invoices extends Security_Controller_Plugin
     {
         validate_numeric_value($invoice_id);
 
-        if (!($invoice_id && $this->can_view_invoice())) {
+        if (!($invoice_id && $this->can_view_invoices($invoice_id))) {
             app_redirect("forbidden");
         }
 
-        $list_data = $this->Invoice_items_model->get_details(array("invoice_id" => $invoice_id))->getResult();
+
+        // Get invoice items
+        $items = $this->Invoice_items_model->get_details_with_sections(array("invoice_id" => $invoice_id))->getResult();
 
         $is_ediable = false;
-        if ($this->can_edit_invoice() && $this->is_invoice_editable($invoice_id)) {
+        if ($this->can_edit_invoices($invoice_id) && $this->is_invoice_editable($invoice_id)) {
             $is_ediable = true;
         }
-
         $result = array();
-        foreach ($list_data as $data) {
-            $result[] = $this->_make_item_row($data, $is_ediable);
+        foreach ($items as $item) {
+            $result[] = $this->_make_item_row($item, $is_ediable);
         }
-        echo json_encode(array("data" => $result));
+
+        echo json_encode(["data" => $result]);
     }
 
     /* prepare a row of invoice item list table */
-
-    // private function _make_item_row($data, $is_ediable)
-    // {
-    //     $move_icon = "";
-    //     $desc_style = "";
-    //     if ($is_ediable) {
-    //         $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
-    //         $desc_style = "style='margin-left:30px'";
-    //     }
-    //     $item = "<div class='item-row strong mb5' data-id='$data->id'>$move_icon $data->title</div>";
-    //     if ($data->description) {
-    //         $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
-    //     }
-    //     $type = $data->unit_type ? $data->unit_type : "";
-
-    //     $taxable = app_lang("no");
-    //     if ($data->taxable) {
-    //         $taxable = app_lang("yes");
-    //     }
-
-    //     return array(
-    //         $data->sort,
-    //         $item,
-    //         $data->days,
-    //         to_decimal_format($data->quantity) . " " . $type,
-    //         to_currency($data->rate, $data->currency_symbol),
-    //         // $taxable,
-    //         to_currency($data->total, $data->currency_symbol),
-    //         modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_invoice'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id))
-    //             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoices/delete_item"), "data-action" => "delete"))
-    //     );
-    // }
-
-    private function _make_item_row($data, $is_ediable) {
+    private function _make_item_row($data, $is_ediable)
+    {
         $move_icon = "";
         $desc_style = "";
 
@@ -1501,88 +1408,169 @@ class Invoices extends Security_Controller_Plugin
             $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
             $desc_style = "style='margin-left:30px'";
         }
-    
-        $item = "<div class='item-row strong mb5' data-id='$data->id'>$move_icon $data->title</div>";
+        $type = $data->is_section ? "section" : "item";
+
+        $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
         if ($data->description) {
             $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
         }
-    
-        $type = $data->unit_type ? $data->unit_type : "";
-        $taxable = app_lang("no");
-        if ($data->taxable) {
-            $taxable = app_lang("yes");
-        }
-    
-        // ✅ Check if this is a section
+
         if ($data->is_section) {
-            $days     = "";     // empty column
-            $quantity = "";     // empty column
-            $rate     = "";     // empty column
-            $total    = "";     // empty column
+            $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                "class" => "edit",
+                "title" => app_lang('edit_invoice'),
+                "data-post-id" => $data->id,
+                "data-post-invoice_id" => $data->invoice_id
+            ))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+                    'title' => app_lang('delete'),
+                    "class" => "delete",
+                    "data-id" => $data->id,
+                    "data-action-url" => get_uri("invoices/delete_section"),
+                    "data-action" => "delete"
+                ));
+
+            return array(
+                $data->sort,
+                $item,
+                "",
+                "",
+                "",
+                "",
+                "",
+                $actions
+            );
         } else {
-            $days     = $data->days;
-            $quantity = to_decimal_format($data->quantity) . " " . $type;
-            $rate     = to_currency($data->rate, $data->currency_symbol);
-            $total    = to_currency($data->total, $data->currency_symbol);
-        }
-    
-        return array(
-            $data->sort,
-            $item,
-            $days,
-            $quantity,
-            $rate,
-            $total,
-            modal_anchor(
-                get_uri("invoices/item_modal_form"),
-                "<i data-feather='edit' class='icon-16'></i>",
-                array(
-                    "class" => "edit",
-                    "title" => app_lang('edit_item'),
-                    "data-post-id" => $data->id,
-                    "data-post-invoice_id" => $data->invoice_id
-                )
-            )
-            . js_anchor(
-                "<i data-feather='x' class='icon-16'></i>",
-                array(
+            $type = $data->unit_type ? $data->unit_type : "";
+            $taxable = $data->taxable ? app_lang("yes") : app_lang("no");
+
+            $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                "class" => "edit",
+                "title" => app_lang('edit_invoice'),
+                "data-post-id" => $data->id,
+                "data-post-invoice_id" => $data->invoice_id
+            ))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
                     'title' => app_lang('delete'),
                     "class" => "delete",
                     "data-id" => $data->id,
                     "data-action-url" => get_uri("invoices/delete_item"),
                     "data-action" => "delete"
-                )
-            )
-        );
+                ));
+
+            return array(
+                $data->sort,
+                $item,
+                $data->days,
+                to_decimal_format($data->quantity) . " " . $type,
+                to_currency($data->rate, $data->currency_symbol),
+                $taxable,
+                to_currency($data->total, $data->currency_symbol),
+                $actions
+            );
+        }
     }
-    
+
+
+    function save_section()
+    {
+        $invoice_id = $this->request->getPost('invoice_id');
+        $id = $this->request->getPost('id');
+        $section_name = $this->request->getPost('section_name');
+
+        $invoice_item_data = [
+            "invoice_id" => $invoice_id,
+            "title" => $section_name,
+            "is_section" => 1,
+        ];
+
+        $log_action = "created";
+        $fields_changed = [];
+        $before_data = [];
+
+        if ($id) {
+            // Fetch old section for comparison
+            $before_data = (array)$this->db->table($this->db->prefixTable('items_section'))->where('id', $id)->get()->getRow();
+            $this->db->table($this->db->prefixTable('items_section'))->where('id', $id)->update($invoice_item_data);
+
+            // Prepare diff
+            foreach ($invoice_item_data as $field => $new_value) {
+                $old_value = isset($before_data[$field]) ? $before_data[$field] : null;
+                if ($new_value != $old_value) {
+                    $fields_changed[$field] = ['from' => $old_value, 'to' => $new_value];
+                }
+            }
+
+            $log_action = "updated";
+        } else {
+            $this->db->table($this->db->prefixTable('items_section'))->insert($invoice_item_data);
+            $id = $this->db->insertID();
+
+            // Log all fields as "to"
+            foreach ($invoice_item_data as $field => $value) {
+                $fields_changed[$field] = ['from' => null, 'to' => $value];
+            }
+        }
+
+        if ($id) {
+            // 📝 Log the section creation/update
+            $log_data = [
+                "created_at" => date("Y-m-d H:i:s"),
+                "created_by" => session()->get("user_id"),
+                "action" => $log_action,
+                "log_type" => "section",
+                "log_type_id" => $id,
+                "log_for" => "invoice",
+                "log_for_id" => $invoice_id,
+                "log_type_title" => $section_name,
+                "changes" => serialize($fields_changed)
+            ];
+
+            $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
+
+            echo json_encode([
+                "success" => true,
+                "rel_id" => $invoice_id,
+                "id" => $id,
+                "message" => app_lang("record_saved")
+            ]);
+        } else {
+            echo json_encode(["success" => false, "message" => app_lang("error_occurred")]);
+        }
+    }
 
     //update the sort value for the item
     function update_item_sort_values($id = 0)
     {
         validate_numeric_value($id);
-        if (!$this->can_edit_invoice()) {
+
+        if (!$this->can_edit_invoices()) {
             app_redirect("forbidden");
         }
 
         $sort_values = $this->request->getPost("sort_values");
-        if ($sort_values) {
 
-            //extract the values from the comma separated string
+        if ($sort_values) {
             $sort_array = explode(",", $sort_values);
 
-            //update the value in db
-            foreach ($sort_array as $value) {
-                $sort_item = explode("-", $value); //extract id and sort value
+            $counter = 1;
 
-                $id = get_array_value($sort_item, 0);
+            foreach ($sort_array as $value) {
+                $parts = explode("-", $value); // format: type-id-index
+
+                $type = get_array_value($parts, 0);
+                $id = get_array_value($parts, 1);
                 validate_numeric_value($id);
 
-                $sort = get_array_value($sort_item, 1);
-                validate_numeric_value($sort);
+                $data = array("sort" => $counter);
 
-                $data = array("sort" => $sort);
-                $this->Invoice_items_model->ci_save($data, $id);
+                if ($type === "item") {
+                    $this->Invoice_items_model->ci_save($data, $id);
+                } elseif ($type === "section") {
+                    $this->db->table($this->db->prefixTable('items_section'))->where('id', $id)->update($data);
+                }
+
+                $counter++;
             }
         }
     }

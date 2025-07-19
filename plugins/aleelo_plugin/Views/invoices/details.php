@@ -144,7 +144,7 @@
 
                 {title: '<?php echo app_lang("quantity") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("rate") ?>', "class": "text-right w15p", sortable: false},
-                // {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},
+                {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},
                 {title: '<?php echo app_lang("total") ?>', "class": "text-right w15p all", sortable: false},
                 {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", sortable: false, visible: optionVisibility}
             ],
@@ -179,26 +179,31 @@
 
                     Sortable.create($selector[0], {
                         animation: 150,
+                        handle: '.move-icon',
                         chosenClass: "sortable-chosen",
                         ghostClass: "sortable-ghost",
-                        onUpdate: function (e) {
+                        onUpdate: function(e) {
                             appLoader.show();
                             //prepare sort indexes 
                             var data = "";
-                            $.each($selector.find(".item-row"), function (index, ele) {
+                            $.each($selector.find(".item-row"), function(index, ele) {
                                 if (data) {
                                     data += ",";
                                 }
+                                var id = $(ele).attr("data-id");
+                                var type = $(ele).attr("data-type");
+                                    data += type + "-" + id + "-" + index;
 
-                                data += $(ele).attr("data-id") + "-" + index;
                             });
 
                             //update sort indexes
                             $.ajax({
                                 url: '<?php echo_uri("invoices/update_item_sort_values") ?>',
                                 type: "POST",
-                                data: {sort_values: data},
-                                success: function () {
+                                data: {
+                                    sort_values: data
+                                },
+                                success: function() {
                                     appLoader.hide();
                                 }
                             });

@@ -1,16 +1,23 @@
 <?php
+
 namespace aleelo_plugin\Models;
+
 use App\Models\Crud_model;
-class Estimates_model extends Crud_model {
+
+class Estimates_model extends Crud_model
+{
 
     protected $table = null;
 
-    function __construct() {
+    function __construct()
+    {
         $this->table = 'estimates';
         parent::__construct($this->table);
+
     }
 
-    function get_details($options = array()) {
+    function get_details($options = array())
+    {
         $estimates_table = $this->db->prefixTable('estimates');
         $clients_table = $this->db->prefixTable('clients');
         $taxes_table = $this->db->prefixTable('taxes');
@@ -32,13 +39,13 @@ class Estimates_model extends Crud_model {
         if ($company_id) {
             $where .= " AND dp.id=$company_id";
         }
-        
+
         $company_id_department = $this->_get_clean_value($options, "company_id_department");
         if ($company_id_department) {
             $where .= " AND dp.id=$company_id_department";
         }
 
-         $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
+        $can_view_all_invoice = $this->_get_clean_value($options, "can_view_all_invoice");
         if ($can_view_all_invoice) {
             $where .= " AND dp.id=$can_view_all_invoice";
         }
@@ -109,7 +116,8 @@ class Estimates_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function get_estimate_total_summary($estimate_id = 0) {
+    function get_estimate_total_summary($estimate_id = 0)
+    {
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $estimates_table = $this->db->prefixTable('estimates');
         $clients_table = $this->db->prefixTable('clients');
@@ -175,7 +183,8 @@ class Estimates_model extends Crud_model {
     }
 
     //get estimate last id
-    function get_estimate_last_id() {
+    function get_estimate_last_id()
+    {
         $estimates_table = $this->db->prefixTable('estimates');
 
         $sql = "SELECT MAX($estimates_table.id) AS last_id FROM $estimates_table";
@@ -184,7 +193,8 @@ class Estimates_model extends Crud_model {
     }
 
     //save initial number of estimate
-    function save_initial_number_of_estimate($value) {
+    function save_initial_number_of_estimate($value)
+    {
         $value = $this->_get_clean_value($value);
         $estimates_table = $this->db->prefixTable('estimates');
 
@@ -193,7 +203,8 @@ class Estimates_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function estimate_sent_statistics($options = array()) {
+    function estimate_sent_statistics($options = array())
+    {
         $estimates_table = $this->db->prefixTable('estimates');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $taxes_table = $this->db->prefixTable('taxes');
@@ -203,7 +214,7 @@ class Estimates_model extends Crud_model {
         $year = get_my_local_time("Y");
 
         $where = "";
-        
+
         $estimate_where = $this->_get_clients_of_currency_query($this->_get_clean_value($options, "currency_symbol"), $estimates_table, $clients_table);
 
         $estimate_value_calculation_query = $this->_get_estimate_value_calculation_query($estimates_table);
@@ -223,7 +234,8 @@ class Estimates_model extends Crud_model {
     }
 
     //get total estimate value calculation query
-    protected function _get_estimate_value_calculation_query($estimates_table) {
+    protected function _get_estimate_value_calculation_query($estimates_table)
+    {
         $select_estimate_value = "IFNULL(items_table.estimate_value,0)";
 
         $after_tax_1 = "(IFNULL(tax_table.percentage,0)/100*$select_estimate_value)";
@@ -245,7 +257,8 @@ class Estimates_model extends Crud_model {
         return $estimate_value_calculation_query;
     }
 
-    function get_used_currencies_of_client() {
+    function get_used_currencies_of_client()
+    {
         $clients_table = $this->db->prefixTable('clients');
         $default_currency = get_setting("default_currency");
 
@@ -256,5 +269,4 @@ class Estimates_model extends Crud_model {
 
         return $this->db->query($sql);
     }
-
 }

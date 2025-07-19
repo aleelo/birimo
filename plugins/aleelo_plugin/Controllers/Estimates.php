@@ -187,7 +187,8 @@ class Estimates extends Security_Controller_Plugin
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
-            "note" => $this->request->getPost('estimate_note')
+            "note" => $this->request->getPost('estimate_note'),
+            "description"=>$this->request->getPost('description'),
         );
 
         $estimate_request_id = $this->request->getPost('estimate_request_id');
@@ -223,24 +224,25 @@ class Estimates extends Security_Controller_Plugin
         if ($estimate_id) {
             $existing_project = $this->Projects_model->get_one_where(["estimate_id" => $estimate_id, "deleted" => 0]);
 
-            if ($existing_project && $existing_project->id) {
-                $save_id_project = $existing_project->id;
-            } else {
-                $data_project = array(
-                    "title" => $this->request->getPost('project_id'),
-                    "client_id" => $client_id,
-                    "start_date" => $this->request->getPost('estimate_date'),
-                    "deadline" => $this->request->getPost('valid_until'),
-                    "estimate_id" => $estimate_id,
-                    "company_id" => $client_info->company_id
-                );
-                $save_id_project = $this->Projects_model->ci_save($data_project);
-            }
+            // if ($existing_project && $existing_project->id) {
+            //     $save_id_project = $existing_project->id;
+            // } 
+            // else {
+            //     $data_project = array(
+            //         "title" => $this->request->getPost('project_id'),
+            //         "client_id" => $client_id,
+            //         "start_date" => $this->request->getPost('estimate_date'),
+            //         "deadline" => $this->request->getPost('valid_until'),
+            //         "estimate_id" => $estimate_id,
+            //         "company_id" => $client_info->company_id
+            //     );
+            //     $save_id_project = $this->Projects_model->ci_save($data_project);
+            // }
 
-            if ($save_id_project) {
-                $data_project_id = array("project_id" => $save_id_project);
-                $this->Estimates_model->ci_save($data_project_id, $estimate_id);
-            }
+            // if ($save_id_project) {
+            //     $data_project_id = array("project_id" => $save_id_project);
+            //     $this->Estimates_model->ci_save($data_project_id, $estimate_id);
+            // }
             if ($is_clone && $main_estimate_id) {
                 //add estimate items
 
@@ -805,11 +807,9 @@ class Estimates extends Security_Controller_Plugin
         $rate = unformat_currency($this->request->getPost('estimate_item_rate'));
         $quantity = unformat_currency($this->request->getPost('estimate_item_quantity'));
         $estimate_item_title = $this->request->getPost('estimate_item_title');
-        $account_name = $this->request->getPost("estimate_item_account_id");
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
         $is_section = $this->request->getPost('is_section'); // "1" or null
         $section_name = $this->request->getPost('section_name');
-        $new_account = $this->request->getPost("new_account");
         $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
         $days = unformat_currency($this->request->getPost('days'));
 
@@ -818,24 +818,7 @@ class Estimates extends Security_Controller_Plugin
         } else {
             $price = 0;
         }
-        if (class_exists('\Accounting\Models\Accounting_model')) {
-            $accounting_model = new Accounting_model();
-            if ($new_account) {
-                $account_data = array(
-                    "name" => $account_name,
-                    "account_type_id" => 11, // Assuming 11 is the account type ID for "Income"
 
-                );
-
-                $accounting_model->db->table("acc_accounts")->insert($account_data);
-
-                $account_id = $accounting_model->db->insertID();
-            } else {
-                $account_id = $this->request->getPost("estimate_item_account_id");
-            }
-        } else {
-            $account_id = "0";
-        }
 
         $item_id = 0;
 
@@ -850,7 +833,6 @@ class Estimates extends Security_Controller_Plugin
                 "title" => $estimate_item_title,
                 "description" => $this->request->getPost('estimate_item_description'),
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
-                "account_id" => $account_id,
                 "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
                 "company_id" => $this->login_user->department,
             );
@@ -882,7 +864,6 @@ class Estimates extends Security_Controller_Plugin
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
                 "rate" => unformat_currency($this->request->getPost('estimate_item_rate')),
                 "total" => $rate * $quantity * $days,
-                "account_id" => $account_id,
                 "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
                 "supplier_price" => $price,
                 "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
@@ -1048,7 +1029,6 @@ class Estimates extends Security_Controller_Plugin
             $item->rate = $item->rate ? to_decimal_format($item->rate) : "";
             $item->description = $item->description ? custom_nl2br($item->description) : "";
             $item->unit_type = $item->unit_type ? $item->unit_type : "";
-            $item->account_id = $item->account_id ? $item->account_id : 0;
             echo json_encode(array("success" => true, "item_info" => $item));
         } else {
             echo json_encode(array("success" => false));

@@ -34,12 +34,12 @@ function adjust_brightness($hex, $steps) {
     <td style="width: 2.6%;"></td>
     
     <td style="width: 1%; vertical-align: top;">
-    <table style="width: 100%; height: 300px; border-collapse: collapse;">
+    <table style="width: 1%; height: 300px; border-collapse: collapse;">
     <tr>
-        <td style="background-color: <?php echo $color; ?>; width: 25%; height: 90px;"></td>
-        <td style="background-color: <?php echo adjust_brightness($color, 20); ?>; width: 25%; height: 90px;"></td>
-        <td style="background-color: <?php echo adjust_brightness($color, 40); ?>; width: 25%; height: 90px;"></td>
-        <td style="background-color: <?php echo adjust_brightness($color, 60); ?>; width: 25%; height: 90px;"></td>
+        <td style="background-color: <?php echo $color; ?>; width: 1%; height: 90px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 20); ?>; width: 1%; height: 1px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 40); ?>; width: 1%; height: 1px;"></td>
+        <td style="background-color: <?php echo adjust_brightness($color, 60); ?>; width: 1%; height: 1px;"></td>
     </tr>
 </table>  
     

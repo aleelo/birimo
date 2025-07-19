@@ -241,7 +241,7 @@
                     <label for="company_logo" class="col-md-3 mt10"><?php echo app_lang('company_logo'); ?> (300x100) </label>
                     <div class="col-md-9">
                         <div class="float-start mr15">
-                            <?php echo get_company_logo($model_info->id); ?>
+                            <?php echo get_company_logo($model_info->id,true); ?>
                         </div>
                         <div class="float-start mr15">
                             <?php echo view("includes/dropzone_preview"); ?>

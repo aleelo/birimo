@@ -2774,7 +2774,6 @@ if (!function_exists('get_company_logo')) {
 }
 
 
-
 /**
  * get all project statuses text object
  * 

@@ -86,15 +86,15 @@
 
                 <div class="form-group">
                 <div class="row">
-                <label for="project_id" class=" col-md-3"><?php echo app_lang('event_name'); ?></label>
+                <label for="description" class=" col-md-3"><?php echo app_lang('description'); ?></label>
                 <div class="col-md-9">
                     <?php
                     echo form_input(array(
-                        "id" => "project_id",
-                        "name" => "project_id",
-                        "value" => $model_info->project_id,
+                        "id" => "description",
+                        "name" => "description",
+                        "value" => $model_info->description,
                         "class" => "form-control",
-                        "placeholder" => app_lang('event_name'),
+                        "placeholder" => app_lang('description'),
                         "autocomplete" => "off",
                         "data-rule-required" => true,
                         "data-msg-required" => app_lang("field_required"),

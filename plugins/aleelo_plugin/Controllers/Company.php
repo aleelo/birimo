@@ -63,10 +63,6 @@ class Company extends Security_Controller_Plugin {
             "vat_number" => $this->request->getPost('vat_number'),
             "is_default" => $is_default ? $is_default : 0,
             "gst_number" => $this->request->getPost('gst_number'),
-            // "we_accept" => $this->request->getPost('we_accept'),
-            // "account_no" => $this->request->getPost('account_no'),
-            // "bank_name" => $this->request->getPost('bank_name'),
-            // "Condition_company" => $this->request->getPost('Condition_company'),
             "finance_manager_id" => $this->request->getPost('finance_manager_id'),
             "Director_id"=> $this->request->getPost('Director_id'),
         );
@@ -155,7 +151,12 @@ function save_invoice_settings() {
         $new_name = $file->getRandomName(); // Generate a random file name
         $file->move($target_path, $new_name); // Move the file to the target directory
         $invoice_pdf_background_image = 'uploads/company/' . $new_name; // Save the relative path
+
     }
+            $value= $this->request->getPost('favicon');
+        $value1 = str_replace("~", ":", $value);
+        $value2 = serialize(move_temp_file("favicon.png", get_setting("system_file_path"), "", $value1));
+
     // Prepare data for saving
     $company_data = array(
         "invoice_color" => $this->request->getPost('invoice_color'),
@@ -163,7 +164,9 @@ function save_invoice_settings() {
         "invoice_footer" => $this->request->getPost('invoice_footer'),
         "invoice_pdf_background_image"=>$invoice_pdf_background_image,
         "enable_background_image_for_invoice_pdf"=> $this->request->getPost('enable_background_image_for_invoice_pdf'),
-        "site_logo_file"=> $this->request->getPost('site_logo_file'),
+        "section_background"=> $this->request->getPost('section_background'),
+        "company_icon"=>$value2,
+
 
     );
 
@@ -173,7 +176,6 @@ function save_invoice_settings() {
     if ($save_id) {
         $options = array("id" => $save_id);
         $company_info = $this->Company_model->get_details($options)->getRow();
-
         echo json_encode([
             "success" => true,
             "id" => $save_id,

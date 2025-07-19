@@ -10,6 +10,7 @@ class Invoices_model extends Crud_model {
     function __construct() {
         $this->table = 'invoices';
         parent::__construct($this->table);
+
     }
 
     function get_details($options = array()) {
@@ -733,6 +734,8 @@ function get_invoice_total_summaryp($invoice_id, $supplier_id) {
     }
 
     function save_invoice_and_update_total($data, $id = 0) {
+        $data_before = $id ? (array)$this->get_one($id) : [];
+
         $save_id = $this->ci_save($data, $id);
 
         $update_total = false;
@@ -742,6 +745,56 @@ function get_invoice_total_summaryp($invoice_id, $supplier_id) {
                 $update_total = true;
             }
         }
+        $saved_item = (array)$this->get_one($save_id);
+
+        // Fetch the saved invoice item after update/create
+        $saved_item = (array)$this->get_one($save_id);
+
+        // Compute the changes
+        $fields_changed = [];
+        if ($id) {
+            // Updating — log only changed fields
+            foreach ($saved_item as $field => $new_value) {
+                if (isset($data_before[$field]) && $data_before[$field] != $new_value) {
+                    $from = $data_before[$field];
+                    $to = $new_value;
+
+                    if ($field === "client_id") {
+                        $Clients_model = model("aleelo_plugin\Models\Clients_model");
+                        $from = $from ? $Clients_model->get_one($from)->company_name : "N/A";
+                        $to   = $to ? $Clients_model->get_one($to)->company_name : "N/A";
+                    }
+                    $pretty_key = preg_replace('/_id\d*$/', '', $field);
+                    $fields_changed[$pretty_key] = ["from" => $from, "to" => $to];
+                }
+            }
+        } else {
+            // Creating — log all fields as "to"
+            foreach ($saved_item as $field => $new_value) {
+                $fields_changed[$field] = [
+                    "from" => null,
+                    "to"   => $new_value,
+                ];
+            }
+        }
+
+        // Prepare log action label
+        $log_action = $id ? 'updated' : 'created';
+
+        // Prepare the log data
+        $log_data = [
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => session()->get('user_id'),
+            'action'     => $log_action,
+            'log_type'   => 'invoice',
+            'log_type_id' => $save_id,
+            'log_for'    => 'invoice',
+            'log_for_id' => $save_id,
+            'log_type_title' => 'invoice',
+            'changes'    => serialize($fields_changed),
+        ];
+
+        $this->db->table($this->db->prefixTable('activity_logs'))->insert($log_data);
 
         if ($update_total) {
             $this->update_invoice_total_meta($save_id);
