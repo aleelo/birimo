@@ -491,7 +491,7 @@ $data = array(
                 } ?>
 
                 <div class="signature-block">
-                    <h5 class="signature-name"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
+                    <h5 class="signature-name"style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
                     <h5 class="signature-title"><?php echo $finance_manager_info->job_title_en; ?></h5>
                 </div>
             </td>
