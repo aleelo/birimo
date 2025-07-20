@@ -24,7 +24,42 @@ if (!function_exists('get_demo_setting')) {
         }
     }
 }
+if (!function_exists('get_company_icon')) {
 
+    function get_company_icon($company_id, $type = "", $return_html = false) {
+        $Company_model = model('App\Models\Company_model');
+        $company_info = $Company_model->get_one($company_id);
+        $only_file_path = get_setting('only_file_path');
+
+        if (isset($company_info->company_icon) && $company_info->company_icon) {
+            $file = unserialize($company_info->company_icon);
+            if (is_array($file)) {
+                $file = get_array_value($file, 0);
+
+                if ($return_html) {
+                    return "<img class='max-logo-size' src='" . get_source_url_of_file($file, get_setting('system_file_path'), 'thumbnail', $only_file_path, $only_file_path) . "' alt='...' />";
+                } else {
+?>
+                    <img class="max-logo-size" src="<?php echo get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path); ?>" alt="..." />
+                <?php
+                }
+            }
+        } else {
+            $logo = $type . "_logo";
+            if (!get_setting($logo)) {
+                $logo = "invoice_logo";
+            }
+
+            if ($return_html) {
+                return "<img class='max-logo-size' src='" . get_file_from_setting($logo, $only_file_path) . "' alt='...' />";
+            } else {
+                ?>
+                <img class="max-logo-size" src="<?php echo get_file_from_setting($logo, $only_file_path); ?>" alt="..." />
+<?php
+            }
+        }
+    }
+}
 if (!function_exists('update_custom_fields_changes')) {
 
     function update_custom_fields_changes($related_to_type, $related_to_id, $changes, $activity_log_id = 0)
