@@ -781,7 +781,7 @@ if (!$signature_path) {
                 $job_data["signature"] = serialize($signature_file);
             }
         }
-        else{
+        elseif($signature_type === "image"){
             $signature_file = $this->request->getFile('signature');
 
             $target_path = get_setting("signature_file_path");
@@ -790,7 +790,12 @@ if (!$signature_path) {
             $job_data["signature"] = serialize($signature);
 
         }
-        $this->Users_models->ci_save($user_data, $user_id);
+        else{
+                $existing_signature = $this->Users_models->get_job_info($user_id)->signature;
+            $job_data["signature"] = $existing_signature;
+
+        }
+        // $this->Users_models->ci_save($user_data, $user_id);
         if ($this->Users_models->save_job_info($job_data)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
         } else {

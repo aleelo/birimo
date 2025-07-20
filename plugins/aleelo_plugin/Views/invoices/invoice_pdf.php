@@ -309,7 +309,7 @@ $data = array(
             <td style="width: 12%;">
                 <?php
 
-                echo get_company_logo($invoice_info->company_id, "");
+                echo get_company_icon($client_info->company_id, "");
                 ?> </td>
             <td style="width: 22%;">
                 <h4 class="company-name"><?php echo $company_info->name; ?></h4>

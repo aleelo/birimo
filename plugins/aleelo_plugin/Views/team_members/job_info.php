@@ -34,7 +34,7 @@
                         echo form_input(array(
                             "id" => "job_title",
                             "name" => "job_title",
-                            "value" => $job_info->job_title,
+                            "value" => $job_info->job_title_en,
                             "class" => "form-control",
                             "placeholder" => app_lang('job_title')
                         ));

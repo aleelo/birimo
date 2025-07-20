@@ -153,10 +153,7 @@ function save_invoice_settings() {
         $invoice_pdf_background_image = 'uploads/company/' . $new_name; // Save the relative path
 
     }
-            $value= $this->request->getPost('favicon');
-        $value1 = str_replace("~", ":", $value);
-        $value2 = serialize(move_temp_file("favicon.png", get_setting("system_file_path"), "", $value1));
-
+ 
     // Prepare data for saving
     $company_data = array(
         "invoice_color" => $this->request->getPost('invoice_color'),
@@ -165,14 +162,27 @@ function save_invoice_settings() {
         "invoice_pdf_background_image"=>$invoice_pdf_background_image,
         "enable_background_image_for_invoice_pdf"=> $this->request->getPost('enable_background_image_for_invoice_pdf'),
         "section_background"=> $this->request->getPost('section_background'),
-        "company_icon"=>$value2,
 
 
     );
+$target_path = get_setting("system_file_path");
+$files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "company_$id");
+$company_icon = unserialize($files_data);
+
+if ($company_icon) {
+    $old_company_info = $this->Company_model->get_one($id);
+    if ($old_company_info->company_icon) {
+        $old_files = unserialize($old_company_info->company_icon);
+        foreach ($old_files as $file) {
+            delete_app_files(get_setting("system_file_path"), array($file));
+        }
+    }
+
+    $company_data["company_icon"] = serialize($company_icon);
+}
 
     // Save data to the Company table
     $save_id = $this->Company_model->ci_save($company_data, $id);
-
     if ($save_id) {
         $options = array("id" => $save_id);
         $company_info = $this->Company_model->get_details($options)->getRow();

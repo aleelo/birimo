@@ -17,6 +17,7 @@
                         <div class="card-body">
                             <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
                             <div class="card-body post-dropzone">
+<div id="company_icon-dropzone" class="post-dropzone">
 
 
                                 <div class="form-group">
@@ -93,33 +94,22 @@
 
                                 </div>
 
-                            <div class="form-group">
-                                <div class="row">
-                                    <label for="favicon" class="col-md-2"><?php echo app_lang('favicon'); ?> (32x32)</label>
-                                    <div class="col-lg-10">
-                                        <div class="float-start mr15">
-                                            <img id="favicon-preview" src="<?php echo get_company_icon($model_info->id); ?>" alt="..." style="width: 32px" />
-                                        </div>
-                                        <div class="float-start file-upload btn btn-default btn-sm">
-                                            <i data-feather="upload" class="icon-14"></i> <?php echo app_lang("upload_and_crop"); ?>
-                                            <input id="favicon_file" class="cropbox-upload upload" name="favicon_file" type="file" data-height="32" data-width="32" data-preview-container="#favicon-preview" data-input-field="#favicon" />
-                                        </div>
-                                        <div class="mt10 ml10 float-start">
-                                            <?php
-                                            echo form_upload(array(
-                                                "id" => "favicon_file_upload",
-                                                "name" => "favicon_file",
-                                                "class" => "no-outline hidden-input-file"
-                                            ));
-                                            ?>
-                                            <label for="favicon_file_upload" class="btn btn-default btn-sm">
-                                                <i data-feather="upload" class="icon-14"></i> <?php echo app_lang("upload"); ?>
-                                            </label>
-                                        </div>
-                                        <input type="hidden" id="favicon" name="favicon" value="" />
-                                    </div>
-                                </div>
-                            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="company_logo" class="col-md-3 mt10"><?php echo app_lang('company_logo'); ?> (300x100) </label>
+                    <div class="col-md-9">
+                        <div class="float-start mr15">
+                            <?php echo get_company_logo($model_info->id,true); ?>
+                        </div>
+                        <div class="float-start mr15">
+                            <?php echo view("includes/dropzone_preview"); ?>
+                        </div>
+                        <div class="float-start upload-file-button btn btn-default btn-sm">
+                            <span>...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
                             </div>
 
                             <div class="form-group">
@@ -201,154 +191,13 @@
             var uploadUrl = "<?php echo get_uri("uploader/upload_file"); ?>";
             var validationUrl = "<?php echo get_uri("uploader/validate_file"); ?>";
 
-            var dropzone = attachDropzoneWithForm("#invoice-settings-form", uploadUrl, validationUrl, {
+            var dropzone = attachDropzoneWithForm("#company_icon-dropzone", uploadUrl, validationUrl, {
                 maxFiles: 1
             });
 
-            var showHideInputFields = function() {
-                var value = $("#invoice_number_format").val() || "",
-                    hasYear = value.includes("YEAR"),
-                    hasMonth = value.includes("MONTH"),
-                    $yearSection = $("#invoice-number-format-year-section"),
-                    $resetSection = $("#reset-invoice-number-section"),
-                    $initialNumber = $("#initial-number-of-the-invoice");
 
-
-                // Check if the value includes "YEAR" and show/hide the year section accordingly
-                if (hasYear) {
-                    $yearSection.removeClass("hide");
-                    $resetSection.removeClass("hide");
-                } else {
-                    $resetSection.addClass("hide");
-                }
-
-                if (hasMonth) {
-                    $yearSection.removeClass("hide");
-                }
-
-                if (!hasYear && !hasMonth) {
-                    $yearSection.addClass("hide");
-                    $resetSection.addClass("hide");
-                }
-
-                // Check if the value does not include "YEAR" and show/hide the initial number section accordingly
-
-                if ($("#reset_invoice_number_every_year").is(":checked")) {
-                    $initialNumber.addClass("hide");
-                } else {
-                    $initialNumber.removeClass("hide");
-                }
-            }
-
-            $("#invoice_number_format").on("input", function() {
-                showHideInputFields();
-            });
-
-            showHideInputFields();
-
-            $("#reset_invoice_number_every_year").click(function() {
-                if ($("#invoice_number_format").val().includes("YEAR") && $(this).is(":checked")) {
-                    $("#initial-number-of-the-invoice").addClass("hide");
-                } else {
-                    $("#initial-number-of-the-invoice").removeClass("hide");
-                }
-            });
-
-            $(".invoice_number_format_variabls").click(function() {
-                $("#invoice_number_format").val($("#invoice_number_format").val() + $(this).text());
-                $("#invoice_number_format").focus();
-                $("#invoice_number_format").trigger("input");
-                setTimeout(function() {
-                    $("#invoice_prefix").focus();
-                });
-                setTimeout(function() {
-                    $("#invoice_number_format").focus();
-                });
-
-            });
-
-            $("#invoice_number_format").on("input", function() {
-                var inputValue = $(this).val();
-
-                var duplicateVariablesFoundMsg = "<?php echo app_lang("please_do_not_use_duplicate_variables") ?>";
-                $(this).attr("data-rule-noDuplicateVariables", inputValue);
-                $(this).attr("data-msg-noDuplicateVariables", duplicateVariablesFoundMsg);
-
-                var invalidSpecialCharMsg = "<?php echo app_lang("please_do_not_use_invalid_special_character") ?>";
-                $(this).attr("data-rule-invalidSpecialChar", inputValue);
-                $(this).attr("data-msg-invalidSpecialChar", invalidSpecialCharMsg);
-
-                var mustUseSerialMsg = "<?php echo app_lang('please_use_any_serial') ?>";
-                $(this).attr("data-rule-mustUseSerial", inputValue);
-                $(this).attr("data-msg-mustUseSerial", mustUseSerialMsg);
-            });
-
-            // Initial preview generation
-            generatePreview();
-
-            // Call generatePreview function when input values change
-            $("#invoice_prefix, #invoice_number_format").on("input", generatePreview);
-        });
-
-        $.validator.addMethod("mustUseSerial", function(value, element) {
-            var serialVariables = ['{SERIAL}', '{2_DIGIT_SERIAL}', '{3_DIGIT_SERIAL}', '{4_DIGIT_SERIAL}', '{5_DIGIT_SERIAL}', '{6_DIGIT_SERIAL}'];
-            return serialVariables.some(function(variable) {
-                return value.includes(variable);
-            });
-        }, 'You must use one of the serial variables.');
-
-        //Finding duplicate variables
-        $.validator.addMethod("noDuplicateVariables",
-            function(value, element) {
-                var variables = value.match(/\{(.*?)\}/g);
-                if (variables) {
-                    var uniqueVariables = new Set(variables);
-                    if (uniqueVariables.size === variables.length) {
-                        var serialVariables = ['{SERIAL}', '{2_DIGIT_SERIAL}', '{3_DIGIT_SERIAL}', '{4_DIGIT_SERIAL}', '{5_DIGIT_SERIAL}', '{6_DIGIT_SERIAL}'];
-                        var countSerial = 0;
-                        variables.forEach(function(variable) {
-                            if (serialVariables.includes(variable)) {
-                                countSerial++;
-                            }
-                        });
-                        return countSerial <= 1;
-                    }
-                }
-
-                return false;
-            }, 'Duplicate variables found.');
-
-
-        //Fiending invalid special character
-        $.validator.addMethod("invalidSpecialChar",
-            function(value, element) {
-                var invalidChars = value.match(/[^a-zA-Z0-9\-_/:()#\\{}]|(?<!\{)(?<!YEAR)(?<!MONTH)(?<!SERIAL)(?<!2_DIGIT_SERIAL)(?<!3_DIGIT_SERIAL)(?<!4_DIGIT_SERIAL)(?<!5_DIGIT_SERIAL)(?<!6_DIGIT_SERIAL)\{(?!\w*\})|(?<!\})(?<!YEAR)(?<!MONTH)(?<!SERIAL)(?<!2_DIGIT_SERIAL)(?<!3_DIGIT_SERIAL)(?<!4_DIGIT_SERIAL)(?<!5_DIGIT_SERIAL)(?<!6_DIGIT_SERIAL)\}(?!\{)|(?<!\})(?<!YEAR)(?<!MONTH)(?<!SERIAL)(?<!2_DIGIT_SERIAL)(?<!3_DIGIT_SERIAL)(?<!4_DIGIT_SERIAL)(?<!5_DIGIT_SERIAL)(?<!6_DIGIT_SERIAL)(?<!\/)\//g); // Get all invalid special characters except those inside {}
-                if (!invalidChars) {
-                    return true;
-                }
-            }, 'Invalid special character found.');
-
+   
 
         // Function to generate preview based on input values
-        function generatePreview() {
-            var prefix = $("#invoice_prefix").val() || 'INVOICE #';
-            var format = $("#invoice_number_format").val();
-
-            // Ensure both prefix and format are defined
-            if (prefix && format) {
-                format = format.replace("{YEAR}", new Date().getFullYear());
-                format = format.replace("{MONTH}", ('0' + (new Date().getMonth() + 1)).slice(-2));
-
-                format = format.replace("{SERIAL}", ('1'));
-                format = format.replace("{2_DIGIT_SERIAL}", ('01'));
-                format = format.replace("{3_DIGIT_SERIAL}", ('001'));
-                format = format.replace("{4_DIGIT_SERIAL}", ('0001'));
-                format = format.replace("{5_DIGIT_SERIAL}", ('00001'));
-                format = format.replace("{6_DIGIT_SERIAL}", ('000001'));
-
-                $("#invoice-display-id-preview-section").text(prefix + format);
-            } else {
-                $("#invoice-display-id-preview-section").text('');
-            }
-        }
+        });
     </script>
