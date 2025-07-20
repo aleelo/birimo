@@ -50,7 +50,7 @@
                     echo form_input(array(
                         "id" => "days",
                         "name" => "days",
-                        "value" => $model_info->days ? $model_info->days : "",
+                        "value" => $model_info->days ? $model_info->days : "0",
                         "class" => "form-control",
                         "placeholder" => app_lang('days')
                     ));

@@ -1197,9 +1197,15 @@ class Invoices extends Security_Controller_Plugin
         $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
         $days = unformat_currency($this->request->getPost('days'));
+        
+        if($days==0){
+            $day=1;
+        }else{
+            $day=$days;
+        }
 
         if ($supplier_price) {
-            $price = $supplier_price * $quantity * $days;
+            $price = $supplier_price * $quantity * $day;
         } else {
             $price = 0;
         }
@@ -1233,7 +1239,7 @@ class Invoices extends Security_Controller_Plugin
             "quantity" => $quantity,
             "unit_type" => $this->request->getPost('invoice_unit_type'),
             "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-            "total" => $rate * $quantity * $days,
+            "total" => $rate * $quantity * $day,
             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
             "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
             "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",

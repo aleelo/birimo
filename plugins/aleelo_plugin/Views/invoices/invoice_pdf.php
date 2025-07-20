@@ -13,7 +13,7 @@ if (get_setting('taxable_column') == "always_show") {
     foreach ($invoice_items as $item) {
         $taxable_fields[] = $item->taxable;
     }
-    if (count(array_unique($taxable_fields)) == 2) {
+    if ($invoice_info->tax_id) {
         $show_taxable = true;
         $colspan = 4;
     }
@@ -113,6 +113,9 @@ if (get_setting('taxable_column') == "always_show") {
             text-align: left;
             width: 12%;
             color: white;
+            font-weight: bold;
+
+            text-align: left;
 
         }
 
@@ -343,11 +346,12 @@ $data = array(
         <thead>
 
             <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '55%' : '60%'; ?>;">Description</th>
+                <th style="width: <?php echo $show_taxable ? '45%' : '53%'; ?>;">Description</th>
+                <th style="width:10%"> Days</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <?php if ($show_taxable) { ?>
-                    <th>taxable </th>
+                <th>Taxable</th>
                 <?php } ?>
                 <th>Total</th>
             </tr>
@@ -356,24 +360,27 @@ $data = array(
             <?php foreach ($invoice_items as $item) { ?>
 
                 <?php if ($item->is_section) { ?>
-                    <tr style="background-color: <?php echo $company_info->section_background ;?>">
+                    <tr style="font-weight: bold; background-color: <?php echo $company_info->section_background ;?>">
 
-                        <td style="width: <?php echo $show_taxable ? '55%' : '60%'; ?>;"><?php echo $item->title ?></td>
+                        <td style="width: <?php echo $show_taxable ? '55%' : '63%'; ?>;"><?php echo $item->title ?></td>
                         <td><?php echo $item->quantity ?></td>
                         <td><?php echo $item->quantity ?></td>
-                        <td></td>
-                        <td><?php echo $item->quantity ?></td>
+                        <?php if ($show_taxable) { ?>
+                            <td></td>
+                        <?php } ?>
+                       <td><?php echo $item->quantity ?></td>
 
                     </tr>
 
                 <?php } else { ?>
                     <tr style="background-color:<?php echo  $company_info->invoice_item_list_background ?>;">
 
-                        <td style="width: <?php echo $show_taxable ? '55%' : '60%'; ?>;"><?php echo $item->title ?></td>
+                        <td style="width: <?php echo $show_taxable ? '45%' : '53%'; ?>;"><?php echo $item->title ?></td>
+                        <td style="width:10%"> <?php echo $item->days ? $item->days:"" ?></td>
                         <td><?php echo $item->quantity ?></td>
                         <td><?php echo $item->rate ?></td>
                         <?php if ($show_taxable) { ?>
-                            <td><?php echo $item->taxable ?></td>
+                            <td><?php echo $item->taxable ? "yes" : ""; ?></td>
                         <?php } ?>
                         <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
                     </tr>
@@ -386,7 +393,7 @@ $data = array(
             <?php if ($show_taxable) { ?>
 
                 <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '77%' : '89%'; ?>;"></td>
+                    <td style="width: <?php echo $show_taxable ? '76%' : '90%'; ?>;"></td>
                     <td style="width: 15%; text-align: left;">Sub Total</td>
                     <td style="width: 20%;"><?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
@@ -394,14 +401,14 @@ $data = array(
             <?php if ($invoice_total_summary->tax) { ?>
 
                 <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '77%' : '89%'; ?>;"></td>
+                    <td style="width: <?php echo $show_taxable ? '76%' : '90%'; ?>;"></td>
                     <td style="width: 15%;"><?php echo $invoice_total_summary->tax_name; ?></td>
                     <td style="width: 18%;"><?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
             <?php } ?>
 
             <tr class="total">
-                <td style="width: <?php echo $show_taxable ? '65%' : '72%'; ?> ?> ?> ?>;"></td>
+                <td style="width: <?php echo $show_taxable ? '64%' : '72%'; ?> ?> ?> ?>;"></td>
                 <?php if ($show_taxable) { ?>
                     <td></td>
                 <?php } ?>
@@ -411,14 +418,14 @@ $data = array(
 
             <?php if ($invoice_total_summary->total_paid) { ?>
                 <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '65%' : '72%'; ?> ?> ?> ?>;"></td>
+                    <td style="width: <?php echo $show_taxable ? '64%' : '72%'; ?> ?> ?> ?>;"></td>
                     <?php if ($show_taxable) { ?><td></td><?php } ?>
                     <td style="width: 15%; text-align: left;">Paid</td>
                     <td><?php echo to_currency($invoice_total_summary->total_paid, $invoice_total_summary->currency_symbol); ?>
                     </td>
                 </tr>
                 <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '65%' : '72%'; ?> ?> ?> ?>;"></td>
+                    <td style="width: <?php echo $show_taxable ? '64%' : '72%'; ?> ?> ?> ?>;"></td>
                     <?php if ($show_taxable) { ?><td></td><?php } ?>
                     <td style="width: 15%; text-align: left;">Balance Due</td>
                     <td style="width: 14%; text-align: left;"><?php echo to_currency($invoice_total_summary->balance_due, $invoice_total_summary->currency_symbol); ?>
@@ -428,10 +435,12 @@ $data = array(
 
         </tfoot>
     </table>
-
+    <?php if($invoice_info->terms){?>
     <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
+    <?php } ?>
+    <?php if($invoice_info->display_id){?>
     <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
-
+    <?php } ?>
     <table>
         <tr>
             <td style="width:60%;">
