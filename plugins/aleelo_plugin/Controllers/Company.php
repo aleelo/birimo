@@ -4,50 +4,57 @@ namespace aleelo_plugin\Controllers;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 
-class Company extends Security_Controller_Plugin {
+class Company extends Security_Controller_Plugin
+{
 
     public $Company_model;
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->access_only_admin_or_settings_admin();
         $this->Company_model = model('App\Models\Company_model');
     }
 
-    function index() {
+    function index()
+    {
         return $this->template->rander("aleelo_plugin\Views/company/index");
     }
 
-    function modal_form() {
+    function modal_form()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
 
-        $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
+        $view_data['finance_manager_id'] = array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id",);
         $view_data['model_info'] = $this->Company_model->get_one($this->request->getPost('id'));
         return $this->template->view('aleelo_plugin\Views/company/modal_form', $view_data);
     }
 
-      function view($company_id) {
+    function view($company_id)
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
 
-        $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
+        $view_data['finance_manager_id'] = array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id",);
         $view_data['model_info'] = $this->Company_model->get_one($company_id);
         return $this->template->view('aleelo_plugin\Views/company/view', $view_data);
     }
-      function estimate_company($role_id) {
+    function estimate_company($role_id)
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
 
-        $view_data['finance_manager_id']=array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name","last_name"), "id", );
+        $view_data['finance_manager_id'] = array("" => "-") + $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id",);
         $view_data['model_info'] = $this->Company_model->get_one($role_id);
         return $this->template->view('aleelo_plugin\Views/company/estimate_company', $view_data);
     }
-    
-    function save() {
+
+    function save()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric",
             "name" => "required"
@@ -64,7 +71,7 @@ class Company extends Security_Controller_Plugin {
             "is_default" => $is_default ? $is_default : 0,
             "gst_number" => $this->request->getPost('gst_number'),
             "finance_manager_id" => $this->request->getPost('finance_manager_id'),
-            "Director_id"=> $this->request->getPost('Director_id'),
+            "Director_id" => $this->request->getPost('Director_id'),
         );
 
         $id = $this->request->getPost('id');
@@ -102,7 +109,8 @@ class Company extends Security_Controller_Plugin {
         }
     }
 
-    function delete() {
+    function delete()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric|required"
         ));
@@ -128,78 +136,80 @@ class Company extends Security_Controller_Plugin {
             }
         }
     }
-function save_invoice_settings() {
-    // Validate submitted data
-    $this->validate_submitted_data(array(
-        // "id" => "required|numeric",
-        // "site_logo_file" => "required",
-        // "invoice_color" => "required",
-        // "invoice_item_list_background" => "required",
-        // "invoice_footer" => "required"
-    ));
+    function save_invoice_settings()
+    {
+        // Validate submitted data
+        $this->validate_submitted_data(array(
+            // "id" => "required|numeric",
+            // "site_logo_file" => "required",
+            // "invoice_color" => "required",
+            // "invoice_item_list_background" => "required",
+            // "invoice_footer" => "required"
+        ));
 
-    $id =  $this->request->getPost('id');
-    $invoice_pdf_background_image = $this->request->getPost('existing_invoice_pdf_background_image'); // Default to the existing value
-    $file = $this->request->getFile('invoice_pdf_background_image');
+        $id =  $this->request->getPost('id');
+        $invoice_pdf_background_image = $this->request->getPost('existing_invoice_pdf_background_image'); // Default to the existing value
+        $file = $this->request->getFile('invoice_pdf_background_image');
 
-    if ($file && $file->isValid()) {
-        $target_path = WRITEPATH . 'uploads/company/';
-        if (!is_dir($target_path)) {
-            mkdir($target_path, 0755, true); // Create directory if it doesn't exist
+        if ($file && $file->isValid()) {
+            $target_path = WRITEPATH . 'uploads/company/';
+            if (!is_dir($target_path)) {
+                mkdir($target_path, 0755, true); // Create directory if it doesn't exist
+            }
+
+            $new_name = $file->getRandomName(); // Generate a random file name
+            $file->move($target_path, $new_name); // Move the file to the target directory
+            $invoice_pdf_background_image = 'uploads/company/' . $new_name; // Save the relative path
+
         }
 
-        $new_name = $file->getRandomName(); // Generate a random file name
-        $file->move($target_path, $new_name); // Move the file to the target directory
-        $invoice_pdf_background_image = 'uploads/company/' . $new_name; // Save the relative path
-
-    }
- 
-    // Prepare data for saving
-    $company_data = array(
-        "invoice_color" => $this->request->getPost('invoice_color'),
-        "invoice_item_list_background" => $this->request->getPost('invoice_item_list_background'),
-        "invoice_footer" => $this->request->getPost('invoice_footer'),
-        "invoice_pdf_background_image"=>$invoice_pdf_background_image,
-        "enable_background_image_for_invoice_pdf"=> $this->request->getPost('enable_background_image_for_invoice_pdf'),
-        "section_background"=> $this->request->getPost('section_background'),
+        // Prepare data for saving
+        $company_data = array(
+            "invoice_color" => $this->request->getPost('invoice_color'),
+            "invoice_item_list_background" => $this->request->getPost('invoice_item_list_background'),
+            "invoice_footer" => $this->request->getPost('invoice_footer'),
+            "invoice_pdf_background_image" => $invoice_pdf_background_image,
+            "enable_background_image_for_invoice_pdf" => $this->request->getPost('enable_background_image_for_invoice_pdf'),
+            "section_background" => $this->request->getPost('section_background'),
 
 
-    );
-$target_path = get_setting("system_file_path");
-$files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "company_$id");
-$company_icon = unserialize($files_data);
+        );
+        $target_path = get_setting("system_file_path");
+        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "company_$id");
+        $company_icon = unserialize($files_data);
 
-if ($company_icon) {
-    $old_company_info = $this->Company_model->get_one($id);
-    if ($old_company_info->company_icon) {
-        $old_files = unserialize($old_company_info->company_icon);
-        foreach ($old_files as $file) {
-            delete_app_files(get_setting("system_file_path"), array($file));
+        if ($company_icon) {
+            $old_company_info = $this->Company_model->get_one($id);
+            if ($old_company_info->company_icon) {
+                $old_files = unserialize($old_company_info->company_icon);
+                foreach ($old_files as $file) {
+                    delete_app_files(get_setting("system_file_path"), array($file));
+                }
+            }
+
+            $company_data["company_icon"] = serialize($company_icon);
+        }
+
+        // Save data to the Company table
+        $save_id = $this->Company_model->ci_save($company_data, $id);
+        if ($save_id) {
+            $options = array("id" => $save_id);
+            $company_info = $this->Company_model->get_details($options)->getRow();
+            echo json_encode([
+                "success" => true,
+                "id" => $save_id,
+                "data" => $this->_make_row($company_info),
+                "message" => app_lang("record_saved")
+            ]);
+        } else {
+            echo json_encode([
+                "success" => false,
+                "message" => app_lang("error_occurred")
+            ]);
         }
     }
-
-    $company_data["company_icon"] = serialize($company_icon);
-}
-
-    // Save data to the Company table
-    $save_id = $this->Company_model->ci_save($company_data, $id);
-    if ($save_id) {
-        $options = array("id" => $save_id);
-        $company_info = $this->Company_model->get_details($options)->getRow();
-        echo json_encode([
-            "success" => true,
-            "id" => $save_id,
-            "data" => $this->_make_row($company_info),
-            "message" => app_lang("record_saved")
-        ]);
-    } else {
-        echo json_encode([
-            "success" => false,
-            "message" => app_lang("error_occurred")
-        ]);
-    }
-}
-    function list_data() {
+    function list_data()
+    {
         $list_data = $this->Company_model->get_details()->getResult();
         $result = array();
         foreach ($list_data as $data) {
@@ -208,13 +218,15 @@ if ($company_icon) {
         echo json_encode(array("data" => $result));
     }
 
-    private function _row_data($id) {
+    private function _row_data($id)
+    {
         $options = array("id" => $id);
         $data = $this->Company_model->get_details($options)->getRow();
         return $this->_make_row($data);
     }
 
-    private function _make_row($data) {
+    private function _make_row($data)
+    {
         $default_company = "";
         $delete = js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_company'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("company/delete"), "data-action" => "delete"));
         if ($data->is_default) {
@@ -229,14 +241,13 @@ if ($company_icon) {
         return array(
             // $company_logo,
             // $data->name,
-              "<a href='#' data-id='$data->id' class='role-row link'>" . $data->name . "</a>",
-            "<a class='edit'><i data-feather='sliders' class='icon-16'></i></a>" . modal_anchor(get_uri("company/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "", "title" => app_lang('edit_role'), "data-post-id" => $data->id)).
-              
-            // modal_anchor(get_uri("company/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id)).
-             $delete
+            "<a href='#' data-id='$data->id' class='role-row link'>" . $data->name . "</a>",
+            "<a class='edit'><i data-feather='sliders' class='icon-16'></i></a>" . modal_anchor(get_uri("company/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "", "title" => app_lang('edit_role'), "data-post-id" => $data->id)) .
+
+                // modal_anchor(get_uri("company/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id)).
+                $delete
         );
     }
-
 }
 
 /* End of file company.php */

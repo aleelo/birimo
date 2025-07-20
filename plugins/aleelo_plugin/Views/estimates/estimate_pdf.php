@@ -89,7 +89,16 @@
             color: #fff;
         }
 
-        th,
+        th {
+            padding: 10px;
+            text-align: left;
+            width: 12%;
+            color: white;
+            font-weight: bold;
+
+            text-align: left;
+
+        }
         td {
             padding: 10px;
             text-align: left;
@@ -271,7 +280,7 @@ $data = array(
 <table style="width: 100%; margin-bottom: 10px;">
   <tr>
     <td style="width: 12%;">
-     <?php                 echo get_company_icon($client_info->company_id, "");
+     <?php echo get_company_icon($client_info->company_id, "");
 ?>
     </td>
     <td style="width: 22%;">
@@ -307,7 +316,8 @@ $data = array(
         <thead>
 
             <tr style="background-color:<?php echo $color?>;">
-                <th style="width: 65%;">Description</th>
+                <th style="width: 55%;">Description</th>
+                <th style="width:10%"> Days</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total</th>
@@ -317,18 +327,21 @@ $data = array(
             <?php foreach ($estimate_items as $item) { ?>
 
                 <?php if ($item->is_section) { ?>
-                    <tr style="background-color: <?php echo $company_info->section_background ;?>">
+                    <tr style= "font-weight: bold; background-color: <?php echo $company_info->section_background ;?>">
 
-                        <td style="width: 65%;"><?php echo $item->title ?></td>
-                        <td><?php echo $item->quantity ?></td>
-                        <td><?php echo $item->quantity ?></td>
-                        <td><?php echo $item->quantity ?></td>
+                        <td style="width: 55%;"><?php echo $item->title ?></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="width:10%"></td>
+
                     </tr>
 
                 <?php } else { ?>
                     <tr style="background-color:<?php echo  $company_info->invoice_item_list_background ?>;">
 
-                        <td style="width: 65%;"><?php echo $item->title ?></td>
+                        <td style="width: 55%;"><?php echo $item->title ?></td>
+                        <td style="width:10%"> <?php echo $item->days ? $item->days:"" ?></td>
                         <td><?php echo $item->quantity ?></td>
                         <td><?php echo $item->rate ?></td>
                         <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
@@ -342,7 +355,7 @@ $data = array(
             <?php if ($estimate_total_summary->tax) { ?>
 
                 <tr class="total">
-                    <td style="width: <?php echo $estimate_total_summary->tax ? '76%' : '89%'; ?>;"></td>
+                    <td style="width: <?php echo $estimate_total_summary->tax ? '75%' : '88%'; ?>;"></td>
                     <td style="width: 15%; text-align: left;">Sub Total</td>
                     <td style="width: 20%;"><?php echo to_currency($estimate_total_summary->estimate_subtotal, $estimate_total_summary->currency_symbol); ?></td>
                 </tr>
@@ -350,13 +363,13 @@ $data = array(
             <?php if ($estimate_total_summary->tax) { ?>
 
                 <tr class="total">
-                    <td style="width: <?php echo $estimate_total_summary->tax ? '76%' : '89%'; ?>;"></td>
+                    <td style="width: <?php echo $estimate_total_summary->tax ? '75%' : '88%'; ?>;"></td>
                     <td style="width: 15%;"><?php echo $estimate_total_summary->tax_name; ?></td>
                     <td style="width: 18%;"><?php echo to_currency($estimate_total_summary->tax, $estimate_total_summary->currency_symbol); ?></td>
                 </tr>
             <?php } ?>
             <tr>
-                <td style="width: 76%;"></td>
+                <td style="width: 75%;"></td>
                 <td  style="width: 15%; text-align: left;"><strong>Total</strong></td>
                 <td style="width:17%;"><?php echo to_currency($estimate_total_summary->estimate_total, $estimate_total_summary->currency_symbol); ?></td>
             </tr>
