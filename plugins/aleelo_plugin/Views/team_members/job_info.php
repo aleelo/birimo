@@ -102,7 +102,7 @@
                 ""=> "Select Signature Type",
                 "image" => "Upload Image",
                 "digital" => "Digital Signature",
-            ), "", "class='form-control select2' value=$job_info->signature id='signature_type'");
+            ), "", "class='form-control select2' id='signature_type'");
             ?>
         </div>
     </div>
