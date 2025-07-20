@@ -96,10 +96,10 @@
 
             <div class="form-group">
                 <div class="row">
-                    <label for="company_logo" class="col-md-3 mt10"><?php echo app_lang('company_logo'); ?> (300x100) </label>
+                    <label for="company_logo" class="col-md-3 mt10"><?php echo ('company icon'); ?> </label>
                     <div class="col-md-9">
                         <div class="float-start mr15">
-                            <?php echo get_company_logo($model_info->id,true); ?>
+                            <?php echo get_company_icon($model_info->id,true); ?>
                         </div>
                         <div class="float-start mr15">
                             <?php echo view("includes/dropzone_preview"); ?>
