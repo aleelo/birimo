@@ -5,20 +5,21 @@ namespace aleelo_plugin\Controllers;
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 use App\Libraries\Excel_import;
 
-class Team_member extends Security_Controller_Plugin {
+class Team_member extends Security_Controller_Plugin
+{
 
     use Excel_import;
 
     private $roles_id_by_title = array();
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->access_only_team_members();
     }
     function upload_file()
     {
         upload_file_to_temp();
-        
     }
     // private function can_view_team_members_contact_info() {
     //     if ($this->login_user->user_type == "staff") {
@@ -30,7 +31,8 @@ class Team_member extends Security_Controller_Plugin {
     //     }
     // }
 
-    private function can_view_team_members_social_links() {
+    private function can_view_team_members_social_links()
+    {
         if ($this->login_user->user_type == "staff") {
             if ($this->login_user->is_admin) {
                 return true;
@@ -39,7 +41,8 @@ class Team_member extends Security_Controller_Plugin {
             }
         }
     }
-   private function can_edit_team_members() {
+    private function can_edit_team_members()
+    {
         if ($this->login_user->user_type == "staff") {
             if ($this->login_user->is_admin) {
                 return true;
@@ -48,7 +51,8 @@ class Team_member extends Security_Controller_Plugin {
             }
         }
     }
-    private function update_only_allowed_members($user_id) {
+    private function update_only_allowed_members($user_id)
+    {
         if ($this->can_update_team_members_info($user_id)) {
             return true; //own profile
         } else {
@@ -58,16 +62,17 @@ class Team_member extends Security_Controller_Plugin {
     function validate_team_file()
     {
         return validate_post_file($this->request->getPost("file_name"));
-    } 
+    }
     //only admin can change other user's info
     //none admin users can only change his/her own info
     //allowed members can update other members info    
-    private function can_update_team_members_info($user_id) {
+    private function can_update_team_members_info($user_id)
+    {
         $access_info = $this->get_access_info("can_edit_team_members");
 
         if ($this->login_user->id === $user_id) {
             return true; //own profile
-        } else if ( $this->login_user->is_admin ||get_array_value($this->login_user->permissions, "can_edit_team_members" )) {
+        } else if ($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_edit_team_members")) {
             return true; //has access to change all user's profile
         } else if ($user_id && in_array($user_id, $access_info->allowed_members)) {
             return true; //has permission to update this user's profile
@@ -79,7 +84,8 @@ class Team_member extends Security_Controller_Plugin {
 
     //only admin/permitted users can change other user's info
     //other users can only change his/her own info
-    private function can_access_user_settings($user_id) {
+    private function can_access_user_settings($user_id)
+    {
         if ($user_id && ($this->login_user->is_admin || $this->login_user->id === $user_id || get_array_value($this->login_user->permissions, "can_manage_user_role_and_permissions"))) {
             return true;
         } else {
@@ -87,7 +93,8 @@ class Team_member extends Security_Controller_Plugin {
         }
     }
 
-    private function _can_activate_deactivate_team_member($member_info) {
+    private function _can_activate_deactivate_team_member($member_info)
+    {
 
         if ($member_info && !$this->is_own_id($member_info->id) && ($this->login_user->is_admin || (get_array_value($this->login_user->permissions, "can_activate_deactivate_team_members") && $member_info->is_admin != 1))) {
             return true;
@@ -95,7 +102,8 @@ class Team_member extends Security_Controller_Plugin {
         return false;
     }
 
-    private function _can_delete_team_member($member_info) {
+    private function _can_delete_team_member($member_info)
+    {
 
         //can't delete own user
         //only admin can delete other admin users.
@@ -106,7 +114,8 @@ class Team_member extends Security_Controller_Plugin {
         return false;
     }
 
-    private function show_staff(){
+    private function show_staff()
+    {
         if ($this->login_user->user_type == "staff") {
             if ($this->login_user->is_admin) {
                 return true;
@@ -115,11 +124,12 @@ class Team_member extends Security_Controller_Plugin {
             }
         }
     }
-    public function index() {
-        if(!$this->show_staff()){
+    public function index()
+    {
+        if (!$this->show_staff()) {
             app_redirect("forbidden");
         }
-    
+
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
         $view_data["company"] = $this->_get_company();
@@ -129,7 +139,8 @@ class Team_member extends Security_Controller_Plugin {
         return $this->template->rander("aleelo_plugin\Views/team_members/index", $view_data);
     }
 
-    private function access_only_admin_or_member_creator() {
+    private function access_only_admin_or_member_creator()
+    {
         if (!($this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_add_or_invite_new_team_members"))) {
             app_redirect("forbidden");
         }
@@ -137,7 +148,8 @@ class Team_member extends Security_Controller_Plugin {
 
     /* open new member modal */
 
-    function modal_form() {
+    function modal_form()
+    {
         $this->access_only_admin_or_member_creator();
 
         $this->validate_submitted_data(array(
@@ -145,16 +157,16 @@ class Team_member extends Security_Controller_Plugin {
         ));
 
         $view_data['role_dropdown'] = $this->_get_roles_dropdown();
-        $view_data['company_dropdown']=array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
-        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company_dropdown'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company'] = $this->Company_model->get_dropdown_list(array("name"), "id");
         $id = $this->request->getPost('id');
         $options = array(
             "id" => $id,
         );
-        $add_user_type=$this->request->getPost('add_user_type');
-        $view_data['add_user_type']=$add_user_type;
-        $company_id=$this->request->getPost('company_id');
-        $view_data['company_id']=$company_id;
+        $add_user_type = $this->request->getPost('add_user_type');
+        $view_data['add_user_type'] = $add_user_type;
+        $company_id = $this->request->getPost('company_id');
+        $view_data['company_id'] = $company_id;
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", 0, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
@@ -164,7 +176,8 @@ class Team_member extends Security_Controller_Plugin {
 
     /* save new member */
 
-    function add_team_member() {
+    function add_team_member()
+    {
         $this->access_only_admin_or_member_creator();
 
         //check duplicate email address, if found then show an error message
@@ -182,17 +195,19 @@ class Team_member extends Security_Controller_Plugin {
         ));
 
         $password = $this->request->getPost("password");
-        $user_id = $this->request->getPost('user_id');
+
         $can_access_all = $this->request->getPost('can_access_all_company');
-        $department=$this->request->getPost('user_id');
-        
+        $company_ids = $this->request->getPost('company_ids') ? implode(",", $this->request->getPost('company_ids')) : "";
+
+        // Process the company access value
         if ($can_access_all) {
-            $cc = $can_access_all;
-            $cid=0;
+            $company_access = "all";
+            $cid = 0;
         } else {
-            $cc=0;
-            $cid = !empty($user_id) ? json_encode($user_id) : '';
+            $company_access = $company_ids;
+    $cid = $company_ids ? $company_ids[0] : "33";
         }
+
         $user_data = array(
             "email" => $this->request->getPost('email'),
             "first_name" => $this->request->getPost('first_name'),
@@ -204,11 +219,10 @@ class Team_member extends Security_Controller_Plugin {
             "job_title" => $this->request->getPost('job_title'),
             "user_type" => "staff",
             "created_at" => get_current_utc_time(),
-                    "company_access" => $cc,
-                    "department"=>$cid,
-                    "department_id"=>"1,2",
+            "company_access" => $company_access,
+            "department" => $cid,
 
-);
+        );
 
         if ($password) {
             $user_data["password"] = password_hash($password, PASSWORD_DEFAULT);
@@ -241,7 +255,7 @@ class Team_member extends Security_Controller_Plugin {
             );
             $this->Users_models->save_job_info($job_data);
 
-            
+
             save_custom_fields("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type);
 
             //send login details to user
@@ -400,7 +414,8 @@ class Team_member extends Security_Controller_Plugin {
     }
     /* open invitation modal */
 
-    function invitation_modal() {
+    function invitation_modal()
+    {
         $this->access_only_admin_or_member_creator();
 
         $role_dropdown = array(
@@ -418,7 +433,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //send a team member invitation to an email address
-    function send_invitation() {
+    function send_invitation()
+    {
         $this->access_only_admin_or_member_creator();
 
         $this->validate_submitted_data(array(
@@ -476,7 +492,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //prepere the data for members list
-    function list_data() {
+    function list_data()
+    {
         if (!$this->can_view_team_members_list()) {
             app_redirect("forbidden");
         }
@@ -489,7 +506,7 @@ class Team_member extends Security_Controller_Plugin {
             "custom_field_filter" => $this->prepare_custom_field_filter_values("team_members", $this->login_user->is_admin, $this->login_user->user_type),
             // "own_company_members" => $this->can_view_own_company_members(),
             "can_view_own_members" => $this->can_view_own_members(),
-            "can_view_all_members"=>$this->request->getPost("can_view_all_members"),
+            "can_view_all_members" => $this->request->getPost("can_view_all_members"),
 
         );
 
@@ -502,7 +519,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //get a row data for member list
-    function _row_data($id) {
+    function _row_data($id)
+    {
         validate_numeric_value($id);
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("team_members", $this->login_user->is_admin, $this->login_user->user_type);
         $options = array(
@@ -515,16 +533,17 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //prepare team member list row
-    private function _make_row($data, $custom_fields) {
+    private function _make_row($data, $custom_fields)
+    {
         $image_url = get_avatar($data->image);
         $user_avatar = "<span class='avatar avatar-xs'><img src='$image_url' alt='...'></span>";
         $full_name = $data->first_name . " " . $data->last_name . " ";
-        $name ="";
-            if($this->login_user->is_admin || $this->can_edit_team_members()) {
-           $name= get_team_member_profile_link($data->id, $full_name);
-            } else {
-              $name=  $full_name;
-            }       
+        $name = "";
+        if ($this->login_user->is_admin || $this->can_edit_team_members()) {
+            $name = get_team_member_profile_link($data->id, $full_name);
+        } else {
+            $name =  $full_name;
+        }
         //check contact info view permissions
         $show_cotact_info = $this->can_view_team_members_contact_info();
 
@@ -552,7 +571,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //delete a team member
-    function delete() {
+    function delete()
+    {
 
 
         $this->validate_submitted_data(array(
@@ -574,7 +594,8 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //show team member's details view
-    function view($id = 0, $tab = "") {
+    function view($id = 0, $tab = "")
+    {
         if ($id * 1) {
             validate_numeric_value($id);
 
@@ -583,12 +604,12 @@ class Team_member extends Security_Controller_Plugin {
                 app_redirect("forbidden");
             }
 
-        
+
             $users_info = $this->Users_models->get_details(array("id" => $id))->getRow();
             if (!$users_info) {
                 show_404();
             }
-            
+
             $user_company_id = $this->login_user->department;
 
             if ($user_company_id != 0 && $users_info->company_id != $user_company_id) {
@@ -606,7 +627,7 @@ class Team_member extends Security_Controller_Plugin {
                 $can_update_team_members_info = $this->can_update_team_members_info($id);
 
                 $view_data['show_general_info'] = $can_update_team_members_info;
-            
+
                 $view_data['show_account_settings'] = false;
 
                 $show_attendance = false;
@@ -676,7 +697,7 @@ class Team_member extends Security_Controller_Plugin {
                 }
                 $view_data['hide_send_message_button'] = $hide_send_message_button;
 
-               
+
 
                 $view_data["show_timesheets"] = false;
                 $access_timesheets = $this->get_access_info("timesheet_manage_permission");
@@ -701,23 +722,24 @@ class Team_member extends Security_Controller_Plugin {
     }
 
     //show the job information of a team member
-    function job_info($user_id) {
+    function job_info($user_id)
+    {
 
         validate_numeric_value($user_id);
         if (!($this->login_user->is_admin || $this->login_user->id === $user_id || $this->has_job_info_manage_permission())) {
             app_redirect("forbidden");
         }
-        $view_data['company']=$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company'] = $this->Company_model->get_dropdown_list(array("name"), "id");
         $id = $this->request->getPost('id');
         $options = array(
             "id" => $id,
         );
-        $add_user_type=$this->request->getPost('add_user_type');
-        $view_data['add_user_type']=$add_user_type;
-        $company_id=$this->request->getPost('company_id');
-        $view_data['company_id']=$company_id;
+        $add_user_type = $this->request->getPost('add_user_type');
+        $view_data['add_user_type'] = $add_user_type;
+        $company_id = $this->request->getPost('company_id');
+        $view_data['company_id'] = $company_id;
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
-        $view_data['company_dropdown']=array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company_dropdown'] = array("" => " -- Choose Company -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
 
         $options = array("id" => $user_id);
         $user_info = $this->Users_models->get_details($options)->getRow();
@@ -732,12 +754,14 @@ class Team_member extends Security_Controller_Plugin {
         return $this->template->view("aleelo_plugin\Views/team_members/job_info", $view_data);
     }
 
-    private function has_job_info_manage_permission() {
+    private function has_job_info_manage_permission()
+    {
         return get_array_value($this->login_user->permissions, "can_edit_team_members");
     }
 
     //save job information of a team member
-    function save_job_info() {
+    function save_job_info()
+    {
         if (!($this->login_user->is_admin || $this->has_job_info_manage_permission())) {
             app_redirect("forbidden");
         }
@@ -764,36 +788,32 @@ class Team_member extends Security_Controller_Plugin {
         );
         $signature_type = $this->request->getPost("signature_type");
         $data = array();
-    
-     
+
+
         if ($signature_type === "digital") {
             $digital_signature = $this->request->getPost("digital_signature");
             $signature_parts = explode(",", $digital_signature);
             $signature_base64 = get_array_value($signature_parts, 1);
             $signature_decoded = base64_decode($signature_base64);
             $signature_path = get_setting("signature_file_path");
-if (!$signature_path) {
-    $signature_path = "files/signature/"; // fallback path
-}
+            if (!$signature_path) {
+                $signature_path = "files/signature/"; // fallback path
+            }
 
             $signature_file = move_temp_file("signature.jpg", get_setting("signature_file_path"), "signature", NULL, "", $signature_decoded);
             if ($signature_file) {
                 $job_data["signature"] = serialize($signature_file);
             }
-        }
-        elseif($signature_type === "image"){
+        } elseif ($signature_type === "image") {
             $signature_file = $this->request->getFile('signature');
 
             $target_path = get_setting("signature_file_path");
             $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, $signature_file);
             $signature = unserialize($files_data);
             $job_data["signature"] = serialize($signature);
-
-        }
-        else{
-                $existing_signature = $this->Users_models->get_job_info($user_id)->signature;
+        } else {
+            $existing_signature = $this->Users_models->get_job_info($user_id)->signature;
             $job_data["signature"] = $existing_signature;
-
         }
         // $this->Users_models->ci_save($user_data, $user_id);
         if ($this->Users_models->save_job_info($job_data)) {
@@ -804,7 +824,8 @@ if (!$signature_path) {
     }
 
     //show general information of a team member
-    function general_info($user_id) {
+    function general_info($user_id)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
 
@@ -813,7 +834,8 @@ if (!$signature_path) {
 
         return $this->template->view("aleelo_plugin\Views/team_members/general_info", $view_data);
     }
-    function company_access($user_id) {
+    function company_access($user_id)
+    {
         validate_numeric_value($user_id);
         $this->can_access_user_settings($user_id);
         $id = $this->request->getPost('id');
@@ -823,15 +845,16 @@ if (!$signature_path) {
         );
         $view_data['user_info'] = $this->Users_models->get_one($user_id);
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", $user_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-        $view_data['company']=array("0" => " -- all -- ") +$this->Company_model->get_dropdown_list(array("name"), "id");
+        $view_data['company'] = array("0" => " -- all -- ") + $this->Company_model->get_dropdown_list(array("name"), "id");
         $view_data['model_info'] = $this->Users_models->get_details($options)->getRow();
-        $add_user_type=$this->request->getPost('add_user_type');
-        $view_data['add_user_type']=$add_user_type;
+        $add_user_type = $this->request->getPost('add_user_type');
+        $view_data['add_user_type'] = $add_user_type;
         return $this->template->view("aleelo_plugin\Views/team_members/company_access", $view_data);
     }
 
     //save general information of a team member
-    function save_general_info($user_id) {
+    function save_general_info($user_id)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
 
@@ -865,34 +888,33 @@ if (!$signature_path) {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
-    function save_company_access($user_id) {
+    function save_company_access($user_id)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
-    
-        $post_user_id = $this->request->getPost('user_id');
+
         $can_access_all = $this->request->getPost('can_access_all_company');
-    
+        $company_ids = $this->request->getPost('company_ids') ? implode(",", $this->request->getPost('company_ids')) : "";
+
         // Process the company access value
         if ($can_access_all) {
-            $cc = "all";
-            $cid=$post_user_id;
+            $company_access = "all";
+            $cid = 0;
         } else {
-            $cc =0;
-            $cid =$post_user_id;
+            $company_access = $company_ids;
+    $cid = $company_ids ? $company_ids[0] : "33";
         }
-            $status_ids = $this->request->getPost('department_ids') ? implode(",", $this->request->getPost('department_ids')) : "";
 
         // Prepare data for saving
         $user_data = array(
-            "company_access" => $cc,
-            "department"=>$cid,
-            "department_id"=> $status_ids,
-            
+            "company_access" => $company_access,
+            "department" => $cid,
+
         );
-    
+
         // Save data
         $result = $this->Users_models->ci_save($user_data, $user_id);
-    
+
         if ($result) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
         } else {
@@ -900,7 +922,8 @@ if (!$signature_path) {
         }
     }
     //show social links of a team member
-    function social_links($user_id) {
+    function social_links($user_id)
+    {
         //important! here id=user_id
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
@@ -911,7 +934,8 @@ if (!$signature_path) {
     }
 
     //save social links of a team member
-    function save_social_links($user_id) {
+    function save_social_links($user_id)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
 
@@ -944,7 +968,8 @@ if (!$signature_path) {
     }
 
     //show account settings of a team member
-    function account_settings($user_id) {
+    function account_settings($user_id)
+    {
         validate_numeric_value($user_id);
         $this->can_access_user_settings($user_id);
 
@@ -959,7 +984,8 @@ if (!$signature_path) {
     }
 
     //show my preference settings of a team member
-    function my_preferences() {
+    function my_preferences()
+    {
         $view_data["user_info"] = $this->Users_models->get_one($this->login_user->id);
 
         //language dropdown
@@ -974,7 +1000,8 @@ if (!$signature_path) {
         return $this->template->view("aleelo_plugin\Views/team_members/my_preferences", $view_data);
     }
 
-    function save_my_preferences() {
+    function save_my_preferences()
+    {
         //setting preferences
         $settings = array("notification_sound_volume", "disable_push_notification", "hidden_topbar_menus", "disable_keyboard_shortcuts", "recently_meaning", "reminder_sound_volume", "reminder_snooze_length");
 
@@ -1014,7 +1041,8 @@ if (!$signature_path) {
         echo json_encode(array("success" => true, 'message' => app_lang('settings_updated')));
     }
 
-    function save_personal_language($language) {
+    function save_personal_language($language)
+    {
         if (!get_setting("disable_language_selector_for_team_members") && ($language || $language === "0")) {
 
             $language = clean_data($language);
@@ -1025,7 +1053,8 @@ if (!$signature_path) {
     }
 
     //save account settings of a team member
-    function save_account_settings($user_id) {
+    function save_account_settings($user_id)
+    {
         validate_numeric_value($user_id);
         $this->can_access_user_settings($user_id);
 
@@ -1074,7 +1103,8 @@ if (!$signature_path) {
     }
 
     //save profile image of a team member
-    function save_profile_image($user_id = 0) {
+    function save_profile_image($user_id = 0)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
         $user_info = $this->Users_models->get_one($user_id);
@@ -1120,7 +1150,8 @@ if (!$signature_path) {
     }
 
     //show projects list of a team member
-    function projects_info($user_id) {
+    function projects_info($user_id)
+    {
         if ($user_id) {
             validate_numeric_value($user_id);
             $view_data['user_id'] = $user_id;
@@ -1132,7 +1163,8 @@ if (!$signature_path) {
     }
 
     //show attendance list of a team member
-    function attendance_info($user_id) {
+    function attendance_info($user_id)
+    {
         if ($user_id) {
             validate_numeric_value($user_id);
             $view_data['user_id'] = $user_id;
@@ -1141,24 +1173,28 @@ if (!$signature_path) {
     }
 
     //show weekly attendance list of a team member
-    function weekly_attendance() {
+    function weekly_attendance()
+    {
         return $this->template->view("aleelo_plugin\Views/team_members/weekly_attendance");
     }
 
     //show weekly attendance list of a team member
-    function custom_range_attendance() {
+    function custom_range_attendance()
+    {
         return $this->template->view("aleelo_plugin\Views/team_members/custom_range_attendance");
     }
 
     //show attendance summary of a team member
-    function attendance_summary($user_id) {
+    function attendance_summary($user_id)
+    {
         validate_numeric_value($user_id);
         $view_data["user_id"] = $user_id;
         return $this->template->view("aleelo_plugin\Views/team_members/attendance_summary", $view_data);
     }
 
     //show leave list of a team member
-    function leave_info($applicant_id) {
+    function leave_info($applicant_id)
+    {
         if ($applicant_id) {
             validate_numeric_value($applicant_id);
             $view_data['applicant_id'] = $applicant_id;
@@ -1167,12 +1203,14 @@ if (!$signature_path) {
     }
 
     //show yearly leave list of a team member
-    function yearly_leaves() {
+    function yearly_leaves()
+    {
         return $this->template->view("aleelo_plugin\Views/team_members/yearly_leaves");
     }
 
     //show yearly leave list of a team member
-    function expense_info($user_id) {
+    function expense_info($user_id)
+    {
         validate_numeric_value($user_id);
         $view_data["user_id"] = $user_id;
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
@@ -1181,7 +1219,8 @@ if (!$signature_path) {
 
     /* load files tab */
 
-    function files($user_id) {
+    function files($user_id)
+    {
         validate_numeric_value($user_id);
         $this->update_only_allowed_members($user_id);
 
@@ -1193,7 +1232,8 @@ if (!$signature_path) {
 
     /* file upload modal */
 
-    function file_modal_form() {
+    function file_modal_form()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
@@ -1209,7 +1249,8 @@ if (!$signature_path) {
 
     /* save file data and move temp file to parmanent file directory */
 
-    function save_file() {
+    function save_file()
+    {
 
 
         $this->validate_submitted_data(array(
@@ -1259,7 +1300,8 @@ if (!$signature_path) {
 
     /* list of files, prepared for datatable  */
 
-    function files_list_data($user_id = 0) {
+    function files_list_data($user_id = 0)
+    {
         validate_numeric_value($user_id);
         $options = array("user_id" => $user_id);
 
@@ -1273,7 +1315,8 @@ if (!$signature_path) {
         echo json_encode(array("data" => $result));
     }
 
-    private function _make_file_row($data) {
+    private function _make_file_row($data)
+    {
         $file_icon = get_file_icon(strtolower(pathinfo($data->file_name, PATHINFO_EXTENSION)));
 
         $image_url = get_avatar($data->uploaded_by_user_image);
@@ -1306,7 +1349,8 @@ if (!$signature_path) {
         );
     }
 
-    function view_file($file_id = 0) {
+    function view_file($file_id = 0)
+    {
         validate_numeric_value($file_id);
         $file_info = $this->General_files_model->get_details(array("id" => $file_id))->getRow();
 
@@ -1338,7 +1382,8 @@ if (!$signature_path) {
 
     /* download a file */
 
-    function download_file($id) {
+    function download_file($id)
+    {
         validate_numeric_value($id);
         $file_info = $this->General_files_model->get_one($id);
 
@@ -1355,7 +1400,8 @@ if (!$signature_path) {
 
     /* delete a file */
 
-    function delete_file() {
+    function delete_file()
+    {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
@@ -1384,11 +1430,13 @@ if (!$signature_path) {
 
     /* show keyboard shortcut modal form */
 
-    function keyboard_shortcut_modal_form() {
+    function keyboard_shortcut_modal_form()
+    {
         return $this->template->view('aleelo_plugin\Views/team_members/keyboard_shortcut_modal_form');
     }
 
-    private function get_recently_meaning_dropdown() {
+    private function get_recently_meaning_dropdown()
+    {
         return array(
             "2_hours" => app_lang("in") . " 2 " . strtolower(app_lang("hours")),
             "5_hours" => app_lang("in") . " 5 " . strtolower(app_lang("hours")),
@@ -1403,12 +1451,14 @@ if (!$signature_path) {
         );
     }
 
-    function recently_meaning_modal_form() {
+    function recently_meaning_modal_form()
+    {
         $view_data["recently_meaning_dropdown"] = $this->get_recently_meaning_dropdown();
         return $this->template->view('tasks/recently_meaning_modal_form', $view_data);
     }
 
-    function save_recently_meaning() {
+    function save_recently_meaning()
+    {
         $recently_meaning = $this->request->getPost("recently_meaning");
         $recently_meaning = clean_data($recently_meaning);
         $this->Settings_model->save_setting("user_" . $this->login_user->id . "_recently_meaning", $recently_meaning, "user");
@@ -1417,7 +1467,8 @@ if (!$signature_path) {
 
     /* load notes tab  */
 
-    function notes($user_id) {
+    function notes($user_id)
+    {
         validate_numeric_value($user_id);
         $this->can_access_team_members_note($user_id);
 
@@ -1427,19 +1478,23 @@ if (!$signature_path) {
         }
     }
 
-    private function _validate_excel_import_access() {
+    private function _validate_excel_import_access()
+    {
         return $this->access_only_admin_or_member_creator();
     }
 
-    private function _get_controller_slag() {
+    private function _get_controller_slag()
+    {
         return "team_members";
     }
 
-    private function _get_custom_field_context() {
+    private function _get_custom_field_context()
+    {
         return "team_members";
     }
 
-    private function _get_headers_for_import() {
+    private function _get_headers_for_import()
+    {
         return array(
             array("name" => "first_name", "required" => true, "required_message" => app_lang("import_team_member_error_name_field_required")),
             array("name" => "last_name", "required" => true, "required_message" => app_lang("import_team_member_error_name_field_required")),
@@ -1462,12 +1517,14 @@ if (!$signature_path) {
         );
     }
 
-    function download_sample_excel_file() {
+    function download_sample_excel_file()
+    {
         $this->access_only_admin_or_member_creator();
         return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-team-members-sample.xlsx"))));
     }
 
-    private function _init_required_data_before_starting_import() {
+    private function _init_required_data_before_starting_import()
+    {
 
         $roles = $this->Roles_model->get_details()->getResult();
         $roles_id_by_title = array();
@@ -1478,7 +1535,8 @@ if (!$signature_path) {
         $this->roles_id_by_title = $roles_id_by_title;
     }
 
-    private function _save_a_row_of_excel_data($row_data) {
+    private function _save_a_row_of_excel_data($row_data)
+    {
         $now = get_current_utc_time();
 
         $team_member_data_array = $this->_prepare_team_member_data($row_data);
@@ -1504,7 +1562,8 @@ if (!$signature_path) {
         return true;
     }
 
-    private function _prepare_team_member_data($row_data) {
+    private function _prepare_team_member_data($row_data)
+    {
         $team_member_data = array("user_type" => "staff");
         $custom_field_values_array = array();
 

@@ -3,28 +3,28 @@
 <?php
 $db = \Config\Database::connect();
 $user_id = session()->get('user_id'); 
-$user_query = $db->query("SELECT department_id FROM rise_users WHERE id = ?", [$user_id]);
-$is_admin = $db->query("SELECT is_admin FROM rise_users WHERE id = ?", [$user_id]);
 
-$user_department_ids = $user_query->getRow()->department_id;
-$is_admin = $is_admin->getRow()->is_admin;
-// Convert department_id to an array if it contains multiple IDs (e.g., "2,3")
-$department_ids_array = explode(',', $user_department_ids);
+$user_query = $db->query("SELECT company_access, is_admin,department FROM rise_users WHERE id = ?", [$user_id]);
+$user_data = $user_query->getRow();
 
-$placeholders = implode(',', array_fill(0, count($department_ids_array), '?'));
+$company_access = $user_data->company_access;
+$is_admin = $user_data->is_admin;
+$department=$user_data->department;
 
-// Fetch companies that match the user's department_id(s)
-$query = $db->query("SELECT id, name FROM rise_company WHERE id IN ($placeholders)", $department_ids_array);
+$company_options = [];
 
-$companies = $query->getResultArray();
-if (in_array("0", $department_ids_array ) || $is_admin) {
-    $companies[] = array('id' => '0', 'name' => 'all');
+if ($company_access === "all" ) {
+    $query = $db->query("SELECT id, name FROM rise_company");
+    $companies = $query->getResultArray();
+    $company_options["0"] = "all";
+} else {
+    $company_ids_array = explode(',', $company_access);
+    $placeholders = implode(',', array_fill(0, count($company_ids_array), '?'));
+
+    $query = $db->query("SELECT id, name FROM rise_company WHERE id IN ($placeholders)", $company_ids_array);
+    $companies = $query->getResultArray();
 }
-// // Prepare the dropdown options
-// $company_options = array(
-//     // "" => "Choose the company",
-//     "0" => "all"
-// );
+
 foreach ($companies as $company) {
     $company_options[$company['id']] = $company['name'];
 }
@@ -51,7 +51,6 @@ $(document).ready(function () {
         $("#department").val(savedDepartment).trigger("change");
     }
 
- 
     $("#department").on("change", function () {
         let department = $(this).val();
 

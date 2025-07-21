@@ -148,13 +148,18 @@
                         </li>
                     <?php } ?>
 <?php
-            if (($login_user->company_access) === "all" && !in_array("to_do", $hidden_topbar_menus)) {
+$access = $login_user->company_access;
+$access_array = explode(",", $access);
 
-        //    /      if (get_array_value($login_user->permissions, "company") === "all" && !in_array("to_do", $hidden_topbar_menus)) {
-                    echo view("todo/company_topbar_icon");
-            }
-            
-                ?>
+if (
+    $access === "all" || count($access_array) > 1 &&
+    !in_array("to_do", $hidden_topbar_menus)
+) {
+    echo view("todo/company_topbar_icon");
+}
+?>
+
+                
                     <li class="nav-item dropdown">
                         <a id="user-dropdown" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                             <span class="avatar-xs avatar me-1">

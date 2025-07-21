@@ -41,7 +41,10 @@ class Projects_model extends Crud_model {
         if ($status_id) {
             $where .= " AND $projects_table.status_id='$status_id'";
         }
-
+        $company_id = $this->_get_clean_value($options, "company_id");
+        if ($company_id) {
+            $where .= " AND $projects_table.company_id=$company_id";
+        }
         $status_ids = $this->_get_clean_value($options, "status_ids");
         if ($status_ids) {
             $where .= " AND (FIND_IN_SET($projects_table.status_id, '$status_ids')) ";

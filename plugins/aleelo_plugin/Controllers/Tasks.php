@@ -41,15 +41,15 @@ class Tasks extends Security_Controller_Plugin {
             array("context" => "general", "id_key" => "", "id" => null),
             array("context" => "project", "id_key" => "project_id", "id" => null), //keep the 1st item as project since it'll be used maximum times
             array("context" => "client", "id_key" => "client_id", "id" => null),
-            array("context" => "contract", "id_key" => "contract_id", "id" => null),
+            // array("context" => "contract", "id_key" => "contract_id", "id" => null),
             array("context" => "estimate", "id_key" => "estimate_id", "id" => null),
             array("context" => "expense", "id_key" => "expense_id", "id" => null),
             array("context" => "invoice", "id_key" => "invoice_id", "id" => null),
-            array("context" => "lead", "id_key" => "lead_id", "id" => null),
-            array("context" => "order", "id_key" => "order_id", "id" => null),
-            array("context" => "proposal", "id_key" => "proposal_id", "id" => null),
-            array("context" => "subscription", "id_key" => "subscription_id", "id" => null),
-            array("context" => "ticket", "id_key" => "ticket_id", "id" => null)
+            // array("context" => "lead", "id_key" => "lead_id", "id" => null),
+            // array("context" => "order", "id_key" => "order_id", "id" => null),
+            // array("context" => "proposal", "id_key" => "proposal_id", "id" => null),
+            // array("context" => "subscription", "id_key" => "subscription_id", "id" => null),
+            // array("context" => "ticket", "id_key" => "ticket_id", "id" => null)
         );
     }
 
@@ -688,6 +688,7 @@ class Tasks extends Security_Controller_Plugin {
     }
 
     private function _get_task_related_dropdowns($context = "", $context_id = 0, $return_empty_context = false) {
+        $department= $this->login_user->department;
 
         //get milestone dropdown
         $milestones_dropdown = array(array("id" => "", "text" => "-"));
@@ -777,6 +778,7 @@ class Tasks extends Security_Controller_Plugin {
             } else {
                 $project_options["client_id"] = $this->login_user->client_id; //get client's projects
             }
+                $project_options["company_id"] = $department; //get client's projects
 
             $projects = $this->Projects_model->get_details($project_options)->getResult();
 
@@ -792,7 +794,8 @@ class Tasks extends Security_Controller_Plugin {
             $this->init_permission_checker("client");
             $options = array(
                 "show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(),
-                "client_groups" => $this->allowed_client_groups
+                "client_groups" => $this->allowed_client_groups,
+                "company_id"=>$department
             );
 
             $clients = $this->Clients_model->get_details($options)->getResult();
@@ -819,7 +822,11 @@ class Tasks extends Security_Controller_Plugin {
         $invoices_dropdown = array(array("id" => "", "text" => "-"));
         if ($context === "invoice" && !$return_empty_context) {
             //get invoices dropdown
-            $invoices = $this->Invoices_model->get_all_where(array("deleted" => 0))->getResult();
+            $options = array(
+            "deleted" =>0,
+            "company_id"=>$department,
+            );
+            $invoices = $this->Invoices_model->get_details($options)->getResult();
             foreach ($invoices as $invoice) {
                 $invoices_dropdown[] = array("id" => $invoice->id, "text" => $invoice->display_id);
             }
@@ -829,7 +836,8 @@ class Tasks extends Security_Controller_Plugin {
         if ($context === "estimate" && !$return_empty_context) {
             //get estimates dropdown
             $options = array(
-                "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
+            "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
+            "company_id"=>$department,
             );
 
             $estimates = $this->Estimates_model->get_details($options)->getResult();
@@ -877,7 +885,12 @@ class Tasks extends Security_Controller_Plugin {
         $expenses_dropdown = array(array("id" => "", "text" => "-"));
         if ($context === "expense" && !$return_empty_context) {
             //get expenses dropdown
+            $department= $this->login_user->department;
+            if($department){
+            $expenses = $this->Expenses_model->get_all_where(array("deleted" => 0,"company_id"=>$department))->getResult();
+            }else{
             $expenses = $this->Expenses_model->get_all_where(array("deleted" => 0))->getResult();
+            }
             foreach ($expenses as $expense) {
                 $expenses_dropdown[] = array("id" => $expense->id, "text" => ($expense->title ? $expense->title : format_to_date($expense->expense_date, false)));
             }
@@ -3073,7 +3086,7 @@ class Tasks extends Security_Controller_Plugin {
             app_redirect("forbidden");
         }
         $view_data['project_id'] = 0;
-        
+        $department= $this->login_user->department;
         $projects = $this->Tasks_model->get_my_projects_dropdown_list($this->_get_only_own_projects_user_id())->getResult();
         $projects_dropdown = array(array("id" => "", "text" => "- " . app_lang("project") . " -"));
         foreach ($projects as $project) {
