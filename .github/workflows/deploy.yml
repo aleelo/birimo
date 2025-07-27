@@ -26,5 +26,5 @@ jobs:
         remote-user: ${{ secrets.USERNAME_STAGING }}
         remote-password: ${{ secrets.PASSWORD_STAGING }}
         remote-port: 22
-        sync: "full"
+        # sync: "full"
         remote-path: "/public_html"

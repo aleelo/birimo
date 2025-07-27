@@ -189,7 +189,7 @@ public $Users_models;
         }elseif($env == "production"){
             return 'https://birimo.aleelo.com/signin/aad_callback';
         }elseif($env == "staging"){
-            return 'https://birimo.aleelo.com/signin/aad_callback';
+            return 'https://birimo-staging.aleelo.com/signin/aad_callback';
         }
     }
 
