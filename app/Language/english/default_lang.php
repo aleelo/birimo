@@ -36,6 +36,8 @@ $lang["end_time"] = "End time";
 $lang["deadline"] = "Deadline";
 $lang["added"] = "Added";
 $lang["created_date"] = "Created date";
+$lang["service_cost"] = "Service Cost";
+$lang["total_with_service"] = "Total with Service";
 
 $lang["created"] = "Created";
 $lang["created_by"] = "Created by";

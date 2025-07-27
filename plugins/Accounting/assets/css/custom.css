@@ -1,0 +1,110 @@
+.col-md-offset-4{
+	margin-left: 33.33333333%;
+}
+
+.datepicker-dropdown{
+	z-index: 1065 !important;
+}
+
+.pull-left{
+	float: left;
+}
+
+.pull-right{
+	float: right;
+}
+
+.mleft5 {
+	margin-left: 5px;
+}
+
+.mleft10 {
+	margin-left: 10px;
+}
+
+.mleft15 {
+	margin-left: 15px;
+}
+
+.mleft20 {
+	margin-left: 20px;
+}
+
+.mleft25 {
+	margin-left: 25px;
+}
+
+.mtop5 {
+	margin-top: 5px;
+}
+
+.mtop10 {
+	margin-top: 10px;
+}
+
+.mtop15 {
+	margin-top: 15px;
+}
+
+.mtop20 {
+	margin-top: 20px;
+}
+
+.mtop25 {
+	margin-top: 25px;
+}
+
+.mright5 {
+	margin-right: 5px;
+}
+
+.mright10 {
+	margin-right: 10px;
+}
+
+.mright15 {
+	margin-right: 15px;
+}
+
+.mright20 {
+	margin-right: 20px;
+}
+
+.mright25 {
+	margin-right: 25px;
+}
+
+.mbot5 {
+	margin-bottom: 5px;
+}
+
+.mbot10 {
+	margin-bottom: 10px;
+}
+
+.mbot15 {
+	margin-bottom: 15px;
+}
+
+.mbot20 {
+	margin-bottom: 20px;
+}
+
+.mbot25 {
+	margin-bottom: 25px;
+}
+
+.table-responsive {
+    overflow-x: auto !important;
+}
+
+.integrations-banking-reconcile-ui {
+    overflow-x: auto !important;
+}
+
+.report-content{
+    overflow-x: auto !important;
+}
+#accordion .card{
+    overflow-x: auto !important;
+}

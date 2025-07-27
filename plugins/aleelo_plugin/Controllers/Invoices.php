@@ -317,7 +317,7 @@ class Invoices extends Security_Controller_Plugin
 
             // save discount when cloning and creating from estimate
             $invoice_data["discount_amount"] = $this->request->getPost('discount_amount') ? $this->request->getPost('discount_amount') : 0;
-            $invoice_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ? $this->request->getPost('discount_amount_type') : "percentage";
+            $invoice_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ? $this->request->getPost('discount_amount_type') : "services";
             $invoice_data["discount_type"] = $this->request->getPost('discount_type') ? $this->request->getPost('discount_type') : "before_tax";
 
             $invoice_data["order_id"] = $order_id ? $order_id : 0;
@@ -409,7 +409,7 @@ class Invoices extends Security_Controller_Plugin
         $order_id = $this->request->getPost('order_id');
 
         $invoice_data["discount_amount"] = $this->request->getPost('discount_amount') ?: 0;
-        $invoice_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ?: "percentage";
+        $invoice_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ?: "services";
         $invoice_data["discount_type"] = $this->request->getPost('discount_type') ?: "before_tax";
         $invoice_data["order_id"] = $order_id ?: 0;
 
@@ -934,7 +934,7 @@ class Invoices extends Security_Controller_Plugin
         $row_data = array(
             $data->id,
             $invoice_url,
-            anchor(get_uri("client/view/" . $data->client_id), $data->company_name),
+            anchor(get_uri("client/view/" . $data->client_id), $data->company_name ?? '----'),
             $data->project_title ? anchor(get_uri("projects/view/" . $data->project_id), $data->project_title) : "-",
             $data->bill_date,
             format_to_date($data->bill_date, false),
@@ -1168,103 +1168,375 @@ class Invoices extends Security_Controller_Plugin
         $view_data['invoice_id'] = $invoice_id;
         return $this->template->view('aleelo_plugin\Views/invoices/section_modal_form', $view_data);
     }
+    function save_item() {
+    $this->validate_submitted_data(array(
+        "id" => "numeric",
+        "invoice_id" => "required|numeric"
+    ));
 
-    /* add or edit an invoice item */
+    $invoice_id = $this->request->getPost('invoice_id');
+    $services = (float)$this->request->getPost('services');
+    $days = (float)$this->request->getPost('days');
+    $days = $days > 0 ? $days : 1;
 
-    function save_item()
-    {
-        $this->validate_submitted_data(array(
-            "id" => "numeric",
-            "invoice_id" => "required|numeric"
-        ));
-
-        $invoice_id = $this->request->getPost('invoice_id');
-        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
-        $new_account = $this->request->getPost("new_account");
-
-        $invoice_item_data = [];
-
-        if (!$this->can_edit_invoice()) {
-            app_redirect("forbidden");
-        }
-
-        if (!$this->is_invoice_editable($invoice_id)) {
-            app_redirect("forbidden");
-        }
-
-        $id = $this->request->getPost('id');
-        $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
-        $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
-        $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
-        $days = unformat_currency($this->request->getPost('days'));
-        
-        if($days==0){
-            $day=1;
-        }else{
-            $day=$days;
-        }
-
-        if ($supplier_price) {
-            $price = $supplier_price * $quantity * $day;
-        } else {
-            $price = 0;
-        }
-        $invoice_item_title = $this->request->getPost('invoice_item_title');
-        $item_id = 0;
-
-        if (!$id) {
-            //on adding item for the first time, get the id to store
-            $item_id = $this->request->getPost('item_id');
-        }
-
-        //check if the add_new_item flag is on, if so, add the item to libary. 
-        if ($add_new_item_to_library) {
-            $library_item_data = array(
-                "title" => $invoice_item_title,
-                "description" => $this->request->getPost('invoice_item_description'),
-                "unit_type" => $this->request->getPost('invoice_unit_type'),
-                "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-                "company_id" => $this->login_user->department,
-            );
-            $item_id = $this->Items_model->ci_save($library_item_data);
-        }
-
-
-
-        $invoice_item_data = array(
-            "invoice_id" => $invoice_id,
-            "title" => $this->request->getPost('invoice_item_title'),
-            "description" => $this->request->getPost('invoice_item_description'),
-            "quantity" => $quantity,
-            "unit_type" => $this->request->getPost('invoice_unit_type'),
-            "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-            "total" => $rate * $quantity * $day,
-            "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-            "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
-            "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
-            "supplier_price" => $price,
-            "supplier_id" => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
-            "days" => $days,
-
-
-        );
-
-        if ($item_id) {
-            $invoice_item_data["item_id"] = $item_id;
-        }
-
-        $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
-
-        if ($invoice_item_id) {
-            $options = array("id" => $invoice_item_id);
-            $item_info = $this->Invoice_items_model->get_details($options)->getRow();
-            echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_item_row($item_info, true), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_item_id, 'message' => app_lang('record_saved')));
-        } else {
-            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
-        }
+    if (!$this->can_edit_invoices() || !$this->is_invoice_editable($invoice_id)) {
+        app_redirect("forbidden");
     }
+
+    $id = $this->request->getPost('id');
+    $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
+    $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
+    $item_id = !$id ? $this->request->getPost('item_id') : 0;
+
+    // ✅ Calculate totals
+    $base_total = $quantity * $rate * $days;
+    $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
+    $alltotal = $base_total + $service_cost;
+
+    // ✅ Log the calculations
+    log_message('debug', 'SAVE_ITEM DEBUG: Invoice='.$invoice_id.' QTY='.$quantity.' Rate='.$rate.' Days='.$days.' BaseTotal='.$base_total.' Service%='.$services.' ServiceCost='.$service_cost.' AllTotal='.$alltotal);
+
+    $invoice_item_data = array(
+        "invoice_id" => $invoice_id,
+        "title" => $this->request->getPost('invoice_item_title'),
+        "description" => $this->request->getPost('invoice_item_description'),
+        "quantity" => $quantity,
+        "days" => $days,
+        "rate" => $rate,
+        "services" => $services,
+        "service_cost" => $service_cost,
+        "total" => $base_total,
+        "alltotal" => $alltotal,
+        "unit_type" => $this->request->getPost('invoice_unit_type'),
+        "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+    );
+
+    if ($item_id) {
+        $invoice_item_data["item_id"] = $item_id;
+    }
+
+    $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+
+    // ✅ Update totals after saving item
+    $this->Invoices_model->update_invoice_total_meta($invoice_id);
+
+    if ($invoice_item_id) {
+        $options = array("id" => $invoice_item_id);
+        $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+        echo json_encode(array(
+            "success" => true,
+            "invoice_id" => $item_info->invoice_id,
+            "data" => $this->_make_item_row($item_info, true),
+            "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+            'id' => $invoice_item_id,
+            'message' => app_lang('record_saved')
+        ));
+    } else {
+        echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+    }
+}
+
+// function save_item() {
+//     $this->validate_submitted_data(array(
+//         "id" => "numeric",
+//         "invoice_id" => "required|numeric"
+//     ));
+
+//     $invoice_id = $this->request->getPost('invoice_id');
+//     $services = (float)$this->request->getPost('services');
+//     $days = (float)$this->request->getPost('days');
+//     $days = $days > 0 ? $days : 1;
+
+//     if (!$this->can_edit_invoices() || !$this->is_invoice_editable($invoice_id)) {
+//         app_redirect("forbidden");
+//     }
+
+//     $id = $this->request->getPost('id');
+//     $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
+//     $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
+//     $item_id = !$id ? $this->request->getPost('item_id') : 0;
+
+//     // ✅ Base Total
+//     $base_total = $quantity * $rate * $days;
+
+//     // ✅ Service Cost
+//     $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
+
+//     // ✅ All Total = Base + Service Cost
+//     $alltotal = $base_total + $service_cost;
+
+//     $invoice_item_data = array(
+//         "invoice_id" => $invoice_id,
+//         "title" => $this->request->getPost('invoice_item_title'),
+//         "description" => $this->request->getPost('invoice_item_description'),
+//         "quantity" => $quantity,
+//         "days" => $days,
+//         "rate" => $rate,
+//         "services" => $services,
+//         "service_cost" => $service_cost,
+//         "total" => $base_total,    // Base Total Price
+//         "alltotal" => $alltotal,   // Total including Service %
+//         "unit_type" => $this->request->getPost('invoice_unit_type'),
+//         "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+//     );
+
+//     if ($item_id) {
+//         $invoice_item_data["item_id"] = $item_id;
+//     }
+
+//     $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+
+//     // ✅ Update invoice totals immediately after saving item
+//     $this->Invoices_model->update_invoice_total_meta($invoice_id);
+
+//     if ($invoice_item_id) {
+//         $options = array("id" => $invoice_item_id);
+//         $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+//         echo json_encode(array(
+//             "success" => true,
+//             "invoice_id" => $item_info->invoice_id,
+//             "data" => $this->_make_item_row($item_info, true),
+//             "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+//             'id' => $invoice_item_id,
+//             'message' => app_lang('record_saved')
+//         ));
+//     } else {
+//         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+//     }
+// }
+
+
+    /* add or edit an invoice item */##
+// function save_item() {
+//     $this->validate_submitted_data(array(
+//         "id" => "numeric",
+//         "invoice_id" => "required|numeric"
+//     ));
+
+//     $invoice_id = $this->request->getPost('invoice_id');
+//     $services = $this->request->getPost('services');
+//     $days = (float)$this->request->getPost('days');
+//     $days = $days > 0 ? $days : 1;  // ✅ Default to 1 if empty or 0
+
+//     if (!$this->can_edit_invoices()) {
+//         app_redirect("forbidden");
+//     }
+
+//     if (!$this->is_invoice_editable($invoice_id)) {
+//         app_redirect("forbidden");
+//     }
+
+//     $id = $this->request->getPost('id');
+//     $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
+//     $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
+//     $invoice_item_title = $this->request->getPost('invoice_item_title');
+//     $item_id = 0;
+
+//     if (!$id) {
+//         // on adding item for the first time, get the id to store
+//         $item_id = $this->request->getPost('item_id');
+//     }
+
+//     // ✅ Auto calculate total (quantity * rate * days)
+//     $total = $quantity * $rate * $days;
+
+//     // If you want to include service % in total:
+//     // $total = $total + ($total * ((float)$services / 100));
+
+//     // Add to library if needed
+//     $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+//     if ($add_new_item_to_library) {
+//         $library_item_data = array(
+//             "title" => $invoice_item_title,
+//             "description" => $this->request->getPost('invoice_item_description'),
+//             "unit_type" => $this->request->getPost('invoice_unit_type'),
+//             "rate" => $rate,
+//             "days" => $days,
+//             "services" => $services,
+//             "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+//         );
+//         $item_id = $this->Items_model->ci_save($library_item_data);
+//     }
+
+//     $invoice_item_data = array(
+//         "invoice_id" => $invoice_id,
+//         "title" => $this->request->getPost('invoice_item_title'),
+//         "description" => $this->request->getPost('invoice_item_description'),
+//         "quantity" => $quantity,
+//         "days" => $days,
+//         "rate" => $rate,
+//         "services" => $services,
+//         "total" => $total,   // ✅ Auto-calculated value
+//         "unit_type" => $this->request->getPost('invoice_unit_type'),
+//         "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+//     );
+
+//     if ($item_id) {
+//         $invoice_item_data["item_id"] = $item_id;
+//     }
+
+//     $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+//     if ($invoice_item_id) {
+//         $options = array("id" => $invoice_item_id);
+//         $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+//         echo json_encode(array(
+//             "success" => true,
+//             "invoice_id" => $item_info->invoice_id,
+//             "data" => $this->_make_item_row($item_info, true),
+//             "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+//             'id' => $invoice_item_id,
+//             'message' => app_lang('record_saved')
+//         ));
+//     } else {
+//         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+//     }
+// }
+
+//      function save_item() {
+//         $this->validate_submitted_data(array(
+//             "id" => "numeric",
+//             "invoice_id" => "required|numeric"
+//         ));
+
+//         $invoice_id = $this->request->getPost('invoice_id');
+//         $services = $this->request->getPost('services');
+//         $days = $this->request->getPost('days');
+//         $total = $this->request->getPost('total');
+
+//         if (!$this->can_edit_invoices()) {
+//             app_redirect("forbidden");
+//         }
+
+//         if (!$this->is_invoice_editable($invoice_id)) {
+//             app_redirect("forbidden");
+//         }
+
+//         $id = $this->request->getPost('id');
+//         $rate = unformat_currency($this->request->getPost('invoice_item_rate'));
+//         $quantity = unformat_currency($this->request->getPost('invoice_item_quantity'));
+//         $invoice_item_title = $this->request->getPost('invoice_item_title');
+//         $item_id = 0;
+
+//         if (!$id) {
+//             //on adding item for the first time, get the id to store
+//             $item_id = $this->request->getPost('item_id');
+//         }
+
+//         //check if the add_new_item flag is on, if so, add the item to libary. 
+//          $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+// if ($add_new_item_to_library) {
+//     $library_item_data = array(
+//         "title" => $invoice_item_title,
+//         "description" => $this->request->getPost('invoice_item_description'),
+//         "unit_type" => $this->request->getPost('invoice_unit_type'),
+//         "rate" => $rate,
+//         "days" => $days,
+//         "services" =>$services,
+        
+//         "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+//     );
+//     $item_id = $this->Items_model->ci_save($library_item_data);
+// }
+
+
+//        $invoice_item_data = array(
+//     "invoice_id" => $invoice_id,
+//     "title" => $this->request->getPost('invoice_item_title'),
+//     "description" => $this->request->getPost('invoice_item_description'),
+//     "quantity" => $quantity,
+//     "days" => $days,
+//     "rate" => $rate,
+//     "services" => $services,
+//     "total" => $total,
+     
+//     "unit_type" => $this->request->getPost('invoice_unit_type'),
+//     "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+// );
+
+//         if ($item_id) {
+//             $invoice_item_data["item_id"] = $item_id;
+//         }
+
+//         $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+//         if ($invoice_item_id) {
+//             $options = array("id" => $invoice_item_id);
+//             $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+//             echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_item_row($item_info, true), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_item_id, 'message' => app_lang('record_saved')));
+//         } else {
+//             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+//         }
+//     }
+
     /* delete or undo an invoice item */
+// function save_item() {
+//     $this->validate_submitted_data(array(
+//         "id" => "numeric",
+//         "invoice_id" => "required|numeric"
+//     ));
+
+//     $invoice_id = $this->request->getPost('invoice_id');
+//     $services = (float)$this->request->getPost('services');  
+//     $days = (float)$this->request->getPost('days');
+//     $days = $days > 0 ? $days : 1;  
+
+//     if (!$this->can_edit_invoices() || !$this->is_invoice_editable($invoice_id)) {
+//         app_redirect("forbidden");
+//     }
+
+//     $id = $this->request->getPost('id');
+//     $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
+//     $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
+//     $invoice_item_title = $this->request->getPost('invoice_item_title');
+//     $item_id = 0;
+
+//     if (!$id) {
+//         $item_id = $this->request->getPost('item_id');
+//     }
+
+//     // ✅ Base total
+//     $base_total = $quantity * $rate * $days;
+
+//     // ✅ Service Cost = (Base Total * services%)
+//     $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
+
+//     // ✅ Final Total = Base + Service Cost
+//     $total = $base_total + $service_cost;
+
+//     $invoice_item_data = array(
+//         "invoice_id" => $invoice_id,
+//         "title" => $this->request->getPost('invoice_item_title'),
+//         "description" => $this->request->getPost('invoice_item_description'),
+//         "quantity" => $quantity,
+//         "days" => $days,
+//         "rate" => $rate,
+//         "services" => $services,
+//         "service_cost" => $service_cost,  // ✅ Save the calculated service cost
+//         "total" => $total,
+//         "unit_type" => $this->request->getPost('invoice_unit_type'),
+//         "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+//     );
+
+//     if ($item_id) {
+//         $invoice_item_data["item_id"] = $item_id;
+//     }
+
+//     $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
+
+//     if ($invoice_item_id) {
+//         $options = array("id" => $invoice_item_id);
+//         $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+//         echo json_encode(array(
+//             "success" => true,
+//             "invoice_id" => $item_info->invoice_id,
+//             "data" => $this->_make_item_row($item_info, true),
+//             "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+//             'id' => $invoice_item_id,
+//             'message' => app_lang('record_saved')
+//         ));
+//     } else {
+//         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+//     }
+// }
 
     function delete_item()
     {
@@ -1401,80 +1673,344 @@ class Invoices extends Security_Controller_Plugin
 
         echo json_encode(["data" => $result]);
     }
-
-    /* prepare a row of invoice item list table */
     private function _make_item_row($data, $is_ediable)
-    {
-        $move_icon = "";
-        $desc_style = "";
+{
+    $move_icon = "";
+    $desc_style = "";
 
-        if ($is_ediable) {
-            $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
-            $desc_style = "style='margin-left:30px'";
-        }
-        $type = $data->is_section ? "section" : "item";
-
-        $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
-        if ($data->description) {
-            $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
-        }
-
-        if ($data->is_section) {
-            $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
-                "class" => "edit",
-                "title" => app_lang('edit_invoice'),
-                "data-post-id" => $data->id,
-                "data-post-invoice_id" => $data->invoice_id
-            ))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
-                    'title' => app_lang('delete'),
-                    "class" => "delete",
-                    "data-id" => $data->id,
-                    "data-action-url" => get_uri("invoices/delete_section"),
-                    "data-action" => "delete"
-                ));
-
-            return array(
-                $data->sort,
-                $item,
-                "",
-                "",
-                "",
-                "",
-                "",
-                $actions
-            );
-        } else {
-            $type = $data->unit_type ? $data->unit_type : "";
-            $taxable = $data->taxable ? app_lang("yes") : app_lang("no");
-
-            $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
-                "class" => "edit",
-                "title" => app_lang('edit_invoice'),
-                "data-post-id" => $data->id,
-                "data-post-invoice_id" => $data->invoice_id
-            ))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
-                    'title' => app_lang('delete'),
-                    "class" => "delete",
-                    "data-id" => $data->id,
-                    "data-action-url" => get_uri("invoices/delete_item"),
-                    "data-action" => "delete"
-                ));
-
-            return array(
-                $data->sort,
-                $item,
-                $data->days,
-                to_decimal_format($data->quantity) . " " . $type,
-                to_currency($data->rate, $data->currency_symbol),
-                $taxable,
-                to_currency($data->total, $data->currency_symbol),
-                $actions
-            );
-        }
+    if ($is_ediable) {
+        $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+        $desc_style = "style='margin-left:30px'";
     }
 
+    $type = $data->is_section ? "section" : "item";
+    $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+
+    if (!empty($data->description)) {
+        $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+    }
+
+    if ($data->is_section) {
+        // Handle section if needed
+    } else {
+        $unit_type = !empty($data->unit_type) ? $data->unit_type : "";
+
+        $services = property_exists($data, 'services') ? $data->services : 0;
+        $service_cost = property_exists($data, 'service_cost') ? $data->service_cost : 0;
+        $alltotal = property_exists($data, 'alltotal') ? $data->alltotal : 0;
+
+        $taxable = !empty($data->taxable) ? app_lang("yes") : app_lang("no");
+
+        $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+            "class" => "edit",
+            "title" => app_lang('edit_invoice'),
+            "data-post-id" => $data->id,
+            "data-post-invoice_id" => $data->invoice_id
+        ))
+        . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+            'title' => app_lang('delete'),
+            "class" => "delete",
+            "data-id" => $data->id,
+            "data-action-url" => get_uri("invoices/delete_item"),
+            "data-action" => "delete"
+        ));
+
+        return array(
+            $data->sort,
+            $item,
+            $data->days,
+            to_decimal_format($data->quantity) . " " . $unit_type,
+            to_currency($data->rate, $data->currency_symbol),
+            $taxable,
+            to_currency($data->total, $data->currency_symbol),          // Base Total
+            $services,                                                  // % Service
+            to_currency($service_cost, $data->currency_symbol),         // % Service Cost
+            to_currency($alltotal, $data->currency_symbol),             // Total cost + Service %
+            $actions
+        );
+    }
+}
+
+//    private function _make_item_row($data, $is_ediable)
+// {
+//     $move_icon = "";
+//     $desc_style = "";
+
+//     if ($is_ediable) {
+//         $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+//         $desc_style = "style='margin-left:30px'";
+//     }
+
+//     $type = $data->is_section ? "section" : "item";
+//     $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+
+//     if (!empty($data->description)) {
+//         $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+//     }
+
+//     if ($data->is_section) {
+//         // Handle section rows if needed
+//     } else {
+//         $unit_type = !empty($data->unit_type) ? $data->unit_type : "";
+
+//         // ✅ Safe checks to prevent undefined property errors
+//         $services = property_exists($data, 'services') ? $data->services : 0;
+//         $service_cost = property_exists($data, 'service_cost') ? $data->service_cost : 0;
+//         $alltotal = property_exists($data, 'alltotal') ? $data->alltotal : 0;
+
+//         $taxable = !empty($data->taxable) ? app_lang("yes") : app_lang("no");
+
+//         $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+//             "class" => "edit",
+//             "title" => app_lang('edit_invoice'),
+//             "data-post-id" => $data->id,
+//             "data-post-invoice_id" => $data->invoice_id
+//         ))
+//         . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+//             'title' => app_lang('delete'),
+//             "class" => "delete",
+//             "data-id" => $data->id,
+//             "data-action-url" => get_uri("invoices/delete_item"),
+//             "data-action" => "delete"
+//         ));
+
+//         return array(
+//             $data->sort,
+//             $item,
+//             $data->days,
+//             to_decimal_format($data->quantity) . " " . $unit_type,
+//             to_currency($data->rate, $data->currency_symbol),
+//             $taxable,
+//             to_currency($data->total, $data->currency_symbol),        // Base Total
+//             $services,                                                 // % Service
+//             to_currency($service_cost, $data->currency_symbol),        // % Service Cost
+//             to_currency($alltotal, $data->currency_symbol),            // Total (Cost + Service %)
+//             $actions
+//         );
+//     }
+// }
+
+
+// private function _make_item_row($data, $is_ediable)
+// {
+//     $move_icon = "";
+//     $desc_style = "";
+
+//     if ($is_ediable) {
+//         $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+//         $desc_style = "style='margin-left:30px'";
+//     }
+//     $type = $data->is_section ? "section" : "item";
+
+//     $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+//     if (!empty($data->description)) {
+//         $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+//     }
+
+//     if ($data->is_section) {
+//         $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+//             "class" => "edit",
+//             "title" => app_lang('edit_invoice'),
+//             "data-post-id" => $data->id,
+//             "data-post-invoice_id" => $data->invoice_id
+//         ))
+//         . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+//             'title' => app_lang('delete'),
+//             "class" => "delete",
+//             "data-id" => $data->id,
+//             "data-action-url" => get_uri("invoices/delete_section"),
+//             "data-action" => "delete"
+//         ));
+
+//         return array(
+//             $data->sort,
+//             $item,
+//             "",
+//             "",
+//             "",
+//             "",
+//             "",
+//             $actions
+//         );
+//     } else {
+//         $unit_type = !empty($data->unit_type) ? $data->unit_type : "";
+//        $services = property_exists($data, 'services') ? $data->services:"";
+       
+//         $taxable = !empty($data->taxable) ? app_lang("yes") : app_lang("no");
+
+//         $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+//             "class" => "edit",
+//             "title" => app_lang('edit_invoice'),
+//             "data-post-id" => $data->id,
+//             "data-post-invoice_id" => $data->invoice_id
+//         ))
+//         . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+//             'title' => app_lang('delete'),
+//             "class" => "delete",
+//             "data-id" => $data->id,
+//             "data-action-url" => get_uri("invoices/delete_item"),
+//             "data-action" => "delete"
+//         ));
+
+//         return array(
+//             $data->sort,
+//             $item,
+//             $data->days,
+//             to_decimal_format($data->quantity) . " " . $unit_type,
+//             to_currency($data->rate, $data->currency_symbol),
+//             $taxable,
+//             to_currency($data->total, $data->currency_symbol),
+//             $services,   // ✅ Now always safe
+//             $actions
+//         );
+//     }
+// }
+
+    // /* prepare a row of invoice item list table */
+    // private function _make_item_row($data, $is_ediable)
+    // {
+    //     $move_icon = "";
+    //     $desc_style = "";
+
+    //     if ($is_ediable) {
+    //         $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+    //         $desc_style = "style='margin-left:30px'";
+    //     }
+    //     $type = $data->is_section ? "section" : "item";
+
+    //     $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+    //     if ($data->description) {
+    //         $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+    //     }
+
+    //     if ($data->is_section) {
+    //         $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+    //             "class" => "edit",
+    //             "title" => app_lang('edit_invoice'),
+    //             "data-post-id" => $data->id,
+    //             "data-post-invoice_id" => $data->invoice_id
+    //         ))
+    //             . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+    //                 'title' => app_lang('delete'),
+    //                 "class" => "delete",
+    //                 "data-id" => $data->id,
+    //                 "data-action-url" => get_uri("invoices/delete_section"),
+    //                 "data-action" => "delete"
+    //             ));
+
+    //         return array(
+    //             $data->sort,
+    //             $item,
+    //             "",
+    //             "",
+    //             "",
+    //             "",
+    //             "",
+    //             $actions
+    //         );
+    //     } else {
+    //         $type = $data->unit_type ? $data->unit_type : "";
+    //         $services = $data->services;
+    //         $taxable = $data->taxable ? app_lang("yes") : app_lang("no");
+    //          $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+    //             "class" => "edit",
+    //             "title" => app_lang('edit_invoice'),
+    //             "data-post-id" => $data->id,
+    //             "data-post-invoice_id" => $data->invoice_id
+    //         ))
+    //             . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+    //                 'title' => app_lang('delete'),
+    //                 "class" => "delete",
+    //                 "data-id" => $data->id,
+    //                 "data-action-url" => get_uri("invoices/delete_item"),
+    //                 "data-action" => "delete"
+    //             ));
+
+    //         return array(
+    //             $data->sort,
+    //             $item,
+    //             $data->days,
+    //             to_decimal_format($data->quantity) . " " . $type,
+    //             to_currency($data->rate, $data->currency_symbol),
+    //             $taxable,
+                
+    //             to_currency($data->total, $data->currency_symbol),
+    //               $services, 
+    //             $actions
+    //         );
+    //     }
+    // }
+
+// private function _make_item_row($data, $is_ediable)
+// {
+//     $move_icon = "";
+//     $desc_style = "";
+
+//     if ($is_ediable) {
+//         $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+//         $desc_style = "style='margin-left:30px'";
+//     }
+
+//     $type = $data->is_section ? "section" : "item";
+
+//     $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+//     if ($data->description) {
+//         $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+//     }
+
+//     if ($data->is_section) {
+//         $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+//             "class" => "edit",
+//             "title" => app_lang('edit_invoice'),
+//             "data-post-id" => $data->id,
+//             "data-post-invoice_id" => $data->invoice_id
+//         )) . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+//             'title' => app_lang('delete'),
+//             "class" => "delete",
+//             "data-id" => $data->id,
+//             "data-action-url" => get_uri("invoices/delete_section"),
+//             "data-action" => "delete"
+//         ));
+
+//         return array(
+//             $data->sort,
+//             $item,
+//             "", "", "", "", "", "", "", "",
+//             $actions
+//         );
+//     } else {
+//         $unit_type = $data->unit_type ? $data->unit_type : "";
+//         $taxable = $data->taxable ? app_lang("yes") : app_lang("no");
+
+//         $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+//             "class" => "edit",
+//             "title" => app_lang('edit_invoice'),
+//             "data-post-id" => $data->id,
+//             "data-post-invoice_id" => $data->invoice_id
+//         )) . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+//             'title' => app_lang('delete'),
+//             "class" => "delete",
+//             "data-id" => $data->id,
+//             "data-action-url" => get_uri("invoices/delete_item"),
+//             "data-action" => "delete"
+//         ));
+
+//         return array(
+//             $data->sort,
+//             $item,
+//             to_decimal_format($data->quantity) . " " . $unit_type,
+//             to_decimal_format($data->days),
+//             to_currency($data->rate, $data->currency_symbol),
+//              // to_currency($data->service_cost, $data->currency_symbol),
+//             // to_currency($data->total_with_service, $data->currency_symbol),
+//             $taxable,
+//             to_currency($data->total, $data->currency_symbol),
+//             '',// to_decimal_format($data->services) . " %",
+
+//             $actions
+//         );
+//     }
+// }
 
     function save_section()
     {

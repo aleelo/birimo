@@ -138,16 +138,22 @@
             displayLength: 100,
             stateSave: false,
             columns: [
-                {visible: false, searchable: false},
-                {title: '<?php echo app_lang("item") ?> ', sortable: false, "class": "all"},
-                {title: '<?php echo app_lang("days") ?>', "class": "text-right w15p", sortable: false},
+    {visible: false, searchable: false}, // sort
+    {title: '<?php echo app_lang("item") ?> ', sortable: false, "class": "all"}, // item
+     {title: '<?php echo app_lang("days") ?>', "class": "text-right w15p", sortable: false}, // days
+         {title: '<?php echo app_lang(lang: "quantity") ?>', "class": "text-right w15p", sortable: false}, // quantity
 
-                {title: '<?php echo app_lang("quantity") ?>', "class": "text-right w15p", sortable: false},
-                {title: '<?php echo app_lang("rate") ?>', "class": "text-right w15p", sortable: false},
-                {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false},
-                {title: '<?php echo app_lang("total") ?>', "class": "text-right w15p all", sortable: false},
-                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", sortable: false, visible: optionVisibility}
-            ],
+    {title: '<?php echo app_lang("rate") ?>', "class": "text-right w15p", sortable: false},
+  
+    {title: '<?php echo app_lang("taxable") ?>', "class": "text-right w15p", sortable: false}, // taxable
+    {title: '<?php echo app_lang("total") ?>', "class": "text-right w15p all", sortable: false}, // total
+    {title: '<?php echo app_lang("services") ?>', "class": "text-right w15p all", sortable: false}, // total
+    {title: '<?php echo app_lang("service_cost") ?>', "class": "text-right w15p all", sortable: false}, // total
+    {title: '<?php echo app_lang("alltotal") ?>', "class": "text-right w15p all", sortable: false}, // total
+
+     {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100", sortable: false, visible: optionVisibility} // actions
+],
+
             rowCallback: function (nRow, aData) {
                 var column = $("#invoice-item-table").DataTable().column(4);
                 var taxableColumn = "<?php echo get_setting('taxable_column'); ?>";

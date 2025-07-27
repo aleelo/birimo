@@ -685,7 +685,7 @@ class Invoices extends Security_Controller {
                 $credit_note_url = anchor(get_uri("invoices/view/" . $data->credit_note_id), "<i data-feather='file-minus' class='icon-18'></i>", array("title" => app_lang("credit_note"), "class" => "ml10"));
             }
 
-            $invoice_url = anchor(get_uri("invoices/view/" . $data->id), $data->display_id, array("class" => $link_class)) . $main_invoice_url . $credit_note_url;
+            $invoice_url = anchor(get_uri("invoices/view/" . $data->id), $data->display_id ?? '---', array("class" => $link_class)) . $main_invoice_url . $credit_note_url;
         } else {
             $link_class = "";
             if ($data->main_invoice_id) {
@@ -695,7 +695,7 @@ class Invoices extends Security_Controller {
                 $credit_note_url = anchor(get_uri("invoices/preview/" . $data->credit_note_id), "<i data-feather='file-minus' class='icon-18'></i>", array("title" => app_lang("credit_note"), "class" => "ml10"));
             }
 
-            $invoice_url = anchor(get_uri("invoices/preview/" . $data->id), $data->display_id, array("class" => $link_class)) . $main_invoice_url . $credit_note_url;
+            $invoice_url = anchor(get_uri("invoices/preview/" . $data->id), $data->display_id ?? '---', array("class" => $link_class)) . $main_invoice_url . $credit_note_url;
         }
 
         $status = "-";
@@ -724,7 +724,7 @@ class Invoices extends Security_Controller {
         $row_data = array(
             $data->id,
             $invoice_url,
-            anchor(get_uri("clients/view/" . $data->client_id), $data->company_name),
+            anchor(get_uri("clients/view/" . $data->client_id), $data->company_name ?? '----'),
             $data->project_title ? anchor(get_uri("projects/view/" . $data->project_id), $data->project_title) : "-",
             $data->bill_date,
             format_to_date($data->bill_date, false),
@@ -923,6 +923,9 @@ class Invoices extends Security_Controller {
         ));
 
         $invoice_id = $this->request->getPost('invoice_id');
+        $percentage = $this->request->getPost('percentage');
+        $days = $this->request->getPost('days');
+        $total = $this->request->getPost('total');
 
         if (!$this->can_edit_invoices()) {
             app_redirect("forbidden");
@@ -944,28 +947,35 @@ class Invoices extends Security_Controller {
         }
 
         //check if the add_new_item flag is on, if so, add the item to libary. 
-        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
-        if ($add_new_item_to_library) {
-            $library_item_data = array(
-                "title" => $invoice_item_title,
-                "description" => $this->request->getPost('invoice_item_description'),
-                "unit_type" => $this->request->getPost('invoice_unit_type'),
-                "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
-            );
-            $item_id = $this->Items_model->ci_save($library_item_data);
-        }
+         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+if ($add_new_item_to_library) {
+    $library_item_data = array(
+        "title" => $invoice_item_title,
+        "description" => $this->request->getPost('invoice_item_description'),
+        "unit_type" => $this->request->getPost('invoice_unit_type'),
+        "rate" => $rate,
+        "days" => $days,
+        "percentage" => $percentage,
+        
+        "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+    );
+    $item_id = $this->Items_model->ci_save($library_item_data);
+}
 
-        $invoice_item_data = array(
-            "invoice_id" => $invoice_id,
-            "title" => $this->request->getPost('invoice_item_title'),
-            "description" => $this->request->getPost('invoice_item_description'),
-            "quantity" => $quantity,
-            "unit_type" => $this->request->getPost('invoice_unit_type'),
-            "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
-            "total" => $rate * $quantity,
-            "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
-        );
+
+       $invoice_item_data = array(
+    "invoice_id" => $invoice_id,
+    "title" => $this->request->getPost('invoice_item_title'),
+    "description" => $this->request->getPost('invoice_item_description'),
+    "quantity" => $quantity,
+    "days" => $days,
+    "rate" => $rate,
+    "percentage" => $percentage,
+    "total" => $total,
+     
+    "unit_type" => $this->request->getPost('invoice_unit_type'),
+    "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+);
 
         if ($item_id) {
             $invoice_item_data["item_id"] = $item_id;
@@ -1041,36 +1051,55 @@ class Invoices extends Security_Controller {
     }
 
     /* prepare a row of invoice item list table */
-
-    private function _make_item_row($data, $is_ediable) {
-        $move_icon = "";
-        $desc_style = "";
-        if ($is_ediable) {
-            $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
-            $desc_style = "style='margin-left:30px'";
-        }
-        $item = "<div class='item-row strong mb5' data-id='$data->id'>$move_icon $data->title</div>";
-        if ($data->description) {
-            $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
-        }
-        $type = $data->unit_type ? $data->unit_type : "";
-
-        $taxable = app_lang("no");
-        if ($data->taxable) {
-            $taxable = app_lang("yes");
-        }
-
-        return array(
-            $data->sort,
-            $item,
-            to_decimal_format($data->quantity) . " " . $type,
-            to_currency($data->rate, $data->currency_symbol),
-            $taxable,
-            to_currency($data->total, $data->currency_symbol),
-            modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_invoice'), "data-post-id" => $data->id, "data-post-invoice_id" => $data->invoice_id))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("invoices/delete_item"), "data-action" => "delete"))
-        );
+ private function _make_item_row($data, $is_ediable) {
+    $move_icon = "";
+    $desc_style = "";
+    if ($is_ediable) {
+        $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+        $desc_style = "style='margin-left:30px'";
     }
+
+    $item = "<div class='item-row strong mb5' data-id='$data->id'>$move_icon $data->title</div>";
+    if ($data->description) {
+        $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+    }
+
+    $type = $data->unit_type ? $data->unit_type : "";
+    $percentage = $data->percentage. "%";
+     
+
+    $taxable = app_lang("no");
+    if ($data->taxable) {
+        $taxable = app_lang("yes");
+    }
+
+    return array(
+        $data->sort,
+        $item,
+        to_decimal_format($data->quantity) . " " . $type,
+        to_decimal_format($data->days),                       // new
+        to_currency($data->rate, $data->currency_symbol),
+           // new
+        // to_currency($data->service_cost, $data->currency_symbol), // new
+        // to_currency($data->total_with_service, $data->currency_symbol), // new
+        $taxable,
+        to_currency($data->total, $data->currency_symbol),
+        $percentage,   
+        modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+            "class" => "edit",
+            "title" => app_lang('edit_invoice'),
+            "data-post-id" => $data->id,
+            "data-post-invoice_id" => $data->invoice_id
+        )) . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+            'title' => app_lang('delete'),
+            "class" => "delete",
+            "data-id" => $data->id,
+            "data-action-url" => get_uri("invoices/delete_item"),
+            "data-action" => "delete"
+        ))
+    );
+}
+
 
     //update the sort value for the item
     function update_item_sort_values($id = 0) {

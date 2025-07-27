@@ -582,102 +582,211 @@ class Crud_model extends Model {
         $custom_field_values_table = $this->db->prefixTable('custom_field_values');
         return " OR $table.id IN( SELECT $custom_field_values_table.related_to_id FROM $custom_field_values_table WHERE $custom_field_values_table.deleted=0 AND $custom_field_values_table.related_to_type='$related_to_type' AND $custom_field_values_table.value LIKE '%$search_by%' ESCAPE '!' ) ";
     }
+protected function get_sales_total_meta($id, $main_table, $items_table) {
 
-    protected function get_sales_total_meta($id, $main_table, $items_table) {
+    $taxes_table = $this->db->prefixTable('taxes');
 
-        //$main_table like as invoices table
-        //$items_table like as invoice_items_table
-        $taxes_table = $this->db->prefixTable('taxes');
+    $invoice_sql = "SELECT $main_table.id, $main_table.discount_amount, $main_table.discount_amount_type, $main_table.discount_type,
+            tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2, tax_table3.percentage AS tax_percentage3,
+            tax_table.title AS tax_name, tax_table2.title AS tax_name2, tax_table3.title AS tax_name3,
+            taxable_item.total_taxable, non_taxable_item.total_non_taxable, taxable_item.alltotal
+            FROM $main_table
+            LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table ON tax_table.id = $main_table.tax_id
+            LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table2 ON tax_table2.id = $main_table.tax_id2
+            LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table3 ON tax_table3.id = $main_table.tax_id3
+            LEFT JOIN (SELECT SUM($items_table.total) AS total_taxable, ($items_table.alltotal) as alltotal, $items_table.invoice_id 
+                       FROM $items_table 
+                       WHERE $items_table.deleted=0 AND $items_table.taxable = 1 
+                       GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
+            LEFT JOIN (SELECT SUM($items_table.total) AS total_non_taxable, $items_table.invoice_id  
+                       FROM $items_table 
+                       WHERE $items_table.deleted=0 AND $items_table.taxable = 0 
+                       GROUP BY $items_table.invoice_id) AS non_taxable_item ON non_taxable_item.invoice_id = $main_table.id
+            WHERE $main_table.deleted=0 AND $main_table.id = $id";
 
-        $invoice_sql = "SELECT $main_table.id, $main_table.discount_amount, $main_table.discount_amount_type, $main_table.discount_type,
-                tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2, tax_table3.percentage AS tax_percentage3,
-                tax_table.title AS tax_name, tax_table2.title AS tax_name2, tax_table3.title AS tax_name3,
-                taxable_item.total_taxable, non_taxable_item.total_non_taxable
-                FROM $main_table
-                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table ON tax_table.id = $main_table.tax_id
-                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table2 ON tax_table2.id = $main_table.tax_id2
-                LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table3 ON tax_table3.id = $main_table.tax_id3
-                LEFT JOIN (SELECT SUM($items_table.total) AS total_taxable, $items_table.invoice_id FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 1 GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
-                LEFT JOIN (SELECT SUM($items_table.total) AS total_non_taxable, $items_table.invoice_id  FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 0 GROUP BY $items_table.invoice_id) AS non_taxable_item ON non_taxable_item.invoice_id = $main_table.id
-                WHERE $main_table.deleted=0 AND $main_table.id = $id";
+    $invoice_info = $this->db->query($invoice_sql)->getRow();
 
-        $invoice_info = $this->db->query($invoice_sql)->getRow();
-
-        if (!$invoice_info->id) {
-            return null;
-        }
-
-        $total_taxable = $invoice_info->total_taxable ? $invoice_info->total_taxable : 0;
-        $total_non_taxable = $invoice_info->total_non_taxable ? $invoice_info->total_non_taxable : 0;
-        $sub_total = $total_taxable + $total_non_taxable;
-        $discount_total = 0;
-        $invoice_total = 0;
-
-        if ($invoice_info->discount_amount_type == "percentage") {
-
-            $non_taxable_discount_value = $total_non_taxable * ($invoice_info->discount_amount / 100);
-
-            if ($invoice_info->discount_type == "before_tax") {
-                $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
-                $total_taxable = $total_taxable - $taxable_discount_value; //apply discount before tax
-            }
-
-            $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
-            $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
-            $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
-            $total_taxable = $total_taxable + $tax1 + $tax2 - $tax3;
-
-            $invoice_total = $total_taxable + $total_non_taxable - $non_taxable_discount_value; //deduct only non-taxable discount since the taxable discount already deducted 
-
-            if ($invoice_info->discount_type == "after_tax") {
-                $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
-                $invoice_total = $total_taxable + $total_non_taxable - $taxable_discount_value - $non_taxable_discount_value;
-            }
-
-            $discount_total = $taxable_discount_value + $non_taxable_discount_value;
-        } else {
-            //discount_amount_type is fixed_amount
-
-            $discount_total = $invoice_info->discount_amount; //fixed amount 
-            //fixed amount discount. fixed amount can't be applied before tax when there are both taxable and non-taxable items.
-            //calculate all togather 
-
-            if ($invoice_info->discount_type == "before_tax" && $total_taxable > 0) {
-                $total_taxable = $total_taxable - $discount_total;
-            } else if ($invoice_info->discount_type == "before_tax" && $total_taxable == 0) {
-                $total_non_taxable = $total_non_taxable - $discount_total;
-            }
-
-
-            $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
-            $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
-            $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
-            $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3; //discount before tax
-
-            if ($invoice_info->discount_type == "after_tax") {
-                $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3 - $discount_total;
-            }
-        }
-
-        $info = new \stdClass();
-        $info->invoice_total = number_format($invoice_total, 2, ".", "") * 1;
-        $info->invoice_subtotal = number_format($sub_total, 2, ".", "") * 1;
-        $info->discount_total = number_format($discount_total, 2, ".", "") * 1;
-
-        $info->tax_percentage = $invoice_info->tax_percentage;
-        $info->tax_percentage2 = $invoice_info->tax_percentage2;
-        $info->tax_percentage3 = $invoice_info->tax_percentage3;
-        $info->tax_name = $invoice_info->tax_name;
-        $info->tax_name2 = $invoice_info->tax_name2;
-        $info->tax_name3 = $invoice_info->tax_name3;
-
-        $info->tax = number_format($tax1, 2, ".", "") * 1;
-        $info->tax2 = number_format($tax2, 2, ".", "") * 1;
-        $info->tax3 = number_format($tax3, 2, ".", "") * 1;
-
-        $info->discount_type = $invoice_info->discount_type;
-        return $info;
+    if (!$invoice_info->id) {
+        return null;
     }
+
+    $total_taxable = $invoice_info->total_taxable ?: 0;
+    $total_non_taxable = $invoice_info->total_non_taxable ?: 0;
+    $sub_total = $total_taxable + $total_non_taxable;
+
+    // alltotal = service percentage
+    $service_percentage = $invoice_info->alltotal ?: 0;
+    $service_cost = ($sub_total * $service_percentage) / 100;
+
+    $discount_total = 0;
+    $invoice_total = 0;
+
+    if ($invoice_info->discount_amount_type == "percentage") {
+        $non_taxable_discount_value = $total_non_taxable * ($invoice_info->discount_amount / 100);
+
+        if ($invoice_info->discount_type == "before_tax") {
+            $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+            $total_taxable -= $taxable_discount_value;
+        }
+
+        $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+        $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+        $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+        $total_taxable = $total_taxable + $tax1 + $tax2 - $tax3;
+
+        $invoice_total = $total_taxable + $total_non_taxable - $non_taxable_discount_value;
+
+        if ($invoice_info->discount_type == "after_tax") {
+            $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+            $invoice_total = $total_taxable + $total_non_taxable - $taxable_discount_value - $non_taxable_discount_value;
+        }
+
+        $discount_total = $taxable_discount_value + $non_taxable_discount_value;
+    } else {
+        $discount_total = $invoice_info->discount_amount;
+
+        if ($invoice_info->discount_type == "before_tax" && $total_taxable > 0) {
+            $total_taxable -= $discount_total;
+        } else if ($invoice_info->discount_type == "before_tax" && $total_taxable == 0) {
+            $total_non_taxable -= $discount_total;
+        }
+
+        $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+        $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+        $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+        $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3;
+
+        if ($invoice_info->discount_type == "after_tax") {
+            $invoice_total -= $discount_total;
+        }
+    }
+
+    // Add service cost to totals
+    $new_total = $invoice_total + $service_cost;
+    $new_subtotal = $sub_total + $service_cost;
+
+    $info = new \stdClass();
+    $info->invoice_total = number_format($new_total, 2, ".", "") * 1;
+    $info->invoice_subtotal = number_format($new_subtotal, 2, ".", "") * 1;
+    $info->discount_total = number_format($discount_total, 2, ".", "") * 1;
+    $info->service_percentage = $service_percentage;
+    $info->service_cost = number_format($service_cost, 2, ".", "") * 1;
+
+    $info->tax_percentage = $invoice_info->tax_percentage;
+    $info->tax_percentage2 = $invoice_info->tax_percentage2;
+    $info->tax_percentage3 = $invoice_info->tax_percentage3;
+    $info->tax_name = $invoice_info->tax_name;
+    $info->tax_name2 = $invoice_info->tax_name2;
+    $info->tax_name3 = $invoice_info->tax_name3;
+
+    $info->tax = number_format($tax1, 2, ".", "") * 1;
+    $info->tax2 = number_format($tax2, 2, ".", "") * 1;
+    $info->tax3 = number_format($tax3, 2, ".", "") * 1;
+
+    $info->discount_type = $invoice_info->discount_type;
+    return $info;
+}
+
+    // protected function get_sales_total_meta($id, $main_table, $items_table) {
+
+    //     //$main_table like as invoices table
+    //     //$items_table like as invoice_items_table
+    //     $taxes_table = $this->db->prefixTable('taxes');
+
+    //     $invoice_sql = "SELECT $main_table.id, $main_table.discount_amount, $main_table.discount_amount_type, $main_table.discount_type,
+    //             tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2, tax_table3.percentage AS tax_percentage3,
+    //             tax_table.title AS tax_name, tax_table2.title AS tax_name2, tax_table3.title AS tax_name3,
+    //             taxable_item.total_taxable, non_taxable_item.total_non_taxable, taxable_item.alltotal
+    //             FROM $main_table
+    //             LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table ON tax_table.id = $main_table.tax_id
+    //             LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table2 ON tax_table2.id = $main_table.tax_id2
+    //             LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table3 ON tax_table3.id = $main_table.tax_id3
+    //             LEFT JOIN (SELECT SUM($items_table.total) AS total_taxable,($items_table.alltotal) as alltotal, $items_table.invoice_id FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 1 GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
+    //             LEFT JOIN (SELECT SUM($items_table.total) AS total_non_taxable, $items_table.invoice_id  FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 0 GROUP BY $items_table.invoice_id) AS non_taxable_item ON non_taxable_item.invoice_id = $main_table.id
+    //             WHERE $main_table.deleted=0 AND $main_table.id = $id";
+
+    //     $invoice_info = $this->db->query($invoice_sql)->getRow();
+
+    //     if (!$invoice_info->id) {
+    //         return null;
+    //     }
+
+    //     $total_taxable = $invoice_info->total_taxable ? $invoice_info->total_taxable : 0;
+    //     $total_non_taxable = $invoice_info->total_non_taxable ? $invoice_info->total_non_taxable : 0;
+    //     $sub_total = $total_taxable + $total_non_taxable;
+    //     $alltotal = $invoice_info->alltotal;
+    //     $discount_total = 0;
+    //     $invoice_total = 0;
+
+    //     if ($invoice_info->discount_amount_type == "percentage") {
+
+    //         $non_taxable_discount_value = $total_non_taxable * ($invoice_info->discount_amount / 100);
+
+    //         if ($invoice_info->discount_type == "before_tax") {
+    //             $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+    //             $total_taxable = $total_taxable - $taxable_discount_value; //apply discount before tax
+    //         }
+
+    //         $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+    //         $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+    //         $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+    //         $total_taxable = $total_taxable + $tax1 + $tax2 - $tax3;
+
+    //         $invoice_total = $total_taxable + $total_non_taxable - $non_taxable_discount_value; //deduct only non-taxable discount since the taxable discount already deducted 
+
+    //         if ($invoice_info->discount_type == "after_tax") {
+    //             $taxable_discount_value = $total_taxable * ($invoice_info->discount_amount / 100);
+    //             $invoice_total = $total_taxable + $total_non_taxable - $taxable_discount_value - $non_taxable_discount_value;
+    //         }
+
+    //         $discount_total = $taxable_discount_value + $non_taxable_discount_value;
+    //     } else {
+    //         //discount_amount_type is fixed_amount
+
+    //         $discount_total = $invoice_info->discount_amount; //fixed amount 
+    //         //fixed amount discount. fixed amount can't be applied before tax when there are both taxable and non-taxable items.
+    //         //calculate all togather 
+
+    //         if ($invoice_info->discount_type == "before_tax" && $total_taxable > 0) {
+    //             $total_taxable = $total_taxable - $discount_total;
+    //         } else if ($invoice_info->discount_type == "before_tax" && $total_taxable == 0) {
+    //             $total_non_taxable = $total_non_taxable - $discount_total;
+    //         }
+
+
+    //         $tax1 = $total_taxable * ($invoice_info->tax_percentage / 100);
+    //         $tax2 = $total_taxable * ($invoice_info->tax_percentage2 / 100);
+    //         $tax3 = $total_taxable * ($invoice_info->tax_percentage3 / 100);
+    //         $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3; //discount before tax
+
+    //         if ($invoice_info->discount_type == "after_tax") {
+    //             $invoice_total = $total_taxable + $total_non_taxable + $tax1 + $tax2 - $tax3 - $discount_total;
+    //         }
+    //     }
+
+    //     $alltotal = $alltotal == null ? 0 : $alltotal;
+    //     $new_total = $invoice_total + $alltotal;
+    //     $new_subtotal = $sub_total + $alltotal;
+        
+    //     $info = new \stdClass();
+    //     $info->invoice_total = number_format($new_total, 2, ".", "") * 1;
+    //     $info->invoice_subtotal = number_format($new_subtotal, 2, ".", "") * 1;
+    //     $info->discount_total = number_format($discount_total, 2, ".", "") * 1;
+
+    //     $info->tax_percentage = $invoice_info->tax_percentage;
+    //     $info->tax_percentage2 = $invoice_info->tax_percentage2;
+    //     $info->tax_percentage3 = $invoice_info->tax_percentage3;
+    //     $info->tax_name = $invoice_info->tax_name;
+    //     $info->tax_name2 = $invoice_info->tax_name2;
+    //     $info->tax_name3 = $invoice_info->tax_name3;
+
+    //     $info->tax = number_format($tax1, 2, ".", "") * 1;
+    //     $info->tax2 = number_format($tax2, 2, ".", "") * 1;
+    //     $info->tax3 = number_format($tax3, 2, ".", "") * 1;
+
+    //     $info->discount_type = $invoice_info->discount_type;
+    //     return $info;
+    // }
 
     function get_share_with_users_of_event($event_info = null, $query_for_notification = false) {
         if (!($event_info && $event_info->share_with)) {

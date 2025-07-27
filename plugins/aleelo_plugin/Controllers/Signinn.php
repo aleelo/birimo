@@ -183,6 +183,16 @@ public $Users_models;
         }
     }
 
+     public function get_redirect_uri($env){
+        if ($env == "development"){
+            return 'https://localhost/birimo/signin/aad_callback';
+        }elseif($env == "production"){
+            return 'https://birimo.aleelo.com/signin/aad_callback';
+        }elseif($env == "staging"){
+            return 'https://birimo.aleelo.com/signin/aad_callback';
+        }
+    }
+
     public function aad_signin($email)
     {
         // 1. request authentication code first:
@@ -200,12 +210,15 @@ public $Users_models;
 
         $session = \Config\Services::session();
         $session->set('state', session_id());
+
+        // print_r($this->get_redirect_uri($env));die;
         
         $this->session->set('login_email', $email);
 
         $params = array(
             'client_id' => $appid,
-            'redirect_uri' => $env == 'development' ? 'https://localhost/workspace/signin/aad_callback' : 'https://workspace.aleelo.com/signin/aad_callback',
+            'redirect_uri' => $this->get_redirect_uri($env),
+            // 'redirect_uri' => $env == 'development' ? 'https://localhost/workspace/signin/aad_callback' : 'https://workspace.aleelo.com/signin/aad_callback',
             'response_type' => 'code',
             'login_hint' => $email, //'admin@presidency@gov.so',
             // 'prompt'=>'consent',

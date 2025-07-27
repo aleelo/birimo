@@ -13,6 +13,10 @@ $lang["ref_prefix"] = "Document Reference";
 $lang["depertment"] = "Depertment";
 $lang["single"] = "Single";
 $lang["maried"] = "Maried";
+$lang["select"] = "Select Percentage";
+$lang["services"] = "Service (%)";
+$lang["alltotal"] = " Totalcost + Service %";
+
 $lang["employee"] = "Employee";
 $lang["new_leave_request"] = "New Leave Request";
 $lang["leave_request_approved"] = "Leave Request Approved";

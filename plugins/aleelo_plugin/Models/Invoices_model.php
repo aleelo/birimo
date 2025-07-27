@@ -193,32 +193,66 @@ class Invoices_model extends Crud_model {
         WHERE $invoices_table.deleted=0  $where $custom_fields_where";
         return $this->db->query($sql);
     }
+function get_invoice_total_summary($invoice_id) {
+    $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+    $clients_table = $this->db->prefixTable('clients');
+    $invoices_table = $this->db->prefixTable('invoices');
 
-    function get_invoice_total_summary($invoice_id) {
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $clients_table = $this->db->prefixTable('clients');
-        $invoices_table = $this->db->prefixTable('invoices');
+    $invoice_id = $this->_get_clean_value($invoice_id);
 
-        $invoice_id = $this->_get_clean_value($invoice_id);
+    // Use the updated meta calculation
+    $result = $this->get_invoice_total_meta($invoice_id);
 
-        $result = $this->get_invoice_total_meta($invoice_id);
+    // Get client currency info
+    $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency 
+                   FROM $clients_table 
+                   WHERE $clients_table.id=(SELECT $invoices_table.client_id 
+                                            FROM $invoices_table 
+                                            WHERE $invoices_table.id=$invoice_id LIMIT 1)";
+    $client = $this->db->query($client_sql)->getRow();
+    $result->currency_symbol = $client->currency_symbol ? $client->currency_symbol : get_setting("currency_symbol");
+    $result->currency = $client->currency ? $client->currency : get_setting("default_currency");
 
-        $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency FROM $clients_table WHERE $clients_table.id=(SELECT $invoices_table.client_id FROM $invoices_table WHERE $invoices_table.id=$invoice_id LIMIT 1)";
-        $client = $this->db->query($client_sql)->getRow();
+    // Get total payments
+    $payment_sql = "SELECT SUM($invoice_payments_table.amount) AS total_paid
+                    FROM $invoice_payments_table
+                    WHERE $invoice_payments_table.supplier_id=0 
+                      AND $invoice_payments_table.deleted=0 
+                      AND $invoice_payments_table.invoice_id=$invoice_id";
+    $payment = $this->db->query($payment_sql)->getRow();
+    $result->total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
 
-        $result->currency_symbol = $client->currency_symbol ? $client->currency_symbol : get_setting("currency_symbol");
-        $result->currency = $client->currency ? $client->currency : get_setting("default_currency");
+    // Balance due
+    $result->balance_due = number_format($result->invoice_total, 2, ".", "") - number_format($result->total_paid, 2, ".", "");
 
-        $payment_sql = "SELECT SUM($invoice_payments_table.amount) AS total_paid
-        FROM $invoice_payments_table
-        WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id=$invoice_id";
-        $payment = $this->db->query($payment_sql)->getRow();
+    return $result;
+}
 
-        $result->total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
-        $result->balance_due = number_format($result->invoice_total, 2, ".", "") - number_format($result->total_paid, 2, ".", "");
+    // function get_invoice_total_summary($invoice_id) {
+    //     $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+    //     $clients_table = $this->db->prefixTable('clients');
+    //     $invoices_table = $this->db->prefixTable('invoices');
 
-        return $result;
-    }
+    //     $invoice_id = $this->_get_clean_value($invoice_id);
+
+    //     $result = $this->get_invoice_total_meta($invoice_id);
+
+    //     $client_sql = "SELECT $clients_table.currency_symbol, $clients_table.currency FROM $clients_table WHERE $clients_table.id=(SELECT $invoices_table.client_id FROM $invoices_table WHERE $invoices_table.id=$invoice_id LIMIT 1)";
+    //     $client = $this->db->query($client_sql)->getRow();
+
+    //     $result->currency_symbol = $client->currency_symbol ? $client->currency_symbol : get_setting("currency_symbol");
+    //     $result->currency = $client->currency ? $client->currency : get_setting("default_currency");
+
+    //     $payment_sql = "SELECT SUM($invoice_payments_table.amount) AS total_paid
+    //     FROM $invoice_payments_table
+    //     WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id=$invoice_id";
+    //     $payment = $this->db->query($payment_sql)->getRow();
+
+    //     $result->total_paid = is_null($payment->total_paid) ? 0 : $payment->total_paid;
+    //     $result->balance_due = number_format($result->invoice_total, 2, ".", "") - number_format($result->total_paid, 2, ".", "");
+
+    //     return $result;
+    // }
 
 function get_invoice_total_summaryp($invoice_id, $supplier_id) {
     $invoice_items_table = $this->db->prefixTable('invoice_items');
@@ -300,7 +334,7 @@ function get_invoice_total_summaryp($invoice_id, $supplier_id) {
                 LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table ON tax_table.id = $main_table.tax_id
                 LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table2 ON tax_table2.id = $main_table.tax_id2
                 LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage, $taxes_table.title FROM $taxes_table) AS tax_table3 ON tax_table3.id = $main_table.tax_id3
-                LEFT JOIN (SELECT SUM($items_table.supplier_price) AS total_taxable, $items_table.invoice_id FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 1 GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
+                LEFT JOIN (SELECT SUM($items_table.supplier_price) AS total_taxable, $items_table.invoice_id,alltotal FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 1 GROUP BY $items_table.invoice_id) AS taxable_item ON taxable_item.invoice_id = $main_table.id
                 LEFT JOIN (SELECT SUM($items_table.supplier_price) AS total_non_taxable, $items_table.invoice_id  FROM $items_table WHERE $items_table.deleted=0 AND $items_table.taxable = 0 GROUP BY $items_table.invoice_id) AS non_taxable_item ON non_taxable_item.invoice_id = $main_table.id
                 WHERE $main_table.deleted=0 AND $main_table.id = $id";
 
@@ -310,8 +344,11 @@ function get_invoice_total_summaryp($invoice_id, $supplier_id) {
             return null;
         }
         $total_taxable = $invoice_info->total_taxable ? $invoice_info->total_taxable : 0;
+        $total_taxable+$invoice_info->alltotal;
         $total_non_taxable = $invoice_info->total_non_taxable ? $invoice_info->total_non_taxable : 0;
+        
         $sub_total = $total_taxable + $total_non_taxable;
+
         $discount_total = 0;
         $invoice_total = 0;
 
@@ -708,15 +745,43 @@ function get_invoice_total_summaryp($invoice_id, $supplier_id) {
 
         return $this->db->query($sql);
     }
+function get_invoice_total_meta($invoice_id) {
+    $id = $this->_get_clean_value($invoice_id);
 
-    function get_invoice_total_meta($invoice_id) {
-        $id = $this->_get_clean_value($invoice_id);
+    $invoices_table = $this->db->prefixTable('invoices');
+    $invoice_items_table = $this->db->prefixTable('invoice_items');
 
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $info = $this->get_sales_total_meta($id, $invoices_table, $invoice_items_table);
-        return $info;
-    }
+    // Fetch cost + service% from items
+    $items_sql = "SELECT 
+                    SUM(total) AS base_cost,
+                    SUM(service_cost) AS service_total,
+                    SUM(alltotal) AS combined_total
+                  FROM $invoice_items_table
+                  WHERE invoice_id = $id AND deleted = 0";
+    $items = $this->db->query($items_sql)->getRow();
+
+    $base_cost = $items->base_cost ? $items->base_cost : 0;
+    $service_total = $items->service_total ? $items->service_total : 0;
+    $combined_total = $items->combined_total ? $items->combined_total : ($base_cost + $service_total);
+
+    $info = new \stdClass();
+    $info->invoice_total = number_format($combined_total, 2, ".", "") * 1;
+    $info->invoice_subtotal = number_format($combined_total, 2, ".", "") * 1;
+    $info->discount_total = 0;
+    $info->tax = 0;
+    $info->tax2 = 0;
+    $info->tax3 = 0;
+    return $info;
+}
+
+    // function get_invoice_total_meta($invoice_id) {
+    //     $id = $this->_get_clean_value($invoice_id);
+
+    //     $invoices_table = $this->db->prefixTable('invoices');
+    //     $invoice_items_table = $this->db->prefixTable('invoice_items');
+    //     $info = $this->get_sales_total_meta($id , $invoices_table, $invoice_items_table);
+    //     return $info;
+    // }
 
     function update_invoice_total_meta($invoice_id) {
         $info = $this->get_invoice_total_meta($invoice_id);
