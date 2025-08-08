@@ -3,7 +3,7 @@
 namespace aleelo_plugin\Controllers;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
-
+use Accounting\Models\Accounting_model;
 class Supplier extends Security_Controller_Plugin {
 
 
@@ -30,6 +30,13 @@ class Supplier extends Security_Controller_Plugin {
         if (!$this->can_add_supplier()  && !$this->can_edit_supplier()) {
             app_redirect("forbidden");
         }       
+        $accounting_model = new Accounting_model();
+        $accounts = $accounting_model->get_accounts();
+        $accounts_dropdown = [];
+        foreach ($accounts as $account) {
+            $accounts_dropdown[$account['id']] = $account['name'];
+        }
+        $view_data['accounts_dropdown'] = $accounts_dropdown;
         $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
         $view_data['countries_dropdown'] = $this->Country_model->get_dropdown_list(array("country_name"));
         $view_data['Regions_dropdown'] = $this->Regions_model->get_dropdown_list(array("region"), "region");
@@ -77,8 +84,7 @@ class Supplier extends Security_Controller_Plugin {
             "Country" => $this->request->getPost('country'),
             "region"=> $this->request->getPost('district'),
             "website" => $this->request->getPost('website'),
-
-
+            "Account_Payable" => $this->request->getPost('Account_Payable'),
         );
     
         // Optional file uploads (if needed in future)

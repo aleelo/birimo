@@ -57,41 +57,81 @@ function get_details($options = array()) {
 
     return $this->db->query($sql);
 }
-function get_details_with_sections($options = array()) {
-    $invoice_items_table = $this->db->prefixTable('invoice_items');
-    $invoices_table = $this->db->prefixTable('invoices');
-    $clients_table = $this->db->prefixTable('clients');
+    function get_details_with_sections($options = array())
+    {
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $section_invoice_table = $this->db->prefixTable('items_section');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $clients_table = $this->db->prefixTable('clients');
+        $suppliers_table = $this->db->prefixTable('supplier');
 
-    $invoice_id = get_array_value($options, "invoice_id");
+        $where = "";
+        $invoice_id = $this->_get_clean_value($options, "invoice_id");
+        if ($invoice_id) {
+            $where .= " AND invoice_id=$invoice_id";
+        }
 
-    $sql = "SELECT 
-                $invoice_items_table.id,
-                $invoice_items_table.title,
-                $invoice_items_table.description,
-                $invoice_items_table.quantity,
-                $invoice_items_table.unit_type,
-                $invoice_items_table.rate,
-                IFNULL($invoice_items_table.services, 0) AS services,          /* ✅ Safe services */
-                IFNULL($invoice_items_table.service_cost, 0) AS service_cost,  /* ✅ Safe service_cost */
-                $invoice_items_table.total,
-                            IFNULL($invoice_items_table.alltotal, 0) AS alltotal,
+        $sections_query = "
+        SELECT 
+            id,
+            invoice_id,
+            title,
+            NULL AS quantity,
+            NULL AS rate,
+            null AS services,
+            null AS service_cost,
+            null AS alltotal,
+            total,
+            sort,
+            description,
+            unit_type,
+            taxable,
+            days,
+            1 AS is_section,
+            NULL AS supplier_name,
+            NULL AS currency_symbol
+        FROM $section_invoice_table
+        WHERE deleted = 0 $where
+    ";
 
-                $invoice_items_table.days,
-                $invoice_items_table.taxable,
-                $invoice_items_table.is_section,
-                $invoice_items_table.invoice_id,
-                $invoice_items_table.sort,
-                (SELECT $clients_table.currency_symbol 
-                 FROM $clients_table 
-                 WHERE $clients_table.id=$invoices_table.client_id 
-                 LIMIT 1) AS currency_symbol
-            FROM $invoice_items_table
-            LEFT JOIN $invoices_table ON $invoices_table.id=$invoice_items_table.invoice_id
-            WHERE $invoice_items_table.deleted=0 AND $invoice_items_table.invoice_id=$invoice_id
-            ORDER BY $invoice_items_table.sort ASC";
+        $items_query = "
+        SELECT 
+            $invoice_items_table.id,
+            $invoice_items_table.invoice_id,
+            $invoice_items_table.title,
+            $invoice_items_table.quantity,
+            $invoice_items_table.rate,
+            $invoice_items_table.services,
+            $invoice_items_table.service_cost,
+            $invoice_items_table.alltotal,
+            $invoice_items_table.total,
+            $invoice_items_table.sort,
+            $invoice_items_table.description,
+            $invoice_items_table.unit_type,
+            $invoice_items_table.taxable,
+            $invoice_items_table.days,
 
-    return $this->db->query($sql);
-}
+            0 AS is_section,
+            $suppliers_table.supplier_name AS supplier_name,
+            (SELECT $clients_table.currency_symbol 
+             FROM $clients_table 
+             WHERE $clients_table.id = $invoices_table.client_id 
+             LIMIT 1) AS currency_symbol
+        FROM $invoice_items_table
+        LEFT JOIN $invoices_table ON $invoices_table.id = $invoice_items_table.invoice_id
+        LEFT JOIN $suppliers_table ON $suppliers_table.id = $invoice_items_table.supplier_id
+        WHERE $invoice_items_table.deleted = 0 $where
+    ";
+
+        $final_query = "
+        ($sections_query)
+        UNION ALL
+        ($items_query)
+        ORDER BY sort ASC
+    ";
+
+        return $this->db->query($final_query);
+    }
 
     // function get_details($options = array()) {
     //     $invoice_items_table = $this->db->prefixTable('invoice_items');

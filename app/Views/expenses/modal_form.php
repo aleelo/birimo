@@ -8,6 +8,17 @@
                 <input type="hidden" name="is_clone" value="1" />
             <?php } ?>
 
+            <div class="form-group">
+                <div class="row">
+                    <label for="vendor_id" class=" col-md-3"><?php echo 'Vendor'; ?></label>
+                    <div class=" col-md-9">
+                        <?php
+                        echo form_dropdown("vendor_id", $vendors_dropdown, $model_info->vendor_id, "class='select2 validate-hidden' id='vendor_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        ?>
+                    </div>
+                </div>
+            </div>
+
             <div class=" form-group">
                 <div class="row">
                     <label for="expense_date" class=" col-md-3"><?php echo app_lang('date_of_expense'); ?></label>
@@ -35,6 +46,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="form-group">
                 <div class="row">
                     <label for="title" class=" col-md-3"><?php echo app_lang('amount'); ?></label>
@@ -88,28 +100,35 @@
                 </div>
             </div>
 
-            <?php
 
-            if ($client_id) { ?>
-                <input type="hidden" name="expense_client_id" value="<?php echo $client_id; ?>" />
-            <?php } else if ($clients_dropdown) { ?>
+            <!-- <?php //if ($client_id) { ?>
+                <input type="hidden" name="expense_client_id" value="<?php// echo $client_id; ?>" />
+            <?php //} elseif ($clients_dropdown) { ?>
                 <div class="form-group">
                     <div class="row">
-                        <label for="client_id" class=" col-md-3"><?php echo app_lang('client'); ?></label>
+                        <label for="client_id" class=" col-md-3"><?php //echo app_lang('client');
+                                                                    ?></label>
                         <div class=" col-md-9">
                             <?php
-                            echo form_input(array(
-                                "id" => "expense_client_id",
-                                "name" => "expense_client_id",
-                                "value" => $model_info->client_id,
-                                "class" => "form-control",
-                                "data-roload_dropdown_on_change" => "#expense_project_id",
-                            ));
+                            // echo form_input(array(
+                            //     "id" => "expense_client_id",
+                            //     "name" => "expense_client_id",
+                            //     "value" => $model_info->client_id,
+                            //     "class" => "form-control",
+                            //     "data-source_url" => get_uri("expenses/get_clients_dropdown"),
+                            //     "data-post_field_values_of" => "expense_project_id", // 🔁 listen to project dropdown
+                            //     "data-auto-select" => true,
+                            //     "data-rule-required" => true,  // <= Qasab ka dhig halkan
+                            //     "data-msg-required" => app_lang("field_required")
+
+                            // ));
+
                             ?>
                         </div>
                     </div>
                 </div>
-            <?php } ?>
+            <?php// } ?> -->
+
 
             <?php if ($project_id) { ?>
                 <input type="hidden" name="expense_project_id" value="<?php echo $project_id; ?>" />
@@ -126,6 +145,9 @@
                                 "class" => "form-control",
                                 "data-source_url" => get_uri("expenses/get_projects_dropdown"),
                                 "data-post_field_values_of" => "expense_client_id",
+                                "data-reload_dropdown_on_change" => "#expense_client_id", // 🔁 trigger client reload
+                                "data-rule-required" => true,  // <= Qasab ka dhig halkan
+                                "data-msg-required" => app_lang("field_required")
                             ));
 
                             ?>
@@ -135,16 +157,23 @@
                 </div>
             <?php } ?>
 
-            <div class="form-group">
-                <div class="row">
-                    <label for="expense_user_id" class=" col-md-3"><?php echo app_lang('team_member'); ?></label>
-                    <div class="col-md-9">
-                        <?php
-                        echo form_dropdown("expense_user_id", $members_dropdown, $model_info->user_id, "class='select2 validate-hidden' id='expense_user_id'");
-                        ?>
+
+
+            <!-- <?php //if ($user_id) { ?>
+                <input type="hidden" name="expense_user_id" value="<?php// echo $user_id; ?>" />
+            <?php// } else { ?>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="expense_user_id" class=" col-md-3"><?php //echo app_lang('team_member'); ?></label>
+                        <div class="col-md-9">
+                            <?php
+                            //echo form_dropdown("expense_user_id", $members_dropdown, $model_info->user_id, "class='select2 validate-hidden' id='expense_user_id'");
+                            ?>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php// } ?> -->
+
 
             <div class="form-group">
                 <div class="row">
@@ -317,13 +346,9 @@
         });
 
         setDatePicker("#expense_date");
-
         $("#expense-form .select2").appDropdown();
 
-        $("#expense_project_id").appDropdown({
-            list_data: <?php echo json_encode($projects_dropdown); ?>
-        });
-
+        // 👇 Load clients on page load
         var clients_dropdown = <?php echo json_encode($clients_dropdown); ?>;
         if (clients_dropdown) {
             $("#expense_client_id").appDropdown({
@@ -331,9 +356,50 @@
             });
         }
 
+        // 👇 Load projects on page load
+        var projects_dropdown = <?php echo json_encode($projects_dropdown); ?>;
+        if (projects_dropdown) {
+            $("#expense_project_id").appDropdown({
+                list_data: projects_dropdown
+            });
+        }
+
+        // 👂 When client changes → update projects
+        $("#expense_client_id").on("change", function() {
+            var clientId = $(this).val();
+            $.ajax({
+                url: "<?php echo get_uri('expenses/get_projects_dropdown'); ?>",
+                type: "POST",
+                data: {
+                    expense_client_id: clientId
+                },
+                success: function(result) {
+                    $("#expense_project_id").appDropdown({
+                        list_data: JSON.parse(result)
+                    });
+                }
+            });
+        });
+
+        // 👂 When project changes → update client
+        $("#expense_project_id").on("change", function() {
+            var projectId = $(this).val();
+            $.ajax({
+                url: "<?php echo get_uri('expenses/get_clients_dropdown'); ?>",
+                type: "POST",
+                data: {
+                    expense_project_id: projectId
+                },
+                success: function(result) {
+                    $("#expense_client_id").appDropdown({
+                        list_data: JSON.parse(result)
+                    });
+                }
+            });
+        });
+
         $('[data-bs-toggle="tooltip"]').tooltip();
 
-        //show/hide recurring fields
         $("#expense_recurring").click(function() {
             if ($(this).is(":checked")) {
                 $("#recurring_fields").removeClass("hide");
@@ -342,8 +408,9 @@
             }
         });
 
+        var dynamicDates = getDynamicDates();
         setDatePicker("#next_recurring_date", {
-            startDate: moment().add(1, 'days').format("YYYY-MM-DD") //set min date = tomorrow
+            startDate: dynamicDates.tomorrow
         });
 
     });

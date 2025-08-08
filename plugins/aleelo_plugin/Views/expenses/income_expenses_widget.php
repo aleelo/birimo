@@ -160,7 +160,7 @@ $current_year = get_array_value($today, 0);
         data.year = "<?php echo $current_year; ?>";
 
         $.ajax({
-            url: "<?php echo_uri("expense/income_vs_expenses_chart_data") ?>",
+            url: "<?php echo_uri("expenses/income_vs_expenses_chart_data") ?>",
             data: data,
             cache: false,
             type: 'POST',

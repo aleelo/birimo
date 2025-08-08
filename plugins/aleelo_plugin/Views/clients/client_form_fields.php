@@ -114,7 +114,7 @@
         </div>
     </div>
 <?php //} ?> -->
-            <div class="form-group">
+            <!-- <div class="form-group">
              <div class="row">
 
                     <label for="country" class="<?php echo $label_column; ?>"><?php echo app_lang('country'); ?></label>
@@ -137,7 +137,7 @@
                          ?>
                 </div>
              </div>
-            </div>
+            </div> -->
 <div class="form-group">
     <div class="row">
         <label for="address" class="<?php echo $label_column; ?>"><?php echo app_lang('address'); ?></label>

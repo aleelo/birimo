@@ -74,21 +74,6 @@
                     </div>
                 </div>
             </div>
-            <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
-
-                <? if($accounts_dropdown){?>
-                <div class="form-group">
-                <div class="row">
-                    <label for="account_id" class=" col-md-3"><?php echo app_lang('account'); ?></label>
-                    <div class=" col-md-9">
-                        <?php
-                        echo form_dropdown("account_id", $accounts_dropdown, $model_info->account_id, "class='select2 validate-hidden' id='account_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
-                        ?>
-                    </div>
-                </div>
-            </div>
-            <?}?>
-            <?php endif; ?>
             <div class="form-group">
                 <div class="row">
                     <label for="unit_type" class=" col-md-3"><?php echo app_lang('unit_type'); ?></label>

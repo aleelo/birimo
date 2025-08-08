@@ -19,7 +19,11 @@ class Supplier_model extends Crud_model {
         $region_table = $this->db->prefixTable('regions');
         
         $where = "";
-        
+        $id = $this->_get_clean_value($options, "id");
+        if ($id) {
+            $where = " AND $supplier_table.id=$id";
+        }
+
         $can_view_own_company_client = $this->_get_clean_value($options, "can_view_own_company_client");
         if ($can_view_own_company_client) {
             $where .= " AND $supplier_table.company=$can_view_own_company_client";

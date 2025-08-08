@@ -36,9 +36,9 @@ $routes = service('routes');
     $routes->get('clientss/(:any)', 'Client::$1');
     $routes->post('clientss/(:any)', 'Client::$1');
 
-    $routes->get('expenses', 'Expense::index');
-    $routes->get('expenses/(:any)', 'Expense::$1');
-    $routes->post('expenses/(:any)', 'Expense::$1');
+    $routes->get('expenses', 'Expenses::index');
+    $routes->get('expenses/(:any)', 'Expenses::$1');
+    $routes->post('expenses/(:any)', 'Expenses::$1');
 
     $routes->get('projects', 'Project::index');
     $routes->get('projects/(:any)', 'Project::$1');

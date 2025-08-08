@@ -20,6 +20,7 @@ class Security_Controller_Plugin extends Security_Controller
     public $Projects_model;
     public $Project_status_model;
     public $Clients_model;
+    public $Expense_payments_model;
     public $Country_model;
     public $Regions_model;
 
@@ -49,7 +50,7 @@ class Security_Controller_Plugin extends Security_Controller
         $this->Assigning_items_model = new \aleelo_plugin\Models\Assigning_items_model();
         $this->Screen_size_model = new \aleelo_plugin\Models\Screen_size_model();
         $this->Items_list_model = new \aleelo_plugin\Models\Items_list_model();
-        $this->Expenses_model = new \aleelo_plugin\Models\Expense_model();
+        $this->Expenses_model = new \aleelo_plugin\Models\Expenses_model();
         $this->Company_model = new \App\Models\Company_model();
         $this->Project_status_model = new \aleelo_plugin\Models\Project_status_model();
         $this->Projects_model = new \aleelo_plugin\Models\Projects_model();
@@ -134,7 +135,7 @@ class Security_Controller_Plugin extends Security_Controller
 
         return $temp_array;
     }
-    protected function get_clients_and_leads_dropdown($return_json = false)
+    public function get_clients_and_leads_dropdown($return_json = false)
     {
         $clients_dropdown = array("" => "-");
         $clients_json_dropdown = array(array("id" => "", "text" => "-"));
@@ -155,6 +156,135 @@ class Security_Controller_Plugin extends Security_Controller
         }
 
         return $return_json ? $clients_json_dropdown : $clients_dropdown;
+    }
+    function get_payment_method_dropdown()
+    {
+
+        $payment_methods = $this->Payment_methods_model->get_all_where(array("deleted" => 0), 0, 0,"title")->getResult();
+
+        $payment_method_dropdown =  array("" =>  "-- " . app_lang("payment_methods") . " --");
+        foreach ($payment_methods as $value) {
+            $payment_method_dropdown[$value->id] = $value->title;
+        }
+
+        return $payment_method_dropdown;
+    }
+    //get categories dropdown
+    public function _get_categories_dropdown()
+    {
+        $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
+
+        $categories_dropdown = array("" =>  "--- " . app_lang("category") . " ---");
+        foreach ($categories as $category) {
+            $categories_dropdown[$category->id] = $category->title;
+        }
+
+        return $categories_dropdown;
+    }
+    public function _get_expenses_dropdown()
+    {
+        $expenses = $this->Expenses_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
+
+        $expenses_dropdown = array("" =>  "-- " . app_lang("expenses") . " --");
+        foreach ($expenses as $expense) {
+            $expenses_dropdown[$expense->id] = $expense->title;
+        }
+
+        return $expenses_dropdown;
+    }
+        function payment_method_dropdown()
+    {
+        if (!$this->can_view_invoice()) {
+            app_redirect("forbidden");
+        }
+        $payment_methods = $this->Payment_methods_model->get_all_where(array("deleted" => 0))->getResult();
+
+        $payment_method_dropdown = array(array("id" => "", "text" => "- " . app_lang("payment_method") . " -"));
+        foreach ($payment_methods as $value) {
+            $payment_method_dropdown[] = array("id" => $value->id, "text" => $value->title);
+        }
+
+        return $payment_method_dropdown;
+    }
+    public function _get_vendors_dropdown()
+    {
+        $venders = $this->Supplier_model->get_all_where(array("deleted" => 0), 0, 0, "supplier_name")->getResult();
+
+        $venders_dropdown = array("" => "----Vendor----");
+        foreach ($venders as $vender) {
+            $venders_dropdown[$vender->id] = $vender->supplier_name;
+        }
+
+        return $venders_dropdown;
+    }
+    //get categories dropdown
+    public function _get_categories_dropdown_js()
+    {
+        $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
+
+        $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
+        foreach ($categories as $category) {
+            $categories_dropdown[] = array("id" => $category->id, "text" => $category->title);
+        }
+
+        return json_encode($categories_dropdown);
+    }
+
+    public function _get_vendors_dropdown_js()
+    {
+        $venders = $this->Supplier_model->get_all_where(array("deleted" => 0), 0, 0, "supplier_name")->getResult();
+
+        $venders_dropdown = array(array("id" => "", "text" => "- " . "Vendor" . " -"));
+        foreach ($venders as $vender) {
+            $venders_dropdown[] = array("id" => $vender->id, "text" => $vender->supplier_name);
+        }
+
+        return json_encode($venders_dropdown);
+    }
+
+    public function _get_expenses_dropdown_js()
+    {
+        $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
+                    left join rise_supplier s on s.id = e.vendor_id 
+                    where e.deleted = 0")->getResult();
+
+        $venders_dropdown = array(array("id" => "", "text" => "- " . "Expense" . " -"));
+        foreach ($expenses as $e) {
+            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name. " - ". $e->expense_date . " - ".$e->amount);
+        }
+
+        return json_encode($venders_dropdown);
+    }
+    
+
+    public function getExpensesByVendorJs($category_id = 0, $vendor_id = 0 )
+    {
+
+        if($category_id && $vendor_id){
+            $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
+                    left join rise_supplier s on s.id = e.vendor_id 
+                    where e.category_id = $category_id and e.vendor_id = $vendor_id and e.deleted = 0")->getResult();
+        }else if($category_id){
+            $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
+                    left join rise_supplier s on s.id = e.vendor_id 
+                    where e.category_id = $category_id and e.deleted = 0")->getResult();
+        }else if($vendor_id){
+            $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
+                    left join rise_supplier s on s.id = e.vendor_id 
+                    where e.vendor_id = $vendor_id and e.deleted = 0")->getResult();
+        }else{
+            
+            $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
+                    left join rise_supplier s on s.id = e.vendor_id 
+                    where e.deleted = 0")->getResult();
+        }
+        
+        $venders_dropdown = array(array("id" => "", "text" => "- " . "Expense" . " -"));
+        foreach ($expenses as $e) {
+            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name. " - ". $e->expense_date . " - ".$e->amount);
+        }
+
+        return json_encode($venders_dropdown);
     }
 
     protected function can_view_own_project()

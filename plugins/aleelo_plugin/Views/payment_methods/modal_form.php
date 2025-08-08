@@ -23,25 +23,18 @@
         </div>
                   <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
 
-        <div class="form-group">
-            <div class="row">
-                <label for="account_id" class="col-md-4"><?php echo app_lang('account'); ?></label>
-                <div class="col-md-8">
-                <?php
-                echo form_input(array(
-                    "id" => "account_id",
-                    "name" => "account_id",
-                    "value" => $model_info->account_id,
-                    "class" => "form-control validate-hidden",
-                    "placeholder" => app_lang('select_or_create_new_item'),
-                    "data-rule-required" => true,
-                    "data-msg-required" => app_lang("field_required"),
-                ));
-                ?>
-                </div>
-            </div>
+    <div class="form-group">
+    <div class="row">
+        <label for="account_id" class="col-md-4"><?php echo ('account_id'); ?></label>
+        <div class=" col-md-8">
+            <?php
+            echo form_dropdown("account_id", $accounts_dropdown, $model_info->account_id ?? "", "class='select2 form-control validate-hidden' id='account_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+            ?>
         </div>
+    </div>
+</div>
         <?php endif; ?>
+
 
         <div class="form-group">
             <div class="row">
@@ -177,27 +170,8 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#account_id").select2({
-        ajax: {
-            url: "<?php echo get_uri("payment_methods/get_estimate_account_suggestion"); ?>",
-            data: function (params) {
-                return {
-                    c: params.term // search term
-                };
-            },
-            type: 'POST',
-            dataType: 'json',
-            quietMillis: 250,
-            data: function (term, page) {
-                return {
-                    q: term
-                };
-            },
-            results: function (data, page) {
-                return { results: data };
-            }
-        }
-    })
+        $("#account_id").select2();
+
         $("#payment-method-form").appForm({
             onSuccess: function(result) {
                 $("#payment-method-table").appTable({

@@ -6,8 +6,8 @@ defined('PLUGINPATH') or exit('No direct script access allowed');
   Description: This plugin offers the ability to automate many processes which will not only save time but will also ensure accuracy and efficiency with financial reports.
   Version: 1.0.0
   Requires at least: 3.0
-  Author: GreenTech Solutions
-  Author URI: https://codecanyon.net/user/greentech_solutions
+  Author: Aleelo Solutions
+  Author URI: aleelo solution
 */
 use App\Controllers\Security_Controller;
 
@@ -41,13 +41,13 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
             );
         }
 
-        if(acc_has_permission('acc_can_view_banking')){
-            $accounting_submenu["accounting_banking"] = array(
-                "name" => "acc_banking", 
-                "url" => "accounting/banking?group=bank_accounts", 
-                "class" => "repeat"
-            );
-        }
+        // if(acc_has_permission('acc_can_view_banking')){
+        //     $accounting_submenu["accounting_banking"] = array(
+        //         "name" => "acc_banking", 
+        //         "url" => "accounting/banking?group=bank_accounts", 
+        //         "class" => "repeat"
+        //     );
+        // }
         
         if(acc_has_permission('acc_can_view_transaction')){
             $accounting_submenu["accounting_transaction"] = array(
@@ -57,21 +57,21 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
             );
         }
         
-        if(acc_has_permission('acc_can_view_register')){
-            $accounting_submenu["accounting_registers"] = array(
-                "name" => "acc_registers", 
-                "url" => "accounting/registers", 
-                "class" => "list"
-            );
-        }
+        // if(acc_has_permission('acc_can_view_register')){
+        //     $accounting_submenu["accounting_registers"] = array(
+        //         "name" => "acc_registers", 
+        //         "url" => "accounting/registers", 
+        //         "class" => "list"
+        //     );
+        // }
         
-        if(acc_has_permission('acc_can_view_journal_entry')){
-            $accounting_submenu["accounting_journal_entry"] = array(
-                "name" => "acc_journal_entry", 
-                "url" => "accounting/journal_entry", 
-                "class" => "repeat"
-            );
-        }
+        // if(acc_has_permission('acc_can_view_journal_entry')){
+        //     $accounting_submenu["accounting_journal_entry"] = array(
+        //         "name" => "acc_journal_entry", 
+        //         "url" => "accounting/journal_entry", 
+        //         "class" => "repeat"
+        //     );
+        // }
         
         if(acc_has_permission('acc_can_view_transfer')){
             $accounting_submenu["accounting_transfer"] = array(
@@ -89,21 +89,21 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
             );
         }
         
-        if(acc_has_permission('acc_can_view_reconcile')){
-            $accounting_submenu["accounting_reconcile"] = array(
-                "name" => "acc_reconcile", 
-                "url" => "accounting/reconcile", 
-                "class" => "home"
-            );
-        }
+        // if(acc_has_permission('acc_can_view_reconcile')){
+        //     $accounting_submenu["accounting_reconcile"] = array(
+        //         "name" => "acc_reconcile", 
+        //         "url" => "accounting/reconcile", 
+        //         "class" => "home"
+        //     );
+        // }
         
-        if(acc_has_permission('acc_can_view_budget')){
-            $accounting_submenu["accounting_budget"] = array(
-                "name" => "acc_budget", 
-                "url" => "accounting/budget", 
-                "class" => "home"
-            );
-        }
+        // if(acc_has_permission('acc_can_view_budget')){
+        //     $accounting_submenu["accounting_budget"] = array(
+        //         "name" => "acc_budget", 
+        //         "url" => "accounting/budget", 
+        //         "class" => "home"
+        //     );
+        // }
         
         if(acc_has_permission('acc_can_view_report')){
             $accounting_submenu["accounting_reports"] = array(
@@ -284,6 +284,12 @@ app_hooks()->add_action("app_hook_data_update", function($data){
                     $Accounting_model->automatic_expense_conversion($data['id']);
                 }
             break;
+        case get_db_prefix().'expense_payments':
+                if (get_setting('acc_expense_automatic_conversion') == 1) {
+                    
+                    $Accounting_model->automatic_expense_payment_conversion($data['id']);
+                }
+            break;
         default:
             // code...
             break;
@@ -310,6 +316,11 @@ app_hooks()->add_action("app_hook_data_insert", function($data){
                     $Accounting_model->automatic_expense_conversion($data['id']);
                 }
             break;
+        case get_db_prefix().'expense_payments':
+                if (get_setting('acc_expense_automatic_conversion') == 1) {
+                    $Accounting_model->automatic_expense_payment_conversion($data['id']);
+                }
+            break;
         default:
             // code...
             break;
@@ -334,6 +345,9 @@ app_hooks()->add_action("app_hook_data_delete", function($data){
             break;
         case get_db_prefix().'expenses':
                 $Accounting_model->delete_convert($data['id'], 'expense');
+            break;
+        case get_db_prefix().'expense_payments':
+                $Accounting_model->delete_convert($data['id'], 'expense_payment');
             break;
         case get_db_prefix().'items':
                 $Accounting_model->delete_convert($data['id'], 'opening_stock');

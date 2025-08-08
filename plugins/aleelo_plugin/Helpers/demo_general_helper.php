@@ -6,8 +6,9 @@
  * @return config value
  */
 
-use aleelo_plugin\Controllers\Security_Controller_Plugin;
+use App\Libraries\Template;
 use app\Controllers\App_Controller;
+use aleelo_plugin\Controllers\Security_Controller_Plugin;
 use aleelo_plugin\Libraries\Pdf; // Adjust the namespace based on your project structure
 
 if (!function_exists('get_demo_setting')) {
@@ -60,6 +61,59 @@ if (!function_exists('get_company_icon')) {
         }
     }
 }
+if (!function_exists('get_expense_status_label')) {
+
+    function get_expense_status_label($expense_info, $return_html = true, $extra_classes = "")
+    {
+        $expense_status_class = "bg-secondary";
+        $status = "unpaid";
+
+        $tolarance = get_paid_status_tolarance(); // Use same function as invoices
+        $expense_value = floor(($expense_info->amount + $expense_info->tax_id + $expense_info->tax_id2) * 100) / 100;
+        $paid_amount = $expense_info->expense_paid ?? 0;
+
+        if ($paid_amount <= 0) {
+            $expense_status_class = "bg-warning";
+            $status = "unpaid";
+        } else if ($paid_amount >= $expense_value - $tolarance) {
+            $expense_status_class = "bg-success";
+            $status = "fully_paid";
+        } else {
+            $expense_status_class = "bg-primary";
+            $status = "partially_paid";
+        }
+
+        $label = "<span class='mt0 badge $expense_status_class $extra_classes'>" . app_lang($status) . "</span>";
+
+        return $return_html ? $label : $status;
+    }
+}
+
+if (!function_exists('income_vs_expenses_widget')) {
+
+    function income_vs_expenses_widget($custom_class = "")
+{
+    $Expenses_model = model("App\Models\Expenses_model");
+    $ci = new Security_Controller_Plugin(false);
+
+    $info = $ci->Expenses_model->get_income_expenses_info();
+
+    $today = explode('-', get_today_date());
+    $current_year = get_array_value($today, 0);
+    $previous_year = $current_year - 1;
+
+    $view_data["current_year_info"] = $ci->Expenses_model->get_income_expenses_info(["year" => $current_year]);
+    $view_data["previous_year_info"] = $ci->Expenses_model->get_income_expenses_info(["year" => $previous_year]);
+
+    $view_data["income"] = $info->income ?? 0;
+    $view_data["expenses"] = $info->expenses ?? 0;
+    $view_data["custom_class"] = $custom_class;
+
+    return view("expenses/income_expenses_widget", $view_data);
+}
+
+}
+
 if (!function_exists('update_custom_fields_changes')) {
 
     function update_custom_fields_changes($related_to_type, $related_to_id, $changes, $activity_log_id = 0)
@@ -129,6 +183,17 @@ if (!function_exists('get_team_member_profile_link')) {
         }
     }
 }
+
+
+ function _get_total_paid_view($expense_id)
+{
+    $view_data["expense_id"] = $expense_id;
+    $view_data["total_paid"] = $this->Expense_payments_model->get_total_paid($expense_id);
+    $view_data["expense_info"] = $this->Expenses_model->get_one($expense_id);
+
+    return $this->template->view("aleelo_plugin/Views/expenses/expense_payments/total_paid_section", $view_data, true);
+}
+
 /**
  * link the css files 
  * 

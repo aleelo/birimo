@@ -14,11 +14,29 @@ $routes->post('demo_settings/(:any)', 'Demo_settings::$1', ['namespace' => 'alee
 $routes->get('assigning_items', 'Assigning_items::index', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('assigning_items/(:any)', 'Assigning_items::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('assigning_items/(:any)', 'Assigning_items::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1');
+$routes->post('expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1'); // optional, badanaa GET ayaa fura modals
+$routes->post('expense_payments/save', 'Expense_payments::save');
+$routes->get('expense_payments/index/(:num)', 'Expense_payments::index/$1');
+$routes->match(['get', 'post'], 'expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1');
+$routes->post('expense_payments/save', 'Expense_payments::save', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->match(['get', 'post'], 'expense_payments/modal_form', 'Expense_payments::modal_form', ['namespace' => 'aleelo_plugin\Controllers']);
 
 
 $routes->get('items_list', 'Items_list::index', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('items_list/(:any)', 'Items_list::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('items_list/(:any)', 'Items_list::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->group('', ['namespace' => 'aleelo_plugin\Controllers'], function($routes) {
+    $routes->get('expense_payments', 'Expense_payments::index');
+    $routes->get('expense_payments/index/(:num)', 'Expense_payments::index/$1');
+    $routes->get('expense_payments/datatable/(:num)', 'Expense_payments::datatable/$1');
+    $routes->post('expense_payments/save', 'Expense_payments::save');
+    $routes->get('expense_payments/edit/(:num)', 'Expense_payments::edit/$1');
+    $routes->post('expense_payments/delete/(:num)', 'Expense_payments::delete/$1');
+        $routes->post('expense_payments/get_invoice_payment_amount_suggestion/(:num)', 'Expense_payments::get_invoice_payment_amount_suggestion/$1');
+
+});
+$routes->post('expense_payments/save', 'Expense_payments::save', ['namespace' => 'aleelo_plugin\Controllers']);
 
 
 $routes->get('expense', 'Expense::index', ['namespace' => 'aleelo_plugin\Controllers']);

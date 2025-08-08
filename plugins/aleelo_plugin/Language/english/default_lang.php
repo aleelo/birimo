@@ -840,6 +840,7 @@ $lang["company"] = "Company";
 $lang["company_settings"] = "Company Settings";
 $lang["email_settings"] = "Email Settings";
 $lang["payment_methods"] = "Payment Methods";
+$lang["add_expense_payment"] = "add expense payment";
 $lang["email_sent_from_address"] = "Email sent from address";
 $lang["email_sent_from_name"] = "Email sent from name";
 $lang["email_use_smtp"] = "Use SMTP";
