@@ -31,6 +31,10 @@ use CodeIgniter\Model;
 
 
         $where="";
+        $id = $this->_get_clean_value($options, "id");
+        if ($id) {
+            $where = " AND $expense_payments_table.id=$id";
+        }
         $sql = "SELECT $expense_payments_table.*, $expenses_table.amount AS expense_amount, $expenses_table.title AS expense_title,$payment_methods_table.title AS payment_method_title
         FROM $expense_payments_table
         LEFT JOIN $expenses_table ON $expenses_table.id= $expense_payments_table.expense_id
