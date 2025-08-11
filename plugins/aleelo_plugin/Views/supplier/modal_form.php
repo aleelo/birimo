@@ -41,6 +41,18 @@
             </div>
         </div>
         <div class="form-group">
+        <div class="row">
+
+            <label for="Account_Payable" class="col-md-3"><?php echo ('Account Payable'); ?></label>
+            <div class=" col-md-9">
+                <?php
+                echo form_dropdown("Account_Payable", $accounts_dropdown, $model_info->Account_Payable, "class='select2 form-control validate-hidden' id='Account_Payable' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+
+                ?>
+            </div>
+        </div>
+    </div>
+        <div class="form-group">
              <div class="row">
 
                     <label for="country" class="col-md-3"><?php echo app_lang('country'); ?></label>

@@ -21,31 +21,20 @@ class Expense_categories extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
-        $view_data['has_all_permission'] =
-        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
-            $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
-
+        $view_data['has_all_permission'] =($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
+        $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
+        $accounting_model = new Accounting_model();
+        // $where['account_type_id'] = 3;
+        // $accounts = $accounting_model->get_accounts('', $where);
+        $accounts = $accounting_model->get_accounts();
+        $accounts_dropdown = [];
+        foreach ($accounts as $account) {
+            $accounts_dropdown[$account['id']] = $account['name'];
+        }
+       $view_data['accounts_dropdown'] = $accounts_dropdown;
         $view_data['model_info'] = $this->Expense_categories_model->get_one($this->request->getPost('id'));
         return $this->template->view('aleelo_plugin\Views/expense_categories/modal_form', $view_data);
-    }
 
-        function get_account_suggestion() {
-        $key = $this->request->getPost("c");
-        if (class_exists('\Accounting\Models\Accounting_model')) {
-            $accounting_model = new Accounting_model();
-            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 14), $key);
-
-            foreach ($accounts as $account) {
-                $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
-            }
-        
-        
-            echo json_encode($suggestion);
-        } else {
-            log_message('error', 'Accounting plugin is not available.');
-        }
-        
-       
     }
     //save expense category
     function save() {

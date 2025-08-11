@@ -41,7 +41,7 @@ class Items extends Security_Controller_Plugin {
     }
 
     //get categories dropdown
-    private function _get_categories_dropdown() {
+     function _get_categories_dropdown() {
         $categories = $this->Item_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
 
         $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
@@ -59,29 +59,9 @@ class Items extends Security_Controller_Plugin {
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
-    //     $accoucnts = $this->db->table("rise_acc_accounts")
-    //     ->select("id, key_name")
-    //     ->where("account_type_id", 11)
-    //     ->get()
-    //     ->getResult();
-    // $accounts_dropdown = array("- choose account -");
 
-    // foreach ($accounts as $account) {
-    //     $accounts_dropdown[$account->id] = $account->key_name; 
-    // }
-    if (class_exists('\Accounting\Models\Accounting_model')) {
-        $accounting_model = new Accounting_model();
-    $accounts = $accounting_model->get_accounts('', ['account_type_id' => 11]);
-
-    $accounts_dropdown = array("" => "- choose account -");
-    foreach ($accounts as $account) {
-        $label = $account['name'] ?: app_lang($account['key_name']);
-        $accounts_dropdown[$account['id']] = $label;
-    }
-
-    $view_data['accounts_dropdown'] = $accounts_dropdown;
-}        $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
-$view_data['has_all_permission'] =
+    $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
+    $view_data['has_all_permission'] =
         ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
        
         $view_data['model_info'] = $this->Items_model->get_one($this->request->getPost('id'));
@@ -108,7 +88,7 @@ $view_data['has_all_permission'] =
             "description" => $this->request->getPost('description'),
             "category_id" => $this->request->getPost('category_id'),
             "unit_type" => $this->request->getPost('unit_type'),
-            "account_id" => $this->request->getPost('account_id'),
+            // "account_id" => $this->request->getPost('account_id'),
             "rate" => unformat_currency($this->request->getPost('item_rate')),
             "show_in_client_portal" => $this->request->getPost('show_in_client_portal') ? $this->request->getPost('show_in_client_portal') : "",
             "taxable" => "",

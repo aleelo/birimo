@@ -281,11 +281,11 @@ class Accounting extends Security_Controller
             $invoice_value_calculation_query = $this->Accounting_model->acc_get_invoice_value_calculation_query();
 
             $select = [
-                '1',
                 'client_id',
                 get_db_prefix() . 'invoices.id as id',
                 get_db_prefix() . 'invoices.due_date as due_date',
                 get_db_prefix() .'invoices.bill_date as date',
+                get_db_prefix() .'invoices.invoice_total as invoice_total',
                 '(select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'invoices.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "invoice") as count_account_historys',
                 get_db_prefix() . 'invoices.status'
             ];
@@ -362,7 +362,7 @@ class Accounting extends Security_Controller
                 $row[] = '<a href="' . get_uri('invoices/view/' . $aRow['id']) . '" target="_blank">' . get_invoice_id($aRow['id']) . '</a>';
 
                 $row[] = format_to_date($aRow['date']);
-                $row[] = to_currency($aRow['invoice_value'], $aRow['currency_symbol']);
+                $row[] = to_currency($aRow['invoice_total'], $aRow['currency_symbol']);
 
                 $row[] = anchor(get_uri("clients/view/" . $aRow['client_id']), $aRow['company_name']);
 
@@ -1053,6 +1053,8 @@ class Accounting extends Security_Controller
         $id = $this->request->getPost('id');
         $type = $this->request->getPost('type');
         $currency_symbol = get_setting("currency_symbol");
+        $form_type = $this->request->getPost('form_type');
+        
         $amount = 0;
 
 
@@ -1153,90 +1155,114 @@ class Accounting extends Security_Controller
                     </div>
                 </div>';
             
-        }elseif ($type == 'expense') {
-            $Expenses_model = model('Expenses_model');
-            $expense = $Expenses_model->get_details(['id' => $id])->getRow();
+        }  elseif ($type == 'expense') {
+    $Expenses_model = model('Expenses_model');
+    $expense = $Expenses_model->get_details(['id' => $id])->getRow();
 
-            $Expense_categories_model = model('Expense_categories_model');
-            $category = $Expense_categories_model->get_one($expense->category_id);
+    $Expense_categories_model = model('Expense_categories_model');
+    $category = $Expense_categories_model->get_one($expense->category_id);
 
-            $tax = 0;
-            $tax2 = 0;
-            if ($expense->tax_percentage) {
-                $tax = $expense->amount * ($expense->tax_percentage / 100);
-            }
-            if ($expense->tax_percentage2) {
-                $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
-            }
+    $tax = 0;
+    $tax2 = 0;
+    if ($expense->tax_percentage) {
+        $tax = $expense->amount * ($expense->tax_percentage / 100);
+    }
+    if ($expense->tax_percentage2) {
+        $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
+    }
 
-            $html = '<table class="table border table-striped no-margin">
-                      <tbody>
-                        <tr class="project-overview">
-                            <td class="bold" width="30%">'. app_lang('category').'</td>
-                            <td>'. $category->title  .'</td>
-                            <td></td>
-                         </tr>
-                        <tr class="project-overview">
-                            <td class="bold">'. app_lang('title').'</td>
-                            <td>'. $expense->title  .'</td>
-                            <td></td>
-                         </tr>
-                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('acc_amount').'</td>
-                            <td>'. to_currency($expense->amount + $tax + $tax2, $currency_symbol) .'</td>
-                            <td></td>
-                         </tr>
-                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('date').'</td>
-                            <td>'. format_to_date($expense->expense_date) .'</td>
-                            <td></td>
-                         </tr>
-                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('note').'</td>
-                            <td colspan="2">'. html_entity_decode($expense->description) .'</td>
-                         </tr>';
+    $total_amount = $expense->amount + $tax + $tax2;
 
+    $html = '<table class="table border table-striped no-margin"><tbody>';
 
-                
+    // ✅ Skip title and category if it's an expense_payment form
+    if ($form_type !== 'expense_payment') {
+        $html .= '
+            <tr class="project-overview">
+                <td class="bold" width="30%">' . app_lang('category') . '</td>
+                <td>' . $category->title . '</td><td></td>
+            </tr>
+            <tr class="project-overview">
+                <td class="bold">' . app_lang('title') . '</td>
+                <td>' . $expense->title . '</td><td></td>
+            </tr>';
+    }
 
-            $amount = $expense->amount;
+    // ✅ Editable amount only if 'expense_form'
+    $html .= '
+        <tr class="project-overview">
+            <td class="bold">' . app_lang('acc_amount') . '</td>
+            <td>';
+    if ($form_type === "expense_form") {
+        $html .= '<input type="number" name="expense_amount" value="' . $total_amount . '" class="form-control" step="0.01" required>';
+    } else {
+        $html .= to_currency($total_amount);
+    }
+    $html .= '</td><td></td></tr>';
 
-            $html .=    '</tbody>
-                  </table>';
-            $debit = get_setting('acc_expense_deposit_to');
-            $credit = get_setting('acc_expense_payment_account');
+    $html .= '
+        <tr class="project-overview">
+            <td class="bold">' . app_lang('date') . '</td>
+            <td>' . format_to_date($expense->expense_date) . '</td><td></td>
+        </tr>';
 
-            $db_builder = $db->table(get_db_prefix().'acc_account_history');
-            $db_builder->where('rel_id', $id);
-            $db_builder->where('rel_type', $type);
-            $db_builder->where('(tax = 0 or tax is null)');
-            $account_history = $db_builder->get()->getResultArray();
-            foreach ($account_history as $key => $value) {
-                if($value['debit'] > 0){
-                    $debit = $value['account'];
-                }
+    if ($form_type !== 'expense_payment') {
+        $html .= '
+            <tr class="project-overview">
+                <td class="bold">' . app_lang('note') . '</td>
+                <td colspan="2">' . html_entity_decode($expense->description) . '</td>
+            </tr>';
+    }
 
-                if($value['credit'] > 0){
-                    $credit =  $value['account'];
-                }
-            }
+    $html .= '</tbody></table>';
 
-            $html .= '<div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="payment_account" class="">'. app_lang('payment_account').'</label>
-                                '.form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="deposit_to" class="">'. app_lang('deposit_to').'</label>
-                            '.form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
-                        </div>
-                    </div>
-                </div>';
-            
-        }elseif ($type == 'banking') {
+    // ✅ Load existing account mapping
+    $debit = get_setting('acc_expense_deposit_to');
+    $credit = get_setting('acc_expense_payment_account');
+
+    $db_builder = $db->table(get_db_prefix() . 'acc_account_history');
+    $db_builder->where('rel_id', $id);
+    $db_builder->where('rel_type', $type);
+    $db_builder->where('(tax = 0 or tax is null)');
+    $account_history = $db_builder->get()->getResultArray();
+
+    foreach ($account_history as $value) {
+        if ($value['debit'] > 0) {
+            $debit = $value['account'];
+        }
+        if ($value['credit'] > 0) {
+            $credit = $value['account'];
+        }
+    }
+
+    // ✅ Disable deposit_to if it's payment form
+    $disable_deposit = $form_type === 'expense_payment' ? "disabled" : "";
+
+    $html .= '<div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="payment_account">' . app_lang('payment_account') . '</label>
+                ' . form_dropdown("payment_account", $accounts_dropdown, [$credit], "class='select2 validate-hidden' id='payment_account' data-rule-required='true' data-msg-required='" . app_lang('field_required') . "'") . '
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="deposit_to">' . app_lang('deposit_to') . '</label>
+                ' . form_dropdown("deposit_to", $accounts_dropdown, [$debit], "class='select2 validate-hidden' id='deposit_to' $disable_deposit data-rule-required='true' data-msg-required='" . app_lang('field_required') . "'") . '
+            </div>
+        </div>
+    </div>';
+
+    // ✅ Hidden input for deposit_to (important for payment forms)
+    if ($form_type === 'expense_payment') {
+        $html .= '<input type="hidden" name="deposit_to" value="' . $debit . '">';
+    }
+
+    // ✅ Hidden input for expense_id to use later when saving
+    $html .= '<input type="hidden" name="expense_id" value="' . $expense->id . '">';
+}
+
+elseif ($type == 'banking') {
             $banking = $this->Accounting_model->get_transaction_banking($id);
             $html = '<table class="table border table-striped no-margin">
                       <tbody>
@@ -1266,7 +1292,7 @@ class Accounting extends Security_Controller
             $debit = 0;
             $credit = 0;
         }elseif ($type == 'invoice') {
-            $Invoices_model = model('Invoices_model');
+                $Invoices_model = model('aleelo_plugin\Models\Invoices_model');
             $invoice = $Invoices_model->get_one(['id' => $id]);
 
             $Clients_model = model('Clients_model');
@@ -1351,13 +1377,30 @@ class Accounting extends Security_Controller
                             $credit =  $val['account'];
                         }
                     }
+                
+                $days = $value['days'];
+                if($days==0){
+                    $day=1;
+                }else{
+                    $day=$days;
+                }
+                if($invoice->discount_total){
+                $item_total = $value['quantity'] * $value['rate'] *$days;
+                $services=$value['services'];
+                $service_cost = ($services > 0) ? ($item_total * ($services / 100)) : 0;
+                $before_dis_item= $item_total + $service_cost;
+                $item_dis=$before_dis_item/$invoice->invoice_subtotal;
+                $discount=$invoice->discount_total*$item_dis;
+                }else{
+                $discount=0;
+                }
 
                     if($account_history){
                         $html .= '
                         <div class="div_content">
-                        <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate']), $client->currency_symbol).'</h5>
+                        <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate'] *$day+$value['service_cost']-$discount), $client->currency_symbol).'</h5>
                         <div class="row">
-                                '.form_hidden('item_amount['.$value['id'].']', $value['quantity'] * $value['rate']).'
+                         '.  form_hidden('item_amount['.$value['id'].']', (string)($value['quantity'] * $value['rate'] *$day+$value['service_cost']-$discount)).'
                               <div class="col-md-6"> 
                                 <div class="form-group">
                                     <label for="payment_account" class="">'. app_lang('payment_account').'</label>
@@ -1377,13 +1420,12 @@ class Accounting extends Security_Controller
                         </div>';
                     }else{
                         $item_automatic = $this->Accounting_model->get_item_automatic($item_id);
-
                         if($item_automatic){
                             $html .= '
                             <div class="div_content">
-                                <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate']), $client->currency_symbol).'</h5>
+                                <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate'] +$value['service_cost'] *$day+$value['service_cost']-$discount), $client->currency_symbol).'</h5>
                                 <div class="row">
-                                '.form_hidden('item_amount['.$value['id'].']', $value['quantity'] * $value['rate']).'
+                                '.form_hidden('item_amount['.$value['id'].']', $value['quantity'] * $value['rate']*$day+$value['service_cost']-$discount).'
                                   <div class="col-md-6"> 
                                     <div class="form-group">
                                         <label for="payment_account" class="">'. app_lang('payment_account').'</label>
@@ -1405,9 +1447,9 @@ class Accounting extends Security_Controller
 
                             $html .= '
                             <div class="div_content">
-                                <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate']), $client->currency_symbol).'</h5>
+                                <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate']*$day+$value['service_cost']-$discount), $client->currency_symbol).'</h5>
                                 <div class="row">
-                                '.form_hidden('item_amount['.$value['id'].']', $value['quantity'] * $value['rate']).'
+                                '.form_hidden('item_amount['.$value['id'].']',(string)( $value['quantity'] * $value['rate']*$day+$value['service_cost']-$discount)).'
                                   <div class="col-md-6">
                                    <div class="form-group">
                                     <label for="payment_account" class="">'. app_lang('payment_account').'</label>
@@ -2718,12 +2760,13 @@ class Accounting extends Security_Controller
      * convert
      * @return json 
      */
-    public function convert(){
+   public function convert(){
         if (!acc_has_permission('acc_can_create_transaction')) {
             show_404();
         }
 
         $data = $this->request->getPost();
+        // print_r($data['amount']);die;
         $success = $this->Accounting_model->add_account_history($data);
 
         if ($success === 'close_the_book') {
@@ -2739,6 +2782,9 @@ class Accounting extends Security_Controller
 
         switch ($data['type']) {
             case 'payment':
+                $url = 'accounting/transaction?group=sales';
+                break;
+            case 'supplier_payment':
                 $url = 'accounting/transaction?group=sales';
                 break;
             case 'invoice':
@@ -2796,8 +2842,16 @@ class Accounting extends Security_Controller
                 // code...
                 break;
         }
+        // print_r($data['form_type']);die;
 
-        app_redirect($url);
+            if (!empty($data['form_type']) && $data['form_type'] === 'expense_form') {
+                // app_redirect('expenses/view/' . $data['id']); // or 'expenses' if no view page
+                app_redirect('expenses'); // or 'expenses' if no view page
+            } else {
+                app_redirect($url);
+            }
+
+        // app_redirect($url);
     }
 
     /**

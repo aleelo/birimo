@@ -1,6 +1,6 @@
 <?php
 
-namespace Sales_and_crm\Controllers;
+namespace aleelo_plugin\Controllers;
 
 use App\Libraries\Excel_import;
 
@@ -24,12 +24,7 @@ class Expenses extends Security_Controller_Plugin
         $this->access_only_allowed_members();
     }
 
-    private function validate_expense_access($expense_id = 0)
-    {
-        if (!$this->can_access_this_expense($expense_id)) {
-            app_redirect("forbidden");
-        }
-    }
+   
 
     //load the expenses list view
     function index()
@@ -39,52 +34,28 @@ class Expenses extends Security_Controller_Plugin
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
         $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("expenses", $this->login_user->is_admin, $this->login_user->user_type);
 
-        $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
-        $view_data['vendors_dropdown'] = $this->_get_vendors_dropdown();
+        $view_data['categories_dropdown'] = $this->_get_categories_dropdown_js();
+        $view_data['vendors_dropdown'] = $this->_get_vendors_dropdown_js();
         $members_dropdown = $this->Users_model->get_id_and_text_dropdown(array("first_name", "last_name"), array("deleted" => 0, "status" => "active", "user_type" => "staff"),  "- " . app_lang("member") . " -");
         $view_data['members_dropdown'] = json_encode($members_dropdown);
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
 
-        return $this->template->rander("Sales_and_crm\Views/expenses/index", $view_data);
+        return $this->template->rander("aleelo_plugin\Views/expenses/index", $view_data);
     }
 
-    //get categories dropdown
-    private function _get_categories_dropdown()
-    {
-        $categories = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
-
-        $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
-        foreach ($categories as $category) {
-            $categories_dropdown[] = array("id" => $category->id, "text" => $category->title);
-        }
-
-        return json_encode($categories_dropdown);
-    }
-
-    private function _get_vendors_dropdown()
-    {
-        $venders = $this->Supplier_model->get_all_where(array("deleted" => 0), 0, 0, "supplier_name")->getResult();
-
-        $venders_dropdown = array(array("id" => "", "text" => "- " . "Vendor" . " -"));
-        foreach ($venders as $vender) {
-            $venders_dropdown[] = array("id" => $vender->id, "text" => $vender->supplier_name);
-        }
-
-        return json_encode($venders_dropdown);
-    }
 
     //load the expenses list summary view
     function summary()
     {
         $this->check_module_availability("module_expense");
 
-        return $this->template->rander("Sales_and_crm\Views/expenses/reports/expenses_summary");
+        return $this->template->rander("aleelo_plugin\Views/expenses/reports/expenses_summary");
     }
 
     //load the recurring view of expense list 
     function recurring()
     {
-        return $this->template->view("Sales_and_crm\Views/expenses/recurring_expenses_list");
+        return $this->template->view("aleelo_plugin\Views/expenses/recurring_expenses_list");
     }
 
     //load the add/edit expense form
@@ -95,7 +66,7 @@ class Expenses extends Security_Controller_Plugin
         ));
 
         $id = $this->request->getPost('id');
-        $this->validate_expense_access($id);
+        // $this->validate_expense_access($id);
 
         $client_id = $this->request->getPost('client_id');
         $project_id = $this->request->getPost('project_id');
@@ -164,7 +135,7 @@ class Expenses extends Security_Controller_Plugin
         $view_data['is_clone'] = $is_clone;
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("expenses", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-        return $this->template->view('Sales_and_crm\Views/expenses/modal_form', $view_data);
+        return $this->template->view('aleelo_plugin\Views/expenses/modal_form', $view_data);
     }
 
 
@@ -217,107 +188,181 @@ class Expenses extends Security_Controller_Plugin
             echo json_encode($clients_dropdown);
         }
     }
+ public function save_payment() {
+    $this->validate_submitted_data(array(
+        "amount" => "required",
+        "payment_date" => "required",
+        "expense_id" => "required"
+    ));
+
+    $expense_id = $this->request->getPost('expense_id');
+    $amount = unformat_currency($this->request->getPost('amount'));
+    $payment_date = $this->request->getPost('payment_date');
+    $note = $this->request->getPost('note');
+
+    // Optional: get accounting fields
+    $payment_account = $this->request->getPost('payment_account');
+    $deposit_to = $this->request->getPost('deposit_to');
+
+    $data = array(
+        "amount" => $amount,
+        "payment_date" => $payment_date,
+        "note" => $note,
+        "expense_id" => $expense_id,
+        "created_by" => $this->login_user->id,
+        "created_at" => get_my_sql_date_time(),
+        "payment_account" => $payment_account,
+        "deposit_to" => $deposit_to
+    );
+
+    $save_id = $this->Expense_payments_model->ci_save($data);
+
+    if ($save_id) {
+        // Get all previous payments for this expense
+        $payments = $this->Expense_payments_model->get_all_where(["expense_id" => $expense_id])->getResult();
+        $total_paid = 0;
+
+        foreach ($payments as $pay) {
+            $total_paid += $pay->amount_paid;
+        }
+
+        // Get expense info
+        $expense = $this->Expenses_model->get_one($expense_id);
+
+        // Compare total paid vs expense amount
+        if ($total_paid >= $expense->amount) {
+            $this->Expenses_model->ci_save(["status" => "paid"], $expense_id);
+        } elseif ($total_paid > 0) {
+            $this->Expenses_model->ci_save(["status" => "partially_paid"], $expense_id);
+        }
+
+        echo json_encode([
+            "success" => true,
+            "message" => app_lang('payment_successfully_saved')
+        ]);
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => app_lang('error_occurred')
+        ]);
+    }
+}
+
+
+
 
     //save an expense
-    function save()
-    {
-        $this->validate_submitted_data(array(
-            "id" => "numeric",
-            "expense_date" => "required",
-            "category_id" => "required",
-            "amount" => "required",
-            // "expense_client_id" => "required|numeric",
-            // "expense_project_id" => "required|numeric",
-        ));
+   public function save()
+{
+    $this->validate_submitted_data(array(
+        "id" => "numeric",
+        "expense_date" => "required",
+        "category_id" => "required",
+        "amount" => "required",
+    ));
 
-        $id = $this->request->getPost('id');
-        $this->validate_expense_access($id);
+    $id = $this->request->getPost('id');
+    $target_path = get_setting("timeline_file_path");
+    $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "expense");
+    $new_files = unserialize($files_data);
 
-        $target_path = get_setting("timeline_file_path");
-        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "expense");
-        $new_files = unserialize($files_data);
+    $recurring = $this->request->getPost('recurring') ? 1 : 0;
+    $expense_date = $this->request->getPost('expense_date');
+    $repeat_every = $this->request->getPost('repeat_every');
+    $repeat_type = $this->request->getPost('repeat_type');
+    $no_of_cycles = $this->request->getPost('no_of_cycles');
 
-        $recurring = $this->request->getPost('recurring') ? 1 : 0;
-        $expense_date = $this->request->getPost('expense_date');
-        $repeat_every = $this->request->getPost('repeat_every');
-        $repeat_type = $this->request->getPost('repeat_type');
-        $no_of_cycles = $this->request->getPost('no_of_cycles');
+    $amount = unformat_currency($this->request->getPost('amount'));
 
-        $data = array(
-            "expense_date" => $expense_date,
-            "title" => $this->request->getPost('title'),
-            "description" => $this->request->getPost('description'),
-            "category_id" => $this->request->getPost('category_id'),
-            "vendor_id" => $this->request->getPost('vendor_id'),
-            "amount" => unformat_currency($this->request->getPost('amount')),
-            "client_id" => $this->request->getPost('expense_client_id') ? $this->request->getPost('expense_client_id') : 0,
-            "project_id" => $this->request->getPost('expense_project_id'),
-            "user_id" => $this->request->getPost('expense_user_id'),
-            "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
-            "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
-            "recurring" => $recurring,
-            "repeat_every" => $repeat_every ? $repeat_every : 0,
-            "repeat_type" => $repeat_type ? $repeat_type : NULL,
-            "no_of_cycles" => $no_of_cycles ? $no_of_cycles : 0,
-        );
+    $data = array(
+        "expense_date" => $expense_date,
+        "title" => $this->request->getPost('title'),
+        "description" => $this->request->getPost('description'),
+        "category_id" => $this->request->getPost('category_id'),
+        "vendor_id" => $this->request->getPost('vendor_id'),
+        "amount" => $amount,
+        "client_id" => $this->request->getPost('expense_client_id') ?: 0,
+        "project_id" => $this->request->getPost('expense_project_id'),
+        "user_id" => $this->request->getPost('expense_user_id'),
+        "tax_id" => $this->request->getPost('tax_id') ?: 0,
+        "tax_id2" => $this->request->getPost('tax_id2') ?: 0,
+        "recurring" => $recurring,
+        "repeat_every" => $repeat_every ?: 0,
+        "repeat_type" => $repeat_type ?: NULL,
+        "no_of_cycles" => $no_of_cycles ?: 0,
+    );
 
-        if (!$id) {
-            $data["created_by"] = $this->login_user->id;
-        }
+    if (!$id) {
+        $data["created_by"] = $this->login_user->id;
+    }
 
-        $expense_info = $this->Expenses_model->get_one($id);
+    $expense_info = $this->Expenses_model->get_one($id);
 
-        //is editing? update the files if required
+    if ($id) {
+        $timeline_file_path = get_setting("timeline_file_path");
+        $new_files = update_saved_files($timeline_file_path, $expense_info->files, $new_files);
+    }
+
+    $is_clone = $this->request->getPost('is_clone');
+    if ($is_clone && $id) {
+        $id = "";
+    }
+
+    if ($recurring) {
         if ($id) {
-            $timeline_file_path = get_setting("timeline_file_path");
-            $new_files = update_saved_files($timeline_file_path, $expense_info->files, $new_files);
-        }
-
-        $is_clone = $this->request->getPost('is_clone');
-
-        if ($is_clone && $id) {
-            $id = "";
-        }
-
-        if ($recurring) {
-            //set next recurring date for recurring expenses
-
-            if ($id) {
-                //update
-                if ($this->request->getPost('next_recurring_date')) { //submitted any recurring date? set it.
-                    $data['next_recurring_date'] = $this->request->getPost('next_recurring_date');
-                } else {
-                    //re-calculate the next recurring date, if any recurring fields has changed.
-                    if ($expense_info->recurring != $data['recurring'] || $expense_info->repeat_every != $data['repeat_every'] || $expense_info->repeat_type != $data['repeat_type'] || $expense_info->expense_date != $data['expense_date']) {
-                        $data['next_recurring_date'] = add_period_to_date($expense_date, $repeat_every, $repeat_type);
-                    }
-                }
+            if ($this->request->getPost('next_recurring_date')) {
+                $data['next_recurring_date'] = $this->request->getPost('next_recurring_date');
             } else {
-                //insert new
-                $data['next_recurring_date'] = add_period_to_date($expense_date, $repeat_every, $repeat_type);
+                if (
+                    $expense_info->recurring != $data['recurring']
+                    || $expense_info->repeat_every != $data['repeat_every']
+                    || $expense_info->repeat_type != $data['repeat_type']
+                    || $expense_info->expense_date != $data['expense_date']
+                ) {
+                    $data['next_recurring_date'] = add_period_to_date($expense_date, $repeat_every, $repeat_type);
+                }
             }
-
-
-            //recurring date must have to set a future date
-            if (get_array_value($data, "next_recurring_date") && get_today_date() >= $data['next_recurring_date']) {
-                echo json_encode(array("success" => false, 'message' => app_lang('past_recurring_date_error_message_title'), 'next_recurring_date_error' => app_lang('past_recurring_date_error_message'), "next_recurring_date_value" => $data['next_recurring_date']));
-                return false;
-            }
+        } else {
+            $data['next_recurring_date'] = add_period_to_date($expense_date, $repeat_every, $repeat_type);
         }
 
-        $data = clean_data($data);
-
-        $data["files"] = serialize($new_files);
-
-        $save_id = $this->Expenses_model->ci_save($data, $id);
-        if ($save_id) {
-            save_custom_fields("expenses", $save_id, $this->login_user->is_admin, $this->login_user->user_type);
-
-            echo json_encode(array("success" => true, "data" => $this->_row_data($save_id), 'id' => $save_id, 'message' => app_lang('record_saved')));
-        } else {
-            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        if (get_array_value($data, "next_recurring_date") && get_today_date() >= $data['next_recurring_date']) {
+            echo json_encode(array("success" => false, 'message' => app_lang('past_recurring_date_error_message_title'), 'next_recurring_date_error' => app_lang('past_recurring_date_error_message'), "next_recurring_date_value" => $data['next_recurring_date'])); return false;
         }
     }
+
+    $data = clean_data($data);
+    $data["files"] = serialize($new_files);
+
+    $save_id = $this->Expenses_model->ci_save($data, $id);
+
+    if ($save_id) {
+        save_custom_fields("expenses", $save_id, $this->login_user->is_admin, $this->login_user->user_type);
+
+        // ✅ ADD PAYMENT RECORD after expense created
+        $expense_payment_model = model("Expense_payments_model");
+        $existing_payment = $expense_payment_model->get_one_where(["expense_id" => $save_id, "deleted" => 0]);
+
+        if (!$existing_payment) {
+            $expense_payment_model->ci_save([
+                "expense_id" => $save_id,
+                "amount_paid" => $amount,
+                "payment_date" => $expense_date,
+                "note" => "Auto-paid on creation",
+                "created_by" => $this->login_user->id,
+                "created_at" => get_my_local_time()
+            ]);
+        }
+
+        // ✅ Update status on rise_expenses
+        $this->db->table("rise_expenses")->where("id", $save_id)->update(["payment_expense_status" => "paid"]);
+
+        echo json_encode(array("success" => true, "data" => $this->_row_data($save_id), 'id' => $save_id, 'message' => app_lang('record_saved')));
+    } else {
+        echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+    }
+}
+
 
     //delete/undo an expense
     function delete()
@@ -327,7 +372,7 @@ class Expenses extends Security_Controller_Plugin
         ));
 
         $id = $this->request->getPost('id');
-        $this->validate_expense_access($id);
+        // $this->validate_expense_access($id);
         $expense_info = $this->Expenses_model->get_one($id);
 
         if ($this->Expenses_model->delete($id)) {
@@ -546,7 +591,7 @@ class Expenses extends Security_Controller_Plugin
     {
         validate_numeric_value($id);
         if ($id) {
-            $this->validate_expense_access($id);
+            // $this->validate_expense_access($id);
             $expense_info = $this->Expenses_model->get_one($id);
             $files = unserialize($expense_info->files);
             $file = get_array_value($files, $key);
@@ -563,7 +608,7 @@ class Expenses extends Security_Controller_Plugin
             $view_data["is_google_drive_file"] = ($file_id && $service_type == "google") ? true : false;
             $view_data["is_iframe_preview_available"] = is_iframe_preview_available($file_name);
 
-            return $this->template->view("Sales_and_crm\Views/expenses/file_preview", $view_data);
+            return $this->template->view("aleelo_plugin\Views/expenses/file_preview", $view_data);
         } else {
             show_404();
         }
@@ -572,7 +617,7 @@ class Expenses extends Security_Controller_Plugin
     //load the expenses yearly chart view
     function yearly_chart()
     {
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/yearly_chart");
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/yearly_chart");
     }
 
     function yearly_chart_data()
@@ -601,7 +646,7 @@ class Expenses extends Security_Controller_Plugin
     function income_vs_expenses()
     {
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses();
-        return $this->template->rander("Sales_and_crm\Views/expenses/reports/income_vs_expenses_chart", $view_data);
+        return $this->template->rander("aleelo_plugin\Views/expenses/reports/income_vs_expenses_chart", $view_data);
     }
 
     function income_vs_expenses_chart_data()
@@ -655,7 +700,7 @@ class Expenses extends Security_Controller_Plugin
     function income_vs_expenses_summary()
     {
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses();
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/income_vs_expenses_summary", $view_data);
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/income_vs_expenses_summary", $view_data);
     }
 
     function income_vs_expenses_summary_list_data()
@@ -798,7 +843,7 @@ class Expenses extends Security_Controller_Plugin
         ));
 
         $expense_id = $this->request->getPost('id');
-        $this->validate_expense_access($expense_id);
+        // $this->validate_expense_access($expense_id);
 
         $options = array("id" => $expense_id);
         $info = $this->Expenses_model->get_details($options)->getRow();
@@ -809,7 +854,7 @@ class Expenses extends Security_Controller_Plugin
         $view_data["expense_info"] = $info;
         $view_data['custom_fields_list'] = $this->Custom_fields_model->get_combined_details("expenses", $expense_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
-        return $this->template->view("Sales_and_crm\Views/expenses/expense_details", $view_data);
+        return $this->template->view("aleelo_plugin\Views/expenses/expense_details", $view_data);
     }
 
     //get the expneses summary list data
@@ -845,7 +890,7 @@ class Expenses extends Security_Controller_Plugin
     function download_files($id)
     {
         validate_numeric_value($id);
-        $this->validate_expense_access($id);
+        // $this->validate_expense_access($id);
 
         $files = $this->Expenses_model->get_one($id)->files;
         return $this->download_app_files(get_setting("timeline_file_path"), $files);
@@ -1065,25 +1110,25 @@ class Expenses extends Security_Controller_Plugin
         $view_data["custom_field_headers_of_task"] = $this->Custom_fields_model->get_custom_field_headers_for_table("tasks", $this->login_user->is_admin, $this->login_user->user_type);
 
         $view_data['expense_id'] = clean_data($expense_id);
-        return $this->template->view("Sales_and_crm\Views/expenses/tasks/index", $view_data);
+        return $this->template->view("aleelo_plugin\Views/expenses/tasks/index", $view_data);
     }
 
     //load the expenses monthly summary view
     function monthly_summary()
     {
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/monthly_summary");
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/monthly_summary");
     }
 
     //load the expenses custom summary view
     function custom_summary()
     {
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/custom_summary");
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/custom_summary");
     }
 
     //load the expenses category chart view
     function category_chart()
     {
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/category_chart_container");
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/category_chart_container");
     }
 
     function category_chart_view()
@@ -1110,7 +1155,7 @@ class Expenses extends Security_Controller_Plugin
         $view_data["data"] = $category_value;
 
 
-        return $this->template->view("Sales_and_crm\Views/expenses/reports/category_chart", $view_data);
+        return $this->template->view("aleelo_plugin\Views/expenses/reports/category_chart", $view_data);
     }
 }
 

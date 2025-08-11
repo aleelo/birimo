@@ -1674,48 +1674,71 @@ class Invoices extends Security_Controller_Plugin
         echo json_encode(["data" => $result]);
     }
     private function _make_item_row($data, $is_ediable)
-{
-    $move_icon = "";
-    $desc_style = "";
+    {
+        $move_icon = "";
+        $desc_style = "";
 
-    if ($is_ediable) {
-        $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
-        $desc_style = "style='margin-left:30px'";
-    }
+        if ($is_ediable) {
+            $move_icon = "<div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div>";
+            $desc_style = "style='margin-left:30px'";
+        }
+        $type = $data->is_section ? "section" : "item";
 
-    $type = $data->is_section ? "section" : "item";
-    $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+        $item = "<div class='item-row strong mb5' data-id='$data->id' data-type='$type'>$move_icon $data->title</div>";
+        if ($data->description) {
+            $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
+        }
 
-    if (!empty($data->description)) {
-        $item .= "<div class='text-wrap' $desc_style>" . custom_nl2br($data->description) . "</div>";
-    }
+        if ($data->is_section) {
+            $actions = modal_anchor(get_uri("invoices/section_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                "class" => "edit",
+                "title" => app_lang('edit_invoice'),
+                "data-post-id" => $data->id,
+                "data-post-invoice_id" => $data->invoice_id
+            ))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+                    'title' => app_lang('delete'),
+                    "class" => "delete",
+                    "data-id" => $data->id,
+                    "data-action-url" => get_uri("invoices/delete_section"),
+                    "data-action" => "delete"
+                ));
 
-    if ($data->is_section) {
-        // Handle section if needed
-    } else {
+            return array(
+                $data->sort,
+                $item,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                $actions
+            );
+        } else {
+            $type = $data->unit_type ? $data->unit_type : "";
+            $taxable = $data->taxable ? app_lang("yes") : app_lang("no");
+
+            $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
+                "class" => "edit",
+                "title" => app_lang('edit_invoice'),
+                "data-post-id" => $data->id,
+                "data-post-invoice_id" => $data->invoice_id
+            ))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
+                    'title' => app_lang('delete'),
+                    "class" => "delete",
+                    "data-id" => $data->id,
+                    "data-action-url" => get_uri("invoices/delete_item"),
+                    "data-action" => "delete"
+                ));
         $unit_type = !empty($data->unit_type) ? $data->unit_type : "";
-
-        $services = property_exists($data, 'services') ? $data->services : 0;
+$services = property_exists($data, 'services') ? $data->services : 0;
         $service_cost = property_exists($data, 'service_cost') ? $data->service_cost : 0;
         $alltotal = property_exists($data, 'alltotal') ? $data->alltotal : 0;
-
-        $taxable = !empty($data->taxable) ? app_lang("yes") : app_lang("no");
-
-        $actions = modal_anchor(get_uri("invoices/item_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array(
-            "class" => "edit",
-            "title" => app_lang('edit_invoice'),
-            "data-post-id" => $data->id,
-            "data-post-invoice_id" => $data->invoice_id
-        ))
-        . js_anchor("<i data-feather='x' class='icon-16'></i>", array(
-            'title' => app_lang('delete'),
-            "class" => "delete",
-            "data-id" => $data->id,
-            "data-action-url" => get_uri("invoices/delete_item"),
-            "data-action" => "delete"
-        ));
-
-        return array(
+            return array(
             $data->sort,
             $item,
             $data->days,
@@ -1727,9 +1750,9 @@ class Invoices extends Security_Controller_Plugin
             to_currency($service_cost, $data->currency_symbol),         // % Service Cost
             to_currency($alltotal, $data->currency_symbol),             // Total cost + Service %
             $actions
-        );
+            );
+        }
     }
-}
 
 //    private function _make_item_row($data, $is_ediable)
 // {

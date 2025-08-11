@@ -24,31 +24,21 @@ class Payment_method extends Security_Controller_plugin {
         ));
 
         $view_data['model_info'] = $this->Payment_methods_model->get_one_with_settings($this->request->getPost('id'));
-      
+        $accounting_model = new Accounting_model();
+        $where['account_type_id'] = 3;
+        $accounts = $accounting_model->get_accounts('', $where);
+        $accounts_dropdown = [];
+        foreach ($accounts as $account) {
+            $accounts_dropdown[$account['id']] = $account['name'];
+        }
+        $view_data['accounts_dropdown'] = $accounts_dropdown;
         //get seetings associtated with this payment type
         $view_data['settings'] = $this->Payment_methods_model->get_settings($view_data['model_info']->type);
 
         return $this->template->view('aleelo_plugin\Views/payment_methods/modal_form', $view_data);
     }
 
-    function get_estimate_account_suggestion() {
-        $key = $this->request->getPost("c");
-        if (class_exists('\Accounting\Models\Accounting_model')) {
-            $accounting_model = new Accounting_model();
-            $accounts = $accounting_model->get_accounts("", array("account_type_id" => 3), $key);
 
-            foreach ($accounts as $account) {
-                $suggestion[] = array("id" => $account['id'], "text" => $account['name']);
-            }
-        
-        
-            echo json_encode($suggestion);
-        } else {
-            log_message('error', 'Accounting plugin is not available.');
-        }
-        
-       
-    }
     //save a payment method
     function save() {
 

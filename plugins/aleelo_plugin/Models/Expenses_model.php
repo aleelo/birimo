@@ -1,7 +1,10 @@
 <?php
+
 namespace aleelo_plugin\Models;
+
 use App\Models\Crud_model;
-class Expense_model extends Crud_model {
+
+class Expenses_model extends Crud_model {
 
     protected $table = null;
 
@@ -17,7 +20,7 @@ class Expense_model extends Crud_model {
         $users_table = $this->db->prefixTable('users');
         $taxes_table = $this->db->prefixTable('taxes');
         $clients_table = $this->db->prefixTable('clients');
-        $company_table =$this->db->prefixTable('company');
+        $expense_payments_table = $this->db->prefixTable('expense_payments');
 
         $where = "";
         $id = $this->_get_clean_value($options, "id");
@@ -38,28 +41,13 @@ class Expense_model extends Crud_model {
         $project_id = $this->_get_clean_value($options, "project_id");
         if ($project_id) {
             $where .= " AND $expenses_table.project_id=$project_id";
-            // print_r($project_id);die;
         }
-      
-        $company_id_company = $this->_get_clean_value($options, "company_id_company");
-        if ($company_id_company) {
-            $where .= " AND cm.id=$company_id_company";
-            // print_r($project_id);die;
-        }
-            $company = $this->_get_clean_value($options, "company_id");
-            if ($company) {
-                $where .= " AND cm.id=$company";
-                // print_r($project_id);die;
-            }
-            
-         $user_id = $this->_get_clean_value($options, "user_id");
+
+        $user_id = $this->_get_clean_value($options, "user_id");
         if ($user_id) {
             $where .= " AND $expenses_table.user_id=$user_id";
         }
-        $created_by_user = $this->_get_clean_value($options, "created_by_user");
-        if ($created_by_user) {
-            $where .= " AND $expenses_table.user_id=$created_by_user";
-        }
+
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {
             $where .= " AND $expenses_table.client_id=$client_id";
@@ -70,6 +58,11 @@ class Expense_model extends Crud_model {
             $where .= " AND $expenses_table.recurring=1";
         }
 
+        $show_own_expenses_only_user_id = $this->_get_clean_value($options, "show_own_expenses_only_user_id");
+        if ($show_own_expenses_only_user_id) {
+            $where .= " AND $expenses_table.created_by=$show_own_expenses_only_user_id";
+        }
+
         //prepare custom fild binding query
         $custom_fields = get_array_value($options, "custom_fields");
         $custom_field_filter = get_array_value($options, "custom_field_filter");
@@ -78,30 +71,25 @@ class Expense_model extends Crud_model {
         $join_custom_fields = get_array_value($custom_field_query_info, "join_string");
         $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
 
+        $custom_select = $select_custom_fields ? ", $select_custom_fields" : "";
+
         $sql = "SELECT $expenses_table.*, $expense_categories_table.title as category_title, 
                  CONCAT($users_table.first_name, ' ', $users_table.last_name) AS linked_user_name,
-                 CONCAT(u.first_name, ' ', u.last_name) AS created_by,
                  $clients_table.company_name AS linked_client_name,
                  $projects_table.title AS project_title,
-                 cm.name AS companies,
                  tax_table.percentage AS tax_percentage,
-                 tax_table2.percentage AS tax_percentage2,
-                 cm.id AS company_name
-                 $select_custom_fields
+                 tax_table2.percentage AS tax_percentage2, IFNULL(payments_table.expense_paid,0) AS expense_paid
+                 $custom_select
         FROM $expenses_table
         LEFT JOIN $expense_categories_table ON $expense_categories_table.id= $expenses_table.category_id
         LEFT JOIN $clients_table ON $clients_table.id= $expenses_table.client_id
         LEFT JOIN $projects_table ON $projects_table.id= $expenses_table.project_id
         LEFT JOIN $users_table ON $users_table.id= $expenses_table.user_id
-        LEFT JOIN $users_table as u ON u.id= $expenses_table.created_by
-        LEFT JOIN $company_table as cm ON cm.id= $expenses_table.company_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $expenses_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $expenses_table.tax_id2
+        LEFT JOIN (SELECT expense_id, SUM(amount_paid) AS expense_paid FROM $expense_payments_table WHERE deleted=0 GROUP BY expense_id) AS payments_table ON payments_table.expense_id = $expenses_table.id
             $join_custom_fields
         WHERE $expenses_table.deleted=0 $where $custom_fields_where";
-
-        // print_r($sql);die;
-
         return $this->db->query($sql);
     }
 
@@ -112,13 +100,18 @@ class Expense_model extends Crud_model {
         $taxes_table = $this->db->prefixTable('taxes');
         $clients_table = $this->db->prefixTable('clients');
         $info = new \stdClass();
-        
+
         $where_income = "";
         $where_expenses = "";
         $year = $this->_get_clean_value($options, "year");
-        if($year){
+        if ($year) {
             $where_expenses .= " AND YEAR($expenses_table.expense_date)='$year'";
             $where_income .= " AND YEAR($invoice_payments_table.payment_date)='$year'";
+        }
+
+        $show_own_expenses_only_user_id = $this->_get_clean_value($options, "show_own_expenses_only_user_id");
+        if ($show_own_expenses_only_user_id) {
+            $where_expenses .= " AND $expenses_table.created_by=$show_own_expenses_only_user_id";
         }
 
         $income_sql = "SELECT SUM($invoice_payments_table.amount) as total_income, 
@@ -127,7 +120,7 @@ class Expense_model extends Crud_model {
                 )
             ) AS currency
         FROM $invoice_payments_table
-        WHERE $invoice_payments_table.supplier_id=0 AND $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0) $where_income
+        WHERE $invoice_payments_table.deleted=0 AND $invoice_payments_table.invoice_id IN(SELECT $invoices_table.id FROM $invoices_table WHERE $invoices_table.deleted=0) $where_income
         GROUP BY currency";
         $income_result = $this->db->query($income_sql)->getResult();
 
@@ -137,10 +130,10 @@ class Expense_model extends Crud_model {
         LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage FROM $taxes_table) AS tax_table2 ON tax_table2.id = $expenses_table.tax_id2
         WHERE $expenses_table.deleted=0 $where_expenses";
         $expenses = $this->db->query($expenses_sql)->getRow();
-        
+
         //prepare income
         $total_income = 0;
-        foreach ($income_result as $income){
+        foreach ($income_result as $income) {
             $total_income += get_converted_amount($income->currency, $income->total_income);
         }
 
@@ -149,13 +142,20 @@ class Expense_model extends Crud_model {
         return $info;
     }
 
-    function get_yearly_expenses_chart($year, $project_id = 0) {
+    function get_yearly_expenses_chart($year, $project_id = 0, $show_own_expenses_only_user_id = 0) {
         $expenses_table = $this->db->prefixTable('expenses');
         $taxes_table = $this->db->prefixTable('taxes');
 
+        $year = $this->_get_clean_value($year);
+        $project_id = $this->_get_clean_value($project_id);
+
         $where = "";
         if ($project_id) {
-            $where = " AND $expenses_table.project_id=$project_id";
+            $where .= " AND $expenses_table.project_id=$project_id";
+        }
+
+        if ($show_own_expenses_only_user_id) {
+            $where .= " AND $expenses_table.created_by=$show_own_expenses_only_user_id";
         }
 
         $expenses = "SELECT SUM($expenses_table.amount + IFNULL(tax_table.percentage,0)/100*IFNULL($expenses_table.amount,0) + IFNULL(tax_table2.percentage,0)/100*IFNULL($expenses_table.amount,0)) AS total, MONTH($expenses_table.expense_date) AS month
@@ -168,9 +168,21 @@ class Expense_model extends Crud_model {
         return $this->db->query($expenses)->getResult();
     }
 
+    function get_total_expense_by_project($client_id)
+    {
+        $expenses_table = $this->db->prefixTable('expenses');
+
+        $sql = "SELECT SUM(amount) AS total_expense
+            FROM $expenses_table 
+            WHERE deleted = 0 AND client_id = ?";
+
+        return $this->db->query($sql, [$client_id])->getRow()->total_expense;
+    }
+
     //get the recurring expenses which are ready to renew as on a given date
     function get_renewable_expenses($date) {
         $expenses_table = $this->db->prefixTable('expenses');
+        $date = $this->_get_clean_value($date);
 
         $sql = "SELECT * FROM $expenses_table
                         WHERE $expenses_table.deleted=0 AND $expenses_table.recurring=1
@@ -192,6 +204,11 @@ class Expense_model extends Crud_model {
             $where .= " AND ($expenses_table.expense_date BETWEEN '$start_date' AND '$end_date') ";
         }
 
+        $show_own_expenses_only_user_id = $this->_get_clean_value($options, "show_own_expenses_only_user_id");
+        if ($show_own_expenses_only_user_id) {
+            $where .= " AND $expenses_table.created_by=$show_own_expenses_only_user_id";
+        }
+
         $sql = "SELECT SUM($expenses_table.amount) AS amount, SUM(IFNULL(tax_table.percentage,0)/100*IFNULL($expenses_table.amount,0)) AS tax, SUM(IFNULL(tax_table2.percentage,0)/100*IFNULL($expenses_table.amount,0)) AS tax2, $expense_categories_table.title AS category_title
         FROM $expenses_table
         LEFT JOIN $expense_categories_table ON $expense_categories_table.id= $expenses_table.category_id
@@ -202,5 +219,4 @@ class Expense_model extends Crud_model {
 
         return $this->db->query($sql);
     }
-
 }

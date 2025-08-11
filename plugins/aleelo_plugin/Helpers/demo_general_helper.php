@@ -6,8 +6,9 @@
  * @return config value
  */
 
-use aleelo_plugin\Controllers\Security_Controller_Plugin;
+use App\Libraries\Template;
 use app\Controllers\App_Controller;
+use aleelo_plugin\Controllers\Security_Controller_Plugin;
 use aleelo_plugin\Libraries\Pdf; // Adjust the namespace based on your project structure
 
 if (!function_exists('get_demo_setting')) {
@@ -60,6 +61,59 @@ if (!function_exists('get_company_icon')) {
         }
     }
 }
+if (!function_exists('get_expense_status_label')) {
+
+    function get_expense_status_label($expense_info, $return_html = true, $extra_classes = "")
+    {
+        $expense_status_class = "bg-secondary";
+        $status = "unpaid";
+
+        $tolarance = get_paid_status_tolarance(); // Use same function as invoices
+        $expense_value = floor(($expense_info->amount + $expense_info->tax_id + $expense_info->tax_id2) * 100) / 100;
+        $paid_amount = $expense_info->expense_paid ?? 0;
+
+        if ($paid_amount <= 0) {
+            $expense_status_class = "bg-warning";
+            $status = "unpaid";
+        } else if ($paid_amount >= $expense_value - $tolarance) {
+            $expense_status_class = "bg-success";
+            $status = "fully_paid";
+        } else {
+            $expense_status_class = "bg-primary";
+            $status = "partially_paid";
+        }
+
+        $label = "<span class='mt0 badge $expense_status_class $extra_classes'>" . app_lang($status) . "</span>";
+
+        return $return_html ? $label : $status;
+    }
+}
+
+if (!function_exists('income_vs_expenses_widget')) {
+
+    function income_vs_expenses_widget($custom_class = "")
+{
+    $Expenses_model = model("App\Models\Expenses_model");
+    $ci = new Security_Controller_Plugin(false);
+
+    $info = $ci->Expenses_model->get_income_expenses_info();
+
+    $today = explode('-', get_today_date());
+    $current_year = get_array_value($today, 0);
+    $previous_year = $current_year - 1;
+
+    $view_data["current_year_info"] = $ci->Expenses_model->get_income_expenses_info(["year" => $current_year]);
+    $view_data["previous_year_info"] = $ci->Expenses_model->get_income_expenses_info(["year" => $previous_year]);
+
+    $view_data["income"] = $info->income ?? 0;
+    $view_data["expenses"] = $info->expenses ?? 0;
+    $view_data["custom_class"] = $custom_class;
+
+    return view("expenses/income_expenses_widget", $view_data);
+}
+
+}
+
 if (!function_exists('update_custom_fields_changes')) {
 
     function update_custom_fields_changes($related_to_type, $related_to_id, $changes, $activity_log_id = 0)
@@ -129,6 +183,17 @@ if (!function_exists('get_team_member_profile_link')) {
         }
     }
 }
+
+
+ function _get_total_paid_view($expense_id)
+{
+    $view_data["expense_id"] = $expense_id;
+    $view_data["total_paid"] = $this->Expense_payments_model->get_total_paid($expense_id);
+    $view_data["expense_info"] = $this->Expenses_model->get_one($expense_id);
+
+    return $this->template->view("aleelo_plugin/Views/expenses/expense_payments/total_paid_section", $view_data, true);
+}
+
 /**
  * link the css files 
  * 
@@ -285,7 +350,7 @@ if (!function_exists('get_invoice_making_data')) {
             $data["invoice_total_summary"] = $ci->Invoices_model->get_invoice_total_summary($invoice_id);
             $data['company_info'] = $ci->Company_model->get_one($data['client_info']->company_id);
             $data['users_info'] = $ci->Users_models->get_one($data['company_info']->finance_manager_id);
-            $data['signature'] = get_signature_image_html($data['company_info']->finance_manager_id);
+            $data['signature'] = get_signature_image_html($data['company_info']->finance_manager_id,"",true);
             $finance_manager_info = $ci->db->table('team_member_job_info')
                 ->select('*') // Select user_id and job_title_en
                 ->where('user_id', $data['company_info']->finance_manager_id)
@@ -298,7 +363,52 @@ if (!function_exists('get_invoice_making_data')) {
         }
     }
 }
+if (!function_exists('get_signature_image_html')) {
 
+    function get_signature_image_html($user_id, $style = "max-width: 150px;", $is_pdf = false)
+    {
+        $db = \Config\Database::connect();
+
+        $finance_manager = $db->table('team_member_job_info')
+            ->where('user_id', $user_id)
+            ->get()
+            ->getRow();
+
+        if (!$finance_manager || empty($finance_manager->signature)) {
+            return "m";
+        }
+
+        $raw_signature = $finance_manager->signature;
+        $signature_file_name = null;
+
+        $first = @unserialize($raw_signature);
+
+        if (is_array($first)) {
+            $signature_file_name = $first[0]['file_name'] ?? $first['file_name'] ?? null;
+        } elseif (is_string($first)) {
+            $second = @unserialize($first);
+            if (is_array($second)) {
+                $signature_file_name = $second[0]['file_name'] ?? $second['file_name'] ?? null;
+            }
+        }
+
+        if (!$signature_file_name && is_string($raw_signature) && !str_contains($raw_signature, '{')) {
+            $signature_file_name = $raw_signature;
+        }
+        if ($is_pdf) {
+            $image_path = FCPATH . 'files/signature/' . $signature_file_name;
+            if (file_exists($image_path)) {
+                return '<img src="' . $image_path . '" alt="Company Logo" style="width:250;" />';
+            }
+        } else {
+
+            $signature_url = base_url('files/signature/' . $signature_file_name);
+            return "<img src='{$signature_url}' alt='Signature' style='{$style}'>";
+        }
+
+        return ',';
+    }
+}
 if (!function_exists('get_invoice_making_data_delivery_note')) {
 
     function get_invoice_making_data_delivery_note($invoice_id)
@@ -393,67 +503,7 @@ if (!function_exists('prepare_invoice_pdf')) {
         }
     }
 }
-if (!function_exists('get_signature_image_html')) {
-    /**
-     * Load and render a signature image HTML from a user ID.
-     *
-     * @param int $user_id
-     * @param string $style CSS inline style (optional)
-     * @return string HTML img tag or empty string
-     */
-    function get_signature_image_html($user_id, $style = "max-width: 150px;")
-    {
-        $db = \Config\Database::connect();
 
-        // Get job_info for the user
-        $finance_manager = $db->table('team_member_job_info')
-            ->where('user_id', $user_id)
-            ->get()
-            ->getRow();
-
-        if (!$finance_manager || empty($finance_manager->signature)) {
-            return "";
-        }
-
-        $signature_file_name = null;
-        $raw_signature = $finance_manager->signature;
-
-        $first = @unserialize($raw_signature);
-
-        if ($first !== false && is_string($first)) {
-            $second = @unserialize($first);
-            if (is_array($second)) {
-                if (isset($second[0]['file_name'])) {
-                    $signature_file_name = $second[0]['file_name'];
-                } elseif (isset($second['file_name'])) {
-                    $signature_file_name = $second['file_name'];
-                }
-            }
-        }
-
-        if (!$signature_file_name && is_array($first)) {
-            if (isset($first[0]['file_name'])) {
-                $signature_file_name = $first[0]['file_name'];
-            } elseif (isset($first['file_name'])) {
-                $signature_file_name = $first['file_name'];
-            }
-        }
-
-        if (!$signature_file_name && is_string($raw_signature) && !str_contains($raw_signature, '{')) {
-            $signature_file_name = $raw_signature;
-        }
-
-        if ($signature_file_name) {
-            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
-            if (file_exists($signature_path)) {
-                $signature_url = base_url('files/signature/' . $signature_file_name);
-                return "<img src='" . $signature_url . "' alt='Signature' style='" . $style . "'>";
-            }
-        }
-
-        return "";
-    }
-}
 if (!function_exists('prepare_invoice_pdf_delivery_note')) {
     function prepare_invoice_pdf_delivery_note($invoice_data, $mode = "download")
     {

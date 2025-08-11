@@ -33,6 +33,7 @@ class App_Controller extends Controller {
     public $Projects_model;
     public $Milestones_model;
     public $Task_status_model;
+    public $Expense_payments_model;
     public $Tasks_model;
     public $Project_comments_model;
     public $Activity_logs_model;
@@ -178,6 +179,7 @@ class App_Controller extends Controller {
             'Posts_model',
             'Timesheets_model',
             'Expenses_model',
+            'Expense_payments_model',
             'Expense_categories_model',
             'Taxes_model',
             'Social_links_model',

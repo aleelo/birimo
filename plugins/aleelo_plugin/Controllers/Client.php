@@ -2,7 +2,7 @@
 
 namespace aleelo_plugin\Controllers;
 use App\Libraries\App_folders;
-
+use Accounting\Models\Accounting_model;
 class Client extends Security_Controller_Plugin {
     use App_folders;
 
@@ -94,7 +94,13 @@ class Client extends Security_Controller_Plugin {
         $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
 
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
-
+        $accounting_model = new Accounting_model();
+        $accounts = $accounting_model->get_accounts();
+        $accounts_dropdown = [];
+        foreach ($accounts as $account) {
+            $accounts_dropdown[$account['id']] = $account['name'];
+        }
+        $view_data['accounts_dropdown'] = $accounts_dropdown;
         //prepare label suggestions
         $view_data['label_suggestions'] = $this->make_labels_dropdown("client", $view_data['model_info']->labels);
         $view_data['has_all_permission'] = ( $this->login_user->department ==0  );
@@ -145,6 +151,8 @@ class Client extends Security_Controller_Plugin {
             "gst_number" => $this->request->getPost('gst_number'),
             "email" => $this->request->getPost('email'),
             "district"=> $this->request->getPost('district'),
+            "Account_Payable" => $this->request->getPost('Account_Payable'),
+            "Account_Receivable" => $this->request->getPost('Account_Receivable'),
         );
 
         if ($this->login_user->user_type === "staff") {
@@ -970,7 +978,13 @@ $edit = "";
             $view_data['label_suggestions'] = $this->make_labels_dropdown("client", $view_data['model_info']->labels);
             $view_data['has_all_permission'] = ( $this->login_user->is_admin || 
             ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0));
-            
+            $accounting_model = new Accounting_model();
+            $accounts = $accounting_model->get_accounts();
+            $accounts_dropdown = [];
+            foreach ($accounts as $account) {
+                $accounts_dropdown[$account['id']] = $account['name'];
+            }
+            $view_data['accounts_dropdown'] = $accounts_dropdown;
             $view_data['label_column'] = "col-md-2";
             $view_data['field_column'] = "col-md-10";
             // $view_data['can_edit_clients'] = $this->can_edit_clients($client_id);
