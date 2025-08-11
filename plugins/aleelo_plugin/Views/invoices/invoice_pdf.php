@@ -102,6 +102,12 @@ if (get_setting('taxable_column') == "always_show") {
             margin-top: 30px;
             background: white;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: white;
+        }
 
         thead {
             background-color: #a65f00;
@@ -129,6 +135,24 @@ if (get_setting('taxable_column') == "always_show") {
 
         tbody tr:nth-child(odd) {
             background-color: #f1f1f1;
+            color: #222;
+        }
+
+         tbody tr.row-odd {
+  background-color: #fefefe; /* First row */
+}
+tbody tr.row-even {
+  background-color: #f1f1f1; /* Second row */
+}
+        .even-row {
+            background-color: #e0a6a6ff;
+            color: blue;
+        }
+
+        .odd-row {
+            background-color:  #992626ff;
+            color: red;
+        }
             color: #222;
         }
 
@@ -255,6 +279,7 @@ tbody tr.row-even {
             line-height: 0;
 
         }
+        }
 
         .custom-f {
             display: block;
@@ -325,6 +350,8 @@ $data = array(
             <td style="width: 12%;">
             <?php                echo get_company_icon($client_info->company_id, "");
  ?></td>
+            <?php                echo get_company_icon($client_info->company_id, "");
+ ?></td>
             <td style="width: 22%;">
                 <h4 class="company-name"><?php echo $company_info->name; ?></h4>
                 <h4 class="company-address"><?php echo nl2br($company_info->address); ?></h4>
@@ -354,12 +381,15 @@ $data = array(
 
            <tr style="background-color:<?php echo $color ?>;">
                 <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
+           <tr style="background-color:<?php echo $color ?>;">
+                <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
                 <th style="width:10%"> Days</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Total</th>
                 <th>Service (%)</th>
                 <th>Cost (%)</th>
+                <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
                 <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
             </tr>
         <tbody>
@@ -426,9 +456,29 @@ $data = array(
             <?php
             }
             ?>
+                <?php
+                }
+            }
+
+            // Final section subtotal at the end
+            if ($current_section !== null) {
+                    $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1' ;
+                    $counter++;            ?>
+                    <tr style="background-color: <?php echo $row_class; ?>">
+                    <td style="width: <?php echo $show_taxable ? '88%' : '88%'; ?>"></td>
+                <td style="width: 12%;text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
+                </tr>
+            <?php
+            }
+            ?>
 
         </tbody>
         <tfoot>
+                <tr>
+        <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
+        <td style="width: 2%;text-align: right;"></td>
+        <td style="text-align: left; width: 20%; border: 1px solid #fff;">
+            <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
                 <tr>
         <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
         <td style="width: 2%;text-align: right;"></td>
@@ -493,7 +543,11 @@ $data = array(
     </table>
     <?php if ($invoice_info->terms) { ?>
         <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
+    <?php if ($invoice_info->terms) { ?>
+        <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
     <?php } ?>
+    <?php if ($invoice_info->display_id) { ?>
+        <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
     <?php if ($invoice_info->display_id) { ?>
         <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
     <?php } ?>
@@ -509,6 +563,12 @@ $data = array(
 
 
                 <div class="signature-block">
+                    <?php if ($users_info->first_name) { ?>
+                        <h5 class="signature-name" style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
+                    <?php }
+                    if (!empty($finance_manager_info->job_title_en)) { ?>
+                        <h5 class="signature-title"><?php echo $finance_manager_info->job_title_en; ?></h5>
+                    <?php } ?>
                     <?php if ($users_info->first_name) { ?>
                         <h5 class="signature-name" style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
                     <?php }

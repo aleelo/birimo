@@ -1398,9 +1398,9 @@ elseif ($type == 'banking') {
                     if($account_history){
                         $html .= '
                         <div class="div_content">
-                        <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate'] *$day+$value['service_cost']-$discount), $client->currency_symbol).'</h5>
+                        <h5>'.$value['title'].': '.to_currency(($value['quantity'] * $value['rate']), $client->currency_symbol).'</h5>
                         <div class="row">
-                         '.  form_hidden('item_amount['.$value['id'].']', (string)($value['quantity'] * $value['rate'] *$day+$value['service_cost']-$discount)).'
+                                '.form_hidden('item_amount['.$value['id'].']', $value['quantity'] * $value['rate']).'
                               <div class="col-md-6"> 
                                 <div class="form-group">
                                     <label for="payment_account" class="">'. app_lang('payment_account').'</label>
