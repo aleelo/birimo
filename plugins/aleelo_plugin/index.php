@@ -114,86 +114,86 @@ register_installation_hook("aleelo_plugin", function ($item_purchase_code) {
     $db = db_connect('default');
     $dbprefix = get_db_prefix();
 
-    $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "demo_settings` (
-        `setting_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-        `setting_value` mediumtext COLLATE utf8_unicode_ci NOT NULL,
-        `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'app',
-        `deleted` tinyint(1) NOT NULL DEFAULT '0',
-        UNIQUE KEY `setting_name` (`setting_name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-    $db->query($sql_query);
+//     $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "demo_settings` (
+//         `setting_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+//         `setting_value` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+//         `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'app',
+//         `deleted` tinyint(1) NOT NULL DEFAULT '0',
+//         UNIQUE KEY `setting_name` (`setting_name`)
+//         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+//     $db->query($sql_query);
 
    
 
-    $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "assigning_items` (
-       `id` int(11) NOT NULL AUTO_INCREMENT,
-  `item_id` int(11) NOT NULL,
-  `screen_size_id` int(11) NOT NULL,
-  `quantity` varchar(200) NOT NULL,
-  `created_by` int(11) NOT NULL,
-  `created_at` date DEFAULT NULL,
-  `labels` varchar(200) NOT NULL,
-  `is_lead` int(11) NOT NULL,
-  `starred_by` int(11) NOT NULL,
-  `lead_status_id` int(11) NOT NULL,
-  `deleted` int(11) NOT NULL,
-        PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-    $db->query($sql_query);
+//     $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "assigning_items` (
+//        `id` int(11) NOT NULL AUTO_INCREMENT,
+//   `item_id` int(11) NOT NULL,
+//   `screen_size_id` int(11) NOT NULL,
+//   `quantity` varchar(200) NOT NULL,
+//   `created_by` int(11) NOT NULL,
+//   `created_at` date DEFAULT NULL,
+//   `labels` varchar(200) NOT NULL,
+//   `is_lead` int(11) NOT NULL,
+//   `starred_by` int(11) NOT NULL,
+//   `lead_status_id` int(11) NOT NULL,
+//   `deleted` int(11) NOT NULL,
+//         PRIMARY KEY (`id`)
+//         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+//     $db->query($sql_query);
     
 
-    $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "screen_size` (
-     `id` int(11) NOT NULL  AUTO_INCREMENT,
-  `screen_size` text NOT NULL,
-  `deleted` int(11) NOT NULL,
-         PRIMARY KEY (`id`)
-         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-     $db->query($sql_query);
+//     $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "screen_size` (
+//      `id` int(11) NOT NULL  AUTO_INCREMENT,
+//   `screen_size` text NOT NULL,
+//   `deleted` int(11) NOT NULL,
+//          PRIMARY KEY (`id`)
+//          ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+    //  $db->query($sql_query);
 
-     $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "items_list` (
-        `id` int(11) NOT NULL AUTO_INCREMENT,
-       `item_name` varchar(200) NOT NULL,
-       `description` text NOT NULL,
-       `quantity` varchar(200) NOT NULL,
-       `model` varchar(200) NOT NULL,
-       `created_by` int(11) NOT NULL,
-       `created_at` date DEFAULT NULL,
-       `labels` text NOT NULL,
-       `is_lead` int(11) NOT NULL,
-       `starred_by` int(11) NOT NULL,
-       `lead_status_id` int(11) NOT NULL,
-       `deleted` int(11) NOT NULL,
-                 PRIMARY KEY (`id`)
+    //  $sql_query = "CREATE TABLE IF NOT EXISTS `" . $dbprefix . "items_list` (
+    //     `id` int(11) NOT NULL AUTO_INCREMENT,
+    //    `item_name` varchar(200) NOT NULL,
+    //    `description` text NOT NULL,
+    //    `quantity` varchar(200) NOT NULL,
+    //    `model` varchar(200) NOT NULL,
+    //    `created_by` int(11) NOT NULL,
+    //    `created_at` date DEFAULT NULL,
+    //    `labels` text NOT NULL,
+    //    `is_lead` int(11) NOT NULL,
+    //    `starred_by` int(11) NOT NULL,
+    //    `lead_status_id` int(11) NOT NULL,
+    //    `deleted` int(11) NOT NULL,
+    //              PRIMARY KEY (`id`)
                  
-                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-             $db->query($sql_query);
+    //              ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+    //          $db->query($sql_query);
      
-             $sql_query = "ALTER TABLE `" . $dbprefix . "expenses` 
-             ADD COLUMN `company_id` int(11) NULL,
-                     ADD COLUMN `created_by` int(11) NULL,
-                     ADD COLUMN  `status` enum('unpaid','paid','rejected') NOT NULL DEFAULT 'unpaid',
-                     ADD COLUMN `created_at` date DEFAULT NULL;";
+    //          $sql_query = "ALTER TABLE `" . $dbprefix . "expenses` 
+    //          ADD COLUMN `company_id` int(11) NULL,
+    //                  ADD COLUMN `created_by` int(11) NULL,
+    //                  ADD COLUMN  `status` enum('unpaid','paid','rejected') NOT NULL DEFAULT 'unpaid',
+    //                  ADD COLUMN `created_at` date DEFAULT NULL;";
      
-         $db->query($sql_query);
-         $sql_query = "ALTER TABLE `" . $dbprefix . "clients` 
-         ADD COLUMN `company_id` int(11) NULL;";
-     $db->query($sql_query);
-     $sql_query = "ALTER TABLE `" . $dbprefix . "team_member_job_info` 
-     ADD COLUMN `company_id` int(11) NULL;";
-     $db->query($sql_query);
-         $sql_query = "ALTER TABLE `" . $dbprefix . "projects` 
-             ADD COLUMN `company_id` int(11) NULL, 
-             ADD COLUMN `supervisor_id` int(11) NOT NULL,
-             ADD COLUMN `location` text NOT NULL,
-             ADD COLUMN `project_date` date DEFAULT NULL,
-             ADD COLUMN `screen_size_id` int(11) NOT NULL;";
-         $db->query($sql_query);
+    //      $db->query($sql_query);
+    //      $sql_query = "ALTER TABLE `" . $dbprefix . "clients` 
+    //      ADD COLUMN `company_id` int(11) NULL;";
+    //  $db->query($sql_query);
+    //  $sql_query = "ALTER TABLE `" . $dbprefix . "team_member_job_info` 
+    //  ADD COLUMN `company_id` int(11) NULL;";
+    //  $db->query($sql_query);
+    //      $sql_query = "ALTER TABLE `" . $dbprefix . "projects` 
+    //          ADD COLUMN `company_id` int(11) NULL, 
+    //          ADD COLUMN `supervisor_id` int(11) NOT NULL,
+    //          ADD COLUMN `location` text NOT NULL,
+    //          ADD COLUMN `project_date` date DEFAULT NULL,
+    //          ADD COLUMN `screen_size_id` int(11) NOT NULL;";
+    //      $db->query($sql_query);
          
-         $sql_query = "ALTER TABLE `" . $dbprefix . "users` 
-             ADD COLUMN `uuid` varchar(255) DEFAULT '',
-             ADD COLUMN `login_type` enum('normal_login','azure_login') NOT NULL DEFAULT 'azure_login',
-             ADD COLUMN `private_email` varchar(200) DEFAULT NULL;";
-         $db->query($sql_query);
+    //      $sql_query = "ALTER TABLE `" . $dbprefix . "users` 
+    //          ADD COLUMN `uuid` varchar(255) DEFAULT '',
+    //          ADD COLUMN `login_type` enum('normal_login','azure_login') NOT NULL DEFAULT 'azure_login',
+    //          ADD COLUMN `private_email` varchar(200) DEFAULT NULL;";
+    //      $db->query($sql_query);
           
      });
      
@@ -219,25 +219,26 @@ register_installation_hook("aleelo_plugin", function ($item_purchase_code) {
          $dbprefix = get_db_prefix();
          $db = db_connect('default');
      
-         $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "demo_settings`;";
-         $db->query($sql_query);
-         $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "assigning_items`;";
-         $db->query($sql_query);
-         $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "screen_size`;";
-         $db->query($sql_query);
-             $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "items_list`;";
-             $db->query($sql_query);
+        //  $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "demo_settings`;";
+        //  $db->query($sql_query);
+        //  $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "assigning_items`;";
+        //  $db->query($sql_query);
+        //  $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "screen_size`;";
+        //  $db->query($sql_query);
+        //      $sql_query = "DROP TABLE IF EXISTS `" . $dbprefix . "items_list`;";
+        //      $db->query($sql_query);
             
-             $sql_query = "ALTER TABLE `" . $dbprefix . "clients` DROP COLUMN `company_id`;";
-             $db->query($sql_query);
-             $sql_query = "ALTER TABLE `" . $dbprefix . "team_member_job_info` DROP COLUMN `company_id`;";
-             $db->query($sql_query);
-             $sql_query = "ALTER TABLE `" . $dbprefix . "projects` DROP COLUMN `company_id`, DROP COLUMN `supervisor_id`, DROP COLUMN `location`, DROP COLUMN `project_date`, DROP COLUMN `screen_size_id`;";
-             $db->query($sql_query);
-             $sql_query = "ALTER TABLE `" . $dbprefix . "users` DROP COLUMN `uuid`, DROP COLUMN `login_type`, DROP COLUMN `private_email`;";
-             $db->query($sql_query);
-             $sql_query = "ALTER TABLE `" . $dbprefix . "expenses` DROP COLUMN `company_id`, DROP COLUMN `created_by`, DROP COLUMN `status`, DROP COLUMN `created_at`;";
-             $db->query($sql_query);
+        //      $sql_query = "ALTER TABLE `" . $dbprefix . "clients` DROP COLUMN `company_id`;";
+        //      $db->query($sql_query);
+        //      $sql_query = "ALTER TABLE `" . $dbprefix . "team_member_job_info` DROP COLUMN `company_id`;";
+        //      $db->query($sql_query);
+        //      $sql_query = "ALTER TABLE `" . $dbprefix . "projects` DROP COLUMN `company_id`, DROP COLUMN `supervisor_id`, DROP COLUMN `location`, DROP COLUMN `project_date`, DROP COLUMN `screen_size_id`;";
+        //      $db->query($sql_query);
+        //      $sql_query = "ALTER TABLE `" . $dbprefix . "users` DROP COLUMN `uuid`, DROP COLUMN `login_type`, DROP COLUMN `private_email`;";
+        //      $db->query($sql_query);
+        //      $sql_query = "ALTER TABLE `" . $dbprefix . "expenses` DROP COLUMN `company_id`, DROP COLUMN `created_by`, DROP COLUMN `status`, DROP COLUMN `created_at`;";
+        //      $db->query($sql_query);
              
      
-     });
+     }
+    );
