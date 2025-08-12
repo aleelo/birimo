@@ -127,6 +127,20 @@ public function save()
      $view_data['payment_methods_dropdown'] = $this->get_payment_method_dropdown();
 $amount = "";
 
+
+$hide_expense_dropdown = false;
+
+if (!empty($expense_id)) {
+    $balance_due = $this->Expense_payments_model->get_expense_total($expense_id)->balance_due ?? 0;
+    $amount = to_decimal_format($balance_due);
+    $hide_expense_dropdown = true; 
+}
+
+$view_data["amount"] = $amount;
+$view_data["hide_expense_dropdown"] = $hide_expense_dropdown;
+
+
+
 if (!empty($view_data['model_info']) && $view_data['model_info']->amount_paid) {
     $amount = to_decimal_format($view_data['model_info']->amount_paid);
 } elseif ($expense_id) {
@@ -226,11 +240,14 @@ function get_expense_info($id) {
         $expense = $this->Expenses_model->get_one($expense_id);
 
         if ($total_paid >= $expense->amount) {
-            $this->Expenses_model->ci_save(["status" => "paid"], $expense_id);
+            $paid=array("status" => "paid");
+            $this->Expenses_model->ci_save($paid, $expense_id);
         } elseif ($total_paid > 0) {
-            $this->Expenses_model->ci_save(["status" => "partially_paid"], $expense_id);
+            $partial=array("status" => "partially_paid");
+            $this->Expenses_model->ci_save($partial, $expense_id);
         } else {
-            $this->Expenses_model->ci_save(["status" => "unpaid"], $expense_id);
+            $unpaid=array("status" => "unpaid");
+            $this->Expenses_model->ci_save($unpaid, $expense_id);
         }
     }
 

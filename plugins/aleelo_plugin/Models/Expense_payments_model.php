@@ -40,7 +40,7 @@ use CodeIgniter\Model;
         LEFT JOIN $expenses_table ON $expenses_table.id= $expense_payments_table.expense_id
         LEFT JOIN $payment_methods_table ON $payment_methods_table.id = $expense_payments_table.payment_method
 
-        WHERE $expenses_table.deleted=0 $where";
+        WHERE $expense_payments_table.deleted=0 $where";
         return $this->db->query($sql);
 
     }

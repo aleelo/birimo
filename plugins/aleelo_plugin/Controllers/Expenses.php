@@ -549,7 +549,7 @@ class Expenses extends Security_Controller_Plugin
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
 
-        $row_data[] = modal_anchor(get_uri("accounting/convert_modal_form"), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('acc_convert'), "data-post-id" => $data->id, "data-post-type" => 'expense', "data-post-form_type" => 'expense_form'))
+        $row_data[] = modal_anchor(get_uri("expense_payments/modal_form"), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('acc_convert'), "data-post-expense_id" => $data->id, "data-post-type" => 'expense', "data-post-form_type" => 'expense_form'))
             . modal_anchor(get_uri("expenses/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_expense'), "data-post-id" => $data->id))
             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_expense'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("expenses/delete"), "data-action" => "delete-confirmation"));
 

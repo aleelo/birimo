@@ -15,6 +15,7 @@ $routes->get('assigning_items', 'Assigning_items::index', ['namespace' => 'aleel
 $routes->get('assigning_items/(:any)', 'Assigning_items::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('assigning_items/(:any)', 'Assigning_items::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1');
+$routes->get('expense_payments/modal_form', 'Expense_payments::modal_form/$1');
 $routes->post('expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1'); // optional, badanaa GET ayaa fura modals
 $routes->post('expense_payments/save', 'Expense_payments::save');
 $routes->get('expense_payments/index/(:num)', 'Expense_payments::index/$1');
