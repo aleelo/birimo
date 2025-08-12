@@ -352,7 +352,7 @@ app_hooks()->add_action("app_hook_data_delete", function($data){
                 $Accounting_model->delete_convert($data['id'], 'expense');
             break;
         case get_db_prefix().'expense_payments':
-                $Accounting_model->delete_convert($data['id'], 'expense_payment');
+                $Accounting_model->delete_convert($data['id'], 'vendor_expense_payment');
             break;
         case get_db_prefix().'items':
                 $Accounting_model->delete_convert($data['id'], 'opening_stock');

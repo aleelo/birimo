@@ -183,14 +183,14 @@ public $Users_models;
         }
     }
 
-     public function get_redirect_uri($env){
-        if ($env == "development"){
-            return 'https://localhost/birimo/signin/aad_callback';
-        }elseif($env == "production"){
-            return 'https://birimo.aleelo.com/signin/aad_callback';
-        }elseif($env == "staging"){
-            return 'https://birimo-staging.aleelo.com/signin/aad_callback';
-        }
+    public function get_redirect_uri($env){
+            if ($env == "development"){
+                return 'https://localhost/birimo/signin/aad_callback';
+            }elseif($env == "production"){
+                return 'https://birimo.aleelo.com/signin/aad_callback';
+            }elseif($env == "staging"){
+                return 'https://workspace.birimoevents.com/signin/aad_callback';
+    }
     }
 
     public function aad_signin($email)

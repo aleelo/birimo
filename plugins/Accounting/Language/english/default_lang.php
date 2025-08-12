@@ -1051,5 +1051,7 @@ $lang['acc_reconcile'] = 'Reconcile';
 $lang['acc_budget'] = 'Budget';
 $lang['acc_reports'] = 'Reports';
 $lang['acc_setting'] = 'Setting';
+$lang['vendor_expense_payment'] = 'Vendor Expense Payment';
+$lang['expense_vender'] = 'Expense Vender';
 
 return $lang;

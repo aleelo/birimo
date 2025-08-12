@@ -1,5 +1,5 @@
 <?php
-$form_type = $form_type ?? 'expense_payment';
+$form_type = $form_type ?? 'vendor_expense_payment';
 ?>
 
 <?php echo form_open(get_uri("accounting/convert"), array("id" => "convert-form", "class" => "general-form", "role" => "form")); ?>
@@ -11,7 +11,7 @@ $form_type = $form_type ?? 'expense_payment';
             <?php echo acc_form_hidden('type', $type); ?>
             <?php echo acc_form_hidden('amount', $amount); ?>
             <?php echo acc_form_hidden('form_type', $form_type); ?>
-            <?php if ($form_type === 'expense_payment') {
+            <?php if ($form_type === 'vendor_expense_payment') {
                 echo acc_form_hidden('expense_id', $id);
             } ?>
         </div>
@@ -23,7 +23,7 @@ $form_type = $form_type ?? 'expense_payment';
         </button>
         <button type="submit" class="btn btn-primary">
             <span data-feather="check-circle" class="icon-16"></span>
-            <?php echo ($form_type === 'expense_payment') ? app_lang('pay') : app_lang('save'); ?>
+            <?php echo ($form_type === 'vendor_expense_payment') ? app_lang('pay') : app_lang('save'); ?>
         </button>
     </div>
 </div>
@@ -31,7 +31,7 @@ $form_type = $form_type ?? 'expense_payment';
  <script>
     $(document).ready(function () {
         var formType = "<?php echo $form_type; ?>";
-        if (formType === "expense_payment") {
+        if (formType === "vendor_expense_payment") {
             $('#deposit_to').prop('readonly', true); // beddel 'disabled' => 'readonly'
         }
     });

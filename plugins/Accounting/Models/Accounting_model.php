@@ -3769,7 +3769,7 @@ class Accounting_model extends Crud_model {
                             $node['credit'] = 0;
                             $node['customer'] = $expense->client_id;
                             $node['date'] = $expense->expense_date;
-                            $node['description'] = '';
+                            $node['description'] = '1';
                             $node['rel_id'] = $data['id'];
                             $node['rel_type'] = 'expense';
                             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -3784,7 +3784,7 @@ class Accounting_model extends Crud_model {
                             $node['date'] = $expense->expense_date;
                             $node['debit'] = 0;
                             $node['credit'] = $total_tax;
-                            $node['description'] = '';
+                            $node['description'] = '2';
                             $node['rel_id'] = $data['id'];
                             $node['rel_type'] = 'expense';
                             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -3799,7 +3799,7 @@ class Accounting_model extends Crud_model {
                             $node['debit'] = $total_tax;
                             $node['customer'] = $expense->client_id;
                             $node['credit'] = 0;
-                            $node['description'] = '';
+                            $node['description'] = '3';
                             $node['rel_id'] = $data['id'];
                             $node['rel_type'] = 'expense';
                             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -3814,7 +3814,7 @@ class Accounting_model extends Crud_model {
                             $node['tax'] = $expense->tax_id;
                             $node['debit'] = 0;
                             $node['credit'] = $total_tax;
-                            $node['description'] = '';
+                            $node['description'] = '4';
                             $node['rel_id'] = $data['id'];
                             $node['rel_type'] = 'expense';
                             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -3957,7 +3957,7 @@ class Accounting_model extends Crud_model {
             $node['date'] = $date;
             $node['credit'] = 0;
             $node['tax'] = 0;
-            $node['description'] = $description;
+            $node['description'] = 'j';
             $node['rel_id'] = $data['id'];
             $node['rel_type'] = $data['type'];
             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -3972,7 +3972,7 @@ class Accounting_model extends Crud_model {
             $node['tax'] = 0;
             $node['debit'] = 0;
             $node['credit'] = $data['amount'];
-            $node['description'] = $description;
+            $node['description'] = 'b';
             $node['rel_id'] = $data['id'];
             $node['rel_type'] = $data['type'];
             $node['datecreated'] = date('Y-m-d H:i:s');
@@ -9649,7 +9649,7 @@ class Accounting_model extends Crud_model {
     }
     public function automatic_expense_payment_conversion($id){
     
-        $this->delete_convert($id, 'expense_payment');
+        $this->delete_convert($id, 'vendor_expense_payment');
 
         $expenses_model = model('Expenses_model');
         $Expense_categories_model = model('Expense_categories_model');
@@ -9739,7 +9739,7 @@ class Accounting_model extends Crud_model {
                 $node['credit'] = 0;
                 $node['description'] = '4';
                 $node['rel_id'] = $id;
-                $node['rel_type'] = 'expense_payment';
+                $node['rel_type'] = 'vendor_expense_payment';
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = $created_by;
                 $data_insert[] = $node;
@@ -9754,7 +9754,7 @@ class Accounting_model extends Crud_model {
                 $node['credit'] = $Expense_payments->amount_paid;
                 $node['description'] = '4';
                 $node['rel_id'] = $id;
-                $node['rel_type'] = 'expense_payment';
+                $node['rel_type'] = 'vendor_expense_payment';
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = $created_by;
                 $data_insert[] = $node;
@@ -9777,7 +9777,7 @@ class Accounting_model extends Crud_model {
             //             $node['date'] = $expense->expense_date;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9792,7 +9792,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = $total_tax;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9807,7 +9807,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = 0;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9822,7 +9822,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = $total_tax;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9844,7 +9844,7 @@ class Accounting_model extends Crud_model {
             //             $node['date'] = $expense->expense_date;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9859,7 +9859,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = $total_tax;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9874,7 +9874,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = 0;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9889,7 +9889,7 @@ class Accounting_model extends Crud_model {
             //             $node['credit'] = $total_tax;
             //             $node['description'] = '';
             //             $node['rel_id'] = $id;
-            //             $node['rel_type'] = 'expense_payment';
+            //             $node['rel_type'] = 'vendor_expense_payment';
             //             $node['datecreated'] = date('Y-m-d H:i:s');
             //             $node['addedfrom'] = $created_by;
             //             $data_insert[] = $node;
@@ -9929,6 +9929,20 @@ class Accounting_model extends Crud_model {
 
 
         $db_builder->where('((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'invoices.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "invoice") = 0) '.$where_currency);
+        return $db_builder->countAllResults();
+    }
+    public function count_expense_payment_not_convert_yet($currency = '', $where = ''){
+        $where_currency = '';
+
+        $db_builder = $this->db->table(get_db_prefix().'expense_payments');
+        $db_builder->where('deleted', 0);
+
+        if($where != ''){
+            $db_builder->where($where);
+        }
+
+
+        $db_builder->where('((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") = 0) '.$where_currency);
         return $db_builder->countAllResults();
     }
 
