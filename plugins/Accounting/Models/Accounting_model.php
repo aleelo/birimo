@@ -9432,8 +9432,8 @@ class Accounting_model extends Crud_model {
                     
                     $node = [];
                     $node['split'] = $expense_payment_account;
-                    $node['account'] = $Supplier->Account_Payable;
                     $node['date'] = $expense->expense_date;
+                    $node['account'] = $expense_payment_account;
                     $node['debit'] = $expense_total;
                     $node['customer'] = $expense->client_id;
                     $node['credit'] = 0;
@@ -9448,7 +9448,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $expense_deposit_to;
                     $node['customer'] = $expense->client_id;
-                    $node['account'] = $expense_payment_account;
+                    $node['account'] = $Supplier->Account_Payable;
                     $node['date'] = $expense->expense_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9465,7 +9465,7 @@ class Accounting_model extends Crud_model {
             if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
                 $node = [];
                 $node['split'] = $payment_account;
-                $node['account'] = $Supplier->Account_Payable;
+                $node['account'] = $payment_account;
                 $node['debit'] = $expense_total;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
@@ -9480,7 +9480,7 @@ class Accounting_model extends Crud_model {
 
                 $node = [];
                 $node['split'] = $Supplier->Account_Payable;
-                $node['account'] = $payment_account;
+                $node['account'] = $Supplier->Account_Payable;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
                 $node['tax'] = 0;
@@ -9694,7 +9694,7 @@ class Accounting_model extends Crud_model {
                     $payment_mode_mapping = $this->get_payment_mode_mapping($Expense_payments->payment_method);
                     $node = [];
                     $node['split'] = $Supplier->Account_Payable;
-                    $node['account'] = $payment_mode_mapping->expense_deposit_to;
+                    $node['account'] = $Supplier->Account_Payable;
                     $node['date'] = $expense->expense_date;
                     $node['debit'] = $Expense_payments->amount_paid;
                     $node['customer'] = $expense->client_id;
@@ -9710,7 +9710,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $payment_mode_mapping->expense_deposit_to;
                     $node['customer'] = $expense->client_id;
-                    $node['account'] = $Supplier->Account_Payable;
+                    $node['account'] = $payment_mode_mapping->expense_deposit_to;
                     $node['date'] = $expense->expense_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9727,7 +9727,7 @@ class Accounting_model extends Crud_model {
             if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
                 $node = [];
                 $node['split'] = $payment_account;
-                $node['account'] = $payment_mode_deposit_to;
+                $node['account'] = $Supplier->Account_Payable;
                 $node['debit'] = $Expense_payments->amount_paid;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
@@ -9742,7 +9742,7 @@ class Accounting_model extends Crud_model {
 
                 $node = [];
                 $node['split'] = $deposit_to;
-                $node['account'] = $Supplier->Account_Payable;
+                $node['account'] = $payment_mode_deposit_to;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
                 $node['tax'] = 0;

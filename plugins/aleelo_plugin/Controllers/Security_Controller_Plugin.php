@@ -21,6 +21,8 @@ class Security_Controller_Plugin extends Security_Controller
     public $Project_status_model;
     public $Clients_model;
     public $Expense_payments_model;
+    public $Expense_payments_emp_model;
+    public $Expenses_emp_model;
     public $Country_model;
     public $Regions_model;
 
@@ -70,6 +72,8 @@ class Security_Controller_Plugin extends Security_Controller
         $this->Invoices_model = new \aleelo_plugin\Models\Invoices_model();
         $this->Expense_categories_model = new \aleelo_plugin\Models\Expense_categories_model();
         $this->Estimate_items_model = new \aleelo_plugin\Models\Estimate_items_model();
+        $this->Expense_payments_emp_model = new \aleelo_plugin\Models\Expense_payments_emp_model();
+        $this->Expenses_emp_model = new \aleelo_plugin\Models\Expenses_emp_model();
 
 
 

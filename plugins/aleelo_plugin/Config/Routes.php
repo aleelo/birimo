@@ -27,15 +27,14 @@ $routes->match(['get', 'post'], 'expense_payments/modal_form', 'Expense_payments
 $routes->get('items_list', 'Items_list::index', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->get('items_list/(:any)', 'Items_list::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('items_list/(:any)', 'Items_list::$1', ['namespace' => 'aleelo_plugin\Controllers']);
-$routes->group('', ['namespace' => 'aleelo_plugin\Controllers'], function($routes) {
+$routes->group('', ['namespace' => 'aleelo_plugin\Controllers'], function ($routes) {
     $routes->get('expense_payments', 'Expense_payments::index');
     $routes->get('expense_payments/index/(:num)', 'Expense_payments::index/$1');
     $routes->get('expense_payments/datatable/(:num)', 'Expense_payments::datatable/$1');
     $routes->post('expense_payments/save', 'Expense_payments::save');
     $routes->get('expense_payments/edit/(:num)', 'Expense_payments::edit/$1');
     $routes->post('expense_payments/delete/(:num)', 'Expense_payments::delete/$1');
-        $routes->post('expense_payments/get_invoice_payment_amount_suggestion/(:num)', 'Expense_payments::get_invoice_payment_amount_suggestion/$1');
-
+    $routes->post('expense_payments/get_invoice_payment_amount_suggestion/(:num)', 'Expense_payments::get_invoice_payment_amount_suggestion/$1');
 });
 $routes->post('expense_payments/save', 'Expense_payments::save', ['namespace' => 'aleelo_plugin\Controllers']);
 
@@ -47,6 +46,9 @@ $routes->get('expenses', 'Expense::index', ['namespace' => 'aleelo_plugin\Contro
 $routes->get('expenses/(:any)', 'Expense::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('expenses/(:any)', 'Expense::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 
+$routes->get('expenses_emp', 'Expenses_emp::index', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('expenses_emp/(:any)', 'Expenses_emp::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->post('expenses_emp/(:any)', 'Expenses_emp::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 
 
 $routes->get('project', 'Project::index', ['namespace' => 'aleelo_plugin\Controllers']);
@@ -82,6 +84,10 @@ $routes->get('estimates', 'estimates::index', ['namespace' => 'aleelo_plugin\Con
 $routes->get('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 $routes->post('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
 
-$routes->get('tasks', 'Tasks::index', ['namespace' => 'aleelo_plugin\Controllers']);
-$routes->get('tasks/(:any)', 'Tasks::$1', ['namespace' => 'aleelo_plugin\Controllers']);
-$routes->post('tasks/(:any)', 'Tasks::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('estimates', 'estimates::index', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->post('estimates/(:any)', 'estimates::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+
+$routes->get('expense_payments_emp', 'Expense_payments_emp::index', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->get('expense_payments_emp/(:any)', 'Expense_payments_emp::$1', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->post('expense_payments_emp/(:any)', 'Expense_payments_emp::$1', ['namespace' => 'aleelo_plugin\Controllers']);
