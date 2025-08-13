@@ -1178,6 +1178,12 @@ class Invoices extends Security_Controller_Plugin
     $services = (float)$this->request->getPost('services');
     $days = (float)$this->request->getPost('days');
     $days = $days > 0 ? $days : 1;
+        $invoice_id = $this->request->getPost('invoice_id');
+        $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
+        $new_account = $this->request->getPost("new_account");
+        $invoice_item_title = $this->request->getPost('invoice_item_title');
+
+        $invoice_item_data = [];
 
     if (!$this->can_edit_invoices() || !$this->is_invoice_editable($invoice_id)) {
         app_redirect("forbidden");
@@ -1187,7 +1193,17 @@ class Invoices extends Security_Controller_Plugin
     $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
     $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
     $item_id = !$id ? $this->request->getPost('item_id') : 0;
-
+        if ($add_new_item_to_library) {
+            $library_item_data = array(
+                "title" => $invoice_item_title,
+                "description" => $this->request->getPost('invoice_item_description'),
+                "unit_type" => $this->request->getPost('invoice_unit_type'),
+                "rate" => unformat_currency($this->request->getPost('invoice_item_rate')),
+                "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+                "company_id" => $this->login_user->department,
+            );
+            $item_id = $this->Items_model->ci_save($library_item_data);
+        }
     // ✅ Calculate totals
     $base_total = $quantity * $rate * $days;
     $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
