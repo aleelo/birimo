@@ -9449,7 +9449,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $expense_deposit_to;
                     $node['customer'] = $expense->client_id;
-                    $node['account'] = $Supplier->Account_Payable;
+                    $node['account'] = $expense_deposit_to;
                     $node['date'] = $expense->expense_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9481,7 +9481,7 @@ class Accounting_model extends Crud_model {
 
                 $node = [];
                 $node['split'] = $Supplier->Account_Payable;
-                $node['account'] = $Supplier->Account_Payable;
+                $node['account'] = $expense_deposit_to;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
                 $node['tax'] = 0;
@@ -9694,8 +9694,8 @@ class Accounting_model extends Crud_model {
                     }
                     $payment_mode_mapping = $this->get_payment_mode_mapping($Expense_payments->payment_method);
                     $node = [];
-                    $node['split'] = $Supplier->Account_Payable;
-                    $node['account'] = $Supplier->Account_Payable;
+                    $node['split'] = $payment_mode_mapping->expense_deposit_to;
+                    $node['account'] = $expense_payment_account;
                     $node['date'] = $expense->expense_date;
                     $node['debit'] = $Expense_payments->amount_paid;
                     $node['customer'] = $expense->client_id;
@@ -9709,7 +9709,7 @@ class Accounting_model extends Crud_model {
                     $data_insert[] = $node;
 
                     $node = [];
-                    $node['split'] = $payment_mode_mapping->expense_deposit_to;
+                    $node['split'] = $expense_payment_account;
                     $node['customer'] = $expense->client_id;
                     $node['account'] = $payment_mode_mapping->expense_deposit_to;
                     $node['date'] = $expense->expense_date;

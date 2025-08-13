@@ -204,7 +204,7 @@ class Project extends Security_Controller_Plugin {
 
         $view_data["selected_status_id"] = $status_id;
         $view_data['project_statuses'] = $this->Project_status_model->get_details()->getResult();
-        $view_data['departments_dropdown'] = $this->get_departments_for_table_emp();
+        // $view_data['departments_dropdown'] = $this->get_departments_for_table_emp();
         // $view_data['departments_dropdown'] = array("" => " -- All Companies -- ") + $this->Departments_model->get_dropdown_list(array("nameSo"), "id");
 
         if ($this->login_user->is_admin || $this->login_user->user_type === "staff" && get_array_value($this->login_user->permissions, "do_not_show_projects") !== "1") {

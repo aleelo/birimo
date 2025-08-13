@@ -326,7 +326,7 @@ class Items_list extends Security_Controller_Plugin {
         }
 
         $view_data["show_contact_info"] = $this->can_view_team_members_contact_info();
-        $view_data['departments_dropdown'] = $this->get_departments_for_table_emp();
+        // $view_data['departments_dropdown'] = $this->get_departments_for_table_emp();
         $view_data['deparment_id'] = $deparment_id;
 
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("team_members", $this->login_user->is_admin, $this->login_user->user_type);
