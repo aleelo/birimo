@@ -151,8 +151,8 @@ class Client extends Security_Controller_Plugin {
             "gst_number" => $this->request->getPost('gst_number'),
             "email" => $this->request->getPost('email'),
             "district"=> $this->request->getPost('district'),
-            "Account_Payable" => $this->request->getPost('Account_Payable'),
-            "Account_Receivable" => $this->request->getPost('Account_Receivable'),
+            // "Account_Payable" => $this->request->getPost('Account_Payable'),
+            // "Account_Receivable" => $this->request->getPost('Account_Receivable'),
         );
 
         if ($this->login_user->user_type === "staff") {

@@ -261,6 +261,14 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
                 $sidebar_menu["expense_payments"] = array("name" => "expense_payments", "url" => "expense_payments", "class" => "arrow-right-circle");
                 $show_expenses_menu = true;
             }
+            if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "show_expense") !== "1") {
+                $sidebar_menu["expenses_emp"] = array("name" => "expenses_emp", "url" => "expenses_emp", "class" => "arrow-right-circle");
+                $show_expenses_menu = true;
+            }
+             if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "show_expense") !== "1") {
+                $sidebar_menu["expense_payments_emp"] = array("name" => "expense_payments_emp", "url" => "expense_payments_emp", "class" => "arrow-right-circle");
+                $show_expenses_menu = true;
+            }
 
             if ($this->ci->login_user->is_admin ||get_array_value($this->ci->login_user->permissions,"show_sales") =="1" ){
                 $sidebar_menu["Sales and crm"] = array("name" => "Sales and crm", "url" => "gg", "class" => "menu");

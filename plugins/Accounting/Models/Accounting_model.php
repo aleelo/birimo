@@ -9114,8 +9114,8 @@ class Accounting_model extends Crud_model {
                 if($item_automatic){
                     $node = [];
                     $node['itemable_id'] = $value->id;
-                    $node['split'] = $payment_account;
-                    $node['account'] = $client_acc_receivable;
+                    $node['split'] = $item_automatic->income_account;
+                    $node['account'] = $item_automatic->inventory_asset_account;
                     $node['item'] = $item_id;
                     $node['date'] = $invoice->bill_date;
                     $node['paid'] = $paid;
@@ -9133,7 +9133,7 @@ class Accounting_model extends Crud_model {
 
                     $node = [];
                     $node['itemable_id'] = $value->id;
-                    $node['split'] = $deposit_to;
+                    $node['split'] = $item_automatic->inventory_asset_account;
                     $node['customer'] = $invoice->client_id;
                     $node['account'] = $item_automatic->income_account;
                     $node['item'] = $item_id;
@@ -9153,7 +9153,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['itemable_id'] = $value->id;
                     $node['split'] = $payment_account;
-                    $node['account'] = $client_acc_receivable;
+                    $node['account'] = $deposit_to;
                     $node['item'] = $item_id;
                     $node['debit'] = $alltotal;
                     $node['debit'] = $alltotal;
@@ -9269,7 +9269,7 @@ class Accounting_model extends Crud_model {
                 if($payment_mode_mapping){
                     $node = [];
                     $node['split'] = $payment_mode_mapping->payment_account;
-                    $node['account'] = $Payment_methods->account_id;
+                    $node['account'] = $payment_mode_mapping->deposit_to;
                     $node['date'] = $payment->payment_date;
                     $node['debit'] = $payment_total;
                     $node['customer'] = $invoice->client_id;
@@ -9285,7 +9285,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $payment_mode_mapping->deposit_to;
                     $node['customer'] = $invoice->client_id;
-                    $node['account'] = $client_acc_receivable;
+                    $node['account'] = $payment_mode_mapping->payment_account;
                     $node['date'] = $payment->payment_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9302,7 +9302,7 @@ class Accounting_model extends Crud_model {
                     if(get_setting('acc_payment_automatic_conversion') == 1){
                         $node = [];
                         $node['split'] = $payment_account;
-                        $node['account'] = $Payment_methods->account_id;
+                        $node['account'] = $deposit_to;
                         $node['customer'] = $invoice->client_id;
                         $node['debit'] = $payment_total;
                         $node['credit'] = 0;
@@ -9317,7 +9317,7 @@ class Accounting_model extends Crud_model {
                         $node = [];
                         $node['split'] = $deposit_to;
                         $node['customer'] = $invoice->client_id;
-                        $node['account'] = $client_acc_receivable;
+                        $node['account'] = $payment_account;
                         $node['date'] = $payment->payment_date;
                         $node['debit'] = 0;
                         $node['credit'] = $payment_total;
@@ -9348,7 +9348,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $deposit_to;
                     $node['customer'] = $invoice->client_id;
-                    $node['account'] = $client_acc_receivable;
+                    $node['account'] = $payment_account;
                     $node['date'] = $payment->payment_date;
                     $node['debit'] = 0;
                     $node['credit'] = $payment_total;

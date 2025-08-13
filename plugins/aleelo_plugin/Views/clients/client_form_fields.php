@@ -219,30 +219,30 @@
         </div>
     </div>
 </div> -->
-<div class="form-group">
+<!-- <div class="form-group">
     <div class="row">
 
         <label for="Account_Receivable" class="<?php echo $label_column; ?>"><?php echo ('Account Receivable'); ?></label>
         <div class=" <?php echo $field_column; ?>">
             <?php
-            echo form_dropdown("Account_Receivable", $accounts_dropdown, $model_info->Account_Receivable, "class='select2 form-control validate-hidden' id='Account Payable' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+           // echo form_dropdown("Account_Receivable", $accounts_dropdown, $model_info->Account_Receivable, "class='select2 form-control validate-hidden' id='Account Payable' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
 
             ?>
         </div>
     </div>
-</div>
-<div class="form-group">
+</div> -->
+<!-- <div class="form-group">
     <div class="row">
 
         <label for="Account_Payable" class="<?php echo $label_column; ?>"><?php echo ('Account Payable'); ?></label>
         <div class=" <?php echo $field_column; ?>">
             <?php
-            echo form_dropdown("Account_Payable", $accounts_dropdown, $model_info->Account_Payable, "class='select2 form-control validate-hidden' id='Account_Payable' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+           // echo form_dropdown("Account_Payable", $accounts_dropdown, $model_info->Account_Payable, "class='select2 form-control validate-hidden' id='Account_Payable' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
 
             ?>
         </div>
     </div>
-</div>
+</div> -->
 <div class="form-group">
     <div class="row">
         <label for="phone" class="<?php echo $label_column; ?>"><?php echo app_lang('phone'); ?></label>
