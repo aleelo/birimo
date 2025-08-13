@@ -9465,7 +9465,7 @@ class Accounting_model extends Crud_model {
             if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
                 $node = [];
                 $node['split'] = $payment_account;
-                $node['account'] = $deposit_to;
+                $node['account'] = $Supplier->Account_Payable;
                 $node['debit'] = $expense_total;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
@@ -9479,8 +9479,8 @@ class Accounting_model extends Crud_model {
                 $data_insert[] = $node;
 
                 $node = [];
-                $node['split'] = $deposit_to;
-                $node['account'] = $Supplier->Account_Payable;
+                $node['split'] = $Supplier->Account_Payable;
+                $node['account'] = $payment_account;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
                 $node['tax'] = 0;
