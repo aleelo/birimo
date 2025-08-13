@@ -426,16 +426,16 @@ $data = array(
         </tbody>
         <tfoot>
             <tr>
-                <td style="width: <?php echo $show_taxable ? '72%' : '86%'; ?>;"></td>
+                <td style="width: <?php echo $show_taxable ? '71%' : '85%'; ?>;"></td>
                 <td style="width: 15%;text-align: left;"><?php echo app_lang("sub_total"); ?></td>
-                <td style="text-align: left; width: 20%; border: 1px solid #fff;">
+                <td style="text-align: left; width: 16%; border: 1px solid #fff;">
                     <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
                 </td>
             </tr> <?php
                     if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") { ?>
                 <tr>
-                    <td style="width: 79%;text-align: right;"> <?php echo app_lang("discount") ?></td>
-                    <td style="width: 3%;text-align: right;"></td>
+                <td style="width: <?php echo $show_taxable ? '71%' : '85%'; ?>;"></td>
+                    <td style="width: 16%;text-align: left;"> <?php echo app_lang("discount") ?></td>
                     <td style="text-align: left; width: 20%; border: 1px solid #fff; "><?php echo to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) ?> </td>
                 </tr>
 
@@ -443,9 +443,9 @@ $data = array(
             ?>
             <?php if ($show_taxable) { ?>
 
-                <tr class="total">
+                <!-- <tr class="total">
                     <td style="width: <?php echo $show_taxable ? '72%' : '86%'; ?>;"></td>
-                </tr>
+                </tr> -->
             <?php } ?>
             <?php if ($invoice_total_summary->tax) { ?>
 
