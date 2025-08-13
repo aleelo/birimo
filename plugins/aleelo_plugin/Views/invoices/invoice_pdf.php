@@ -413,9 +413,9 @@ $data = array(
 
             // Final section subtotal at the end
             if ($current_section !== null) {
-                $row_class = ($counter % 2 === 0) ? "even-row" : "odd-row";
-                $counter++;            ?>
-                <tr class="<?php echo $row_class; ?>">
+                    $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
+                    $counter++;           ?>
+                <tr style="background-color:<?php echo $row_color; ?>;">
                     <td style="width: 84%;"></td>
                     <td style="width: 16%;font-weight: bold; text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
@@ -427,7 +427,7 @@ $data = array(
         <tfoot>
             <tr>
                 <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-                <td style="width: 2%;text-align: right;"></td>
+                <td style="width: 3%;text-align: right;"></td>
                 <td style="text-align: left; width: 20%; border: 1px solid #fff;">
                     <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
                 </td>
