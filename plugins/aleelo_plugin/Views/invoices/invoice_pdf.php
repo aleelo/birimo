@@ -102,12 +102,6 @@ if (get_setting('taxable_column') == "always_show") {
             margin-top: 30px;
             background: white;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background: white;
-        }
 
         thead {
             background-color: #a65f00;
@@ -138,39 +132,16 @@ if (get_setting('taxable_column') == "always_show") {
             color: #222;
         }
 
-         tbody tr.row-odd {
-  background-color: #fefefe; /* First row */
-}
-tbody tr.row-even {
-  background-color: #f1f1f1; /* Second row */
-}
         .even-row {
-            background-color: #e0a6a6ff;
-            color: blue;
+            background-color: <?php echo $company_info->invoice_item_list_background ?>;
+            color: black;
         }
 
         .odd-row {
-            background-color:  #992626ff;
-            color: red;
-        }
-            color: #222;
+            background-color:red;
+            color: black;
         }
 
-         tbody tr.row-odd {
-  background-color: #fefefe; /* First row */
-}
-tbody tr.row-even {
-  background-color: #f1f1f1; /* Second row */
-}
-        .even-row {
-            background-color: #e0a6a6ff;
-            color: blue;
-        }
-
-        .odd-row {
-            background-color:  #992626ff;
-            color: red;
-        }
         tfoot td {
             font-weight: bold;
             font-size: 16px;
@@ -279,7 +250,6 @@ tbody tr.row-even {
             line-height: 0;
 
         }
-        }
 
         .custom-f {
             display: block;
@@ -348,10 +318,10 @@ $data = array(
     <table style="width: 100%; margin-bottom: 10px;">
         <tr>
             <td style="width: 12%;">
-            <?php                echo get_company_icon($client_info->company_id, "");
- ?></td>
-            <?php                echo get_company_icon($client_info->company_id, "");
- ?></td>
+                <?php
+
+                echo get_company_icon($client_info->company_id, "");
+                ?> </td>
             <td style="width: 22%;">
                 <h4 class="company-name"><?php echo $company_info->name; ?></h4>
                 <h4 class="company-address"><?php echo nl2br($company_info->address); ?></h4>
@@ -364,6 +334,8 @@ $data = array(
             </td>
         </tr>
     </table>
+
+
 
 
     <h3 class="invoice-title" style=" color:<?php echo $color ?>"><strong>Invoice To:</strong></h3>
@@ -379,34 +351,29 @@ $data = array(
 
     <table>
 
-           <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
-           <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
+            <tr style="background-color:<?php echo $color ?>;">
+                <th style="width: <?php echo $show_taxable ? '55%' : '20%'; ?>;">Item</th>
                 <th style="width:10%"> Days</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Total</th>
                 <th>Service (%)</th>
                 <th>Cost (%)</th>
-                <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
-                <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
+                <th style="width: <?php echo $show_taxable ? '15%' : '10%'; ?>;">Total</th>
             </tr>
         <tbody>
             <?php
             $current_section = null;
             $section_total = 0;
             $counter = 0;
-            $row_index = 0;
 
             foreach ($invoice_items as $item) {
 
                 if ($item->is_section) {
-                    // Output subtotal for previous section before starting a new one
                     if ($current_section !== null) {
-                    $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1' ;
-                    $counter++;            ?>
-                    <tr style="background-color: <?php echo $row_class; ?>">
+                        $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1';
+                        $counter++;            ?>
+                        <tr style="background-color: <?php echo $row_class; ?>">
                             <td style="width: <?php echo $show_taxable ? '88%' : '88%'; ?>"></td>
                             <td style=" width:12% text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
                         </tr>
@@ -422,51 +389,35 @@ $data = array(
                     </tr>
                 <?php
                 } else {
-                      $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
-            $counter++;
+                    $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
+                    $counter++;
                     // Determine row styling
-                    
+
 
                     // Add to section total
                     $section_total += $item->alltotal;
                 ?>
-             <tr style="background-color: <?php echo $row_color; ?>;">
-                <td style="width: <?php echo $show_taxable ? '18%' : '18%'; ?>;"><?php echo $item->title; ?></td>
-                <td style="width:10%"><?php echo $item->days ? $item->days : ""; ?></td>
-                <td><?php echo $item->quantity; ?></td>
-                <td><?php echo $item->rate; ?></td>
-                <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
-                <td><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
-
-                 <td><?php echo to_currency($item->service_cost, $item->currency_symbol); ?></td>
-                <td><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
-            </tr>
+                    <tr style="background-color: <?php echo $row_color; ?>;">
+                        <td style="width: <?php echo $show_taxable ? '18%' : '18%'; ?>;"><?php echo $item->title; ?></td>
+                        <td style="width:10%"><?php echo $item->days ? $item->days : ""; ?></td>
+                        <td><?php echo $item->quantity; ?></td>
+                        <td><?php echo $item->rate; ?></td>
+                        <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
+                        <td><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
+                        <td><?php echo $item->service_cost ? $item->service_cost  : '0'; ?></td>
+                        <td><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                    </tr>
                 <?php
                 }
             }
 
             // Final section subtotal at the end
             if ($current_section !== null) {
-                    $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1' ;
-                    $counter++;            ?>
-                    <tr style="background-color: <?php echo $row_class; ?>">
-                    <td style="width: <?php echo $show_taxable ? '88%' : '88%'; ?>"></td>
-                <td style="width: 12%;text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
-                </tr>
-            <?php
-            }
-            ?>
-                <?php
-                }
-            }
-
-            // Final section subtotal at the end
-            if ($current_section !== null) {
-                    $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1' ;
-                    $counter++;            ?>
-                    <tr style="background-color: <?php echo $row_class; ?>">
-                    <td style="width: <?php echo $show_taxable ? '88%' : '88%'; ?>"></td>
-                <td style="width: 12%;text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
+                $row_class = ($counter % 2 === 0) ? "even-row" : "odd-row";
+                $counter++;            ?>
+                <tr class="<?php echo $row_class; ?>">
+                    <td style="width: 84%;"></td>
+                    <td style="width: 16%;font-weight: bold; text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
             <?php
             }
@@ -474,47 +425,39 @@ $data = array(
 
         </tbody>
         <tfoot>
+            <tr>
+                <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
+                <td style="width: 2%;text-align: right;"></td>
+                <td style="text-align: left; width: 20%; border: 1px solid #fff;">
+                    <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
+                </td>
+            </tr> <?php
+                    if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") { ?>
                 <tr>
-        <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="width: 2%;text-align: right;"></td>
-        <td style="text-align: left; width: 20%; border: 1px solid #fff;">
-            <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
-                <tr>
-        <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="width: 2%;text-align: right;"></td>
-        <td style="text-align: left; width: 20%; border: 1px solid #fff;">
-            <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
-        </td>
-    </tr>
-            <?php
-            if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") { ?>
-                    <tr>
-                        <td style="width: 79%;text-align: right;"> <?php echo app_lang("discount") ?></td>
-                        <td style="width: 3%;text-align: right;"></td>
-                        <td style="text-align: left; width: 20%; "><?php echo to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) ?> </td>
-                    </tr>  
-                           
-                     <?php  }
-            ?> 
+                    <td style="width: 79%;text-align: right;"> <?php echo app_lang("discount") ?></td>
+                    <td style="width: 3%;text-align: right;"></td>
+                    <td style="text-align: left; width: 20%; border: 1px solid #fff; "><?php echo to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) ?> </td>
+                </tr>
+
+            <?php  }
+            ?>
             <?php if ($show_taxable) { ?>
 
-                <!-- <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '86%' : '86%'; ?>;"></td>
-                    <td style="width: 15%; text-align: left;">Sub Total</td>
-                    <td style="text-align: left; width: 20%;"><?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?></td>
-                </tr> -->
+                <tr class="total">
+                    <td style="width: <?php echo $show_taxable ? '72%' : '86%'; ?>;"></td>
+                </tr>
             <?php } ?>
             <?php if ($invoice_total_summary->tax) { ?>
 
                 <tr class="total">
-                    <td style="width: <?php echo $show_taxable ? '67%' : '86%'; ?>;"></td>
+                    <td style="width: <?php echo $show_taxable ? '72%' : '86%'; ?>;"></td>
                     <td style="width: 15%;"><?php echo $invoice_total_summary->tax_name; ?></td>
                     <td style="text-align: left; width: 20%;"><?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
             <?php } ?>
 
             <tr class="total">
-                <td style="width: <?php echo $show_taxable ? '55%' : '68%'; ?> ?> ?> ?>;"></td>
+                <td style="width: <?php echo $show_taxable ? '60%' : '67%'; ?> ?> ?> ?>;"></td>
                 <?php if ($show_taxable) { ?>
                     <td></td>
                 <?php } ?>
@@ -543,11 +486,7 @@ $data = array(
     </table>
     <?php if ($invoice_info->terms) { ?>
         <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
-    <?php if ($invoice_info->terms) { ?>
-        <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
     <?php } ?>
-    <?php if ($invoice_info->display_id) { ?>
-        <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
     <?php if ($invoice_info->display_id) { ?>
         <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
     <?php } ?>
@@ -559,16 +498,48 @@ $data = array(
             </td>
             <td style="width:30%; ">
 
-                <?php echo $signature;?>
+                <?php echo $signature;
+                if (!empty($finance_manager_info->signature)) {
+                    $signature_data = @unserialize($finance_manager_info->signature);
 
+                    if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+                        // Handle serialized signature data
+                        $signature_file_name = $signature_data[0]['file_name'];
+                    } else {
+                        // Handle direct file path
+                        $signature_file_name = $finance_manager_info->signature;
+                    }
+
+                    // Construct the full path to the signature file
+                    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+                    // Check if the file exists
+                    if (file_exists($signature_path)) {
+                        // Display the signature image
+                        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+                    } else {
+                        // File not found, try the second method
+                        $signature_data = @unserialize($finance_manager_info->signature);
+
+                        if (!empty($signature_data['file_name'])) {
+                            $signature_file_name = $signature_data['file_name'];
+
+                            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+                            if (file_exists($signature_path)) {
+                                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+                            } else {
+                                echo '<p>Signature file not found.</p>';
+                            }
+                        } else {
+                            echo '<p>Signature file not found.</p>';
+                        }
+                    }
+                } else {
+                    echo '<p>No signature available.</p>';
+                } ?>
 
                 <div class="signature-block">
-                    <?php if ($users_info->first_name) { ?>
-                        <h5 class="signature-name" style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
-                    <?php }
-                    if (!empty($finance_manager_info->job_title_en)) { ?>
-                        <h5 class="signature-title"><?php echo $finance_manager_info->job_title_en; ?></h5>
-                    <?php } ?>
                     <?php if ($users_info->first_name) { ?>
                         <h5 class="signature-name" style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
                     <?php }

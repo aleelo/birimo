@@ -8863,7 +8863,7 @@ class Accounting_model extends Crud_model {
 
         $affectedRows = 0;
 
-        $Invoices_model = model('Invoices_model');
+            $Invoices_model = model('aleelo_plugin\Models\Invoices_model');
         $invoice = $Invoices_model->get_one($invoice_id);
         
         if(!$invoice || $invoice->deleted == 1){
