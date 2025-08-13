@@ -426,8 +426,8 @@ $data = array(
         </tbody>
         <tfoot>
             <tr>
-                <td style="width: 79%;text-align: right;"><?php echo app_lang("sub_total"); ?></td>
-                <td style="width: 3%;text-align: right;"></td>
+                <td style="width: <?php echo $show_taxable ? '72%' : '86%'; ?>;"></td>
+                <td style="width: 15%;text-align: left;"><?php echo app_lang("sub_total"); ?></td>
                 <td style="text-align: left; width: 20%; border: 1px solid #fff;">
                     <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
                 </td>
