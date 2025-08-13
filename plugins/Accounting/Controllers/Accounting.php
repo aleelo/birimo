@@ -35,7 +35,7 @@ class Accounting extends Security_Controller
         $data['group'] = $this->request->getGet('group');
 
         $data['tab'][] = 'sales';
-        $data['tab'][] = 'expenses';
+        // $data['tab'][] = 'expenses';
         $data['tab'][] = 'expense_vender';
 
         if (accounting_get_status_modules('Purchase')) {
@@ -5083,17 +5083,17 @@ class Accounting extends Security_Controller
                             }
                         }
                     }
-                } elseif ($type == 'expense_vender') {
+                } elseif ($type == 'vendor_expense_payment') {
                     foreach ($ids as $id) {
                         if ($this->request->getPost('mass_convert') === 'true') {
                             if (acc_has_permission('acc_can_create_transaction')) {
-                                if ($this->Accounting_model->automatic_expense_conversion($id)) {
+                                if ($this->Accounting_model->automatic_expense_payment_conversion($id)) {
                                     $total_deleted++;
                                 }
                             }
                         } elseif ($this->request->getPost('mass_delete_convert') === 'true') {
                             if (acc_has_permission('acc_can_delete_transaction')) {
-                                if ($this->Accounting_model->delete_convert($id, 'expense_vender')) {
+                                if ($this->Accounting_model->delete_convert($id, 'vendor_expense_payment')) {
                                     $total_deleted++;
                                 }
                             }

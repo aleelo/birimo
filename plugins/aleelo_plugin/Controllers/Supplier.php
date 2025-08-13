@@ -178,7 +178,7 @@ class Supplier extends Security_Controller_Plugin {
         $edit='';
         $delete='';
         if ($this->can_edit_supplier()) {
-            $edit = modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id));
+            $edit = modal_anchor(get_uri("supplier/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => ('Edit Supplier'), "data-post-id" => $data->id));
         }
         if ($this->can_delete_supplier()) {
             $delete = 
