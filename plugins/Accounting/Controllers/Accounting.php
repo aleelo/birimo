@@ -75,12 +75,12 @@ class Accounting extends Security_Controller
             if ($data['tab_2'] == '') {
                 $data['tab_2'] = 'Accounting\Views/transaction/payment';
             }
-            } elseif ($data['group'] == 'expenses') {
+        } elseif ($data['group'] == 'expenses') {
             $data['categories'] = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResultArray();
 
             $data['members_dropdown'] = $this->_get_team_members_dropdown();
             $data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
-        }elseif ($data['group'] == 'expense_vender') {
+        } elseif ($data['group'] == 'expense_vender') {
             $data['categories'] = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResultArray();
             $data['count_expense_payment'] = $this->Accounting_model->count_expense_payment_not_convert_yet();
             $data['count_expense'] = $this->Accounting_model->count_expense_not_convert_yet();
@@ -422,7 +422,7 @@ class Accounting extends Security_Controller
             }
         }
     }
- public function vender_payment_table($id = '', $return_ajax = true)
+    public function vender_payment_table($id = '', $return_ajax = true)
     {
         $acc_closing_date = '';
         if (get_setting('acc_close_the_books') == 1) {
@@ -1320,7 +1320,7 @@ class Accounting extends Security_Controller
                         </div>
                     </div>
                 </div>';
-        }elseif ($type == 'expense') {
+        } elseif ($type == 'expense') {
             $Expenses_model = model('Expenses_model');
             $expense = $Expenses_model->get_details(['id' => $id])->getRow();
 
@@ -1339,32 +1339,32 @@ class Accounting extends Security_Controller
             $html = '<table class="table border table-striped no-margin">
                     <tbody>
                         <tr class="project-overview">
-                            <td class="bold" width="30%">'. app_lang('category').'</td>
-                            <td>'. $category->title  .'</td>
+                            <td class="bold" width="30%">' . app_lang('category') . '</td>
+                            <td>' . $category->title  . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('title').'</td>
-                            <td>'. $expense->title  .'</td>
+                            <td class="bold">' . app_lang('title') . '</td>
+                            <td>' . $expense->title  . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('acc_amount').'</td>
-                            <td>'. to_currency($expense->amount + $tax + $tax2, $currency_symbol) .'</td>
+                            <td class="bold">' . app_lang('acc_amount') . '</td>
+                            <td>' . to_currency($expense->amount + $tax + $tax2, $currency_symbol) . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('date').'</td>
-                            <td>'. format_to_date($expense->expense_date) .'</td>
+                            <td class="bold">' . app_lang('date') . '</td>
+                            <td>' . format_to_date($expense->expense_date) . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('note').'</td>
-                            <td colspan="2">'. html_entity_decode($expense->description) .'</td>
+                            <td class="bold">' . app_lang('note') . '</td>
+                            <td colspan="2">' . html_entity_decode($expense->description) . '</td>
                         </tr>';
 
 
-                
+
 
             $amount = $expense->amount;
 
@@ -1373,17 +1373,17 @@ class Accounting extends Security_Controller
             $debit = get_setting('acc_expense_deposit_to');
             $credit = get_setting('acc_expense_payment_account');
 
-            $db_builder = $db->table(get_db_prefix().'acc_account_history');
+            $db_builder = $db->table(get_db_prefix() . 'acc_account_history');
             $db_builder->where('rel_id', $id);
             $db_builder->where('rel_type', $type);
             $db_builder->where('(tax = 0 or tax is null)');
             $account_history = $db_builder->get()->getResultArray();
             foreach ($account_history as $key => $value) {
-                if($value['debit'] > 0){
+                if ($value['debit'] > 0) {
                     $debit = $value['account'];
                 }
 
-                if($value['credit'] > 0){
+                if ($value['credit'] > 0) {
                     $credit =  $value['account'];
                 }
             }
@@ -1391,19 +1391,18 @@ class Accounting extends Security_Controller
             $html .= '<div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="payment_account" class="">'. app_lang('payment_account').'</label>
-                                '.form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
+                            <label for="payment_account" class="">' . app_lang('payment_account') . '</label>
+                                ' . form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="deposit_to" class="">'. app_lang('deposit_to').'</label>
-                            '.form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
+                            <label for="deposit_to" class="">' . app_lang('deposit_to') . '</label>
+                            ' . form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
                         </div>
                     </div>
                 </div>';
-            
-        }elseif ($type == 'vendor_expense_payment') {
+        } elseif ($type == 'vendor_expense_payment') {
             $Expenses_model = model('Expenses_model');
             $Expense_payments_model = model('aleelo_plugin\Models\Expense_payments_model');
             $expense_paymnet = $Expense_payments_model->get_details(['id' => $id])->getRow();
@@ -1424,32 +1423,32 @@ class Accounting extends Security_Controller
             $html = '<table class="table border table-striped no-margin">
                     <tbody>
                         <tr class="project-overview">
-                            <td class="bold" width="30%">'. app_lang('category').'</td>
-                            <td>'. $category->title  .'</td>
+                            <td class="bold" width="30%">' . app_lang('category') . '</td>
+                            <td>' . $category->title  . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('title').'</td>
-                            <td>'. $expense->title  .'</td>
+                            <td class="bold">' . app_lang('title') . '</td>
+                            <td>' . $expense->title  . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('acc_amount').'</td>
-                            <td>'. to_currency($expense_paymnet->amount_paid, $currency_symbol) .'</td>
+                            <td class="bold">' . app_lang('acc_amount') . '</td>
+                            <td>' . to_currency($expense_paymnet->amount_paid, $currency_symbol) . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('date').'</td>
-                            <td>'. format_to_date($expense_paymnet->payment_date) .'</td>
+                            <td class="bold">' . app_lang('date') . '</td>
+                            <td>' . format_to_date($expense_paymnet->payment_date) . '</td>
                             <td></td>
                         </tr>
                         <tr class="project-overview">
-                            <td class="bold">'. app_lang('note').'</td>
-                            <td colspan="2">'. html_entity_decode($expense_paymnet->note) .'</td>
+                            <td class="bold">' . app_lang('note') . '</td>
+                            <td colspan="2">' . html_entity_decode($expense_paymnet->note) . '</td>
                         </tr>';
 
 
-                
+
 
             $amount = $expense_paymnet->amount_paid;
 
@@ -1458,17 +1457,17 @@ class Accounting extends Security_Controller
             $debit = get_setting('acc_expense_deposit_to');
             $credit = get_setting('acc_expense_payment_account');
 
-            $db_builder = $db->table(get_db_prefix().'acc_account_history');
+            $db_builder = $db->table(get_db_prefix() . 'acc_account_history');
             $db_builder->where('rel_id', $id);
             $db_builder->where('rel_type', $type);
             $db_builder->where('(tax = 0 or tax is null)');
             $account_history = $db_builder->get()->getResultArray();
             foreach ($account_history as $key => $value) {
-                if($value['debit'] > 0){
+                if ($value['debit'] > 0) {
                     $debit = $value['account'];
                 }
 
-                if($value['credit'] > 0){
+                if ($value['credit'] > 0) {
                     $credit =  $value['account'];
                 }
             }
@@ -1476,18 +1475,17 @@ class Accounting extends Security_Controller
             $html .= '<div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="payment_account" class="">'. app_lang('payment_account').'</label>
-                                '.form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
+                            <label for="payment_account" class="">' . app_lang('payment_account') . '</label>
+                                ' . form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="deposit_to" class="">'. app_lang('deposit_to').'</label>
-                            '.form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'").'
+                            <label for="deposit_to" class="">' . app_lang('deposit_to') . '</label>
+                            ' . form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
                         </div>
                     </div>
                 </div>';
-            
         } elseif ($type == 'banking') {
             $banking = $this->Accounting_model->get_transaction_banking($id);
             $html = '<table class="table border table-striped no-margin">
@@ -4776,6 +4774,12 @@ class Accounting extends Security_Controller
             case 'profit_and_loss':
                 $data['data_report'] = $this->Accounting_model->get_data_profit_and_loss($data_filter);
                 break;
+            case 'accounts_receivable_ageing_supplier_detail':
+                $data['data_report'] = $this->Accounting_model->get_data_accounts_receivable_ageing_supplier_detail($data_filter);
+                break;
+            case 'account_payable':
+                $data['data_report'] = $this->Accounting_model->get_data_accounts_payable_summery($data_filter);
+                break;
             case 'statement_of_cash_flows':
                 $data['data_report'] = $this->Accounting_model->get_data_statement_of_cash_flows($data_filter);
                 break;
@@ -5099,8 +5103,7 @@ class Accounting extends Security_Controller
                             }
                         }
                     }
-                }
-                 elseif ($type == 'banking') {
+                } elseif ($type == 'banking') {
                     foreach ($ids as $id) {
                         if ($this->request->getPost('mass_delete') === 'true') {
                             if (acc_has_permission('acc_can_create_transaction')) {
@@ -7864,7 +7867,7 @@ class Accounting extends Security_Controller
         $data['accounting_method'] = get_setting('acc_accounting_method');
         return $this->template->rander('Accounting\Views\report/includes/accounts_payable_ageing_detail', $data);
     }
-
+    //supplier invoice payable
     /**
      * report Accounts receivable ageing summary
      * @return view
@@ -7878,6 +7881,63 @@ class Accounting extends Security_Controller
         return $this->template->rander('Accounting\Views\report/includes/accounts_receivable_ageing_summary', $data);
     }
 
+
+    public function rp_accounts_receivable_ageing_supplier_detail()
+    {
+        $data['title'] = app_lang('accounts_receivable_ageing_supplier_detail');
+        $data['from_date'] = date('Y-m-01');
+        $data['to_date'] = date('Y-m-d');
+        $ci = new \aleelo_plugin\Models\Supplier_model();
+        $department =  $this->login_user->department;
+        $data['supplier'] = $ci->get_details(['deleted' => 0, 'company_id' => $department])->getResultArray();
+
+        $customers_dropdown = [];
+        $customers_dropdown['0'] = app_lang('all');
+        foreach ($data['supplier'] as $customer) {
+            $customers_dropdown[$customer['id']] = $customer['supplier_name'];
+        }
+
+        $data['supplier'] = $customers_dropdown;
+        $data['accounting_method'] = get_setting('acc_accounting_method');
+        $data['company_id'] = 6;
+        $data['company_dropdown'] = $this->get_company_dropdown_array();
+        $data['company_id'] = 6;
+        $data['company_dropdown'] = $this->get_company_dropdown_array();
+        return $this->template->rander('Accounting\Views\report/includes/accounts_receivable_ageing_supplier_detail', $data);
+    }
+    function get_company_dropdown_array(){
+        $companyes = $this->Company_model->get_details(array("deleted" => 0))->getResult();
+
+        $company_dropdown = array("" => "- " . app_lang("company") . " -");
+        foreach ($companyes as $company) {
+            $company_dropdown[$company->id] = $company->name;
+        }
+
+        return $company_dropdown;
+    }
+    public function rp_account_payable()
+    {
+        $data['title'] = app_lang('account_payable');
+        $data['from_date'] = date('Y-m-01');
+        $data['to_date'] = date('Y-m-d');
+        $data['accounting_method'] = get_setting('acc_accounting_method');
+        $data['company_id'] = 6;
+        $data['company_dropdown'] = $this->get_company_dropdown_array();
+        $ci = new \aleelo_plugin\Models\Supplier_model();
+        $department =  $this->login_user->department;
+        $data['supplier'] = $ci->get_details(['deleted' => 0])->getResultArray();
+
+        $customers_dropdown = [];
+        $customers_dropdown['0'] = app_lang('all');
+        foreach ($data['supplier'] as $customer) {
+            $customers_dropdown[$customer['id']] = $customer['supplier_name'];
+        }
+
+        $data['supplier'] = $customers_dropdown;
+        $data['company_id'] = 6;
+        $data['company_dropdown'] = $this->get_company_dropdown_array();
+        return $this->template->rander('Accounting\Views\report/includes/account_payable', $data);
+    }
     /**
      * report Accounts payable ageing summary
      * @return view
@@ -8903,8 +8963,8 @@ class Accounting extends Security_Controller
 
         $view_data  = [];
         $view_data['categories'] = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResultArray();
-         $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
-         $view_data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
+        $view_data['members_dropdown'] = $this->_get_team_members_dropdown();
+        $view_data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
         return $this->template->view('Accounting\Views\transaction\expenses', $view_data);
     }
     function transfer_form()

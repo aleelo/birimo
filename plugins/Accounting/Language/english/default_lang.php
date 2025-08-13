@@ -1053,5 +1053,11 @@ $lang['acc_reports'] = 'Reports';
 $lang['acc_setting'] = 'Setting';
 $lang['vendor_expense_payment'] = 'Vendor Expense Payment';
 $lang['expense_vender'] = 'Expense Vender';
+$lang['account_payable'] = 'Accounts Payable Supplier Summary';
+$lang['account_payable_note'] = 'account payable note';
+$lang['accounts_receivable_ageing_supplier_detail'] = 'Accounts Payable  Supplier Detail';
+$lang['Supplier'] = 'Supplier'; 
+$lang['accounts_receivable_ageing_detail_supplier'] ='Accounts receivable ageing detail supplier';
+$lang['account_payable_details'] ='Account payable details';
 
 return $lang;

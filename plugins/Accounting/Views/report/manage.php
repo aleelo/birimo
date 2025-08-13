@@ -56,20 +56,14 @@
                <div class="col-md-6">
                   <a href="<?php echo get_uri('accounting/rp_account_list'); ?>"><h4 class="no-margin"><?php echo app_lang('account_list'); ?></h4></a>
                 <p><?php echo app_lang('account_list_note'); ?></p>
-                  <a href="<?php echo get_uri('accounting/rp_balance_sheet_comparison'); ?>"><h4 class="no-margin"><?php echo app_lang('balance_sheet_comparison'); ?></h4></a>
-                <p><?php echo app_lang('balance_sheet_comparison_note'); ?></p>
-                <a href="<?php echo get_uri('accounting/rp_balance_sheet'); ?>"><h4 class="no-margin"><?php echo app_lang('balance_sheet'); ?></h4></a>
-                <p><?php echo app_lang('balance_sheet_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_exceptions_to_closing_date'); ?>"  class="hide"><h4 class="no-margin"><?php echo app_lang('exceptions_to_closing_date'); ?></h4></a>
                 <p class="hide"><?php echo app_lang('exceptions_to_closing_date_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_general_ledger'); ?>"><h4 class="no-margin"><?php echo app_lang('general_ledger'); ?></h4></a>
                 <p><?php echo app_lang('general_ledger_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_journal'); ?>"><h4 class="no-margin"><?php echo app_lang('journal'); ?></h4></a>
                 <p><?php echo app_lang('journal_note'); ?></p>
-                <a href="<?php echo get_uri('accounting/rp_profit_and_loss_comparison'); ?>"><h4 class="no-margin"><?php echo app_lang('profit_and_loss_comparison'); ?></h4></a>
-                <p><?php echo app_lang('profit_and_loss_comparison_note'); ?></p>
-                <a href="<?php echo get_uri('accounting/rp_profit_and_loss'); ?>"><h4 class="no-margin"><?php echo app_lang('profit_and_loss'); ?></h4></a>
-                <p><?php echo app_lang('profit_and_loss_note'); ?></p>
+                <a href="<?php echo get_uri('accounting/rp_trial_balance'); ?>"><h4 class="no-margin"><?php echo app_lang('trial_balance'); ?></h4></a>
+                <p><?php echo app_lang('trial_balance_note'); ?></p>
               </div>
               <div class="col-md-6">
                 <a href="<?php echo get_uri('accounting/rp_account_history'); ?>"><h4 class="no-margin"><?php echo app_lang('account_history'); ?></h4></a>
@@ -80,16 +74,12 @@
                 <p class="hide"><?php echo app_lang('reconciliation_reports_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_recurring_template_list'); ?>" class="hide"><h4 class="no-margin"><?php echo app_lang('recurring_template_list'); ?></h4></a>
                 <p class="hide"><?php echo app_lang('recurring_template_list_note'); ?></p>
-                <a href="<?php echo get_uri('accounting/rp_statement_of_cash_flows'); ?>"><h4 class="no-margin"><?php echo app_lang('statement_of_cash_flows'); ?></h4></a>
-                <p><?php echo app_lang('statement_of_cash_flows_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_transaction_detail_by_account'); ?>"><h4 class="no-margin"><?php echo app_lang('transaction_detail_by_account'); ?></h4></a>
                 <p><?php echo app_lang('transaction_detail_by_account_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_transaction_list_by_date'); ?>"><h4 class="no-margin"><?php echo app_lang('transaction_list_by_date'); ?></h4></a>
                 <p><?php echo app_lang('transaction_list_by_date_note'); ?></p>
                 <a href="<?php echo get_uri('accounting/rp_transaction_list_with_splits'); ?>" class="hide"><h4 class="no-margin"><?php echo app_lang('transaction_list_with_splits'); ?></h4></a>
                 <p class="hide"><?php echo app_lang('transaction_list_with_splits_note'); ?></p>
-                <a href="<?php echo get_uri('accounting/rp_trial_balance'); ?>"><h4 class="no-margin"><?php echo app_lang('trial_balance'); ?></h4></a>
-                <p><?php echo app_lang('trial_balance_note'); ?></p>
               </div>
             </div>
           <hr>  
@@ -134,6 +124,14 @@
               <p><?php echo app_lang('accounts_receivable_ageing_summary_note'); ?></p>
               <a href="<?php echo get_uri('accounting/rp_accounts_receivable_ageing_detail'); ?>"><h4 class="no-margin"><?php echo app_lang('accounts_receivable_ageing_detail'); ?></h4></a>
               <p><?php echo app_lang('accounts_receivable_ageing_detail_note'); ?></p>
+            </div>
+              <div class="col-md-6">
+
+              <a href="<?php echo get_uri('accounting/rp_account_payable'); ?>"><h4 class="no-margin"><?php echo app_lang('account_payable'); ?></h4></a>
+              <p><?php echo app_lang('account_payable_note'); ?></p>
+              <a href="<?php echo get_uri('accounting/rp_accounts_receivable_ageing_supplier_detail'); ?>"><h4 class="no-margin"><?php echo app_lang('account_payable_details'); ?></h4></a>
+              <p><?php echo app_lang('accounts_receivable_ageing_detail_supplier'); ?></p>
+              
             </div>
             <div class="col-md-6 hide">
               <a href="<?php echo get_uri('accounting/rp_accounts_payable_ageing_summary'); ?>"><h4 class="no-margin"><?php echo app_lang('accounts_payable_ageing_summary'); ?></h4></a>

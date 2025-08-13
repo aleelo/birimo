@@ -825,7 +825,25 @@ if (!function_exists('get_company_name')) {
 	    return '';
 	}
 }
+if (!function_exists('get_supplier_name')) {
+	function get_supplier_name($userid, $prevent_empty_company = false)
+	{
+	    
+	    $_userid = $userid;
 
+	    $db = db_connect('default');
+	    $db_builder = $db->table(get_db_prefix() . 'supplier');
+	    $client = $db_builder->select('supplier_name')
+	        ->where('id', $_userid)
+	        ->get()
+	        ->getRow();
+	    if ($client) {
+	        return $client->supplier_name;
+	    }
+
+	    return '';
+	}
+}
 if (!function_exists('get_staff_full_name')) {
 	function get_staff_full_name($staffid = ''){
 		if($staffid != ''){

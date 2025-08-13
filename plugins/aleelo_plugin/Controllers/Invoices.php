@@ -1192,6 +1192,7 @@ class Invoices extends Security_Controller_Plugin
     $id = $this->request->getPost('id');
     $rate = (float)unformat_currency($this->request->getPost('invoice_item_rate'));
     $quantity = (float)unformat_currency($this->request->getPost('invoice_item_quantity'));
+    $supplier_price = $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "";
     $item_id = !$id ? $this->request->getPost('item_id') : 0;
         if ($add_new_item_to_library) {
             $library_item_data = array(
@@ -1208,7 +1209,11 @@ class Invoices extends Security_Controller_Plugin
     $base_total = $quantity * $rate * $days;
     $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
     $alltotal = $base_total + $service_cost;
-
+        if ($supplier_price) {
+            $price = $supplier_price * $quantity * $days;
+        } else {
+            $price = 0;
+        }
     // ✅ Log the calculations
     log_message('debug', 'SAVE_ITEM DEBUG: Invoice='.$invoice_id.' QTY='.$quantity.' Rate='.$rate.' Days='.$days.' BaseTotal='.$base_total.' Service%='.$services.' ServiceCost='.$service_cost.' AllTotal='.$alltotal);
 
@@ -1224,7 +1229,12 @@ class Invoices extends Security_Controller_Plugin
         "total" => $base_total,
         "alltotal" => $alltotal,
         "unit_type" => $this->request->getPost('invoice_unit_type'),
-        "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : ""
+        "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+        "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+        "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
+        "supplier_price" => $price,
+        "supplier_id" => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+            
     );
 
     if ($item_id) {

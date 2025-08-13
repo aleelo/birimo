@@ -4,6 +4,7 @@ namespace Accounting\Models;
 
 use App\Models\Crud_model;
 use Config\Services;
+use aleelo_plugin\Models\Invoices_model;
 
 class Accounting_model extends Crud_model {
     protected $table = null;
@@ -17326,6 +17327,387 @@ class Accounting_model extends Crud_model {
 
         return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date, 'last_from_date' => $last_from_date, 'last_to_date' => $last_to_date];
         
+    }
+//payable supplier
+
+    public function get_data_accounts_payable_summery($data_filter)
+    {
+        $from_date = isset($data_filter['from_date']) ? to_sql_date($data_filter['from_date']) : date('Y-m-01');
+        $to_date = isset($data_filter['to_date']) ? to_sql_date($data_filter['to_date']) : date('Y-m-d');
+        $company_id = 6;
+        if (isset($data_filter['company_filter'])) {
+            $company_filter = $data_filter['company_filter'];
+        } else {
+            $company_filter = 0;
+        }
+        if (isset($data_filter['supplier_id'])) {
+            $supplier_id_filter = $data_filter['supplier_id'];
+        } else {
+            $supplier_id_filter = '';
+        }
+        $Invoices_model = new Invoices_model();
+        $data_report = [];
+
+        $date_ranges = [
+            'current' => [null, $to_date],
+            '1_30_days_past_due' => [date('Y-m-d', strtotime("$to_date - 30 days")), date('Y-m-d', strtotime("$to_date - 1 days"))],
+            '31_60_days_past_due' => [date('Y-m-d', strtotime("$to_date - 60 days")), date('Y-m-d', strtotime("$to_date - 31 days"))],
+            '61_90_days_past_due' => [date('Y-m-d', strtotime("$to_date - 90 days")), date('Y-m-d', strtotime("$to_date - 61 days"))],
+            '91_and_over' => [null, date('Y-m-d', strtotime("$to_date - 91 days"))],
+        ];
+
+        foreach ($date_ranges as $range_key => $range) {
+            $db_builder = $this->db->table(get_db_prefix() . 'invoices as invoices');
+            $db_builder->select('invoices.*, clients.company_id, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = invoices.id) as total_payments');
+            $db_builder->join(get_db_prefix() . 'clients', get_db_prefix() . 'clients.id = invoices.client_id', 'left');
+            $db_builder->where('invoices.deleted', 0);
+            $db_builder->where('invoices.status', 'not_paid');
+
+            if ($range_key == 'current') {
+                $db_builder->where("((due_date IS NOT NULL AND bill_date <= '$to_date' AND due_date >= '$to_date') OR (due_date IS NULL AND bill_date = '$to_date'))");
+            } elseif ($range_key == '91_and_over') {
+                $db_builder->where("((due_date IS NOT NULL AND due_date <= '{$range[1]}') OR (due_date IS NULL AND bill_date <= '{$range[1]}'))");
+            } else {
+                $db_builder->where("((due_date IS NOT NULL AND due_date BETWEEN '{$range[0]}' AND '{$range[1]}') OR (due_date IS NULL AND bill_date BETWEEN '{$range[0]}' AND '{$range[1]}'))");
+            }
+
+            $invoices = $db_builder->get()->getResultArray();
+
+            foreach ($invoices as $invoice) {
+                $item = $this->db->table(get_db_prefix() . 'invoice_items as invoice_items');
+                $item->select('invoice_items.*,supplier.company');
+                $item->join(get_db_prefix() . 'supplier', get_db_prefix() . 'supplier.id = invoice_items.supplier_id', 'left');
+                $item->select('supplier_id');
+                $item->where('invoice_id', $invoice['id']);
+                if ($supplier_id_filter) {
+                    $item->where('supplier_id', $supplier_id_filter);
+                }
+                $items = $item->get()->getResultArray();
+
+                foreach ($items as $item) {
+                    $supplier_id = $item['supplier_id'];
+                    $invoice_summary = $Invoices_model->get_invoice_total_summaryp($invoice['id'], $supplier_id);
+
+                    if ($invoice_summary->balance_due <= 0) {
+                        continue;
+                    }
+
+
+                    $supplier_query = $this->db->table(get_db_prefix() . 'supplier')
+                        ->select('supplier_name')
+                        ->where('id', $supplier_id);
+
+
+                    $supplier = $supplier_query->get()->getRow();
+                    if (!$supplier) {
+                        continue;
+                    }
+                    $supplier_name = $supplier ? $supplier->supplier_name : 'Unknown Supplier';
+                    if (!isset($data_report[$supplier_id])) {
+                        $data_report[$supplier_id] = [
+                            'supplier_name' => $supplier_name,
+                            'current' => 0,
+                            '1_30_days_past_due' => 0,
+                            '31_60_days_past_due' => 0,
+                            '61_90_days_past_due' => 0,
+                            '91_and_over' => 0,
+                            'total' => 0,
+                        ];
+                    }
+
+                    $data_report[$supplier_id][$range_key] += $invoice_summary->balance_due;
+                    $data_report[$supplier_id]['total'] += $invoice_summary->balance_due;
+                }
+            }
+        }
+
+        return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date];
+    }
+    public function get_data_accounts_receivable_ageing_supplier_detail($data_filter)
+    {
+        $from_date = date('Y-m-01');
+        $to_date = date('Y-m-d');
+
+
+        if (isset($data_filter['from_date'])) {
+            $from_date = to_sql_date($data_filter['from_date']);
+        }
+
+        if (isset($data_filter['to_date'])) {
+            $to_date = to_sql_date($data_filter['to_date']);
+        }
+        if (isset($data_filter['supplier_id'])) {
+            $supplier_id = $data_filter['supplier_id'];
+        }
+        if (isset($data_filter['company_filter'])) {
+            $company_filter = $data_filter['company_filter'];
+        } else {
+            $company_filter = 0;
+        }
+
+        $data_report = [
+            'current' => [],
+            '1_30_days_past_due' => [],
+            '31_60_days_past_due' => [],
+            '61_90_days_past_due' => [],
+            '91_and_over' => [],
+        ];
+
+        // Get all invoices first
+
+        $running_balance = 0;
+
+        // Get all invoices
+        $db_builder = $this->db->table(get_db_prefix() . 'invoices');
+        $db_builder->select(get_db_prefix() . 'invoices.*');
+        $db_builder->join(get_db_prefix() . 'clients', get_db_prefix() . 'clients.id = ' . get_db_prefix() . 'invoices.client_id', 'left');
+        if ($company_filter) {
+            $db_builder->where(get_db_prefix() . 'clients.company_id', $company_filter);
+        }
+        $db_builder->where("DATE(bill_date) BETWEEN '{$from_date}' AND '{$to_date}'");
+        $db_builder->where(get_db_prefix() . 'invoices.status', 'not_paid');
+        $db_builder->where(get_db_prefix() . 'invoices.deleted', 0);
+        $db_builder->orderBy('bill_date', 'asc');
+        $invoices = $db_builder->get()->getResultArray();
+
+        $company_id = 6;
+
+        foreach ($invoices as $invoice) {
+            $invoice_id = $invoice['id'];
+
+            $supplier_item_builder = $this->db->table(get_db_prefix() . 'invoice_items')
+                ->select('supplier_id, supplier_price AS in_supplier_price')
+                ->where('invoice_id', $invoice_id)
+                ->where('deleted', 0)
+                ->where('supplier', 1)
+
+                ->where('supplier_id IS NOT NULL');
+
+            if (!empty($supplier_id) && $supplier_id != 0) {
+                $supplier_item_builder->where('supplier_id', $supplier_id);
+            }
+
+            $suppliers = $supplier_item_builder->get()->getResultArray();
+
+            foreach ($suppliers as $supplier_row) {
+                // if ($company_id) {
+                //     $supplier_row_data = $this->db->table(get_db_prefix() . 'supplier')
+                //         ->where('id', $supplier_row['supplier_id'])
+                //         ->where('company', $company_id)
+                //         ->get()
+                //         ->getRow();
+
+                //     if (!$supplier_row_data) {
+                //         continue;
+                //     }
+                // }
+
+                $amount = $supplier_row['in_supplier_price'];
+                $running_balance += $amount;
+
+                $data_report['current'][] = [
+                    'date' => $invoice['bill_date'],
+                    'due_date' => $invoice['due_date'],
+                    'type' => app_lang('invoice'),
+                    'number' => get_invoice_id($invoice_id),
+                    'customer' => $supplier_row['supplier_id'],
+                    'Credit' => $amount,
+                    'Debit' => 0,
+                    'balance' => $amount,
+                    'amount' => $running_balance,
+                ];
+            }
+        }
+
+        // Get all payments
+        $builder = $this->db->table($this->db->prefixTable('invoice_payments'));
+        $builder->select('amount, payment_date, invoice_id, supplier_id');
+        $builder->where('deleted', 0);
+        $builder->where('supplier', 1);
+
+        $builder->orderBy('payment_date', 'asc');
+        // $builder->where('DATE(payment_date)', $to_date);
+
+
+        if (!empty($supplier_id) && $supplier_id != 0) {
+            $builder->where('supplier_id', $supplier_id);
+        }
+
+        $builder->orderBy('payment_date', 'ASC');
+        $payments = $builder->get()->getResult();
+
+
+
+
+
+
+
+
+        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
+        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 30 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 1 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 30 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 1 days')) . '")) and (status = "not_paid")');
+        // $builder->where('DATE(payment_date)', $to_date);
+        // $db_builder->where('DATE(bill_date)', $to_date);
+
+        $db_builder->where('deleted', 0);
+        $db_builder->orderBy('bill_date', 'asc');
+
+        $invoices = $db_builder->get()->getResultArray();
+
+        foreach ($invoices as $invoice) {
+            $invoice_id = $invoice['id'];
+
+            $supplier_table = $this->db->table(get_db_prefix() . 'supplier')
+                ->where('id', $supplier_id);
+            // if ($company_id) {
+            //     $supplier_table->where('company', $company_id);
+            // }
+            $supplier_table = $supplier_table->get()->getRow();
+
+            $supplier_item_builder = $this->db->table(get_db_prefix() . 'invoice_items')
+                ->select('supplier_id, supplier_price AS in_supplier_price')
+                ->where('invoice_id', $invoice_id)
+                ->where('deleted', 0)
+                ->where('supplier', 1)
+
+                ->where('supplier_id IS NOT NULL');
+
+            if (!empty($supplier_id) && $supplier_id != 0) {
+                $supplier_item_builder->where('supplier_id', $supplier_id);
+            }
+
+
+            $suppliers = $supplier_item_builder->get()->getResultArray();
+
+            foreach ($suppliers as $supplier_row) {
+                $amount = $supplier_row['in_supplier_price'];
+                $running_balance += $amount;
+
+                // $data_report['current'][] = [
+                //     'date' => $invoice['bill_date'],
+                //     'due_date' => $invoice['due_date'],
+                //     'type' => app_lang('invoice'),
+                //     'number' => get_invoice_id($invoice_id),
+                //     'customer' => $supplier_row['supplier_id'],
+                //     'Credit' => $amount,
+                //     'Debit' => 0,
+                //     'balance' => $amount,
+                //     'amount' => $running_balance,
+                // ];
+            }
+        }
+        foreach ($payments as $payment) {
+            $supplier_row_data = $this->db->table(get_db_prefix() . 'supplier')
+                ->where('id', $payment->supplier_id)
+
+
+                ->get()
+                ->getRow();
+
+
+            if (!$supplier_row_data) {
+                continue;
+            }
+
+            $ivoice_draft = $this->db->table(get_db_prefix() . 'invoices')
+                ->where('id', $payment->invoice_id)
+                ->where('status', 'not_paid')
+                ->get()
+                ->getRow();
+            if (!$ivoice_draft) {
+                continue;
+            }
+
+            $running_balance -= $payment->amount;
+
+            $data_report['current'][] = [
+                'date' => $payment->payment_date,
+                'due_date' => '',
+                'type' => app_lang('payment'),
+                'number' => get_invoice_id($payment->invoice_id),
+                'customer' => $payment->supplier_id,
+                'Credit' => 0,
+                'Debit' => $payment->amount,
+                'balance' => -$payment->amount,
+                'amount' => $running_balance,
+            ];
+        }
+
+        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
+        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 60 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 31 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 60 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 31 days')) . '")) and (status = "not_paid")');
+
+        $db_builder->where('deleted', 0);
+        $db_builder->orderBy('bill_date', 'asc');
+
+        $invoices = $db_builder->get()->getResultArray();
+
+        foreach ($invoices as $v) {
+            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
+            $total_payments = $invoice_total_summary->balance_due;
+            if ($total_payments <= 0) {
+                continue;
+            }
+
+            $data_report['31_60_days_past_due'][] = [
+                'date' => $v['bill_date'],
+                'due_date' => $v['due_date'],
+                'type' => app_lang('invoice'),
+                'number' => get_invoice_id($v['id']),
+                'customer' => $v['client_id'],
+                'amount' => $total_payments,
+            ];
+        }
+
+        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
+        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 90 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 61 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 90 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 61 days')) . '")) and (status = "not_paid")');
+
+        $db_builder->where('deleted', 0);
+        $db_builder->orderBy('bill_date', 'asc');
+
+        $invoices = $db_builder->get()->getResultArray();
+        $Invoices_model = model('Invoices_model');
+        foreach ($invoices as $v) {
+            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
+            $total_payments = $invoice_total_summary->balance_due;
+            if ($total_payments <= 0) {
+                continue;
+            }
+
+            $data_report['61_90_days_past_due'][] = [
+                'date' => $v['bill_date'],
+                'due_date' => $v['due_date'],
+                'type' => app_lang('invoice'),
+                'number' => get_invoice_id($v['id']),
+                'customer' => $v['client_id'],
+                'amount' => $total_payments,
+            ];
+        }
+
+        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
+        $db_builder->where('IF(due_date IS NOT NULL,(due_date <=  "' . date('Y-m-d', strtotime($to_date . ' - 91 days')) . '"),(bill_date <=  "' . date('Y-m-d', strtotime($to_date . ' - 91 days')) . '")) and (status = "not_paid")');
+
+        $db_builder->where('deleted', 0);
+        $db_builder->orderBy('bill_date', 'asc');
+
+        $invoices = $db_builder->get()->getResultArray();
+
+        foreach ($invoices as $v) {
+            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
+            $total_payments = $invoice_total_summary->balance_due;
+            if ($total_payments <= 0) {
+                continue;
+            }
+
+            $data_report['91_and_over'][] = [
+                'date' => $v['bill_date'],
+                'due_date' => $v['due_date'],
+                'type' => app_lang('invoice'),
+                'number' => get_invoice_id($v['id']),
+                'customer' => $v['client_id'],
+                'amount' => $total_payments,
+            ];
+        }
+
+        return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date];
     }
 
     /**
