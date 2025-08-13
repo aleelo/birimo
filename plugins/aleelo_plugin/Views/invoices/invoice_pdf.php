@@ -352,14 +352,14 @@ $data = array(
     <table>
 
             <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '55%' : '20%'; ?>;">Item</th>
+                <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
                 <th style="width:10%"> Days</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Total</th>
                 <th>Service (%)</th>
                 <th>Cost (%)</th>
-                <th style="width: <?php echo $show_taxable ? '15%' : '10%'; ?>;">Total</th>
+                <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
             </tr>
         <tbody>
             <?php
