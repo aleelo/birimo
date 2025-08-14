@@ -9120,7 +9120,6 @@ class Accounting_model extends Crud_model {
                     $node['date'] = $invoice->bill_date;
                     $node['paid'] = $paid;
                     $node['debit'] = $alltotal;
-                    $node['debit'] = $alltotal;
                     $node['customer'] = $invoice->client_id;
                     $node['tax'] = 0;
                     $node['credit'] = 0;
@@ -9142,7 +9141,6 @@ class Accounting_model extends Crud_model {
                     $node['tax'] = 0;
                     $node['debit'] = 0;
                     $node['credit'] = $alltotal;
-                    $node['credit'] = $alltotal;
                     $node['description'] = '';
                     $node['rel_id'] = $invoice_id;
                     $node['rel_type'] = 'invoice';
@@ -9155,7 +9153,6 @@ class Accounting_model extends Crud_model {
                     $node['split'] = $payment_account;
                     $node['account'] = $deposit_to;
                     $node['item'] = $item_id;
-                    $node['debit'] = $alltotal;
                     $node['debit'] = $alltotal;
                     $node['customer'] = $invoice->client_id;
                     $node['paid'] = $paid;
@@ -9179,7 +9176,6 @@ class Accounting_model extends Crud_model {
                     $node['paid'] = $paid;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
-                    $node['credit'] = $alltotal;
                     $node['credit'] = $alltotal;
                     $node['description'] = '';
                     $node['rel_id'] = $invoice_id;
