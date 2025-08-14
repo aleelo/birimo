@@ -9432,7 +9432,7 @@ class Accounting_model extends Crud_model {
                     }
                     
                     $node = [];
-                    $node['split'] = $expense_payment_account;
+                    $node['split'] = $expense_deposit_to;
                     $node['date'] = $expense->expense_date;
                     $node['account'] = $expense_payment_account;
                     $node['debit'] = $expense_total;
@@ -9447,7 +9447,7 @@ class Accounting_model extends Crud_model {
                     $data_insert[] = $node;
 
                     $node = [];
-                    $node['split'] = $expense_deposit_to;
+                    $node['split'] = $expense_payment_account;
                     $node['customer'] = $expense->client_id;
                     $node['account'] = $expense_deposit_to;
                     $node['date'] = $expense->expense_date;
@@ -9465,7 +9465,7 @@ class Accounting_model extends Crud_model {
 
             if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
                 $node = [];
-                $node['split'] = $payment_account;
+                $node['split'] = $deposit_to;
                 $node['account'] = $payment_account;
                 $node['debit'] = $expense_total;
                 $node['customer'] = $expense->client_id;
@@ -9480,8 +9480,8 @@ class Accounting_model extends Crud_model {
                 $data_insert[] = $node;
 
                 $node = [];
-                $node['split'] = $Supplier->Account_Payable;
-                $node['account'] = $expense_deposit_to;
+                $node['split'] = $payment_account;
+                $node['account'] = $deposit_to;
                 $node['customer'] = $expense->client_id;
                 $node['date'] = $expense->expense_date;
                 $node['tax'] = 0;
