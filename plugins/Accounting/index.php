@@ -371,13 +371,13 @@ app_hooks()->add_action("app_hook_data_delete", function($data){
                 $Accounting_model->delete_convert($data['id'], 'payment');
             break;
         case get_db_prefix().'expenses':
-                $Accounting_model->delete_convert($data['id'], 'expense');
+                $Accounting_model->delete_expenses_convert($data['id']);
             break;
         case get_db_prefix().'expense_payments':
                 $Accounting_model->delete_convert($data['id'], 'vendor_expense_payment');
             break;
         case get_db_prefix().'expenses_emp':
-                $Accounting_model->delete_convert($data['id'], 'expense_emp');
+                $Accounting_model->delete_expenses_emp_convert($data['id']);
             break;
         case get_db_prefix().'expense_payments_emp':
                 $Accounting_model->delete_convert($data['id'], 'emp_expense_payment');

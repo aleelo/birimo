@@ -455,7 +455,7 @@ class Accounting extends Security_Controller
         ];
         $where = [];
         array_push($where, 'AND ' . get_db_prefix() . 'expense_payments.deleted = 0');
-
+        array_push($where, 'AND ' . get_db_prefix() . 'expenses.deleted = 0');
         $category = $this->request->getPost('category') ? $this->request->getPost('category') : "";
         if ($category != '') {
             array_push($where, 'AND ' . get_db_prefix() . 'expenses.category_id in ( ' . implode(',', $category) . ')');
@@ -588,6 +588,7 @@ class Accounting extends Security_Controller
         ];
         $where = [];
         array_push($where, 'AND ' . get_db_prefix() . 'expense_payments_emp.deleted = 0');
+        array_push($where, 'AND ' . get_db_prefix() . 'expenses_emp.deleted = 0');
 
         $category = $this->request->getPost('category') ? $this->request->getPost('category') : "";
         if ($category != '') {

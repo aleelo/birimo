@@ -10482,21 +10482,24 @@ class Accounting_model extends Crud_model {
         $where_currency = '';
 
         $db_builder = $this->db->table(get_db_prefix().'expense_payments');
-        $db_builder->where('deleted', 0);
-
+        $db_builder->where(get_db_prefix().'expense_payments.deleted', 0);
+        $db_builder->where(get_db_prefix().'expenses.deleted', 0);
         if($where != ''){
             $db_builder->where($where);
         }
 
 
         $db_builder->where('((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") = 0) '.$where_currency);
+        $db_builder->join(get_db_prefix() . 'expenses', '' . get_db_prefix() . 'expenses.id = ' . get_db_prefix() . 'expense_payments.expense_id', 'left');
         return $db_builder->countAllResults();
     }
     public function count_emp_expense_payment_not_convert_yet($currency = '', $where = ''){
         $where_currency = '';
 
         $db_builder = $this->db->table(get_db_prefix().'expense_payments_emp');
-        $db_builder->where('deleted', 0);
+        $db_builder->where(get_db_prefix().'expense_payments_emp.deleted', 0);
+        $db_builder->where(get_db_prefix().'expenses_emp.deleted', 0);
+
 
         if($where != ''){
             $db_builder->where($where);
@@ -10504,6 +10507,8 @@ class Accounting_model extends Crud_model {
 
 
         $db_builder->where('((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") = 0) '.$where_currency);
+        $db_builder->join(get_db_prefix() . 'expenses_emp', '' . get_db_prefix() . 'expenses_emp.id = ' . get_db_prefix() . 'expense_payments_emp.expense_id', 'left');
+
         return $db_builder->countAllResults();
     }
     /**
@@ -10592,7 +10597,56 @@ class Accounting_model extends Crud_model {
 
         return false;
     }
+    public function delete_expenses_convert($expense_id){
+        $affectedRows = 0;
 
+        $check = $this->delete_convert($expense_id,'expense');
+        if($check){
+            $affectedRows++;
+        }
+
+        $db_builder = $this->db->table(get_db_prefix() . 'expense_payments');
+        $db_builder->where('expense_id', $expense_id);
+        $payments = $db_builder->get()->getResultArray();
+
+        foreach ($payments as $key => $value) {
+            $check = $this->delete_convert($value['id'],'vendor_expense_payment');
+            if($check){
+                $affectedRows++;
+            }
+        }
+
+        if($affectedRows > 0){
+            return true;
+        }
+
+        return false;
+    }
+        public function delete_expenses_emp_convert($expense_id){
+        $affectedRows = 0;
+
+        $check = $this->delete_convert($expense_id,'expense_emp');
+        if($check){
+            $affectedRows++;
+        }
+
+        $db_builder = $this->db->table(get_db_prefix() . 'expense_payments_emp');
+        $db_builder->where('expense_id', $expense_id);
+        $payments = $db_builder->get()->getResultArray();
+
+        foreach ($payments as $key => $value) {
+            $check = $this->delete_convert($value['id'],'emp_expense_payment');
+            if($check){
+                $affectedRows++;
+            }
+        }
+
+        if($affectedRows > 0){
+            return true;
+        }
+
+        return false;
+    }
     /**
      * invoice status changed
      * @param  array $data 
