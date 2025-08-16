@@ -8,16 +8,21 @@
                 <input type="hidden" name="is_clone" value="1" />
             <?php } ?>
 
+            <?php if ($has_permission) { ?>
+
             <div class="form-group">
                 <div class="row">
-                    <label for="vendor_id" class=" col-md-3"><?php echo 'Vendor'; ?></label>
-                    <div class=" col-md-9">
+                    <label for="expense_user_id" class=" col-md-3"><?php echo app_lang('team_member'); ?></label>
+                    <div class="col-md-9">
                         <?php
-                        echo form_dropdown("vendor_id", $vendors_dropdown, $model_info->vendor_id, "class='select2 validate-hidden' id='vendor_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                        echo form_dropdown("expense_user_id", $members_dropdown, $model_info->user_id, "class='select2 validate-hidden' id='expense_user_id'");
                         ?>
                     </div>
                 </div>
             </div>
+            <?php } else{ ?>
+              <input type="hidden" name="expense_user_id" value="<?php echo $login_user->id; ?>">
+            <?php } ?>
 
             <div class=" form-group">
                 <div class="row">

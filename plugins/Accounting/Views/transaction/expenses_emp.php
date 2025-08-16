@@ -24,7 +24,7 @@
     <thead>
       <th><span class="hide"> - </span><div class="checkbox mass_select_all_wrap"><input type="checkbox" id="mass_select_all" data-to-table="expenses" class="form-check-input"><label></label></div></th>
       <th><?php echo _l('date'); ?></th>
-      <th><?php echo _l('vendor'); ?></th>
+      <th><?php echo _l('emp'); ?></th>
       <th><?php echo _l('title'); ?></th>
       <th><?php echo _l('category'); ?></th>
       <th><?php echo _l('amount'); ?></th>
@@ -71,4 +71,4 @@
 </div>
 <!-- /.modal -->
 
-<?php require 'plugins/Accounting/assets/js/transaction/expenses_js.php';?>
+<?php require 'plugins/Accounting/assets/js/transaction/expenses_emp_js.php';?>

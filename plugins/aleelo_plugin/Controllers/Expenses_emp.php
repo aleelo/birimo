@@ -80,7 +80,7 @@ class Expenses_emp extends Security_Controller_Plugin
 
         $view_data['categories_dropdown'] = $this->Expense_categories_model->get_dropdown_list(array("title"));
         $view_data['vendors_dropdown'] = array("" => " - ") + $this->Supplier_model->get_dropdown_list(array("supplier_name"));
-
+        $view_data['has_permission'] = ( $this->login_user->is_admin || get_array_value($this->login_user->permissions, "can_Assign_expense") == "1");
         $members_where = array("user_type" => "staff");
         if (get_array_value($this->login_user->permissions, "hide_team_members_list_from_dropdowns") == "1") {
             $members_where["id"] = $this->login_user->id;
@@ -279,7 +279,6 @@ class Expenses_emp extends Security_Controller_Plugin
         "title" => $this->request->getPost('title'),
         "description" => $this->request->getPost('description'),
         "category_id" => $this->request->getPost('category_id'),
-        "vendor_id" => $this->request->getPost('vendor_id'),
         "amount" => $amount,
         "client_id" => $this->request->getPost('expense_client_id') ?: 0,
         "project_id" => $this->request->getPost('expense_project_id'),

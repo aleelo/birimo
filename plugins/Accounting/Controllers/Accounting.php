@@ -37,6 +37,7 @@ class Accounting extends Security_Controller
         $data['tab'][] = 'sales';
         // $data['tab'][] = 'expenses';
         $data['tab'][] = 'expense_vender';
+        $data['tab'][] = 'expense_emp';
 
         if (accounting_get_status_modules('Purchase')) {
             $data['tab'][] = 'purchase';
@@ -85,6 +86,16 @@ class Accounting extends Security_Controller
             $data['count_expense_payment'] = $this->Accounting_model->count_expense_payment_not_convert_yet();
             $data['count_expense'] = $this->Accounting_model->count_expense_not_convert_yet();
 
+            $data['members_dropdown'] = $this->_get_team_members_dropdown();
+            $data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
+
+            if ($data['tab_2'] == '') {
+                $data['tab_2'] = 'Accounting\Views/transaction/payment';
+            }
+        } elseif ($data['group'] == 'expense_emp') {
+            $data['categories'] = $this->Expense_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResultArray();
+            $data['count_expense_payment'] = $this->Accounting_model->count_emp_expense_payment_not_convert_yet();
+            $data['count_expense'] = $this->Accounting_model->count_emp_expense_not_convert_yet();
             $data['members_dropdown'] = $this->_get_team_members_dropdown();
             $data['payment_method_dropdown'] = $this->get_payment_method_dropdown();
 
@@ -433,10 +444,10 @@ class Accounting extends Security_Controller
         $Expenses_payment_model =  model('aleelo_plugin\Models\Expense_payments_model');
 
         $select = [
-            '1',
             get_db_prefix() . 'expense_payments.id as id',
             get_db_prefix() . 'expense_payments.expense_id as expense_id',
             'amount_paid',
+            get_db_prefix() . 'supplier.supplier_name as vendor_name',
             get_db_prefix() . 'expense_categories.title as category_name',
             get_db_prefix() . 'expenses.title as title',
             get_db_prefix() . 'expenses.expense_date as expense_date',
@@ -456,17 +467,17 @@ class Accounting extends Security_Controller
             foreach ($status as $key => $value) {
                 if ($value == 'converted') {
                     if ($where_status != '') {
-                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense") > 0)';
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") > 0)';
                     } else {
-                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense") > 0)';
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") > 0)';
                     }
                 }
 
                 if ($value == 'has_not_been_converted') {
                     if ($where_status != '') {
-                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense") = 0)';
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") = 0)';
                     } else {
-                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense") = 0)';
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "vendor_expense_payment") = 0)';
                     }
                 }
             }
@@ -479,12 +490,8 @@ class Accounting extends Security_Controller
         $from_date = $this->request->getPost('from_date') ? to_sql_date($this->request->getPost('from_date')) : "";
         $to_date = $this->request->getPost('to_date') ? to_sql_date($this->request->getPost('to_date')) : "";
 
-        if ($from_date != '' && $to_date != '') {
-            array_push($where, 'AND (' . get_db_prefix() . 'expenses.expense_date >= "' . $from_date . '" and ' . get_db_prefix() . 'expenses.expense_date <= "' . $to_date . '")');
-        } elseif ($from_date != '') {
-            array_push($where, 'AND (' . get_db_prefix() . 'expenses.expense_date >= "' . $from_date . '")');
-        } elseif ($to_date != '') {
-            array_push($where, 'AND (' . get_db_prefix() . 'expenses.expense_date <= "' . $to_date . '")');
+        if ($from_date != '') {
+            array_push($where, 'AND (' . get_db_prefix() . 'expense_payments.payment_date >= "' . $from_date . '")');
         }
 
         if ($id != '') {
@@ -498,6 +505,7 @@ class Accounting extends Security_Controller
         $sTable       = get_db_prefix() . 'expense_payments';
         $join         = [
             'JOIN ' . get_db_prefix() . 'expenses ON ' . get_db_prefix() . 'expenses.id = ' . get_db_prefix() . 'expense_payments.expense_id',
+            'JOIN ' . get_db_prefix() . 'supplier ON ' . get_db_prefix() . 'supplier.id = ' . get_db_prefix() . 'expenses.vendor_id',
             'JOIN ' . get_db_prefix() . 'expense_categories ON ' . get_db_prefix() . 'expense_categories.id = ' . get_db_prefix() . 'expenses.category_id',
         ];
         $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, [$select_purchase]);
@@ -510,27 +518,13 @@ class Accounting extends Security_Controller
             $row   = [];
             $row[] = '<div class="checkbox"><input type="checkbox" value="' . $aRow['id'] . '" class="form-check-input"><label></label></div>';
 
-            $row[] = $aRow['id'];
             $row[] = format_to_date($aRow['expense_date']);
+            $row[] = $aRow['vendor_name'];
 
             $row[] = $aRow['title'];
 
+            $row[] = to_currency($aRow['amount_paid'], $currency_symbol);
             $row[] = $aRow['category_name'];
-
-            $expense = $Expenses_model->get_details(['id' => $aRow['expense_id']])->getRow();
-            $vendor_expense_payment = $Expenses_payment_model->get_details(['id' => $aRow['id']])->getRow();
-
-
-            $tax = 0;
-            $tax2 = 0;
-            if ($expense->tax_percentage) {
-                $tax = $expense->amount * ($expense->tax_percentage / 100);
-            }
-            if ($expense->tax_percentage2) {
-                $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
-            }
-
-            $row[] = to_currency($aRow['amount_paid'] + $tax + $tax2, $currency_symbol);
 
             $status_name = app_lang('has_not_been_converted');
             $label_class = 'bg-secondary';
@@ -572,6 +566,142 @@ class Accounting extends Security_Controller
             }
         }
     }
+        public function emp_payment_table($id = '', $return_ajax = true)
+    {
+        $acc_closing_date = '';
+        if (get_setting('acc_close_the_books') == 1) {
+            $acc_closing_date = get_setting('acc_closing_date');
+        }
+        $currency_symbol = get_setting("currency_symbol");
+        $Expenses_model = model('aleelo_plugin\Models\Expenses_emp_model');
+        $Expenses_payment_model =  model('aleelo_plugin\Models\Expense_payments_emp_model');
+
+        $select = [
+            get_db_prefix() . 'expense_payments_emp.id as id',
+            get_db_prefix() . 'expense_payments_emp.expense_id as expense_id',
+            'amount_paid',
+            get_db_prefix() . 'expense_categories.title as category_name',
+            get_db_prefix() . 'expenses_emp.title as title',
+            get_db_prefix() . 'users.first_name as person_name',
+            get_db_prefix() . 'expenses_emp.expense_date as expense_date',
+            '(select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") as count_account_historys'
+        ];
+        $where = [];
+        array_push($where, 'AND ' . get_db_prefix() . 'expense_payments_emp.deleted = 0');
+
+        $category = $this->request->getPost('category') ? $this->request->getPost('category') : "";
+        if ($category != '') {
+            array_push($where, 'AND ' . get_db_prefix() . 'expenses_emp.category_id in ( ' . implode(',', $category) . ')');
+        }
+
+        $status = $this->request->getPost('status') ? $this->request->getPost('status') : "";
+        if ($status != '') {
+            $where_status = '';
+            foreach ($status as $key => $value) {
+                if ($value == 'converted') {
+                    if ($where_status != '') {
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") > 0)';
+                    } else {
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") > 0)';
+                    }
+                }
+
+                if ($value == 'has_not_been_converted') {
+                    if ($where_status != '') {
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") = 0)';
+                    } else {
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expense_payments_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "emp_expense_payment") = 0)';
+                    }
+                }
+            }
+
+            if ($where_status != '') {
+                array_push($where, 'AND (' . $where_status . ')');
+            }
+        }
+
+        $from_date = $this->request->getPost('from_date') ? to_sql_date($this->request->getPost('from_date')) : "";
+        $to_date = $this->request->getPost('to_date') ? to_sql_date($this->request->getPost('to_date')) : "";
+
+        if ($from_date != '') {
+            array_push($where, 'AND (' . get_db_prefix() . 'expense_payments_emp.payment_date >= "' . $from_date . '")');
+        } 
+
+        if ($id != '') {
+            array_push($where, 'AND ' . get_db_prefix() . 'expense_payments_emp.id = "' . $id . '"');
+        }
+
+        $select_purchase = '0 as count_purchases';
+
+        $aColumns     = $select;
+        $sIndexColumn = 'id';
+        $sTable       = get_db_prefix() . 'expense_payments_emp';
+        $join         = [
+            'JOIN ' . get_db_prefix() . 'expenses_emp ON ' . get_db_prefix() . 'expenses_emp.id = ' . get_db_prefix() . 'expense_payments_emp.expense_id',
+            'JOIN ' . get_db_prefix() . 'users ON ' . get_db_prefix() . 'users.id = ' . get_db_prefix() . 'expenses_emp.user_id',
+            'JOIN ' . get_db_prefix() . 'expense_categories ON ' . get_db_prefix() . 'expense_categories.id = ' . get_db_prefix() . 'expenses_emp.category_id',
+        ];
+        $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, [$select_purchase]);
+
+        $output = $result['output'];
+        $output['data'] = [];
+        $rResult = $result['rResult'];
+
+        foreach ($rResult as $aRow) {
+            $row   = [];
+            $row[] = '<div class="checkbox"><input type="checkbox" value="' . $aRow['id'] . '" class="form-check-input"><label></label></div>';
+
+            $row[] = format_to_date($aRow['expense_date']);
+            $row[] = $aRow['person_name'];
+            $row[] = $aRow['title'];
+            $expense = $Expenses_model->get_details(['id' => $aRow['expense_id']])->getRow();
+            $vendor_expense_payment = $Expenses_payment_model->get_details(['id' => $aRow['id']])->getRow();
+
+            $row[] = to_currency($aRow['amount_paid'] , $currency_symbol);
+
+
+            $row[] = $aRow['category_name'];
+
+            $status_name = app_lang('has_not_been_converted');
+            $label_class = 'bg-secondary';
+
+            if ($aRow['count_account_historys'] > 0) {
+                $label_class = 'bg-success';
+                $status_name = app_lang('acc_converted');
+            }
+
+            $row[] = '<span class="mt0 badge large ' . $label_class . ' payment-status-' . $aRow['id'] . '">' . $status_name . '</span>';
+
+            $options = '';
+            if ($aRow['count_account_historys'] == 0 && acc_has_permission('acc_can_create_transaction') && (($acc_closing_date != '' && strtotime($acc_closing_date) <= strtotime($aRow['expense_date'])) || $acc_closing_date == '' || strtotime(date('Y-m-d')) <= strtotime($acc_closing_date))) {
+                $options .= modal_anchor(get_uri("accounting/convert_modal_form"), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('acc_convert'), "data-post-id" => $aRow['id'], "data-post-type" => 'emp_expense_payment'));
+            } else {
+                if (acc_has_permission('acc_can_edit_transaction')) {
+                    $options .= modal_anchor(get_uri("accounting/convert_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit'), "data-post-id" => $aRow['id'], "data-post-type" => 'emp_expense_payment'));
+                }
+
+                if (acc_has_permission('acc_can_delete_transaction')) {
+                    $options .= modal_anchor(get_uri("accounting/delete_convert_modal"), "<i data-feather='x' class='icon-16'></i> ", array("title" => app_lang('delete') . "?", "data-post-id" => $aRow['id'], "data-post-type" => "emp_expense_payment"));
+                }
+            }
+
+            $row[] = $options;
+
+            $output['aaData'][] = $row;
+        }
+
+        if ($return_ajax) {
+            echo json_encode($output);
+            die();
+        } else {
+            if ($id != '' && isset($output['aaData'][0])) {
+                return $output['aaData'][0];
+            } else {
+
+                return $output['aaData'];
+            }
+        }
+    }
     /**
      * expenses table
      * @return json
@@ -585,7 +715,7 @@ class Accounting extends Security_Controller
         $currency_symbol = get_setting("currency_symbol");
         $Expenses_model = model('Expenses_model');
         $select = [
-            '1',
+            get_db_prefix() . 'supplier.supplier_name as vendor_name',
             get_db_prefix() . 'expenses.id as id',
             'amount',
             get_db_prefix() . 'expense_categories.title as category_name',
@@ -649,6 +779,7 @@ class Accounting extends Security_Controller
         $sTable       = get_db_prefix() . 'expenses';
         $join         = [
             'JOIN ' . get_db_prefix() . 'expense_categories ON ' . get_db_prefix() . 'expense_categories.id = ' . get_db_prefix() . 'expenses.category_id',
+            'JOIN ' . get_db_prefix() . 'supplier ON ' . get_db_prefix() . 'supplier.id = ' . get_db_prefix() . 'expenses.vendor_id',
         ];
         $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, [$select_purchase]);
 
@@ -661,6 +792,8 @@ class Accounting extends Security_Controller
             $row[] = '<div class="checkbox"><input type="checkbox" value="' . $aRow['id'] . '" class="form-check-input"><label></label></div>';
 
             $row[] = format_to_date($aRow['expense_date']);
+
+            $row[] = $aRow['vendor_name'];
 
             $row[] = $aRow['title'];
 
@@ -719,7 +852,152 @@ class Accounting extends Security_Controller
             }
         }
     }
+    public function expenses_emp_table($id = '', $return_ajax = true)
+    {
+        $acc_closing_date = '';
+        if (get_setting('acc_close_the_books') == 1) {
+            $acc_closing_date = get_setting('acc_closing_date');
+        }
+        $currency_symbol = get_setting("currency_symbol");
+        $Expenses_model = model('aleelo_plugin\Models\Expenses_emp_model');
+        $select = [
+            get_db_prefix() . 'users.first_name as person_name',
+            get_db_prefix() . 'expenses_emp.id as id',
+            'amount',
+            get_db_prefix() . 'expense_categories.title as category_name',
+            get_db_prefix() . 'expenses_emp.title as title',
+            get_db_prefix() . 'expenses_emp.expense_date as expense_date',
+            '(select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense_emp") as count_account_historys'
+        ];
+        $where = [];
+        array_push($where, 'AND ' . get_db_prefix() . 'expenses_emp.deleted = 0');
 
+        $category = $this->request->getPost('category') ? $this->request->getPost('category') : "";
+        if ($category != '') {
+            array_push($where, 'AND ' . get_db_prefix() . 'expenses_emp.category_id in ( ' . implode(',', $category) . ')');
+        }
+
+        $status = $this->request->getPost('status') ? $this->request->getPost('status') : "";
+        if ($status != '') {
+            $where_status = '';
+            foreach ($status as $key => $value) {
+                if ($value == 'converted') {
+                    if ($where_status != '') {
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense_emp") > 0)';
+                    } else {
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense_emp") > 0)';
+                    }
+                }
+
+                if ($value == 'has_not_been_converted') {
+                    if ($where_status != '') {
+                        $where_status .= ' or ((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense_emp") = 0)';
+                    } else {
+                        $where_status .= '((select count(*) from ' . get_db_prefix() . 'acc_account_history where ' . get_db_prefix() . 'acc_account_history.rel_id = ' . get_db_prefix() . 'expenses_emp.id and ' . get_db_prefix() . 'acc_account_history.rel_type = "expense_emp") = 0)';
+                    }
+                }
+            }
+
+            if ($where_status != '') {
+                array_push($where, 'AND (' . $where_status . ')');
+            }
+        }
+
+        $from_date = $this->request->getPost('from_date') ? to_sql_date($this->request->getPost('from_date')) : "";
+        $to_date = $this->request->getPost('to_date') ? to_sql_date($this->request->getPost('to_date')) : "";
+
+        if ($from_date != '' && $to_date != '') {
+            array_push($where, 'AND (' . get_db_prefix() . 'expenses_emp.expense_date >= "' . $from_date . '" and ' . get_db_prefix() . 'expenses_emp.expense_date <= "' . $to_date . '")');
+        } elseif ($from_date != '') {
+            array_push($where, 'AND (' . get_db_prefix() . 'expenses_emp.expense_date >= "' . $from_date . '")');
+        } elseif ($to_date != '') {
+            array_push($where, 'AND (' . get_db_prefix() . 'expenses_emp.expense_date <= "' . $to_date . '")');
+        }
+
+        if ($id != '') {
+            array_push($where, 'AND ' . get_db_prefix() . 'expenses_emp.id = "' . $id . '"');
+        }
+
+        $select_purchase = '0 as count_purchases';
+
+        $aColumns     = $select;
+        $sIndexColumn = 'id';
+        $sTable       = get_db_prefix() . 'expenses_emp';
+        $join         = [
+            'JOIN ' . get_db_prefix() . 'expense_categories ON ' . get_db_prefix() . 'expense_categories.id = ' . get_db_prefix() . 'expenses_emp.category_id',
+            'JOIN ' . get_db_prefix() . 'users ON ' . get_db_prefix() . 'users.id = ' . get_db_prefix() . 'expenses_emp.user_id',
+
+        ];
+        $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, [$select_purchase]);
+
+        $output = $result['output'];
+        $output['data'] = [];
+        $rResult = $result['rResult'];
+
+        foreach ($rResult as $aRow) {
+            $row   = [];
+            $row[] = '<div class="checkbox"><input type="checkbox" value="' . $aRow['id'] . '" class="form-check-input"><label></label></div>';
+
+            $row[] = format_to_date($aRow['expense_date']);
+            $row[] = $aRow['person_name'];
+
+            $row[] = $aRow['title'];
+
+            $row[] = $aRow['category_name'];
+
+            $expense = $Expenses_model->get_details(['id' => $aRow['id']])->getRow();
+
+            $tax = 0;
+            $tax2 = 0;
+            if ($expense->tax_percentage) {
+                $tax = $expense->amount * ($expense->tax_percentage / 100);
+            }
+            if ($expense->tax_percentage2) {
+                $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
+            }
+
+            $row[] = to_currency($aRow['amount'] + $tax + $tax2, $currency_symbol);
+
+            $status_name = app_lang('has_not_been_converted');
+            $label_class = 'bg-secondary';
+
+            if ($aRow['count_account_historys'] > 0) {
+                $label_class = 'bg-success';
+                $status_name = app_lang('acc_converted');
+            }
+
+            $row[] = '<span class="mt0 badge large ' . $label_class . ' payment-status-' . $aRow['id'] . '">' . $status_name . '</span>';
+
+            $options = '';
+            if ($aRow['count_account_historys'] == 0 && acc_has_permission('acc_can_create_transaction') && (($acc_closing_date != '' && strtotime($acc_closing_date) <= strtotime($aRow['expense_date'])) || $acc_closing_date == '' || strtotime(date('Y-m-d')) <= strtotime($acc_closing_date))) {
+                $options .= modal_anchor(get_uri("accounting/convert_modal_form"), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('acc_convert'), "data-post-id" => $aRow['id'], "data-post-type" => 'expense_emp'));
+            } else {
+                if (acc_has_permission('acc_can_edit_transaction')) {
+                    $options .= modal_anchor(get_uri("accounting/convert_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit'), "data-post-id" => $aRow['id'], "data-post-type" => 'expense_emp'));
+                }
+
+                if (acc_has_permission('acc_can_delete_transaction')) {
+                    $options .= modal_anchor(get_uri("accounting/delete_convert_modal"), "<i data-feather='x' class='icon-16'></i> ", array("title" => app_lang('delete') . "?", "data-post-id" => $aRow['id'], "data-post-type" => "expense_emp"));
+                }
+            }
+
+            $row[] = $options;
+
+            $output['aaData'][] = $row;
+        }
+
+        if ($return_ajax) {
+            echo json_encode($output);
+            die();
+        } else {
+            if ($id != '' && isset($output['aaData'][0])) {
+                return $output['aaData'][0];
+            } else {
+
+                return $output['aaData'];
+            }
+        }
+    }
     /**
      * banking table
      * @return json
@@ -1486,7 +1764,173 @@ class Accounting extends Security_Controller
                         </div>
                     </div>
                 </div>';
-        } elseif ($type == 'banking') {
+        } elseif ($type == 'expense_emp') {
+            $Expenses_model = model('aleelo_plugin\Models\Expenses_emp_model');
+            $expense = $Expenses_model->get_details(['id' => $id])->getRow();
+
+            $Expense_categories_model = model('Expense_categories_model');
+            $category = $Expense_categories_model->get_one($expense->category_id);
+
+            $tax = 0;
+            $tax2 = 0;
+            if ($expense->tax_percentage) {
+                $tax = $expense->amount * ($expense->tax_percentage / 100);
+            }
+            if ($expense->tax_percentage2) {
+                $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
+            }
+
+            $html = '<table class="table border table-striped no-margin">
+                    <tbody>
+                        <tr class="project-overview">
+                            <td class="bold" width="30%">' . app_lang('category') . '</td>
+                            <td>' . $category->title  . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('title') . '</td>
+                            <td>' . $expense->title  . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('acc_amount') . '</td>
+                            <td>' . to_currency($expense->amount + $tax + $tax2, $currency_symbol) . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('date') . '</td>
+                            <td>' . format_to_date($expense->expense_date) . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('note') . '</td>
+                            <td colspan="2">' . html_entity_decode($expense->description) . '</td>
+                        </tr>';
+
+
+
+
+            $amount = $expense->amount;
+
+            $html .=    '</tbody>
+                </table>';
+            $debit = get_setting('acc_expense_deposit_to');
+            $credit = get_setting('acc_expense_payment_account');
+
+            $db_builder = $db->table(get_db_prefix() . 'acc_account_history');
+            $db_builder->where('rel_id', $id);
+            $db_builder->where('rel_type', $type);
+            $db_builder->where('(tax = 0 or tax is null)');
+            $account_history = $db_builder->get()->getResultArray();
+            foreach ($account_history as $key => $value) {
+                if ($value['debit'] > 0) {
+                    $debit = $value['account'];
+                }
+
+                if ($value['credit'] > 0) {
+                    $credit =  $value['account'];
+                }
+            }
+
+            $html .= '<div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="payment_account" class="">' . app_lang('payment_account') . '</label>
+                                ' . form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="deposit_to" class="">' . app_lang('deposit_to') . '</label>
+                            ' . form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
+                        </div>
+                    </div>
+                </div>';
+        } elseif ($type == 'emp_expense_payment') {
+            $Expenses_model = model('aleelo_plugin\Models\Expenses_emp_model');
+            $Expense_payments_model = model('aleelo_plugin\Models\Expense_payments_emp_model');
+            $expense_paymnet = $Expense_payments_model->get_details(['id' => $id])->getRow();
+            $expense = $Expenses_model->get_details(['id' => $expense_paymnet->expense_id])->getRow();
+
+            $Expense_categories_model = model('Expense_categories_model');
+            $category = $Expense_categories_model->get_one($expense->category_id);
+
+            $tax = 0;
+            $tax2 = 0;
+            if ($expense->tax_percentage) {
+                $tax = $expense->amount * ($expense->tax_percentage / 100);
+            }
+            if ($expense->tax_percentage2) {
+                $tax2 = $expense->amount * ($expense->tax_percentage2 / 100);
+            }
+
+            $html = '<table class="table border table-striped no-margin">
+                    <tbody>
+                        <tr class="project-overview">
+                            <td class="bold" width="30%">' . app_lang('category') . '</td>
+                            <td>' . $category->title  . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('title') . '</td>
+                            <td>' . $expense->title  . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('acc_amount') . '</td>
+                            <td>' . to_currency($expense_paymnet->amount_paid, $currency_symbol) . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('date') . '</td>
+                            <td>' . format_to_date($expense_paymnet->payment_date) . '</td>
+                            <td></td>
+                        </tr>
+                        <tr class="project-overview">
+                            <td class="bold">' . app_lang('note') . '</td>
+                            <td colspan="2">' . html_entity_decode($expense_paymnet->note) . '</td>
+                        </tr>';
+
+
+
+
+            $amount = $expense_paymnet->amount_paid;
+
+            $html .=    '</tbody>
+                </table>';
+            $debit = get_setting('acc_expense_deposit_to');
+            $credit = get_setting('acc_expense_payment_account');
+
+            $db_builder = $db->table(get_db_prefix() . 'acc_account_history');
+            $db_builder->where('rel_id', $id);
+            $db_builder->where('rel_type', $type);
+            $db_builder->where('(tax = 0 or tax is null)');
+            $account_history = $db_builder->get()->getResultArray();
+            foreach ($account_history as $key => $value) {
+                if ($value['debit'] > 0) {
+                    $debit = $value['account'];
+                }
+
+                if ($value['credit'] > 0) {
+                    $credit =  $value['account'];
+                }
+            }
+
+            $html .= '<div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="payment_account" class="">' . app_lang('payment_account') . '</label>
+                                ' . form_dropdown("payment_account", $accounts_dropdown, array($credit ? $credit : ''), "class='select2 validate-hidden' id='payment_account' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="deposit_to" class="">' . app_lang('deposit_to') . '</label>
+                            ' . form_dropdown("deposit_to", $accounts_dropdown, array($debit ? $debit : ''), "class='select2 validate-hidden' id='deposit_to' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'") . '
+                        </div>
+                    </div>
+                </div>';
+        }elseif ($type == 'banking') {
             $banking = $this->Accounting_model->get_transaction_banking($id);
             $html = '<table class="table border table-striped no-margin">
                       <tbody>
@@ -3023,6 +3467,12 @@ class Accounting extends Security_Controller
             case 'vendor_expense_payment':
                 $url = 'accounting/transaction?group=expense_vender';
                 break;
+            case 'expense_emp':
+                $url = 'accounting/transaction?group=expense_emp';
+                break;
+            case 'emp_expense_payment':
+                $url = 'accounting/transaction?group=expense_emp';
+                break;
             case 'purchase_order':
                 $url = 'accounting/transaction?group=purchase';
                 break;
@@ -4250,9 +4700,20 @@ class Accounting extends Security_Controller
                 break;
 
             case 'expense':
-                $group = 'expenses';
+                $group = 'expense_vender';
                 break;
-
+            case 'expense_vender':
+                $group = 'expense_vender';
+                break;
+            case 'vendor_expense_payment':
+                $group = 'expense_vender';
+                break;
+            case 'expense_emp':
+                $group = 'expense_emp';
+                break;     
+            case 'emp_expense_payment':
+                $group = 'expense_emp';
+                break;   
             case 'purchase_order':
                 $group = 'purchase';
                 break;
@@ -5103,7 +5564,39 @@ class Accounting extends Security_Controller
                             }
                         }
                     }
-                } elseif ($type == 'banking') {
+                }  elseif ($type == 'expense_emp') {
+                    foreach ($ids as $id) {
+                        if ($this->request->getPost('mass_convert') === 'true') {
+                            if (acc_has_permission('acc_can_create_transaction')) {
+                                if ($this->Accounting_model->automatic_emp_expense_conversion($id)) {
+                                    $total_deleted++;
+                                }
+                            }
+                        } elseif ($this->request->getPost('mass_delete_convert') === 'true') {
+                            if (acc_has_permission('acc_can_delete_transaction')) {
+                                if ($this->Accounting_model->delete_convert($id, 'expense_emp')) {
+                                    $total_deleted++;
+                                }
+                            }
+                        }
+                    }
+                } elseif ($type == 'emp_expense_payment') {
+                    foreach ($ids as $id) {
+                        if ($this->request->getPost('mass_convert') === 'true') {
+                            if (acc_has_permission('acc_can_create_transaction')) {
+                                if ($this->Accounting_model->automatic_emp_expense_payment_conversion($id)) {
+                                    $total_deleted++;
+                                }
+                            }
+                        } elseif ($this->request->getPost('mass_delete_convert') === 'true') {
+                            if (acc_has_permission('acc_can_delete_transaction')) {
+                                if ($this->Accounting_model->delete_convert($id, 'emp_expense_payment')) {
+                                    $total_deleted++;
+                                }
+                            }
+                        }
+                    }
+                }elseif ($type == 'banking') {
                     foreach ($ids as $id) {
                         if ($this->request->getPost('mass_delete') === 'true') {
                             if (acc_has_permission('acc_can_create_transaction')) {
@@ -8958,7 +9451,12 @@ class Accounting extends Security_Controller
         $view_data  = [];
         return $this->template->view('Accounting\Views\transaction\payment_vender', $view_data);
     }
-    function transaction_expense_payment_list()
+    function transaction_payment_emp_list()
+    {
+
+        $view_data  = [];
+        return $this->template->view('Accounting\Views\transaction\payment_emp', $view_data);
+    }    function transaction_expense_payment_list()
     {
 
         $view_data  = [];
