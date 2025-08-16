@@ -322,7 +322,7 @@ $data = array(
 
                 echo get_company_icon($client_info->company_id, "");
                 ?> </td>
-            <td style="width: 22%;">
+            <td style="width: 50%;">
                 <h4 class="company-name"><?php echo $company_info->name; ?></h4>
                 <h4 class="company-address"><?php echo nl2br($company_info->address); ?></h4>
             </td>
