@@ -826,24 +826,40 @@ if (!function_exists('get_company_name')) {
 	}
 }
 if (!function_exists('get_supplier_name')) {
-	function get_supplier_name($userid, $prevent_empty_company = false)
-	{
-	    
-	    $_userid = $userid;
+    function get_supplier_name($userid, $prevent_empty_company = false)
+    {
+        if (empty($userid)) {
+            return $prevent_empty_company ? '-' : '';
+        }
 
-	    $db = db_connect('default');
-	    $db_builder = $db->table(get_db_prefix() . 'supplier');
-	    $client = $db_builder->select('supplier_name')
-	        ->where('id', $_userid)
-	        ->get()
-	        ->getRow();
-	    if ($client) {
-	        return $client->supplier_name;
-	    }
+        $db = db_connect('default');
 
-	    return '';
-	}
+        $row = $db->table(get_db_prefix() . 'supplier')
+                  ->select('supplier_name')
+                  ->where('id', (int)$userid)
+                  ->limit(1)
+                  ->get()
+                  ->getRow();
+
+        if ($row && $row->supplier_name !== '') {
+            return $row->supplier_name;
+        }
+
+        $u = $db->table(get_db_prefix() . 'users')
+        	    ->select("TRIM(CONCAT_WS(' ', first_name, last_name)) AS name", false)
+                ->where('id', (int)$userid)
+                ->limit(1)
+                ->get()
+                ->getRow();
+
+        if ($u && $u->name !== '') {
+            return $u->name;
+        }
+
+        return $prevent_empty_company ? '-' : '';
+    }
 }
+
 if (!function_exists('get_staff_full_name')) {
 	function get_staff_full_name($staffid = ''){
 		if($staffid != ''){

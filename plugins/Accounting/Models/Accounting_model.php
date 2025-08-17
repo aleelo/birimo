@@ -9255,7 +9255,8 @@ class Accounting_model extends Crud_model {
 
         $Invoice_payments_model = model('Invoice_payments_model');
         $payment = $Invoice_payments_model->get_one($payment_id);
-
+        $payment_account = get_setting('acc_expense_payment_payment_account');
+        $deposit_to = get_setting('acc_expense_payment_deposit_to');
         $Invoices_model = model('Invoices_model');
         $invoice = $Invoices_model->get_one(['id' => $payment->invoice_id]);
         $Payment_methods_model = model('Payment_methods_model');
@@ -9282,8 +9283,6 @@ class Accounting_model extends Crud_model {
             $currency_converter = 1;
         }
 
-        $payment_account = get_setting('acc_payment_payment_account');
-        $deposit_to = get_setting('acc_payment_deposit_to');
         $affectedRows = 0;
 
         $this->automatic_invoice_conversion($payment->invoice_id);
@@ -9310,6 +9309,39 @@ class Accounting_model extends Crud_model {
                 $payment_mode_mapping = $this->get_payment_mode_mapping($payment->payment_method_id);
                 $data_insert = [];
                 if($payment_mode_mapping){
+                    if($payment->supplier){
+                    $node = [];
+                    $node['split'] = $payment_mode_mapping->expense_payment_account;
+                    $node['account'] = $payment_mode_mapping->expense_deposit_to;
+                    $node['date'] = $payment->payment_date;
+                    $node['debit'] = $payment_total;
+                    $node['customer'] = $invoice->client_id;
+                    $node['credit'] = 0;
+                    $node['tax'] = 0;
+                    $node['description'] = '';
+                    $node['rel_id'] = $payment_id;
+                    $node['rel_type'] = 'payment';
+                    $node['supplier_id'] = $payment->supplier_id;
+                    $node['datecreated'] = date('Y-m-d H:i:s');
+                    $node['addedfrom'] = $created_by;
+                    $data_insert[] = $node;
+
+                    $node = [];
+                    $node['split'] = $payment_mode_mapping->expense_deposit_to;
+                    $node['account'] = $payment_mode_mapping->expense_payment_account;
+                    $node['customer'] = $invoice->client_id;
+                    $node['date'] = $payment->payment_date;
+                    $node['tax'] = 0;
+                    $node['debit'] = 0;
+                    $node['credit'] = $payment_total;
+                    $node['description'] = '';
+                    $node['rel_id'] = $payment_id;
+                    $node['rel_type'] = 'payment';
+                    $node['supplier_id'] = $payment->supplier_id;
+                    $node['datecreated'] = date('Y-m-d H:i:s');
+                    $node['addedfrom'] = $created_by;
+                    $data_insert[] = $node;
+                    }else{
                     $node = [];
                     $node['split'] = $payment_mode_mapping->payment_account;
                     $node['account'] = $payment_mode_mapping->deposit_to;
@@ -9321,6 +9353,7 @@ class Accounting_model extends Crud_model {
                     $node['description'] = '';
                     $node['rel_id'] = $payment_id;
                     $node['rel_type'] = 'payment';
+                    $node['supplier_id'] = $payment->supplier_id;
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
                     $data_insert[] = $node;
@@ -9336,13 +9369,17 @@ class Accounting_model extends Crud_model {
                     $node['description'] = '';
                     $node['rel_id'] = $payment_id;
                     $node['rel_type'] = 'payment';
+                    $node['supplier_id'] = $payment->supplier_id;
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
                     $data_insert[] = $node;
+                    }
+
                 }
 
                 if(count($data_insert) == 0){   
                     if(get_setting('acc_payment_automatic_conversion') == 1){
+                        if($payment->supplier){
                         $node = [];
                         $node['split'] = $payment_account;
                         $node['account'] = $deposit_to;
@@ -9353,6 +9390,37 @@ class Accounting_model extends Crud_model {
                         $node['description'] = '';
                         $node['rel_id'] = $payment_id;
                         $node['rel_type'] = 'payment';
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
+
+                        $node = [];
+                        $node['split'] = $deposit_to;
+                        $node['account'] = $payment_account;
+                        $node['customer'] = $invoice->client_id;
+                        $node['date'] = $payment->payment_date;
+                        $node['debit'] = 0;
+                        $node['credit'] = $payment_total;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['rel_type'] = 'payment';
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
+                        }else{
+                        $node = [];
+                        $node['split'] = $payment_account;
+                        $node['account'] = $deposit_to;
+                        $node['customer'] = $invoice->client_id;
+                        $node['debit'] = $payment_total;
+                        $node['credit'] = 0;
+                        $node['date'] = $payment->payment_date;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['rel_type'] = 'payment';
+                        $node['supplier_id'] = $payment->supplier_id;
                         $node['datecreated'] = date('Y-m-d H:i:s');
                         $node['addedfrom'] = $created_by;
                         $data_insert[] = $node;
@@ -9366,10 +9434,13 @@ class Accounting_model extends Crud_model {
                         $node['credit'] = $payment_total;
                         $node['description'] = '';
                         $node['rel_id'] = $payment_id;
+                        $node['supplier_id'] = $payment->supplier_id;
                         $node['rel_type'] = 'payment';
                         $node['datecreated'] = date('Y-m-d H:i:s');
                         $node['addedfrom'] = $created_by;
                         $data_insert[] = $node;
+                        }
+
                     }
                 }
             }else{
@@ -9384,6 +9455,7 @@ class Accounting_model extends Crud_model {
                     $node['description'] = '';
                     $node['rel_id'] = $payment_id;
                     $node['rel_type'] = 'payment';
+                    $node['supplier_id'] = $payment->supplier_id;
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
                     $data_insert[] = $node;
@@ -9397,6 +9469,7 @@ class Accounting_model extends Crud_model {
                     $node['credit'] = $payment_total;
                     $node['description'] = '';
                     $node['rel_id'] = $payment_id;
+                    $node['supplier_id'] = $payment->supplier_id;
                     $node['rel_type'] = 'payment';
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
@@ -10037,6 +10110,7 @@ class Accounting_model extends Crud_model {
                     $node['description'] = '';
                     $node['rel_id'] = $id;
                     $node['rel_type'] = 'vendor_expense_payment';
+                    $node['supplier_id'] = $expense->vendor_id;
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
                     $data_insert[] = $node;
@@ -10052,6 +10126,7 @@ class Accounting_model extends Crud_model {
                     $node['description'] = '';
                     $node['rel_id'] = $id;
                     $node['rel_type'] = 'vendor_expense_payment';
+                    $node['supplier_id'] = $expense->vendor_id;
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
                     $data_insert[] = $node;
@@ -10070,6 +10145,7 @@ class Accounting_model extends Crud_model {
                 $node['description'] = '4';
                 $node['rel_id'] = $id;
                 $node['rel_type'] = 'vendor_expense_payment';
+                $node['supplier_id'] = $expense->vendor_id;
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = $created_by;
                 $data_insert[] = $node;
@@ -10085,6 +10161,7 @@ class Accounting_model extends Crud_model {
                 $node['description'] = '4';
                 $node['rel_id'] = $id;
                 $node['rel_type'] = 'vendor_expense_payment';
+                $node['supplier_id'] = $expense->vendor_id;
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = $created_by;
                 $data_insert[] = $node;
@@ -18012,391 +18089,292 @@ public function get_data_accounts_payable_summery($data_filter)
     $from_date = isset($data_filter['from_date']) ? to_sql_date($data_filter['from_date']) : date('Y-m-01');
     $to_date   = isset($data_filter['to_date'])   ? to_sql_date($data_filter['to_date'])   : date('Y-m-d');
 
-    $supplier_id_filter = isset($data_filter['supplier_id']) ? $data_filter['supplier_id'] : '';
+    $supplier_id_filter = isset($data_filter['supplier_id']) && (int)$data_filter['supplier_id'] > 0
+        ? (int)$data_filter['supplier_id'] : null;
 
-    $Invoices_model = new Invoices_model();
+    $db = $this->db;
+    $p  = get_db_prefix();
+
+    $EXPENSES_TABLE      = "{$p}expenses"; 
+    $EXPENSES_EMP_TABLE      = "{$p}expenses_emp"; 
+    $EXPENSE_DATE_COLUMN = 'e.expense_date';  
+
     $data_report = [];
 
     $date_ranges = [
-        'current'              => [null, $to_date],
-        '1_30_days_past_due'   => [date('Y-m-d', strtotime("$to_date - 30 days")), date('Y-m-d', strtotime("$to_date - 1 days"))],
-        '31_60_days_past_due'  => [date('Y-m-d', strtotime("$to_date - 60 days")), date('Y-m-d', strtotime("$to_date - 31 days"))],
-        '61_90_days_past_due'  => [date('Y-m-d', strtotime("$to_date - 90 days")), date('Y-m-d', strtotime("$to_date - 61 days"))],
-        '91_and_over'          => [null, date('Y-m-d', strtotime("$to_date - 91 days"))],
+        'current'             => [null, $to_date],
+        '1_30_days_past_due'  => [date('Y-m-d', strtotime("$to_date - 30 days")), date('Y-m-d', strtotime("$to_date - 1 days"))],
+        '31_60_days_past_due' => [date('Y-m-d', strtotime("$to_date - 60 days")), date('Y-m-d', strtotime("$to_date - 31 days"))],
+        '61_90_days_past_due' => [date('Y-m-d', strtotime("$to_date - 90 days")), date('Y-m-d', strtotime("$to_date - 61 days"))],
+        '91_and_over'         => [null, date('Y-m-d', strtotime("$to_date - 91 days"))],
     ];
 
-    foreach ($date_ranges as $range_key => $range) {
 
-        // --- 1) Get invoice IDs *from the ledger* (account history) ---
-        // ah.rel_type = 'invoice' and ah.rel_id = invoices.id
-        $db_builder = $this->db->table(get_db_prefix() . 'acc_account_history as ah');
-        $db_builder->select('inv.*,ah.*,sum(debit) as debit');
-        $db_builder->join(get_db_prefix() . 'invoices as inv', 'inv.id = ah.rel_id', 'left');
-        $db_builder->where('ah.rel_type', 'invoice');
-        $db_builder->where('inv.deleted', 0);
-        $db_builder->where('ah.supplier_id', 'NOT NULL');
+    $invoiceDebitSub = $db->table("{$p}acc_account_history ah")
+        ->select('ah.rel_id AS invoice_id, ah.supplier_id, SUM(ah.debit) AS debit_i', false)
+        ->where('ah.rel_type', 'invoice')
+        ->where('ah.supplier_id IS NOT NULL', null, false)
+        ->where('ah.supplier_id !=', 0)
+        ->groupBy('ah.rel_id, ah.supplier_id')
+        ->getCompiledSelect();
 
-        // If you still want to respect status:
-        $db_builder->where('inv.status', 'not_paid');
+    $invoiceCreditSub = $db->table("{$p}invoice_payments ip")
+        ->select('ip.invoice_id, ah.supplier_id, SUM(ah.credit) AS credit_p', false)
+        ->join("{$p}acc_account_history ah",
+               'ah.rel_type="payment" AND ah.rel_id = ip.id AND ah.supplier_id IS NOT NULL AND ah.supplier_id <> 0',
+               'inner')
+        ->groupBy('ip.invoice_id, ah.supplier_id')
+        ->getCompiledSelect();
 
-        // Ageing filters based on invoice due/bill dates
-        if ($range_key == 'current') {
-            $db_builder->where("((inv.due_date IS NOT NULL AND inv.bill_date <= '$to_date' AND inv.due_date >= '$to_date') 
-                              OR (inv.due_date IS NULL AND inv.bill_date = '$to_date'))");
-        } elseif ($range_key == '91_and_over') {
-            $edge = $this->db->escapeString($range[1]);
-            $db_builder->where("((inv.due_date IS NOT NULL AND inv.due_date <= '{$edge}') 
-                              OR (inv.due_date IS NULL AND inv.bill_date <= '{$edge}'))");
+    $expenseDebitSub = $db->table("{$p}acc_account_history ah")
+        ->select('ah.rel_id AS expense_id, ah.supplier_id, SUM(ah.debit) AS debit_e', false)
+        ->where('ah.rel_type', 'expense')
+        ->where('ah.supplier_id IS NOT NULL', null, false)
+        ->where('ah.supplier_id !=', 0)
+        ->groupBy('ah.rel_id, ah.supplier_id')
+        ->getCompiledSelect();
+    $expenseCreditSub = $db->table("{$p}expense_payments vep") 
+        ->select('vep.expense_id, ah.supplier_id, SUM(ah.credit) AS credit_e', false)
+        ->join("{$p}acc_account_history ah",
+            'ah.rel_type="vendor_expense_payment" AND ah.rel_id = vep.id AND ah.supplier_id IS NOT NULL AND ah.supplier_id <> 0',
+            'inner')
+        ->groupBy('vep.expense_id, ah.supplier_id')
+        ->getCompiledSelect();
+    $expenseempDebitSub = $db->table("{$p}acc_account_history ah")
+        ->select('ah.rel_id AS expense_id, ah.user_id, SUM(ah.debit) AS debit_e', false)
+        ->where('ah.rel_type', 'expense_emp')
+        ->where('ah.user_id IS NOT NULL', null, false)
+        ->where('ah.user_id !=', 0)
+        ->groupBy('ah.rel_id, ah.user_id')
+        ->getCompiledSelect();
+    $expenseempCreditSub = $db->table("{$p}expense_payments_emp vep") 
+        ->select('vep.expense_id, ah.user_id, SUM(ah.credit) AS credit_e', false)
+        ->join("{$p}acc_account_history ah",
+            'ah.rel_type="emp_expense_payment" AND ah.rel_id = vep.id AND ah.user_id IS NOT NULL AND ah.user_id <> 0',
+            'inner')
+        ->groupBy('vep.expense_id, ah.user_id')
+        ->getCompiledSelect();
+
+    foreach ($date_ranges as $bucket => [$start, $end]) {
+
+        $b = $db->table("{$p}invoices inv");
+        $b->join("({$invoiceDebitSub}) d", 'd.invoice_id = inv.id', 'inner');
+        $b->join("({$invoiceCreditSub}) c", 'c.invoice_id = inv.id AND c.supplier_id = d.supplier_id', 'left');
+
+        if ($supplier_id_filter) {
+            $b->where('d.supplier_id', $supplier_id_filter);
+        }
+
+        $b->where('inv.deleted', 0);
+        $b->where('inv.status', 'not_paid');
+
+        if ($bucket === 'current') {
+            $b->where("((inv.due_date IS NOT NULL AND inv.bill_date <= {$db->escape($to_date)} AND inv.due_date >= {$db->escape($to_date)}) 
+                OR (inv.due_date IS NULL AND inv.bill_date = {$db->escape($to_date)}))", null, false);
+        } elseif ($bucket === '91_and_over') {
+            $edge = $db->escape($end);
+            $b->where("((inv.due_date IS NOT NULL AND inv.due_date <= {$edge}) 
+                OR (inv.due_date IS NULL AND inv.bill_date <= {$edge}))", null, false);
         } else {
-            $start = $this->db->escapeString($range[0]);
-            $end   = $this->db->escapeString($range[1]);
-            $db_builder->where("((inv.due_date IS NOT NULL AND inv.due_date BETWEEN '{$start}' AND '{$end}') 
-                              OR (inv.due_date IS NULL AND inv.bill_date BETWEEN '{$start}' AND '{$end}'))");
+            $start_esc = $db->escape($start);
+            $end_esc   = $db->escape($end);
+            $b->where("((inv.due_date IS NOT NULL AND inv.due_date BETWEEN {$start_esc} AND {$end_esc}) 
+                OR (inv.due_date IS NULL AND inv.bill_date BETWEEN {$start_esc} AND {$end_esc}))", null, false);
         }
 
-        $invoices = $db_builder->get()->getResultArray();
-        $db_builder = $this->db->table(get_db_prefix() . 'acc_account_history as ah');
-        $db_builder->select('inv.*,ah.*,sum(credit) as credit');
-        $db_builder->join(get_db_prefix() . 'invoice_payments as inv', 'inv.id = ah.rel_id', 'left');
-        $db_builder->where('ah.rel_type', 'payment');
-        $db_builder->where('inv.deleted', 0);
-        $db_builder->where('ah.supplier_id', 'NOT NULL');
-        $payment = $db_builder->get()->getResultArray();
+        $b->select('d.supplier_id, d.debit_i, COALESCE(c.credit_p,0) AS credit_p', false);
+        $rows = $b->get()->getResultArray();
 
-        // --- 2) For each invoice, split by supplier (items) and compute balance due ---
-        foreach ($invoices as $invoice) {
+        foreach ($rows as $r) {
+            $sid     = (int)$r['supplier_id'];
+            $balance = (float)$r['debit_i'] - (float)$r['credit_p'];
+            if ($balance <= 0) continue;
 
-            // Pull the suppliers on the invoice via items (keeps your per-supplier split)
-            $it = $this->db->table(get_db_prefix() . 'invoice_items ii');
-            $it->select('ii.supplier_id, s.supplier_name');
-            $it->join(get_db_prefix() . 'supplier s', 's.id = ii.supplier_id', 'left');
-            $it->where('ii.invoice_id', $invoice['id']);
-            if ($supplier_id_filter) {
-                $it->where('ii.supplier_id', $supplier_id_filter);
-            }
-            $it->groupBy('ii.supplier_id'); // avoid duplicates if multiple lines same supplier
-            $suppliers = $it->get()->getResultArray();
-
-            foreach ($suppliers as $sup) {
-                if (!$sup['supplier_id']) {
-                    continue;
-                }
-
-                // Supplier-scoped totals (your existing method keeps logic consistent)
-                $summary = $Invoices_model->get_invoice_total_summaryp($invoice['id'], $sup['supplier_id']);
-                if (!$summary || $summary->balance_due <= 0) {
-                    continue; // fully paid for this supplier share
-                }
-
-                // Init bucket
-                $sid = $sup['supplier_id'];
-                if (!isset($data_report[$sid])) {
-                    $data_report[$sid] = [
-                        'supplier_name'        => $sup['supplier_name'] ?: 'Unknown Supplier',
-                        'current'              => 0,
-                        '1_30_days_past_due'   => 0,
-                        '31_60_days_past_due'  => 0,
-                        '61_90_days_past_due'  => 0,
-                        '91_and_over'          => 0,
-                        'total'                => 0,
-                    ];
-                }
-
-                $data_report[$sid][$range_key] += $invoices->debit;
-                $data_report[$sid]['total']     = $invoices->debit-$payment->credit;
-            }
-        }
-    }
-
-    return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date];
-}
-
-    public function get_data_accounts_receivable_ageing_supplier_detail($data_filter)
-    {
-        $from_date = date('Y-m-01');
-        $to_date = date('Y-m-d');
-
-
-        if (isset($data_filter['from_date'])) {
-            $from_date = to_sql_date($data_filter['from_date']);
-        }
-
-        if (isset($data_filter['to_date'])) {
-            $to_date = to_sql_date($data_filter['to_date']);
-        }
-        if (isset($data_filter['supplier_id'])) {
-            $supplier_id = $data_filter['supplier_id'];
-        }
-        if (isset($data_filter['company_filter'])) {
-            $company_filter = $data_filter['company_filter'];
-        } else {
-            $company_filter = 0;
-        }
-
-        $data_report = [
-            'current' => [],
-            '1_30_days_past_due' => [],
-            '31_60_days_past_due' => [],
-            '61_90_days_past_due' => [],
-            '91_and_over' => [],
-        ];
-
-        // Get all invoices first
-
-        $running_balance = 0;
-
-        // Get all invoices
-        $db_builder = $this->db->table(get_db_prefix() . 'invoices');
-        $db_builder->select(get_db_prefix() . 'invoices.*');
-        $db_builder->join(get_db_prefix() . 'clients', get_db_prefix() . 'clients.id = ' . get_db_prefix() . 'invoices.client_id', 'left');
-        if ($company_filter) {
-            $db_builder->where(get_db_prefix() . 'clients.company_id', $company_filter);
-        }
-        $db_builder->where("DATE(bill_date) BETWEEN '{$from_date}' AND '{$to_date}'");
-        $db_builder->where(get_db_prefix() . 'invoices.status', 'not_paid');
-        $db_builder->where(get_db_prefix() . 'invoices.deleted', 0);
-        $db_builder->orderBy('bill_date', 'asc');
-        $invoices = $db_builder->get()->getResultArray();
-
-        $company_id = 6;
-
-        foreach ($invoices as $invoice) {
-            $invoice_id = $invoice['id'];
-
-            $supplier_item_builder = $this->db->table(get_db_prefix() . 'invoice_items')
-                ->select('supplier_id, supplier_price AS in_supplier_price')
-                ->where('invoice_id', $invoice_id)
-                ->where('deleted', 0)
-                ->where('supplier', 1)
-
-                ->where('supplier_id IS NOT NULL');
-
-            if (!empty($supplier_id) && $supplier_id != 0) {
-                $supplier_item_builder->where('supplier_id', $supplier_id);
-            }
-
-            $suppliers = $supplier_item_builder->get()->getResultArray();
-
-            foreach ($suppliers as $supplier_row) {
-                // if ($company_id) {
-                //     $supplier_row_data = $this->db->table(get_db_prefix() . 'supplier')
-                //         ->where('id', $supplier_row['supplier_id'])
-                //         ->where('company', $company_id)
-                //         ->get()
-                //         ->getRow();
-
-                //     if (!$supplier_row_data) {
-                //         continue;
-                //     }
-                // }
-
-                $amount = $supplier_row['in_supplier_price'];
-                $running_balance += $amount;
-
-                $data_report['current'][] = [
-                    'date' => $invoice['bill_date'],
-                    'due_date' => $invoice['due_date'],
-                    'type' => app_lang('invoice'),
-                    'number' => get_invoice_id($invoice_id),
-                    'customer' => $supplier_row['supplier_id'],
-                    'Credit' => $amount,
-                    'Debit' => 0,
-                    'balance' => $amount,
-                    'amount' => $running_balance,
+            if (!isset($data_report[$sid])) {
+                $data_report[$sid] = [
+                    'current'              => 0,
+                    '1_30_days_past_due'   => 0,
+                    '31_60_days_past_due'  => 0,
+                    '61_90_days_past_due'  => 0,
+                    '91_and_over'          => 0,
+                    'total'                => 0,
                 ];
             }
+            $data_report[$sid][$bucket] += $balance;
+            $data_report[$sid]['total'] += $balance;
         }
 
-        // Get all payments
-        $builder = $this->db->table($this->db->prefixTable('invoice_payments'));
-        $builder->select('amount, payment_date, invoice_id, supplier_id');
-        $builder->where('deleted', 0);
-        $builder->where('supplier', 1);
+        $e = $db->table("{$EXPENSES_TABLE} e");
+        $e->join("({$expenseDebitSub}) d", 'd.expense_id = e.id', 'inner');
+        $e->join("({$expenseCreditSub}) c", 'c.expense_id = e.id AND c.supplier_id = d.supplier_id', 'left');
 
-        $builder->orderBy('payment_date', 'asc');
-        // $builder->where('DATE(payment_date)', $to_date);
-
-
-        if (!empty($supplier_id) && $supplier_id != 0) {
-            $builder->where('supplier_id', $supplier_id);
+        if ($supplier_id_filter) {
+            $e->where('d.supplier_id', $supplier_id_filter);
         }
 
-        $builder->orderBy('payment_date', 'ASC');
-        $payments = $builder->get()->getResult();
+        $e->where('e.deleted', 0);
 
-
-
-
-
-
-
-
-        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
-        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 30 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 1 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 30 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 1 days')) . '")) and (status = "not_paid")');
-        // $builder->where('DATE(payment_date)', $to_date);
-        // $db_builder->where('DATE(bill_date)', $to_date);
-
-        $db_builder->where('deleted', 0);
-        $db_builder->orderBy('bill_date', 'asc');
-
-        $invoices = $db_builder->get()->getResultArray();
-
-        foreach ($invoices as $invoice) {
-            $invoice_id = $invoice['id'];
-
-            $supplier_table = $this->db->table(get_db_prefix() . 'supplier')
-                ->where('id', $supplier_id);
-            // if ($company_id) {
-            //     $supplier_table->where('company', $company_id);
-            // }
-            $supplier_table = $supplier_table->get()->getRow();
-
-            $supplier_item_builder = $this->db->table(get_db_prefix() . 'invoice_items')
-                ->select('supplier_id, supplier_price AS in_supplier_price')
-                ->where('invoice_id', $invoice_id)
-                ->where('deleted', 0)
-                ->where('supplier', 1)
-
-                ->where('supplier_id IS NOT NULL');
-
-            if (!empty($supplier_id) && $supplier_id != 0) {
-                $supplier_item_builder->where('supplier_id', $supplier_id);
-            }
-
-
-            $suppliers = $supplier_item_builder->get()->getResultArray();
-
-            foreach ($suppliers as $supplier_row) {
-                $amount = $supplier_row['in_supplier_price'];
-                $running_balance += $amount;
-
-                // $data_report['current'][] = [
-                //     'date' => $invoice['bill_date'],
-                //     'due_date' => $invoice['due_date'],
-                //     'type' => app_lang('invoice'),
-                //     'number' => get_invoice_id($invoice_id),
-                //     'customer' => $supplier_row['supplier_id'],
-                //     'Credit' => $amount,
-                //     'Debit' => 0,
-                //     'balance' => $amount,
-                //     'amount' => $running_balance,
-                // ];
-            }
+        // Ageing for expenses (use your expense date column)
+        if ($bucket === 'current') {
+            $e->where("{$EXPENSE_DATE_COLUMN} = {$db->escape($to_date)}", null, false);
+        } elseif ($bucket === '91_and_over') {
+            $edge = $db->escape($end);
+            $e->where("{$EXPENSE_DATE_COLUMN} <= {$edge}", null, false);
+        } else {
+            $start_esc = $db->escape($start);
+            $end_esc   = $db->escape($end);
+            $e->where("{$EXPENSE_DATE_COLUMN} BETWEEN {$start_esc} AND {$end_esc}", null, false);
         }
-        foreach ($payments as $payment) {
-            $supplier_row_data = $this->db->table(get_db_prefix() . 'supplier')
-                ->where('id', $payment->supplier_id)
 
+        $e->select('d.supplier_id, d.debit_e, COALESCE(c.credit_e,0) AS credit_e', false);
+        $expRows = $e->get()->getResultArray();
 
-                ->get()
-                ->getRow();
+        foreach ($expRows as $r) {
+            $sid     = (int)$r['supplier_id'];
+            $balance = (float)$r['debit_e'] - (float)$r['credit_e'];
+            if ($balance <= 0) continue;
 
-
-            if (!$supplier_row_data) {
-                continue;
+            if (!isset($data_report[$sid])) {
+                $data_report[$sid] = [
+                    'current'              => 0,
+                    '1_30 days_past_due'   => 0,
+                    '31_60_days_past_due'  => 0,
+                    '61_90_days_past_due'  => 0,
+                    '91_and_over'          => 0,
+                    'total'                => 0,
+                ];
+            }
+            if (!isset($data_report[$sid]['1_30_days_past_due'])) {
+                $data_report[$sid]['1_30_days_past_due'] = 0;
             }
 
-            $ivoice_draft = $this->db->table(get_db_prefix() . 'invoices')
-                ->where('id', $payment->invoice_id)
-                ->where('status', 'not_paid')
-                ->get()
-                ->getRow();
-            if (!$ivoice_draft) {
-                continue;
+            $data_report[$sid][$bucket] += $balance;
+            $data_report[$sid]['total'] += $balance;
+        }
+
+
+        $em = $db->table("{$EXPENSES_EMP_TABLE} e");
+        $em->join("({$expenseempDebitSub}) d", 'd.expense_id = e.id', 'inner');
+        $em->join("({$expenseempCreditSub}) c", 'c.expense_id = e.id AND c.user_id = d.user_id', 'left');
+
+        // if ($supplier_id_filter) {
+        //     $em->where('d.supplier_id', $supplier_id_filter);
+        // }
+
+        $em->where('e.deleted', 0);
+
+        // Ageing for expenses (use your expense date column)
+        if ($bucket === 'current') {
+            $em->where("{$EXPENSE_DATE_COLUMN} = {$db->escape($to_date)}", null, false);
+        } elseif ($bucket === '91_and_over') {
+            $edge = $db->escape($end);
+            $em->where("{$EXPENSE_DATE_COLUMN} <= {$edge}", null, false);
+        } else {
+            $start_esc = $db->escape($start);
+            $end_esc   = $db->escape($end);
+            $em->where("{$EXPENSE_DATE_COLUMN} BETWEEN {$start_esc} AND {$end_esc}", null, false);
+        }
+
+        $em->select('d.user_id, d.debit_e, COALESCE(c.credit_e,0) AS credit_e', false);
+        $expemRows = $em->get()->getResultArray();
+
+        foreach ($expemRows as $r) {
+            $sid     = (int)$r['user_id'];
+            $balance = (float)$r['debit_e'] - (float)$r['credit_e'];
+            if ($balance <= 0) continue;
+
+            if (!isset($data_report[$sid])) {
+                $data_report[$sid] = [
+                    'current'              => 0,
+                    '1_30 days_past_due'   => 0,
+                    '31_60_days_past_due'  => 0,
+                    '61_90_days_past_due'  => 0,
+                    '91_and_over'          => 0,
+                    'total'                => 0,
+                ];
+            }
+            if (!isset($data_report[$sid]['1_30_days_past_due'])) {
+                $data_report[$sid]['1_30_days_past_due'] = 0;
             }
 
-            $running_balance -= $payment->amount;
+            $data_report[$sid][$bucket] += $balance;
+            $data_report[$sid]['total'] += $balance;
+        }
+        }
 
+        return ['data'=> $data_report,'from_date' => $from_date, 'to_date'   => $to_date,];
+}
+
+
+
+public function get_data_accounts_receivable_ageing_supplier_detail($data_filter)
+{    
+    $running_balance = 0;
+    $from_date = isset($data_filter['from_date']) ? to_sql_date($data_filter['from_date']) : date('Y-m-01');
+    $to_date   = isset($data_filter['to_date'])   ? to_sql_date($data_filter['to_date'])   : date('Y-m-d');
+
+    $history_builder = $this->db->table(get_db_prefix() . 'acc_account_history ah')
+        ->select('ah.supplier_id,ah.user_id, ah.datecreated, ah.date, ah.rel_id, ah.rel_type, ah.debit, ah.credit')
+        ->whereIn('rel_type', [
+            'invoice',
+            'expense',
+            'expense_emp',
+            'payment',
+            'vendor_expense_payment',
+            'emp_expense_payment'
+        ])
+        ->orderBy('ah.date', 'asc');
+
+    $history_builder->groupStart()
+        ->whereIn('rel_type', ['expense_emp', 'emp_expense_payment'])
+        ->orWhere('supplier_id !=', 0)
+    ->groupEnd();
+
+    // if ($supplier_id) {
+    //     $history_builder->where('ah.supplier_id', $supplier_id);
+    // }
+
+    $all_history = $history_builder->get()->getResultArray();
+        $data_report = [
+            'current' => [],
+        ];
+    foreach ($all_history as $row) {
+        if (in_array($row['rel_type'], ['invoice', 'expense', 'expense_emp'])) {
+
+        if ($row['debit'] > 0) {
+            $running_balance += $row['debit'];
             $data_report['current'][] = [
-                'date' => $payment->payment_date,
-                'due_date' => '',
-                'type' => app_lang('payment'),
-                'number' => get_invoice_id($payment->invoice_id),
-                'customer' => $payment->supplier_id,
-                'Credit' => 0,
-                'Debit' => $payment->amount,
-                'balance' => -$payment->amount,
-                'amount' => $running_balance,
+                'date'      => $row['datecreated'],
+                'due_date'  => $row['date'],
+                'type'      => app_lang($row['rel_type']),
+                'number'    => get_invoice_id($row['rel_id']),
+                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'Credit'    => $row['debit'],
+                'Debit'     => 0,
+                'balance'   => $row['debit'],
+                'amount'    => $running_balance,
             ];
-        }
-
-        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
-        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 60 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 31 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 60 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 31 days')) . '")) and (status = "not_paid")');
-
-        $db_builder->where('deleted', 0);
-        $db_builder->orderBy('bill_date', 'asc');
-
-        $invoices = $db_builder->get()->getResultArray();
-
-        foreach ($invoices as $v) {
-            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
-            $total_payments = $invoice_total_summary->balance_due;
-            if ($total_payments <= 0) {
-                continue;
-            }
-
-            $data_report['31_60_days_past_due'][] = [
-                'date' => $v['bill_date'],
-                'due_date' => $v['due_date'],
-                'type' => app_lang('invoice'),
-                'number' => get_invoice_id($v['id']),
-                'customer' => $v['client_id'],
-                'amount' => $total_payments,
+        }} else{
+            if ($row['credit'] > 0) {
+            $running_balance -= $row['credit'];
+            $data_report['current'][] = [
+                'date'      => $row['datecreated'],
+                'due_date'  => $row['date'],
+                'type'      => app_lang($row['rel_type']),
+                'number'    => get_invoice_id($row['rel_id']),
+                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'Credit'    => 0,
+                'Debit'     => $row['credit'],
+                'balance'   => -$row['credit'],
+                'amount'    => $running_balance,
             ];
-        }
-
-        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
-        $db_builder->where('IF(due_date IS NOT NULL,(due_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 90 days')) . '" and due_date <= "' . date('Y-m-d', strtotime($to_date . ' - 61 days')) . '"),(bill_date >=  "' . date('Y-m-d', strtotime($to_date . ' - 90 days')) . '" and bill_date <= "' . date('Y-m-d', strtotime($to_date . ' - 61 days')) . '")) and (status = "not_paid")');
-
-        $db_builder->where('deleted', 0);
-        $db_builder->orderBy('bill_date', 'asc');
-
-        $invoices = $db_builder->get()->getResultArray();
-        $Invoices_model = model('Invoices_model');
-        foreach ($invoices as $v) {
-            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
-            $total_payments = $invoice_total_summary->balance_due;
-            if ($total_payments <= 0) {
-                continue;
-            }
-
-            $data_report['61_90_days_past_due'][] = [
-                'date' => $v['bill_date'],
-                'due_date' => $v['due_date'],
-                'type' => app_lang('invoice'),
-                'number' => get_invoice_id($v['id']),
-                'customer' => $v['client_id'],
-                'amount' => $total_payments,
-            ];
-        }
-
-        $db_builder->select('*, (select sum(amount) from ' . get_db_prefix() . 'invoice_payments where invoice_id = ' . get_db_prefix() . 'invoices.id) as total_payments');
-        $db_builder->where('IF(due_date IS NOT NULL,(due_date <=  "' . date('Y-m-d', strtotime($to_date . ' - 91 days')) . '"),(bill_date <=  "' . date('Y-m-d', strtotime($to_date . ' - 91 days')) . '")) and (status = "not_paid")');
-
-        $db_builder->where('deleted', 0);
-        $db_builder->orderBy('bill_date', 'asc');
-
-        $invoices = $db_builder->get()->getResultArray();
-
-        foreach ($invoices as $v) {
-            $invoice_total_summary = $Invoices_model->get_invoice_total_summary($v['id']);
-            $total_payments = $invoice_total_summary->balance_due;
-            if ($total_payments <= 0) {
-                continue;
-            }
-
-            $data_report['91_and_over'][] = [
-                'date' => $v['bill_date'],
-                'due_date' => $v['due_date'],
-                'type' => app_lang('invoice'),
-                'number' => get_invoice_id($v['id']),
-                'customer' => $v['client_id'],
-                'amount' => $total_payments,
-            ];
-        }
-
-        return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date];
+        }   
     }
+}
+
+        return ['data'=> $data_report,'from_date' => $from_date, 'to_date'   => $to_date,];
+}
+
 
     /**
      * get html budget variance
