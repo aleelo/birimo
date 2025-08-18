@@ -254,11 +254,11 @@ $hide_invoice = get_array_value($this->ci->login_user->permissions, "hide_invoic
 
 
             if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "show_expense") !== "1") {
-                $sidebar_menu["expenses"] = array("name" => "expenses", "url" => "expenses", "class" => "arrow-right-circle");
+                $sidebar_menu["expenses"] = array("name" => "Vendor_Bills", "url" => "expenses", "class" => "arrow-right-circle");
                 $show_expenses_menu = true;
             }
              if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "show_expense") !== "1") {
-                $sidebar_menu["expense_payments"] = array("name" => "expense_payments", "url" => "expense_payments", "class" => "arrow-right-circle");
+                $sidebar_menu["expense_payments"] = array("name" => "Bill_Payment", "url" => "expense_payments", "class" => "arrow-right-circle");
                 $show_expenses_menu = true;
             }
             if  ($this->ci->login_user->is_admin || get_array_value($this->ci->login_user->permissions, "show_expense") !== "1") {

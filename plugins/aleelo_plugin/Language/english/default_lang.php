@@ -4420,8 +4420,10 @@ $lang['expense_type'] = 'Expense type';
 $lang['select_company'] = 'Select company';
 $lang['can_access_some_company'] = 'Can access some companies';
 $lang['team members'] = 'Team members';
-$lang['expenses_emp'] = 'Expenses Emp';
-$lang['expense_payments_emp'] = 'Expense Payments Emp';
+$lang['expenses_emp'] = 'Employee Expenses';
+$lang['expense_payments_emp'] = 'Expense Payments';
+$lang['Bill_Payment'] = 'Bill Payment';
+$lang['Vendor_Bills'] = 'Vendor Bills';
 
 $lang['expenses_vendor'] = 'Expenses Vendor';
 
