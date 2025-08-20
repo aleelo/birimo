@@ -1178,6 +1178,9 @@ class Accounting extends Security_Controller
         $data          = [];
         $data['group'] = $this->request->getGet('group');
         $data['accounts'] = $this->Accounting_model->get_accounts();
+        $data['account_income'] = $this->Accounting_model->get_accounts('', 'find_in_set(account_type_id, "11")');
+        $data['account_cash'] = $this->Accounting_model->get_accounts('', 'find_in_set(account_type_id, "3")');
+        $data['account_expense'] = $this->Accounting_model->get_accounts('', 'find_in_set(account_type_id, "14")');
 
         $data['tab'][] = 'general';
         $data['tab'][] = 'banking_rules';

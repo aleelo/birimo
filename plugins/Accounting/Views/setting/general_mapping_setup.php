@@ -314,9 +314,7 @@
          <?php echo form_hidden('id'); ?>
          <div class="modal-body">
               <?php echo render_select('item[]',$items,array('id','title', 'sku_code'),'acc_item', '', array('multiple' => true, 'data-actions-box' => true), array(), '', '', true); ?>
-              <?php echo render_select('inventory_asset_account',$accounts,array('id','name','account_type_name'),'inventory_asset_account', '37', array(), array(), '', '', false); ?>
-              <?php echo render_select('income_account',$accounts,array('id','name','account_type_name'),'income_account', '69', array(), array(), '', '', false); ?>
-              <?php echo render_select('expense_account',$accounts,array('id','name','account_type_name'),'expense_account', '16', array(), array(), '', '', false); ?>
+              <?php echo render_select('income_account',$account_income,array('id','name','account_type_name'),'income_account', '69', array(), array(), '', '', false); ?>
          </div>
          <div class="modal-footer">
             <button type="button" class="btn btn-default" data-bs-dismiss="modal"><i data-feather="x" class="icon-16"></i> <?php echo app_lang('close'); ?></button>
@@ -339,9 +337,7 @@
          
          <div class="modal-body">
               <?php echo render_select('item_id',$_items,array('id','title', 'sku_code'),'acc_item', '',array('disabled' => true), array(), '', '', false); ?>
-              <?php echo render_select('inventory_asset_account',$accounts,array('id','name','account_type_name'),'inventory_asset_account', '37', array(), array(), '', '', false); ?>
-              <?php echo render_select('income_account',$accounts,array('id','name','account_type_name'),'income_account', '69', array(), array(), '', '', false); ?>
-              <?php echo render_select('expense_account',$accounts,array('id','name','account_type_name'),'expense_account', '16', array(), array(), '', '', false); ?>
+              <?php echo render_select('income_account',$account_income,array('id','name','account_type_name'),'income_account', '69', array(), array(), '', '', false); ?>
          </div>
          <div class="modal-footer">
             <button type="button" class="btn btn-default" data-bs-dismiss="modal"><i data-feather="x" class="icon-16"></i> <?php echo app_lang('close'); ?></button>
@@ -450,11 +446,9 @@
          <div class="modal-body">
               <?php echo render_select('category[]',$categories,array('id','title'),'category', '', array('multiple' => true, 'data-actions-box' => true), array(), '', '', false); ?>
               <div class="row">
-                <div class="col-md-6">
-                  <?php echo render_select('payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_deposit_to,array(),array(),'','',false); ?>
+
+                <div class="col-md-12">
+                  <?php echo render_select('deposit_to',$account_expense,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_deposit_to,array(),array(),'','',false); ?>
                 </div>
               </div>
               <div class="row">
@@ -491,11 +485,8 @@
          <div class="modal-body">
               <?php echo render_select('category_id',$_categories,array('id','title'),'category', '',array('disabled' => true), array(), '', '', false); ?>
               <div class="row">
-                <div class="col-md-6">
-                  <?php echo render_select('payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_deposit_to,array(),array(),'','',false); ?>
+                <div class="col-md-12">
+                  <?php echo render_select('deposit_to',$account_expense,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_deposit_to,array(),array(),'','',false); ?>
                 </div>
               </div>
               <div class="row">
@@ -535,20 +526,15 @@
                 <div class="col-md-12">
                   <h5><?php echo app_lang('sales'); ?></h5>
                 </div>
-                <div class="col-md-6">
-                  <?php echo render_select('payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_payment_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_payment_deposit_to,array(),array(),'','',false); ?>
+
+                <div class="col-md-12">
+                  <?php echo render_select('deposit_to',$account_cash,array('id','name', 'account_type_name'),'deposit_to',$acc_payment_deposit_to,array(),array(),'','',false); ?>
                 </div>
                 <div class="col-md-12">
                   <h5><?php echo app_lang('expenses'); ?></h5>
                 </div>
-                <div class="col-md-6">
-                  <?php echo render_select('expense_payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('expense_deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_payment_deposit_to,array(),array(),'','',false); ?>
+                <div class="col-md-12">
+                  <?php echo render_select('expense_payment_account',$account_cash,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_payment_account,array(),array(),'','',false); ?>
                 </div>
               </div>
          </div>
@@ -574,20 +560,16 @@
          <div class="modal-body">
               <?php echo render_select('payment_mode_id',$_payment_modes,array('id','title', 'payment_moderate'),'payment_method', '',array('disabled' => true), array(), '', '', false); ?>
               <div class="row">
-                <div class="col-md-6">
-                  <?php echo render_select('payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_payment_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_payment_deposit_to,array(),array(),'','',false); ?>
+                  <h5><?php echo app_lang('sales'); ?></h5>
+
+                <div class="col-md-12">
+                  <?php echo render_select('deposit_to',$account_cash,array('id','name', 'account_type_name'),'deposit_to',$acc_payment_deposit_to,array(),array(),'','',false); ?>
                 </div>
                 <div class="col-md-12">
                   <h5><?php echo app_lang('expenses'); ?></h5>
                 </div>
-                <div class="col-md-6">
-                  <?php echo render_select('expense_payment_account',$accounts,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_payment_account,array(),array(),'','',false); ?>
-                </div>
-                <div class="col-md-6">
-                  <?php echo render_select('expense_deposit_to',$accounts,array('id','name', 'account_type_name'),'deposit_to',$acc_expense_payment_deposit_to,array(),array(),'','',false); ?>
+                <div class="col-md-12">
+                  <?php echo render_select('expense_payment_account',$account_cash,array('id','name', 'account_type_name'),'payment_account',$acc_expense_payment_payment_account,array(),array(),'','',false); ?>
                 </div>
               </div>
          </div>
