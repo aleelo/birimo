@@ -9138,7 +9138,7 @@ class Accounting_model extends Crud_model {
 
                     $node = [];
                     $node['itemable_id'] = $value->id;
-                    $node['split'] = $deposit_to;
+                    $node['split'] = $item_automatic->income_account;
                     $node['account'] = $payment_account;
                     $node['item'] = $item_id;
                     $node['date'] = $invoice->bill_date;
@@ -9158,8 +9158,8 @@ class Accounting_model extends Crud_model {
                     }else{
                     $node = [];
                     $node['itemable_id'] = $value->id;
-                    $node['split'] = $item_automatic->income_account;
-                    $node['account'] = $deposit_to;
+                    $node['split'] = $deposit_to;
+                    $node['account'] = $deposit_toitem_automatic->income_accounts;
                     $node['item'] = $item_id;
                     $node['date'] = $invoice->bill_date;
                     $node['paid'] = $paid;
@@ -9169,7 +9169,7 @@ class Accounting_model extends Crud_model {
                     $node['supplier_id']= 0;
                     $node['debit'] = 0;
                     $node['description'] = '3';
-                    $node['rel_id'] = $invoice_id;
+                    $node['rel_id'] = $invoice_id;  
                     $node['rel_type'] = 'invoice';
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = $created_by;
