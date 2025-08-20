@@ -9315,7 +9315,7 @@ class Accounting_model extends Crud_model {
                     if($payment->supplier){
                     $node = [];
                     $node['split'] = $payment_mode_mapping->deposit_to;
-                    $node['account'] = $payment_account;
+                    $node['account'] = $payment_mode_mapping->deposit_to;
                     $node['date'] = $payment->payment_date;
                     $node['debit'] = $payment_total;
                     $node['customer'] = $invoice->client_id;
@@ -9331,7 +9331,7 @@ class Accounting_model extends Crud_model {
 
                     $node = [];
                     $node['split'] = $payment_account;
-                    $node['account'] = $payment_mode_mapping->deposit_to;
+                    $node['account'] = $payment_mode_mapping->payment_account;
                     $node['customer'] = $invoice->client_id;
                     $node['date'] = $payment->payment_date;
                     $node['tax'] = 0;
@@ -9364,7 +9364,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $payment_mode_mapping->deposit_to;
                     $node['customer'] = $invoice->client_id;
-                    $node['account'] = $deposit_to;
+                    $node['account'] = $payment_mode_mapping->payment_account;
                     $node['date'] = $payment->payment_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9380,72 +9380,72 @@ class Accounting_model extends Crud_model {
 
                 }
 
-                // if(count($data_insert) == 0){   
-                //     if(get_setting('acc_payment_automatic_conversion') == 1){
-                //         if($payment->supplier){
-                //         $node = [];
-                //         $node['split'] = $payment_account;
-                //         $node['account'] = $deposit_to;
-                //         $node['customer'] = $invoice->client_id;
-                //         $node['debit'] = $payment_total;
-                //         $node['credit'] = 0;
-                //         $node['date'] = $payment->payment_date;
-                //         $node['description'] = '';
-                //         $node['rel_id'] = $payment_id;
-                //         $node['rel_type'] = 'payment';
-                //         $node['supplier_id'] = $payment->supplier_id;
-                //         $node['datecreated'] = date('Y-m-d H:i:s');
-                //         $node['addedfrom'] = $created_by;
-                //         $data_insert[] = $node;
+                if(count($data_insert) == 0){   
+                    if(get_setting('acc_payment_automatic_conversion') == 1){
+                        if($payment->supplier){
+                        $node = [];
+                        $node['split'] = $payment_account;
+                        $node['account'] = $deposit_to;
+                        $node['customer'] = $invoice->client_id;
+                        $node['debit'] = $payment_total;
+                        $node['credit'] = 0;
+                        $node['date'] = $payment->payment_date;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['rel_type'] = 'payment';
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
 
-                //         $node = [];
-                //         $node['split'] = $deposit_to;
-                //         $node['account'] = $payment_account;
-                //         $node['customer'] = $invoice->client_id;
-                //         $node['date'] = $payment->payment_date;
-                //         $node['debit'] = 0;
-                //         $node['credit'] = $payment_total;
-                //         $node['description'] = '';
-                //         $node['rel_id'] = $payment_id;
-                //         $node['supplier_id'] = $payment->supplier_id;
-                //         $node['rel_type'] = 'payment';
-                //         $node['datecreated'] = date('Y-m-d H:i:s');
-                //         $node['addedfrom'] = $created_by;
-                //         $data_insert[] = $node;
-                //         }else{
-                //         $node = [];
-                //         $node['split'] = $payment_account;
-                //         $node['account'] = $deposit_to;
-                //         $node['customer'] = $invoice->client_id;
-                //         $node['debit'] = $payment_total;
-                //         $node['credit'] = 0;
-                //         $node['date'] = $payment->payment_date;
-                //         $node['description'] = '';
-                //         $node['rel_id'] = $payment_id;
-                //         $node['rel_type'] = 'payment';
-                //         $node['supplier_id'] = $payment->supplier_id;
-                //         $node['datecreated'] = date('Y-m-d H:i:s');
-                //         $node['addedfrom'] = $created_by;
-                //         $data_insert[] = $node;
+                        $node = [];
+                        $node['split'] = $deposit_to;
+                        $node['account'] = $payment_account;
+                        $node['customer'] = $invoice->client_id;
+                        $node['date'] = $payment->payment_date;
+                        $node['debit'] = 0;
+                        $node['credit'] = $payment_total;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['rel_type'] = 'payment';
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
+                        }else{
+                        $node = [];
+                        $node['split'] = $payment_account;
+                        $node['account'] = $deposit_to;
+                        $node['customer'] = $invoice->client_id;
+                        $node['debit'] = $payment_total;
+                        $node['credit'] = 0;
+                        $node['date'] = $payment->payment_date;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['rel_type'] = 'payment';
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
 
-                //         $node = [];
-                //         $node['split'] = $deposit_to;
-                //         $node['customer'] = $invoice->client_id;
-                //         $node['account'] = $payment_account;
-                //         $node['date'] = $payment->payment_date;
-                //         $node['debit'] = 0;
-                //         $node['credit'] = $payment_total;
-                //         $node['description'] = '';
-                //         $node['rel_id'] = $payment_id;
-                //         $node['supplier_id'] = $payment->supplier_id;
-                //         $node['rel_type'] = 'payment';
-                //         $node['datecreated'] = date('Y-m-d H:i:s');
-                //         $node['addedfrom'] = $created_by;
-                //         $data_insert[] = $node;
-                //         }
+                        $node = [];
+                        $node['split'] = $deposit_to;
+                        $node['customer'] = $invoice->client_id;
+                        $node['account'] = $payment_account;
+                        $node['date'] = $payment->payment_date;
+                        $node['debit'] = 0;
+                        $node['credit'] = $payment_total;
+                        $node['description'] = '';
+                        $node['rel_id'] = $payment_id;
+                        $node['supplier_id'] = $payment->supplier_id;
+                        $node['rel_type'] = 'payment';
+                        $node['datecreated'] = date('Y-m-d H:i:s');
+                        $node['addedfrom'] = $created_by;
+                        $data_insert[] = $node;
+                        }
 
-                //     }
-                // }
+                    }
+                }
             }
             // else{
             //     if(get_setting('acc_payment_automatic_conversion') == 1){
@@ -9552,7 +9552,7 @@ class Accounting_model extends Crud_model {
                     }
                     
                     $node = [];
-                    $node['split'] = $payment_account;
+                    $node['split'] = $expense_payment_account;
                     $node['date'] = $expense->expense_date;
                     $node['account'] = $expense_deposit_to;
                     $node['debit'] = $expense_total;
@@ -9570,7 +9570,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $expense_deposit_to;                    
                     $node['customer'] = $expense->client_id;
-                    $node['account'] = $payment_account;
+                    $node['account'] = $expense_payment_account;
                     $node['date'] = $expense->expense_date;
                     $node['tax'] = 0;
                     $node['debit'] = 0;
@@ -9585,40 +9585,40 @@ class Accounting_model extends Crud_model {
                 }
             }
 
-            // if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
-            //     $node = [];
+            if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
+                $node = [];
 
-            //     $node['split'] = $payment_account;
-            //     $node['account'] = $deposit_to;
-            //     $node['debit'] = $expense_total;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['credit'] = 0;
-            //     $node['supplier_id'] = $expense->vendor_id;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $expense_id;
-            //     $node['rel_type'] = 'expense';
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
+                $node['split'] = $payment_account;
+                $node['account'] = $deposit_to;
+                $node['debit'] = $expense_total;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['credit'] = 0;
+                $node['supplier_id'] = $expense->vendor_id;
+                $node['description'] = '4';
+                $node['rel_id'] = $expense_id;
+                $node['rel_type'] = 'expense';
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
 
-            //     $node = [];
-            //     $node['split'] = $deposit_to ;
-            //     $node['account'] = $payment_account;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['debit'] = 0;
-            //     $node['supplier_id'] = $expense->vendor_id;
-            //     $node['credit'] = $expense_total;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $expense_id;
-            //     $node['rel_type'] = 'expense';
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
-            // }
+                $node = [];
+                $node['split'] = $deposit_to ;
+                $node['account'] = $payment_account;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['debit'] = 0;
+                $node['supplier_id'] = $expense->vendor_id;
+                $node['credit'] = $expense_total;
+                $node['description'] = '4';
+                $node['rel_id'] = $expense_id;
+                $node['rel_type'] = 'expense';
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
+            }
 
             if(get_setting('acc_tax_automatic_conversion') == 1){
                 if($expense->tax_id > 0){
@@ -9847,7 +9847,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['split'] = $expense_deposit_to;
                     $node['customer'] = $expense->client_id;
-                    $node['account'] = $payment_account;
+                    $node['account'] = $expense_payment_account;
                     $node['date'] = $expense->expense_date;
                     $node['tax'] = 0;
                     $node['user_id'] = $expense->user_id;
@@ -9862,40 +9862,40 @@ class Accounting_model extends Crud_model {
                 }
             }
 
-            // if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
-            //     $node = [];
+            if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
+                $node = [];
 
-            //     $node['split'] = $payment_account;
-            //     $node['account'] = $deposit_to;
-            //     $node['debit'] = $expense_total;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['user_id'] = $expense->user_id;
-            //     $node['credit'] = 0;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $expense_id;
-            //     $node['rel_type'] = 'expense_emp';
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
+                $node['split'] = $payment_account;
+                $node['account'] = $deposit_to;
+                $node['debit'] = $expense_total;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['user_id'] = $expense->user_id;
+                $node['credit'] = 0;
+                $node['description'] = '4';
+                $node['rel_id'] = $expense_id;
+                $node['rel_type'] = 'expense_emp';
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
 
-            //     $node = [];
-            //     $node['split'] = $deposit_to ;
-            //     $node['account'] = $payment_account;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['user_id'] = $expense->user_id;
-            //     $node['debit'] = 0;
-            //     $node['credit'] = $expense_total;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $expense_id;
-            //     $node['rel_type'] = 'expense_emp';
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
-            // }
+                $node = [];
+                $node['split'] = $deposit_to ;
+                $node['account'] = $payment_account;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['user_id'] = $expense->user_id;
+                $node['debit'] = 0;
+                $node['credit'] = $expense_total;
+                $node['description'] = '4';
+                $node['rel_id'] = $expense_id;
+                $node['rel_type'] = 'expense_emp';
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
+            }
 
             if(get_setting('acc_tax_automatic_conversion') == 1){
                 if($expense->tax_id > 0){
@@ -10105,7 +10105,7 @@ class Accounting_model extends Crud_model {
                     $payment_mode_mapping = $this->get_payment_mode_mapping($Expense_payments->payment_method);
                     $node = [];
                     $node['split'] = $payment_mode_mapping->expense_payment_account;
-                    $node['account'] = $payment_mode_payment_account;
+                    $node['account'] = $payment_mode_mapping->expense_deposit_to;
                     $node['date'] = $expense->expense_date;
                     $node['debit'] = $Expense_payments->amount_paid;
                     $node['customer'] = $expense->client_id;
@@ -10137,39 +10137,39 @@ class Accounting_model extends Crud_model {
                 }
             }
 
-            // if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
-            //     $node = [];
-            //     $node['split'] = $deposit_to;
-            //     $node['account'] = $payment_account;
-            //     $node['debit'] = $Expense_payments->amount_paid;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['credit'] = 0;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $id;
-            //     $node['rel_type'] = 'vendor_expense_payment';
-            //     $node['supplier_id'] = $expense->vendor_id;
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
+            if(count($data_insert) == 0 && get_setting('acc_expense_automatic_conversion') == 1){   
+                $node = [];
+                $node['split'] = $deposit_to;
+                $node['account'] = $payment_account;
+                $node['debit'] = $Expense_payments->amount_paid;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['credit'] = 0;
+                $node['description'] = '4';
+                $node['rel_id'] = $id;
+                $node['rel_type'] = 'vendor_expense_payment';
+                $node['supplier_id'] = $expense->vendor_id;
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
 
-            //     $node = [];
-            //     $node['split'] = $payment_account;
-            //     $node['account'] = $deposit_to;
-            //     $node['customer'] = $expense->client_id;
-            //     $node['date'] = $expense->expense_date;
-            //     $node['tax'] = 0;
-            //     $node['debit'] = 0;
-            //     $node['credit'] = $Expense_payments->amount_paid;
-            //     $node['description'] = '4';
-            //     $node['rel_id'] = $id;
-            //     $node['rel_type'] = 'vendor_expense_payment';
-            //     $node['supplier_id'] = $expense->vendor_id;
-            //     $node['datecreated'] = date('Y-m-d H:i:s');
-            //     $node['addedfrom'] = $created_by;
-            //     $data_insert[] = $node;
-            // }
+                $node = [];
+                $node['split'] = $payment_account;
+                $node['account'] = $deposit_to;
+                $node['customer'] = $expense->client_id;
+                $node['date'] = $expense->expense_date;
+                $node['tax'] = 0;
+                $node['debit'] = 0;
+                $node['credit'] = $Expense_payments->amount_paid;
+                $node['description'] = '4';
+                $node['rel_id'] = $id;
+                $node['rel_type'] = 'vendor_expense_payment';
+                $node['supplier_id'] = $expense->vendor_id;
+                $node['datecreated'] = date('Y-m-d H:i:s');
+                $node['addedfrom'] = $created_by;
+                $data_insert[] = $node;
+            }
 
             // if(get_setting('acc_tax_automatic_conversion') == 1){
             //     if($expense->tax_id > 0){
@@ -10370,7 +10370,7 @@ class Accounting_model extends Crud_model {
                     $payment_mode_mapping = $this->get_payment_mode_mapping($Expense_payments->payment_method);
                     $node = [];
                     $node['split'] = $payment_mode_mapping->expense_payment_account;
-                    $node['account'] = $payment_mode_payment_account;
+                    $node['account'] = $payment_mode_mapping->expense_deposit_to;
                     $node['date'] = $expense->expense_date;
                     $node['debit'] = $Expense_payments->amount_paid;
                     $node['customer'] = $expense->client_id;
@@ -10385,7 +10385,7 @@ class Accounting_model extends Crud_model {
                     $data_insert[] = $node;
 
                     $node = [];
-                    $node['split'] = $payment_mode_payment_account;
+                    $node['split'] = $payment_mode_mapping->expense_deposit_to;
                     $node['account'] = $payment_mode_mapping->expense_payment_account;
                     $node['customer'] = $expense->client_id;
                     $node['date'] = $expense->expense_date;
@@ -11140,6 +11140,7 @@ class Accounting_model extends Crud_model {
             if($count == 0 && $value != ''){
                 $node = [];
                 $node['category_id'] = $value;
+                $node['payment_account'] = $data['payment_account'];
                 $node['deposit_to'] = $data['deposit_to'];
                 $node['preferred_payment_method'] = $data['preferred_payment_method'];
 
@@ -11578,8 +11579,10 @@ class Accounting_model extends Crud_model {
             if($count == 0 && $value != ''){
                 $node = [];
                 $node['payment_mode_id'] = $value;
+                $node['payment_account'] = $data['payment_account'];
                 $node['deposit_to'] = $data['deposit_to'];
                 $node['expense_payment_account'] = $data['expense_payment_account'];
+                $node['expense_deposit_to'] = $data['expense_deposit_to'];
                 
                 $data_insert[] = $node;
             }
