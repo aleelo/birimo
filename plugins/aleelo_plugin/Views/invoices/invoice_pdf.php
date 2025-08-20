@@ -352,10 +352,10 @@ $data = array(
     <table>
 
             <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;">Item</th>
-                <th style="width:10%"> Days</th>
-                <th>Qty</th>
-                <th>Price</th>
+                <th style="width: <?php echo $show_taxable ? '26%' : '26%'; ?>;">Item</th>
+                <th style="width:8%"> Day</th>
+                <th style="width:8%"> Qty</th>
+                <th style="width:8%">Price</th>
                 <th>Total</th>
                 <th>Service (%)</th>
                 <th>Cost (%)</th>
@@ -398,17 +398,17 @@ $data = array(
                     $section_total += $item->alltotal;
                 ?>
                     <tr style="background-color: <?php echo $row_color; ?>;">
-                        <td style="width: <?php echo $show_taxable ? '20%' : '20%'; ?>;"><?php echo $item->title; ?><br />
+                        <td style="width: <?php echo $show_taxable ? '26%' : '26%'; ?>;"><?php echo $item->title; ?><br />
                             <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ?? ""); ?></span>
                        </td>
-                        <td style="width:10%"><?php echo $item->days ? $item->days : ""; ?>
+                        <td style="width:8%"><?php echo $item->days ? $item->days : ""; ?>
                     </td>
-                        <td style="width:10%"><?php echo $item->quantity; ?></td>
-                        <td><?php echo $item->rate; ?></td>
+                        <td style="width:8%"><?php echo $item->quantity; ?></td>
+                        <td style="width:8%"><?php echo $item->rate; ?></td>
                         <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
                         <td><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
                         <td><?php echo $item->service_cost ? $item->service_cost  : '0'; ?></td>
-                        <td><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                        <td style="width:10%"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
                     </tr>
                 <?php
                 }
