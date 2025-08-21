@@ -475,7 +475,7 @@ $data = array(
                 <td style="text-align: left; width: 20%;"><strong><?php echo to_currency($invoice_total_summary->invoice_total, $invoice_total_summary->currency_symbol); ?></strong></td>
             </tr>
 
-            <?php if ($invoice_total_summary->total_paid) { ?>
+            <!-- <?php if ($invoice_total_summary->total_paid) { ?>
                 <tr class="total">
                 <td style="width: <?php echo $show_taxable ? '60%' : '71%'; ?>;"></td>
                     <?php if ($show_taxable) { ?><td></td><?php } ?>
@@ -490,7 +490,7 @@ $data = array(
                     <td style="text-align: left; width: 17%;"><?php echo to_currency($invoice_total_summary->balance_due, $invoice_total_summary->currency_symbol); ?>
                     </td>
                 </tr>
-            <?php } ?>
+            <?php } ?> -->
 
         </tfoot>
     </table>
