@@ -18341,7 +18341,7 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
             'current' => [],
         ];
     foreach ($all_history as $row) {
-        if (in_array($row['rel_type'], ['invoice', 'expense', 'expense_emp'])) {
+        if (in_array($row['rel_type'], ['expense', 'expense_emp'])) {
 
         if ($row['debit'] > 0) {
             $running_balance += $row['debit'];
@@ -18356,7 +18356,22 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
                 'balance'   => $row['debit'],
                 'amount'    => $running_balance,
             ];
-        }} else{
+        }
+    }else if(in_array($row['rel_type'], ['invoice', 'expensetests'])){
+            $running_balance += $row['credit'];
+            $data_report['current'][] = [
+                'date'      => $row['datecreated'],
+                'due_date'  => $row['date'],
+                'type'      => app_lang($row['rel_type']),
+                'number'    => get_invoice_id($row['rel_id']),
+                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'Credit'    => $row['credit'],
+                'Debit'     => 0,
+                'balance'   => $row['credit'],
+                'amount'    => $running_balance,
+            ];
+           
+        }else if(in_array($row['rel_type'], ['expense_emp', 'emp_expense_payment','payment'])){
             if ($row['credit'] > 0) {
             $running_balance -= $row['credit'];
             $data_report['current'][] = [
