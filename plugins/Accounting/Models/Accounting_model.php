@@ -18341,8 +18341,9 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
             'current' => [],
         ];
     foreach ($all_history as $row) {
-        if (in_array($row['rel_type'], ['expense', 'expense_emp'])) {
+            $customerId = !empty($row['supplier_id'])? $row['supplier_id']: (!empty($row['user_id']) ? $row['user_id'] : null);
 
+        if (in_array($row['rel_type'], ['expense', 'expense_emp'])) {
         if ($row['debit'] > 0) {
             $running_balance += $row['debit'];
             $data_report['current'][] = [
@@ -18350,7 +18351,7 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
                 'due_date'  => $row['date'],
                 'type'      => app_lang($row['rel_type']),
                 'number'    => get_invoice_id($row['rel_id']),
-                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'customer' => $customerId,
                 'Credit'    => $row['debit'],
                 'Debit'     => 0,
                 'balance'   => $row['debit'],
@@ -18364,14 +18365,14 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
                 'due_date'  => $row['date'],
                 'type'      => app_lang($row['rel_type']),
                 'number'    => get_invoice_id($row['rel_id']),
-                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'customer' => $customerId,
                 'Credit'    => $row['credit'],
                 'Debit'     => 0,
                 'balance'   => $row['credit'],
                 'amount'    => $running_balance,
             ];
            
-        }else if(in_array($row['rel_type'], ['expense_emp', 'emp_expense_payment','payment'])){
+        }else if(in_array($row['rel_type'], ['vendor_expense_payment', 'emp_expense_payment','payment'])){
             if ($row['credit'] > 0) {
             $running_balance -= $row['credit'];
             $data_report['current'][] = [
@@ -18379,7 +18380,7 @@ public function get_data_accounts_receivable_ageing_supplier_detail($data_filter
                 'due_date'  => $row['date'],
                 'type'      => app_lang($row['rel_type']),
                 'number'    => get_invoice_id($row['rel_id']),
-                'customer' => $row['supplier_id'] ?? $row['user_id'],
+                'customer' => $customerId,
                 'Credit'    => 0,
                 'Debit'     => $row['credit'],
                 'balance'   => -$row['credit'],
