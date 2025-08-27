@@ -18113,7 +18113,7 @@ public function get_data_accounts_payable_summery($data_filter)
 
 
     $invoiceDebitSub = $db->table("{$p}acc_account_history ah")
-        ->select('ah.rel_id AS invoice_id, ah.supplier_id, SUM(ah.debit) AS debit_i', false)
+        ->select('ah.rel_id AS invoice_id, ah.supplier_id, SUM(ah.credit) AS credit_e', false)
         ->where('ah.rel_type', 'invoice')
         ->where('ah.supplier_id IS NOT NULL', null, false)
         ->where('ah.supplier_id !=', 0)
@@ -18121,7 +18121,7 @@ public function get_data_accounts_payable_summery($data_filter)
         ->getCompiledSelect();
 
     $invoiceCreditSub = $db->table("{$p}invoice_payments ip")
-        ->select('ip.invoice_id, ah.supplier_id, SUM(ah.credit) AS credit_p', false)
+        ->select('ip.invoice_id, ah.supplier_id, SUM(ah.debit) AS debit_p', false)
         ->join("{$p}acc_account_history ah",
                'ah.rel_type="payment" AND ah.rel_id = ip.id AND ah.supplier_id IS NOT NULL AND ah.supplier_id <> 0',
                'inner')
@@ -18184,12 +18184,12 @@ public function get_data_accounts_payable_summery($data_filter)
                 OR (inv.due_date IS NULL AND inv.bill_date BETWEEN {$start_esc} AND {$end_esc}))", null, false);
         }
 
-        $b->select('d.supplier_id, d.debit_i, COALESCE(c.credit_p,0) AS credit_p', false);
+        $b->select('d.supplier_id, d.credit_e, COALESCE(c.debit_p,0) AS debit_p', false);
         $rows = $b->get()->getResultArray();
 
         foreach ($rows as $r) {
             $sid     = (int)$r['supplier_id'];
-            $balance = (float)$r['debit_i'] - (float)$r['credit_p'];
+            $balance = (float)$r['credit_e'] - (float)$r['debit_p'];
             if ($balance <= 0) continue;
 
             if (!isset($data_report[$sid])) {
