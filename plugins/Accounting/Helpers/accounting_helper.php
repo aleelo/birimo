@@ -894,8 +894,11 @@ if (!function_exists('to_sql_date')) {
 		]);
 
 		if ($datetime == false) {
-			return app_hooks()->apply_filters('to_sql_date_formatted', date_format(date_create_from_format($from_format, $date), $to_date));
-		}
+$dt = date_create_from_format($from_format, $date);
+if (!$dt) {
+    return null; // or return date('Y-m-d') if you want a fallback
+}
+return app_hooks()->apply_filters('to_sql_date_formatted', date_format($dt, $to_date));		}
 
 		if (strpos($date, ' ') === false) {
 			$date .= ' 00:00:00';
