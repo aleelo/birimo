@@ -42,7 +42,8 @@ class Security_Controller_Plugin extends Security_Controller
     public $Expense_categories_model;
 
     public $Estimate_items_model;
-   
+    public $Payment_methods_model;
+
 
     public function __construct($redirect = true)
     {
@@ -74,6 +75,7 @@ class Security_Controller_Plugin extends Security_Controller
         $this->Estimate_items_model = new \aleelo_plugin\Models\Estimate_items_model();
         $this->Expense_payments_emp_model = new \aleelo_plugin\Models\Expense_payments_emp_model();
         $this->Expenses_emp_model = new \aleelo_plugin\Models\Expenses_emp_model();
+        $this->Payment_methods_model = new \aleelo_plugin\Models\Payment_methods_model();
 
 
 
@@ -164,7 +166,7 @@ class Security_Controller_Plugin extends Security_Controller
     function get_payment_method_dropdown()
     {
 
-        $payment_methods = $this->Payment_methods_model->get_all_where(array("deleted" => 0), 0, 0,"title")->getResult();
+        $payment_methods = $this->Payment_methods_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
 
         $payment_method_dropdown =  array("" =>  "-- " . app_lang("payment_methods") . " --");
         foreach ($payment_methods as $value) {
@@ -196,7 +198,7 @@ class Security_Controller_Plugin extends Security_Controller
 
         return $expenses_dropdown;
     }
-        function payment_method_dropdown()
+    function payment_method_dropdown()
     {
         if (!$this->can_view_invoice()) {
             app_redirect("forbidden");
@@ -254,38 +256,38 @@ class Security_Controller_Plugin extends Security_Controller
 
         $venders_dropdown = array(array("id" => "", "text" => "- " . "Expense" . " -"));
         foreach ($expenses as $e) {
-            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name. " - ". $e->expense_date . " - ".$e->amount);
+            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name . " - " . $e->expense_date . " - " . $e->amount);
         }
 
         return json_encode($venders_dropdown);
     }
-    
 
-    public function getExpensesByVendorJs($category_id = 0, $vendor_id = 0 )
+
+    public function getExpensesByVendorJs($category_id = 0, $vendor_id = 0)
     {
 
-        if($category_id && $vendor_id){
+        if ($category_id && $vendor_id) {
             $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
                     left join rise_supplier s on s.id = e.vendor_id 
                     where e.category_id = $category_id and e.vendor_id = $vendor_id and e.deleted = 0")->getResult();
-        }else if($category_id){
+        } else if ($category_id) {
             $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
                     left join rise_supplier s on s.id = e.vendor_id 
                     where e.category_id = $category_id and e.deleted = 0")->getResult();
-        }else if($vendor_id){
+        } else if ($vendor_id) {
             $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
                     left join rise_supplier s on s.id = e.vendor_id 
                     where e.vendor_id = $vendor_id and e.deleted = 0")->getResult();
-        }else{
-            
+        } else {
+
             $expenses = $this->db->query("select e.*, s.supplier_name from rise_expenses e 
                     left join rise_supplier s on s.id = e.vendor_id 
                     where e.deleted = 0")->getResult();
         }
-        
+
         $venders_dropdown = array(array("id" => "", "text" => "- " . "Expense" . " -"));
         foreach ($expenses as $e) {
-            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name. " - ". $e->expense_date . " - ".$e->amount);
+            $venders_dropdown[] = array("id" => $e->id, "text" => $e->supplier_name . " - " . $e->expense_date . " - " . $e->amount);
         }
 
         return json_encode($venders_dropdown);
@@ -843,110 +845,132 @@ class Security_Controller_Plugin extends Security_Controller
 
 
 
-//-----------------------------------------------------------logs------------------------------------------------------
+    //-----------------------------------------------------------logs------------------------------------------------------
 
 
-public function log_activity_only_with_changes_custom($type, $id, $data_before, $data_after, $action) {
-    $model = null;
-    $log_type_title_key = "title";
+    public function log_activity_only_with_changes_custom($type, $id, $data_before, $data_after, $action)
+    {
+        $model = null;
+        $log_type_title_key = "title";
 
-    switch ($type) {
-        case "project":
-            $model = model('Projects_model');
-            break;
-        case "task":
-            $model = model('Tasks_model');
-            break;
-        case "client":
-            $model = model('Clients_model');
-            $log_type_title_key = "company_name";
-            break;
-        case "quotation":
-            $model = model('Estimates_model');
-            $log_type_title_key = "id";
-            break;
-        case "invoice":
-            $model = model('Invoices_model');
-            $log_type_title_key = "id";
-            break;
-        default:
-            log_message('error', "Unknown log type: $type");
+        switch ($type) {
+            case "project":
+                $model = model('Projects_model');
+                break;
+            case "task":
+                $model = model('Tasks_model');
+                break;
+            case "client":
+                $model = model('Clients_model');
+                $log_type_title_key = "company_name";
+                break;
+            case "quotation":
+                $model = model('Estimates_model');
+                $log_type_title_key = "id";
+                break;
+            case "invoice":
+                $model = model('Invoices_model');
+                $log_type_title_key = "id";
+                break;
+            default:
+                log_message('error', "Unknown log type: $type");
+                return;
+        }
+
+        if (!$model) {
+            log_message('error', "Model not found for type: $type");
             return;
-    }
+        }
 
-    if (!$model) {
-        log_message('error', "Model not found for type: $type");
-        return;
-    }
+        if (!$data_before || !isset($data_before['id'])) {
+            log_message('error', "Data before not found or missing id for log type: $type");
+            return;
+        }
 
-    if (!$data_before || !isset($data_before['id'])) {
-        log_message('error', "Data before not found or missing id for log type: $type");
-        return;
-    }
+        $fields_changed = [];
 
-    $fields_changed = [];
+        foreach ($data_after as $field => $new_value) {
+            $old_value = isset($data_before[$field]) ? $data_before[$field] : null;
+            if ($old_value != $new_value) {
+                $from = $old_value;
+                $to = $new_value;
 
-    foreach ($data_after as $field => $new_value) {
-        $old_value = isset($data_before[$field]) ? $data_before[$field] : null;
-        if ($old_value != $new_value) {
-            $from = $old_value;
-            $to = $new_value;
+                if ($field === "client_id") {
+                    $clients_model = model("aleelo_plugin\Models\Clients_model");
+                    $from = $from ? $clients_model->get_one($from)->company_name : "N/A";
+                    $to   = $to ? $clients_model->get_one($to)->company_name : "N/A";
+                }
 
-            if ($field === "client_id") {
-                $clients_model = model("aleelo_plugin\Models\Clients_model");
-                $from = $from ? $clients_model->get_one($from)->company_name : "N/A";
-                $to   = $to ? $clients_model->get_one($to)->company_name : "N/A";
+                if (in_array($field, ["tax_id", "tax_id2", "tax_id3"])) {
+                    $taxes_model = model("App\Models\Taxes_model");
+                    $from = $from ? $taxes_model->get_one($from)->title : "N/A";
+                    $to   = $to ? $taxes_model->get_one($to)->title : "N/A";
+                }
+
+                if ($field === "project_id") {
+                    $projects_model = model("aleelo_plugin\Models\Projects_model");
+                    $from = $from ? $projects_model->get_one($from)->title : "N/A";
+                    $to   = $to ? $projects_model->get_one($to)->title : "N/A";
+                }
+
+                $pretty_key = preg_replace('/_id\d*$/', '', $field);
+                $fields_changed[$pretty_key] = ["from" => $from, "to" => $to];
             }
+        }
 
-            if (in_array($field, ["tax_id", "tax_id2", "tax_id3"])) {
-                $taxes_model = model("App\Models\Taxes_model");
-                $from = $from ? $taxes_model->get_one($from)->title : "N/A";
-                $to   = $to ? $taxes_model->get_one($to)->title : "N/A";
-            }
+        if (empty($fields_changed) && $action == "updated") {
+            log_message('info', "No changes detected, skipping activity log insert.");
+            return;
+        }
 
-            if ($field === "project_id") {
-                $projects_model = model("aleelo_plugin\Models\Projects_model");
-                $from = $from ? $projects_model->get_one($from)->title : "N/A";
-                $to   = $to ? $projects_model->get_one($to)->title : "N/A";
-            }
+        $log_type_title = isset($data_before[$log_type_title_key]) ? $data_before[$log_type_title_key] : "N/A";
+        if ($type === "quotation") {
+            $log_type_title = "#" . $log_type_title;
+        }
 
-            $pretty_key = preg_replace('/_id\d*$/', '', $field);
-            $fields_changed[$pretty_key] = ["from" => $from, "to" => $to];
+        $log_data = [
+            "created_at"     => date('Y-m-d H:i:s'),
+            "created_by"     => session()->get('user_id') ?: 1,
+            "action"         => $action,
+            "log_type"       => $type,
+            "log_type_title" => $log_type_title,
+            "log_type_id"    => $id,
+            "log_for"        => $type,
+            "log_for_id"     => $id,
+            "changes"        => serialize($fields_changed)
+        ];
+
+        $builder = $this->db->table($this->db->prefixTable('activity_logs'));
+        $inserted = $builder->insert($log_data);
+
+        if (!$inserted) {
+            log_message('error', 'Failed to insert activity log: ' . print_r($builder->error(), true));
+        } else {
+            log_message('info', 'Activity log inserted successfully for ' . $type . ' ID ' . $id);
         }
     }
 
-    if (empty($fields_changed) && $action == "updated") {
-        log_message('info', "No changes detected, skipping activity log insert.");
-        return;
+
+    public function getNextSort(int $invoice_id): int
+    {
+        $itemsTbl    = $this->db->prefixTable('invoice_items');
+        $sectionsTbl = $this->db->prefixTable('items_section');
+
+        $maxItems = $this->db->table($itemsTbl)
+            ->selectMax('sort', 'max_sort')
+            ->where('invoice_id', $invoice_id)
+            ->where('deleted', 0)
+            ->get()->getRow();
+
+        $maxSections = $this->db->table($sectionsTbl)
+            ->selectMax('sort', 'max_sort')
+            ->where('invoice_id', $invoice_id)
+            ->where('deleted', 0)
+            ->get()->getRow();
+
+        $m1 = $maxItems && isset($maxItems->max_sort) ? (int)$maxItems->max_sort : 0;
+        $m2 = $maxSections && isset($maxSections->max_sort) ? (int)$maxSections->max_sort : 0;
+
+        return max($m1, $m2) + 1;
     }
-
-    $log_type_title = isset($data_before[$log_type_title_key]) ? $data_before[$log_type_title_key] : "N/A";
-    if ($type === "quotation") {
-        $log_type_title = "#" . $log_type_title;
-    }
-
-    $log_data = [
-        "created_at"     => date('Y-m-d H:i:s'),
-        "created_by"     => session()->get('user_id') ?: 1,
-        "action"         => $action,
-        "log_type"       => $type,
-        "log_type_title" => $log_type_title,
-        "log_type_id"    => $id,
-        "log_for"        => $type,
-        "log_for_id"     => $id,
-        "changes"        => serialize($fields_changed)
-    ];
-
-    $builder = $this->db->table($this->db->prefixTable('activity_logs'));
-    $inserted = $builder->insert($log_data);
-
-    if (!$inserted) {
-        log_message('error', 'Failed to insert activity log: ' . print_r($builder->error(), true));
-    } else {
-        log_message('info', 'Activity log inserted successfully for ' . $type . ' ID ' . $id);
-    }
-}
-
-
-
 }

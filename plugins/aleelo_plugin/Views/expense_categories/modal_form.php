@@ -2,26 +2,8 @@
 <div class="modal-body clearfix">
     <div class="container-fluid">
         <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
-
-                <?php if ($has_all_permission){ ?>
-
         <div class="form-group">
-        <div class="row">
-
-                    <label for="company_id" class="col-md-3"><?php echo app_lang('company'); ?></label>
-                    <div class=" col-md-9">
-                        <?php
-                        echo form_dropdown("company_id", $companies_dropdown, $model_info->company_id, "class='select2 form-control validate-hidden' id='company_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
-                
-                    ?>
-        </div>
-        </div>
-        </div>
-            <?php } else{ ?>
-                <input type="hidden" name="company_id" value="<?php echo $login_user->department; ?>">
-                <?php } ?>
-
-        <div class="form-group">
+            <br />
             <div class="row">
                 <label for="title" class=" col-md-3"><?php echo app_lang('title'); ?></label>
                 <div class=" col-md-9">
@@ -40,41 +22,6 @@
                 </div>
             </div>
         </div>
-
-
-                <div class="form-group">
-            <div class="row">
-                <label for="expense_type" class="col-md-3"><?php echo ('Expense type'); ?></label>
-                <div class="col-md-9">
-                    <?php
-                    echo form_dropdown(
-                        "expense_type",
-                        array(
-                            "" => ("-"),
-                            "client" => app_lang("client"),
-                            "supplier" => app_lang("supplier")
-                        ),
-                        $model_info->expense_type ?? "",
-                        "class='form-control select2' id='expense_type' data-rule-required='true' data-msg-required='" . app_lang("field_required") . "'"
-                    );
-                    ?>
-                </div>
-            </div>
-        </div>
-
-    <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
-
-    <div class="form-group">
-    <div class="row">
-        <label for="account_id" class="col-md-3"><?php echo ('account_id'); ?></label>
-        <div class=" col-md-9">
-            <?php
-            echo form_dropdown("account_id", $accounts_dropdown, $model_info->account_id ?? "", "class='select2 form-control validate-hidden' id='account_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
-            ?>
-        </div>
-    </div>
-</div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -86,16 +33,13 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-    $("#account_id").select2();
-    $("#company_id").select2();
         $("#category-form").appForm({
             onSuccess: function (result) {
                 $("#category-table").appTable({newData: result.data, dataId: result.id});
             }
         });
-        $('#expense_type').select2();
         setTimeout(function () {
             $("#title").focus();
         }, 200);
     });
-</script>
+</script>s

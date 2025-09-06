@@ -4,7 +4,7 @@
         <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
         <div class="form-group">
             <div class="row">
-                <label for="title" class=" col-md-4"><?php echo app_lang('titlve'); ?></label>
+                <label for="title" class=" col-md-4"><?php echo app_lang('title'); ?></label>
                 <div class=" col-md-8">
                     <?php
                     echo form_input(array(
@@ -21,6 +21,21 @@
                 </div>
             </div>
         </div>
+                  <?php if (class_exists('\Accounting\Models\Accounting_model')): ?>
+
+    <div class="form-group">
+    <div class="row">
+        <label for="account_id" class="col-md-4"><?php echo ('account_id'); ?></label>
+        <div class=" col-md-8">
+            <?php
+            echo form_dropdown("account_id", $accounts_dropdown, $model_info->account_id ?? "", "class='select2 form-control validate-hidden' id='account_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+            ?>
+        </div>
+    </div>
+</div>
+        <?php endif; ?>
+
+
         <div class="form-group">
             <div class="row">
                 <label for="description" class="col-md-4"><?php echo app_lang('description'); ?></label>
@@ -155,6 +170,8 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $("#account_id").select2();
+
         $("#payment-method-form").appForm({
             onSuccess: function(result) {
                 $("#payment-method-table").appTable({

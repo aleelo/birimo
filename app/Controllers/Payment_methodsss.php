@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class Payment_methods extends Security_Controller {
+class Payment_methodsss extends Security_Controller {
 
     function __construct() {
         parent::__construct();

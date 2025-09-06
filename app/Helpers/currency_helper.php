@@ -105,6 +105,19 @@ if (!function_exists('unformat_currency')) {
 
 }
 
+function unformat_currency_birimo($currency = "") {
+    $new_money = preg_replace('/[^\d,-\.]/', '', $currency);
+    $decimal_separator = get_setting("decimal_separator");
+    if ($decimal_separator === ",") {
+        $new_money = str_replace(".", "", $new_money);
+        $new_money = str_replace(",", ".", $new_money);
+    } else {
+        $new_money = str_replace(",", "", $new_money);
+    }
+    return number_format((float)$new_money, 2, '.', ''); // always 2dp numeric string
+}
+
+
 /**
  * get array of international currency codes
  * 
