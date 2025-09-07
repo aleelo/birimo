@@ -116,7 +116,7 @@ class Invoice_payments extends Security_Controller_Plugin
         }
 
         $view_data["amount"] = $amount;
-        $view_data['suppliers_dropdown'] = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
+        // $view_data['suppliers_dropdown'] = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
 
 
         $view_data['payment_methods_dropdown'] = $this->Payment_methods_model->get_dropdown_list(array("title"), "id", array("online_payable" => 0, "deleted" => 0));
@@ -171,55 +171,150 @@ class Invoice_payments extends Security_Controller_Plugin
     // }
     /* add or edit a payment */
 
-    function save_payment()
+    // function save_payment()
+    // {
+    //     // $this->access_only_allowed_members();
+
+    //     $this->validate_submitted_data(array(
+    //         "id" => "numeric",
+    //         "invoice_id" => "required|numeric",
+    //         "invoice_payment_method_id" => "required|numeric",
+    //         "invoice_payment_date" => "required",
+    //         "invoice_payment_amount" => "required"
+    //     ));
+
+    //     $id = $this->request->getPost('id');
+    //     $invoice_id = $this->request->getPost('invoice_id');
+    //     $payment_method_id = $this->request->getPost('invoice_payment_method_id');
+    //     $payment_method = $this->Payment_methods_model->get_one($payment_method_id);
+    //     $account = $payment_method ? $payment_method->account_id : 0;
+    //     $invoice_payment_data = array(
+    //         "invoice_id" => $invoice_id,
+    //         "payment_date" => $this->request->getPost('invoice_payment_date'),
+    //         "note" => $this->request->getPost('invoice_payment_note'),
+    //         "payment_method_id" => $payment_method_id,
+    //         "account_id" => $account,
+    //         "amount" => unformat_currency($this->request->getPost('invoice_payment_amount')),
+    //         "created_at" => get_current_utc_time(),
+    //         "created_by" => $this->login_user->id,
+    //     );
+    //     $data_before = $id ? (array)$this->Invoice_payments_model->get_one($id) : [];
+
+    //     $invoice_payment_id = $this->Invoice_payments_model->ci_save($invoice_payment_data, $id);
+    //     $this->Invoice_payments_model->save_activity($invoice_payment_id, $id, $invoice_id, $data_before);
+    //     if ($invoice_payment_id) {
+
+    //         //As receiving payment for the invoice, we'll remove the 'draft' status from the invoice 
+    //         $this->Invoices_model->update_invoice_status($invoice_id);
+
+    //         if (!$id) {
+    //             //show payment confirmation and payment received notification for new payments only
+    //             log_notification("invoice_payment_confirmation", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), "0");
+    //             log_notification("invoice_manual_payment_added", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), $this->login_user->id);
+    //         }
+    //         //get payment data
+    //         $options = array("id" => $invoice_payment_id);
+    //         $item_info = $this->Invoice_payments_model->get_details($options)->getRow();
+    //         echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_payment_row($item_info), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_payment_id, 'message' => app_lang('record_saved')));
+    //     } else {
+    //         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+    //     }
+    // }
+
+    public function save_payment()
     {
         // $this->access_only_allowed_members();
 
         $this->validate_submitted_data(array(
-            "id" => "numeric",
-            "invoice_id" => "required|numeric",
-            "invoice_payment_method_id" => "required|numeric",
-            "invoice_payment_date" => "required",
-            "invoice_payment_amount" => "required"
+            "id"                          => "numeric",
+            "invoice_id"                  => "required|numeric",
+            "invoice_payment_method_id"   => "required|numeric",
+            "invoice_payment_date"        => "required",
+            "invoice_payment_amount"      => "required"
         ));
 
-        $id = $this->request->getPost('id');
-        $invoice_id = $this->request->getPost('invoice_id');
-        $payment_method_id = $this->request->getPost('invoice_payment_method_id');
-        $payment_method = $this->Payment_methods_model->get_one($payment_method_id);
-        $account = $payment_method ? $payment_method->account_id : 0;
+        $id                = (int)$this->request->getPost('id');
+        $invoice_id        = (int)$this->request->getPost('invoice_id');
+        $payment_method_id = (int)$this->request->getPost('invoice_payment_method_id');
+
+        // amount (parsed & rounded)
+        $rawAmount = $this->request->getPost('invoice_payment_amount');
+        $amount    = (float) unformat_currency($rawAmount);
+        $amount    = round($amount, 2);
+
+        // map payment method -> account (if set)
+        $pm      = $this->Payment_methods_model->get_one($payment_method_id);
+        $account = $pm ? (int)$pm->account_id : 0;
+
+        /* ─────────────────────────────────────────────────────────────
+       Overpayment guard (client invoice)
+       - uses invoice total summary balance_due_raw (preferred)
+       - when editing, add back existing amount so re-save is allowed
+       ───────────────────────────────────────────────────────────── */
+        $tolerance = 0.0001;
+        $summary   = $this->Invoices_model->get_invoice_total_summary($invoice_id);
+
+        // prefer *_raw if available; fallback to formatted field if that’s what your model returns
+        $allowed = (float) ($summary->balance_due_raw ?? $summary->balance_due ?? 0.0);
+
+        if ($id) {
+            $existing = $this->Invoice_payments_model->get_one($id);
+            $allowed += (float) ($existing->amount ?? 0.0);
+        }
+
+        if ($amount > $allowed + $tolerance) {
+            echo json_encode([
+                "success" => false,
+                "message" => app_lang("payment_amount_exceeds_balance_due")
+            ]);
+            return;
+        }
+
+        // payload
         $invoice_payment_data = array(
-            "invoice_id" => $invoice_id,
-            "payment_date" => $this->request->getPost('invoice_payment_date'),
-            "note" => $this->request->getPost('invoice_payment_note'),
+            "invoice_id"        => $invoice_id,
+            "payment_date"      => $this->request->getPost('invoice_payment_date'),
+            "note"              => $this->request->getPost('invoice_payment_note'),
             "payment_method_id" => $payment_method_id,
-            "account_id" => $account,
-            "amount" => unformat_currency($this->request->getPost('invoice_payment_amount')),
-            "created_at" => get_current_utc_time(),
-            "created_by" => $this->login_user->id,
+            "account_id"        => $account,
+            "amount"            => $amount,
+            "created_at"        => get_current_utc_time(),
+            "created_by"        => $this->login_user->id,
+            // no supplier flag here; this is the client path
         );
+
         $data_before = $id ? (array)$this->Invoice_payments_model->get_one($id) : [];
 
         $invoice_payment_id = $this->Invoice_payments_model->ci_save($invoice_payment_data, $id);
         $this->Invoice_payments_model->save_activity($invoice_payment_id, $id, $invoice_id, $data_before);
-        if ($invoice_payment_id) {
 
-            //As receiving payment for the invoice, we'll remove the 'draft' status from the invoice 
+        if ($invoice_payment_id) {
+            // remove draft / recalc status
             $this->Invoices_model->update_invoice_status($invoice_id);
 
             if (!$id) {
-                //show payment confirmation and payment received notification for new payments only
+                // notifications only for new payments
                 log_notification("invoice_payment_confirmation", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), "0");
                 log_notification("invoice_manual_payment_added", array("invoice_payment_id" => $invoice_payment_id, "invoice_id" => $invoice_id), $this->login_user->id);
             }
-            //get payment data
-            $options = array("id" => $invoice_payment_id);
+
+            // get payment row & totals
+            $options   = array("id" => $invoice_payment_id);
             $item_info = $this->Invoice_payments_model->get_details($options)->getRow();
-            echo json_encode(array("success" => true, "invoice_id" => $item_info->invoice_id, "data" => $this->_make_payment_row($item_info), "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id), 'id' => $invoice_payment_id, 'message' => app_lang('record_saved')));
+
+            echo json_encode(array(
+                "success"            => true,
+                "invoice_id"         => $item_info->invoice_id,
+                "data"               => $this->_make_payment_row($item_info),
+                "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+                "id"                 => $invoice_payment_id,
+                "message"            => app_lang('record_saved')
+            ));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
+
     /* add or edit a payment */
 
     // function save_payment_supplier()
@@ -280,6 +375,76 @@ class Invoice_payments extends Security_Controller_Plugin
     /* ─────────────────────────────────────────────────────────────
        1) OPEN MODAL (Supplier Payment)
        ───────────────────────────────────────────────────────────── */
+    // public function supplier_payment_modal_form()
+    // {
+    //     if (!$this->can_add_payment() && !$this->can_edit_payment()) {
+    //         app_redirect("forbidden");
+    //     }
+
+    //     $this->validate_submitted_data([
+    //         "id"        => "numeric",
+    //         "invoice_id" => "numeric"
+    //     ]);
+
+    //     $id         = (int)$this->request->getPost('id');
+    //     $invoice_id = (int)$this->request->getPost('invoice_id');
+
+    //     $view_data['model_info'] = $this->Invoice_payments_model->get_one($id);
+
+    //     // If editing, prefer existing invoice id
+    //     if (!$invoice_id && $view_data['model_info'] && $view_data['model_info']->invoice_id) {
+    //         $invoice_id = (int)$view_data['model_info']->invoice_id;
+    //     }
+    //     $view_data['invoice_id'] = $invoice_id;
+
+    //     // Invoices dropdown only when invoice_id isn’t pre-set
+    //     if (!$invoice_id) {
+    //         $invoices = $this->Invoices_model->get_invoices_dropdown_list()->getResult();
+    //         $options = ["" => "-"];
+    //         foreach ($invoices as $inv) {
+    //             $options[$inv->id] = $inv->display_id;
+    //         }
+    //         $view_data['invoices_dropdown'] = $options;
+    //     }
+
+    //     // Suppliers dropdown
+    //     if ($invoice_id) {
+    //         // Narrow to suppliers on this invoice with open balance
+    //         $suppliers = ['' => '-'] + $this->Supplier_model
+    //             ->get_suppliers_for_invoice_with_open_balance_birimo($invoice_id);
+    //     } else {
+    //         // Fall back to global open-balance list (your current method)
+    //         $suppliers = ['' => '-'] + $this->Supplier_model
+    //             ->get_suppliers_with_open_balance_dropdown_birimo();
+    //     }
+    //     $view_data['suppliers_dropdown'] = $suppliers;
+
+    //     // Suppliers: only those with open balances (Birimo logic)
+    //     if ($this->login_user->department == 0) {
+    //         $suppliers = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
+    //     } else {
+    //         // if you need department scoping, adjust your model query; for now reuse open-balance set
+    //         $suppliers = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
+    //     }
+    //     $view_data['suppliers_dropdown'] = $suppliers;
+
+    //     // Amount suggestion (edit vs new)
+    //     $amount = "";
+    //     if ($id) {
+    //         $amount = to_decimal_format($view_data['model_info']->amount ?? 0);
+    //     } else if ($invoice_id) {
+    //         // when opening fresh for a specific invoice, we’ll compute in JS once supplier is chosen
+    //         $amount = "";
+    //     }
+    //     $view_data['amount'] = $amount;
+
+    //     // Payment methods (offline only; change if you allow online)
+    //     $view_data['payment_methods_dropdown'] =
+    //         $this->Payment_methods_model->get_dropdown_list(["title"], "id", ["online_payable" => 0, "deleted" => 0]);
+
+    //     return $this->template->view('aleelo_plugin\Views/invoices/supplier_payment_modal_form', $view_data);
+    // }
+
     public function supplier_payment_modal_form()
     {
         if (!$this->can_add_payment() && !$this->can_edit_payment()) {
@@ -287,7 +452,7 @@ class Invoice_payments extends Security_Controller_Plugin
         }
 
         $this->validate_submitted_data([
-            "id"        => "numeric",
+            "id"         => "numeric",
             "invoice_id" => "numeric"
         ]);
 
@@ -312,12 +477,23 @@ class Invoice_payments extends Security_Controller_Plugin
             $view_data['invoices_dropdown'] = $options;
         }
 
-        // Suppliers: only those with open balances (Birimo logic)
-        if ($this->login_user->department == 0) {
-            $suppliers = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
+        /* ---------------------------
+       Suppliers dropdown (fixed)
+       --------------------------- */
+        if ($invoice_id) {
+            // Only suppliers on THIS invoice with a remaining due
+            $suppliers = ['' => '-'] + $this->Supplier_model
+                ->get_suppliers_for_invoice_with_open_balance_birimo($invoice_id);
         } else {
-            // if you need department scoping, adjust your model query; for now reuse open-balance set
-            $suppliers = ['' => '-'] + $this->Supplier_model->get_suppliers_with_open_balance_dropdown_birimo();
+            // Global open-balance suppliers (optionally scope by department)
+            if ((int)$this->login_user->department === 0) {
+                $suppliers = ['' => '-'] + $this->Supplier_model
+                    ->get_suppliers_with_open_balance_dropdown_birimo();
+            } else {
+                // TODO: add department-aware version if needed
+                $suppliers = ['' => '-'] + $this->Supplier_model
+                    ->get_suppliers_with_open_balance_dropdown_birimo();
+            }
         }
         $view_data['suppliers_dropdown'] = $suppliers;
 
@@ -326,7 +502,7 @@ class Invoice_payments extends Security_Controller_Plugin
         if ($id) {
             $amount = to_decimal_format($view_data['model_info']->amount ?? 0);
         } else if ($invoice_id) {
-            // when opening fresh for a specific invoice, we’ll compute in JS once supplier is chosen
+            // fresh open for a specific invoice: compute via AJAX after supplier selection
             $amount = "";
         }
         $view_data['amount'] = $amount;
@@ -337,6 +513,7 @@ class Invoice_payments extends Security_Controller_Plugin
 
         return $this->template->view('aleelo_plugin\Views/invoices/supplier_payment_modal_form', $view_data);
     }
+
 
     /* ─────────────────────────────────────────────────────────────
        2) AJAX: invoice+supplier due suggestion (Birimo)

@@ -47,6 +47,10 @@ class Expenses_model extends Crud_model {
         if ($user_id) {
             $where .= " AND $expenses_table.user_id=$user_id";
         }
+        $vendor_id = $this->_get_clean_value($options, "vendor_id");
+        if ($vendor_id) {
+            $where .= " AND $expenses_table.vendor_id=$vendor_id";
+        }
 
         $client_id = $this->_get_clean_value($options, "client_id");
         if ($client_id) {

@@ -36,7 +36,8 @@ class Expenses extends Security_Controller_Plugin
 
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown_js();
         $view_data['vendors_dropdown'] = $this->_get_vendors_dropdown_js();
-        $members_dropdown = $this->Users_model->get_id_and_text_dropdown(array("first_name", "last_name"), array("deleted" => 0, "status" => "active", "user_type" => "staff"),  "- " . app_lang("member") . " -");
+        $members_dropdown = $this->Supplier_model->get_id_and_text_dropdown(array("supplier_name"), array("deleted" => 0),  "- " . app_lang("supplier") . " -");
+        // $members_dropdown = $this->Users_model->get_id_and_text_dropdown(array("first_name", "last_name"), array("deleted" => 0, "status" => "active", "user_type" => "staff"),  "- " . app_lang("member") . " -");
         $view_data['members_dropdown'] = json_encode($members_dropdown);
         $view_data["projects_dropdown"] = $this->_get_projects_dropdown_for_income_and_expenses("expenses");
 
@@ -399,7 +400,7 @@ class Expenses extends Security_Controller_Plugin
         $end_date = $this->request->getPost('end_date');
         $category_id = $this->request->getPost('category_id');
         $project_id = $this->request->getPost('project_id');
-        $user_id = $this->request->getPost('user_id');
+        $vendor_id = $this->request->getPost('vendor_id');
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("expenses", $this->login_user->is_admin, $this->login_user->user_type);
 
@@ -408,7 +409,7 @@ class Expenses extends Security_Controller_Plugin
             "end_date" => $end_date,
             "category_id" => $category_id,
             "project_id" => $project_id,
-            "user_id" => $user_id,
+            "vendor_id" => $vendor_id,
             "custom_fields" => $custom_fields,
             "recurring" => $recurring,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("expenses", $this->login_user->is_admin, $this->login_user->user_type),

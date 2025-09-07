@@ -39,10 +39,10 @@
     $(selector).appTable({
     source: '<?php echo_uri("expenses/list_data") ?>/' + recurring,
             smartFilterIdentity: smartFilterContext, //a to z and _ only. should be unique to avoid conflicts
-            rangeRadioButtons: rangeRadioButtonOptions,
+            // rangeRadioButtons: rangeRadioButtonOptions,
             filterDropdown: [
             {name: "category_id", class: "w200", options: <?php echo $categories_dropdown; ?>},
-            {name: "user_id", class: "w200", options: <?php echo $members_dropdown; ?>}
+            {name: "vendor_id", class: "w200", options: <?php echo $vendors_dropdown; ?>}
 <?php if ($projects_dropdown) { ?>
                 , {name: "project_id", class: "w200", options: <?php echo $projects_dropdown; ?>}
 <?php } ?>

@@ -28,7 +28,7 @@
     loadExpensesTable = function (selector, dateRange) {
     var smartFilterContext = "all-expenses";
     var customDatePicker = "", recurring = "0";
-    var rangeRadioButtonOptions = [{name: "range_radio_button", selectedOption: 'monthly', options: ['monthly', 'yearly', 'custom', 'dynamic'], dynamicRanges:['this_month', 'last_month', 'next_month', 'this_year', 'last_year']}];
+    var rangeRadioButtonOptions = [{name: "range_radio_button", options: ['monthly', 'yearly', 'custom', 'dynamic'], dynamicRanges:['this_month', 'last_month', 'next_month', 'this_year', 'last_year']}];
     if (dateRange === "recurring") {
         customDatePicker = [{startDate: {name: "start_date"}, endDate: {name: "end_date"}, showClearButton: true}];
         recurring = "1";

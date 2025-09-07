@@ -1277,6 +1277,7 @@ class Invoices extends Security_Controller_Plugin
 
         $invoice_id = (int)$this->request->getPost('invoice_id');
         $id         = (int)$this->request->getPost('id');
+        $services = (float)$this->request->getPost('services');
 
         $days = (float)$this->request->getPost('days');
         $days = $days > 0 ? $days : 1;
@@ -1288,7 +1289,7 @@ class Invoices extends Security_Controller_Plugin
         $invoice_item_title = $this->request->getPost('invoice_item_title');
         $item_id           = $this->request->getPost('item_id');
 
-        $price = $supplier_price ? ($supplier_price * $quantity * $days) : 0;
+        // $price = $supplier_price ? ($supplier_price * $quantity * $days) : 0;
 
         // Check if item should be added to library
         $add_new_item_to_library = $this->request->getPost('add_new_item_to_library');
@@ -1326,23 +1327,56 @@ class Invoices extends Security_Controller_Plugin
             // ✅ Done: Income account only (no COGS)
         }
 
+        //  ✅ Calculate totals
+        $base_total = $quantity * $rate * $days;
+        $service_cost = ($services > 0) ? ($base_total * ($services / 100)) : 0;
+        $alltotal = $base_total + $service_cost;
+        if ($supplier_price) {
+            $price = $supplier_price * $quantity * $days;
+        } else {
+            $price = 0;
+        }
+        // ✅ Log the calculations
+        log_message('debug', 'SAVE_ITEM DEBUG: Invoice=' . $invoice_id . ' QTY=' . $quantity . ' Rate=' . $rate . ' Days=' . $days . ' BaseTotal=' . $base_total . ' Service%=' . $services . ' ServiceCost=' . $service_cost . ' AllTotal=' . $alltotal);
+
+
         // Prepare invoice item data
-        $invoice_item_data = [
-            "invoice_id"        => $invoice_id,
-            "title"             => $invoice_item_title,
-            "description"       => $this->request->getPost('invoice_item_description'),
-            "quantity"          => $quantity,
-            "unit_type"         => $this->request->getPost('invoice_unit_type'),
-            "rate"              => $rate,
-            "total"             => $rate * $quantity * $days,
-            "days"              => $days,
-            "taxable"           => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
-            "item_id"           => $item_id,
-            "supplier"          => $this->request->getPost('supplier') ?: "0",
-            "supplier_price"    => $price,
+        // $invoice_item_data = [
+        //     "invoice_id"        => $invoice_id,
+        //     "title"             => $invoice_item_title,
+        //     "description"       => $this->request->getPost('invoice_item_description'),
+        //     "quantity"          => $quantity,
+        //     "unit_type"         => $this->request->getPost('invoice_unit_type'),
+        //     "rate"              => $rate,
+        //     "total"             => $rate * $quantity * $days,
+        //     "days"              => $days,
+        //     "taxable"           => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+        //     "item_id"           => $item_id,
+        //     "supplier"          => $this->request->getPost('supplier') ?: "0",
+        //     "supplier_price"    => $price,
+        //     "supplier_quantity" => $supplier_quantity,
+        //     "supplier_id"       => $this->request->getPost('supplier_id')
+        // ];
+        $invoice_item_data = array(
+            "invoice_id" => $invoice_id,
+            "title" => $this->request->getPost('invoice_item_title'),
+            "description" => $this->request->getPost('invoice_item_description'),
+            "quantity" => $quantity,
+            "days" => $days,
+            "rate" => $rate,
+            "services" => $services,
+            "service_cost" => $service_cost,
+            "total" => $base_total,
+            "alltotal" => $alltotal,
+            "unit_type" => $this->request->getPost('invoice_unit_type'),
+            "taxable" => $this->request->getPost('taxable') ? $this->request->getPost('taxable') : "",
+            "supplier" => $this->request->getPost('supplier') ? $this->request->getPost('supplier') : "",
+            // "supplier_quantity" => $this->request->getPost('supplier_price') ? $this->request->getPost('supplier_price') : "",
             "supplier_quantity" => $supplier_quantity,
-            "supplier_id"       => $this->request->getPost('supplier_id')
-        ];
+            "supplier_price" => $price,
+            "supplier_id" => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id') : "",
+
+        );
 
         // Sort logic
         if ($id) {
@@ -1355,21 +1389,28 @@ class Invoices extends Security_Controller_Plugin
             $invoice_item_data['sort'] = $this->getNextSort($invoice_id);
         }
 
+        if ($item_id) {
+            $invoice_item_data["item_id"] = $item_id;
+        }
+
         $invoice_item_id = $this->Invoice_items_model->save_item_and_update_invoice($invoice_item_data, $id, $invoice_id);
 
-        if ($invoice_item_id) {
-            $options   = ["id" => $invoice_item_id];
-            $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+        // ✅ Update totals after saving item
+        $this->Invoices_model->update_invoice_total_meta($invoice_id);
 
-            echo json_encode([
-                "success"    => true,
+        if ($invoice_item_id) {
+            $options = array("id" => $invoice_item_id);
+            $item_info = $this->Invoice_items_model->get_details($options)->getRow();
+            echo json_encode(array(
+                "success" => true,
                 "invoice_id" => $item_info->invoice_id,
-                "data"       => $this->_make_item_row($item_info, true),
-                "id"         => $invoice_item_id,
-                "message"    => app_lang('record_saved')
-            ]);
+                "data" => $this->_make_item_row($item_info, true),
+                "invoice_total_view" => $this->_get_invoice_total_view($item_info->invoice_id),
+                'id' => $invoice_item_id,
+                'message' => app_lang('record_saved')
+            ));
         } else {
-            echo json_encode(["success" => false, "message" => app_lang('error_occurred')]);
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
 

@@ -1515,6 +1515,7 @@ class Accounting extends Security_Controller
 
                     // ✅ AUTO-LINK HOOK (on Create)
                     $this->_maybe_link_expense_category((int)$newId);
+                    $this->_sync_category_title_from_account((int)$newId);   // <- add this
                 } else {
                     $message = app_lang('add_failure');
                     $this->session->setFlashdata("error_message", $message);
@@ -1536,6 +1537,7 @@ class Accounting extends Security_Controller
 
                     // ✅ AUTO-LINK HOOK (on Update)
                     $this->_maybe_link_expense_category((int)$id);
+                    $this->_sync_category_title_from_account((int)$id);   // <- add this
                 } else {
                     $message = app_lang('updated_fail');
                     $this->session->setFlashdata("error_message", $message);
@@ -1593,6 +1595,56 @@ class Accounting extends Security_Controller
         $this->db->transComplete();
         // Note: if the transaction fails, you can check $this->db->transStatus() and log/flash
     }
+
+    /** If an account is linked to an expense category, mirror the account name into expense_categories.title */
+private function _sync_category_title_from_account(int $accountId): void
+{
+    // read fresh account
+    $acc = $this->db->table(get_db_prefix().'acc_accounts')
+        ->select('id, name, expense_id, account_type_id, account_detail_type_id, active')
+        ->where('id', $accountId)
+        ->get()->getRow();
+
+    if (!$acc) return;
+
+    // only for Expense accounts that are already linked to a category
+    if ((int)$acc->account_type_id !== 14 || empty($acc->expense_id)) return;
+
+    $newTitle = trim((string)$acc->name);
+    if ($newTitle === '') return;
+
+    // fetch category
+    $cat = $this->db->table(get_db_prefix().'expense_categories')
+        ->select('id, title, deleted')
+        ->where('id', (int)$acc->expense_id)
+        ->get()->getRow();
+
+    if (!$cat || (int)$cat->deleted === 1) return;
+
+    // if already same, nothing to do
+    if ($cat->title === $newTitle) return;
+
+    // optional: avoid colliding with an existing active category title
+    $dup = $this->db->table(get_db_prefix().'expense_categories')
+        ->select('id')
+        ->where('title', $newTitle)
+        ->where('deleted', 0)
+        ->where('id !=', (int)$cat->id)
+        ->get()->getRow();
+
+    if ($dup) {
+        // If your schema enforces unique titles, you can either:
+        //  - skip renaming (do nothing), or
+        //  - append a suffix. Choose one. Here we skip to be safe.
+        return;
+    }
+
+    // update the category title to match account name
+    $this->db->table(get_db_prefix().'expense_categories')
+        ->where('id', (int)$cat->id)
+        ->update(['title' => $newTitle]);
+}
+
 
     /**
      * Get or create expense category by title (not deleted).

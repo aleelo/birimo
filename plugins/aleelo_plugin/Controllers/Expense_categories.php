@@ -100,52 +100,102 @@ class Expense_categories extends Security_Controller_Plugin
     }
 
     /** ONE account per expense category (type=13, detail=15), scoped by expense_id */
+    // private function _ensure_single_expense_account(int $categoryId, string $title, int $typeId = 14, int $detailId = 105): int
+    // {
+    //     $desiredName = trim($title);
+    //     $tbl = $this->db->table(get_db_prefix() . 'acc_accounts');
+
+    //     $scoped = $tbl->select('id,name')
+    //         ->where('expense_id', $categoryId)
+    //         ->where('account_type_id', $typeId)
+    //         ->where('account_detail_type_id', $detailId)
+    //         ->get()->getRow();
+
+    //     if ($scoped && isset($scoped->id)) {
+    //         if ($scoped->name !== $desiredName) {
+    //             $tbl->where('id', $scoped->id)->update([
+    //                 'name' => $desiredName,
+    //                 'key_name' => $this->_to_key_name($desiredName),
+    //                 'active' => 1
+    //             ]);
+    //         } else {
+    //             $tbl->where('id', $scoped->id)->update(['active' => 1]);
+    //         }
+    //         return (int)$scoped->id;
+    //     }
+
+    //     $legacy = $tbl->select('id')
+    //         ->where('name', $desiredName)
+    //         ->where('account_type_id', $typeId)
+    //         ->where('account_detail_type_id', $detailId)
+    //         ->where('expense_id', null)
+    //         ->get()->getRow();
+
+    //     if ($legacy && isset($legacy->id)) {
+    //         $tbl->where('id', $legacy->id)->update(['expense_id' => $categoryId, 'active' => 1]);
+    //         return (int)$legacy->id;
+    //     }
+
+    //     $tbl->insert([
+    //         'name' => $desiredName,
+    //         'key_name' => $this->_to_key_name($desiredName),
+    //         'account_type_id' => $typeId,
+    //         'account_detail_type_id' => $detailId,
+    //         'expense_id' => $categoryId,
+    //         'active' => 1,
+    //     ]);
+    //     return (int)$this->db->insertID();
+    // }
+    /** ONE account per expense category; find by expense_id only, then normalize */
     private function _ensure_single_expense_account(int $categoryId, string $title, int $typeId = 14, int $detailId = 105): int
     {
         $desiredName = trim($title);
         $tbl = $this->db->table(get_db_prefix() . 'acc_accounts');
 
-        $scoped = $tbl->select('id,name')
+        // 1) Reuse any scoped account (ignore current type/detail).
+        $scoped = $tbl->select('id, name')
             ->where('expense_id', $categoryId)
-            ->where('account_type_id', $typeId)
-            ->where('account_detail_type_id', $detailId)
             ->get()->getRow();
 
         if ($scoped && isset($scoped->id)) {
-            if ($scoped->name !== $desiredName) {
-                $tbl->where('id', $scoped->id)->update([
-                    'name' => $desiredName,
-                    'key_name' => $this->_to_key_name($desiredName),
-                    'active' => 1
-                ]);
-            } else {
-                $tbl->where('id', $scoped->id)->update(['active' => 1]);
-            }
+            $tbl->where('id', $scoped->id)->update([
+                'name'                   => $desiredName,
+                'key_name'               => $this->_to_key_name($desiredName),
+                'account_type_id'        => $typeId,
+                'account_detail_type_id' => $detailId,
+                'active'                 => 1,
+            ]);
             return (int)$scoped->id;
         }
 
+        // 2) Adopt legacy by name where expense_id IS NULL/0
         $legacy = $tbl->select('id')
             ->where('name', $desiredName)
-            ->where('account_type_id', $typeId)
-            ->where('account_detail_type_id', $detailId)
-            ->where('expense_id', null)
+            ->where('(expense_id IS NULL OR expense_id = 0)', null, false) // proper NULL check
             ->get()->getRow();
 
         if ($legacy && isset($legacy->id)) {
-            $tbl->where('id', $legacy->id)->update(['expense_id' => $categoryId, 'active' => 1]);
+            $tbl->where('id', $legacy->id)->update([
+                'expense_id'             => $categoryId,
+                'account_type_id'        => $typeId,
+                'account_detail_type_id' => $detailId,
+                'active'                 => 1,
+            ]);
             return (int)$legacy->id;
         }
 
+        // 3) Insert fresh
         $tbl->insert([
-            'name' => $desiredName,
-            'key_name' => $this->_to_key_name($desiredName),
-            'account_type_id' => $typeId,
+            'name'                   => $desiredName,
+            'key_name'               => $this->_to_key_name($desiredName),
+            'account_type_id'        => $typeId,
             'account_detail_type_id' => $detailId,
-            'expense_id' => $categoryId,
-            'active' => 1,
+            'expense_id'             => $categoryId,
+            'active'                 => 1,
         ]);
         return (int)$this->db->insertID();
     }
+
 
     /** Upsert ONE row into rise_acc_expense_category_mappings (no preferred!) */
     private function _upsert_expense_category_mapping(int $categoryId, int $paymentAccountId, int $expenseAccountId): void

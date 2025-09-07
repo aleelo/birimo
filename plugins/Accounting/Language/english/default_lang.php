@@ -1065,6 +1065,9 @@ $lang['emp_expense'] = 'Employee Expenses';
 $lang['emp_expense_payment'] = 'Expense Payments'; 
 $lang['vendor'] = 'Vendor'; 
 $lang['emp'] = 'EMP'; 
-$lang['Supplier'] = 'Supplier'; 
+$lang['Supplier'] = 'Supplier';
+$lang["payment_amount_exceeds_balance_due"] = "The payment amount exceeds the balance due.";
+// $lang["payment_amount_exceeds_balance_due"] = "Lacag bixintu waxay ka badan tahay qadarka haray ee la bixinayo.";
+
 
 return $lang;
