@@ -145,7 +145,7 @@
 
             <div class="form-group">
                 <div class="row">
-                    <label for="invoice_terms" class=" col-md-3"><?php echo app_lang('terms'); ?></label>
+                    <label for="invoice_terms" class=" col-md-3"><?php echo 'Terms'; ?></label>
                     <div class="col-md-9">
                         <?php
                         echo form_dropdown("invoice_terms", $terms_dropdown, $model_info->terms, "class='select2 tax-select2 validate-hidden' id='invoice_terms' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
