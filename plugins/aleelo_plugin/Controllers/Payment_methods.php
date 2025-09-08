@@ -136,10 +136,10 @@ class Payment_methods extends Security_Controller_Plugin
             // Map both sales & expense sides:
             $this->_upsert_payment_mode_mapping([
                 'payment_mode_id'         => $save_id,
-                'payment_account'         => 1, // sales clearing
-                'deposit_to'              => $bankAccId,    // bank/cash
+                'payment_account'         => 443, // sales clearing
+                'deposit_to'              => $bankAccId,    // bank/cas1
                 'expense_payment_account' => $bankAccId,    // pay expenses from bank
-                'expense_deposit_to'      => 87, // expense clearing
+                'expense_deposit_to'      => 468, // expense clearing
             ]);
             // --- /NEW -------------------------------------------------------------
 

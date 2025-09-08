@@ -72,7 +72,7 @@ class Expense_categories extends Security_Controller_Plugin
             //          ->update(['account_id' => $expenseAccountId]);
 
             // choose a default bank/cash (or 0 if none); still no preferred field
-            $paymentAccountId = 87;
+            $paymentAccountId = 468;
 
             // upsert mapping in rise_acc_expense_category_mappings
             $this->_upsert_expense_category_mapping($save_id, $paymentAccountId, $expenseAccountId);
