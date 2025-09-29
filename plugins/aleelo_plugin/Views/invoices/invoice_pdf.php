@@ -138,7 +138,7 @@ if (get_setting('taxable_column') == "always_show") {
         }
 
         .odd-row {
-            background-color:red;
+            background-color: red;
             color: black;
         }
 
@@ -349,18 +349,20 @@ $data = array(
     </div>
 
 
-    <table>
-
-            <tr style="background-color:<?php echo $color ?>;">
-                <th style="width: <?php echo $show_taxable ? '30%' : '30%'; ?>;">Item</th>
-                <th style="width:8%"> Days</th>
-                <th style="width:8%"> Qty</th>
-                <th style="width:8%">Price</th>
-                <th>Total</th>
-                <th>Service (%)</th>
-                <th>Cost (%)</th>
-                <th style="width: <?php echo $show_taxable ? '10%' : '10%'; ?>;">Total</th>
+    <table style="width:100%; border-collapse:collapse; font-size:12px; table-layout:fixed;">
+        <thead>
+            <tr style="background-color:<?php echo $color ?>; color:#fff;">
+                <th style="width:33%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Item</th>
+                <th style="width:8%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
+                <th style="width:6%; text-align:center; padding:10px; white-space:nowrap;">Qty</th>
+                <th style="width:8%; text-align:right; padding:10px; white-space:nowrap;">Price</th>
+                <th style="width:14%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
+                <th style="width:9%; text-align:center; padding:10px; white-space:nowrap;">Service (%)</th>
+                <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Cost (%)</th>
+                <th style="width:11%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
             </tr>
+                
+        </thead>
         <tbody>
             <?php
             $current_section = null;
@@ -397,18 +399,21 @@ $data = array(
                     // Add to section total
                     $section_total += $item->alltotal;
                 ?>
-                    <tr style="background-color: <?php echo $row_color; ?>;">
-                        <td style="width: <?php echo $show_taxable ? '30%' : '30%'; ?>;"><?php echo $item->title; ?><br />
-                            <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ?? ""); ?></span>
-                       </td>
-                        <td style="width:8%"><?php echo $item->days ? $item->days : ""; ?>
-                    </td>
-                        <td style="width:8%"><?php echo $item->quantity; ?></td>
-                        <td style="width:8%"><?php echo $item->rate; ?></td>
-                        <td><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
-                        <td><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
-                        <td><?php echo $item->service_cost ? $item->service_cost  : '0'; ?></td>
-                        <td style="width:10%"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                    <tr style="background-color:<?php echo $row_color; ?>;">
+                        <td style="width:33%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <?php echo $item->title; ?><br />
+                            <span style="color:#888; font-size:90%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; max-width:95%;">
+                                <?php echo custom_nl2br($item->description ?? ""); ?>
+                            </span>
+                        </td>
+                        <td style="width:8%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->days ?: ""; ?></td>
+                        <td style="width:6%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->quantity; ?></td>
+                        <td style="width:8%; text-align:right; padding:10px; white-space:nowrap;"><?php echo $item->rate; ?></td>
+                        <td style="width:14%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
+                        <td style="width:9%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
+                        <td style="width:11%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->service_cost ?: '0'; ?></td>
+                        <td style="width:11%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                                
                     </tr>
                 <?php
                 }
@@ -416,8 +421,8 @@ $data = array(
 
             // Final section subtotal at the end
             if ($current_section !== null) {
-                    $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
-                    $counter++;           ?>
+                $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
+                $counter++;           ?>
                 <tr style="background-color:<?php echo $row_color; ?>;">
                     <td style="width: 84%;"></td>
                     <td style="width: 16%;font-weight: bold; text-align: right;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
@@ -437,11 +442,11 @@ $data = array(
                 <td style="text-align: left; width: 20%; border: 1px solid #fff;"><?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?></td>
             </tr> <?php
                     if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") { ?>
-            <tr class="total">
-                <td style="width: <?php echo $show_taxable ? '60%' : '71%'; ?>;"></td>
-                <?php if ($show_taxable) { ?>
-                    <td></td>
-                <?php } ?>
+                <tr class="total">
+                    <td style="width: <?php echo $show_taxable ? '60%' : '71%'; ?>;"></td>
+                    <?php if ($show_taxable) { ?>
+                        <td></td>
+                    <?php } ?>
                     <td style="width: 15%;">Discount</td>
                     <td style="text-align: left; width: 20%; border: 1px solid #fff; "><?php echo to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) ?> </td>
                 </tr>
@@ -457,10 +462,10 @@ $data = array(
             <?php if ($invoice_total_summary->tax) { ?>
 
                 <tr class="total">
-                <td style="width: <?php echo $show_taxable ? '60%' : '71%'; ?>;"></td>
-                <?php if ($show_taxable) { ?>
-                    <td></td>
-                <?php } ?>
+                    <td style="width: <?php echo $show_taxable ? '60%' : '71%'; ?>;"></td>
+                    <?php if ($show_taxable) { ?>
+                        <td></td>
+                    <?php } ?>
                     <td style="width: 15%;"><?php echo $invoice_total_summary->tax_name; ?></td>
                     <td style="text-align: left; width: 20%;"><?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?></td>
                 </tr>
