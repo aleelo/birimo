@@ -353,13 +353,13 @@ $data = array(
         <thead>
             <tr style="background-color:<?php echo $color ?>; color:#fff;">
                 <th style="width:33%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Item</th>
-                <th style="width:8%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
+                <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
                 <th style="width:6%; text-align:center; padding:10px; white-space:nowrap;">Qty</th>
                 <th style="width:8%; text-align:right; padding:10px; white-space:nowrap;">Price</th>
                 <th style="width:14%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
                 <th style="width:9%; text-align:center; padding:10px; white-space:nowrap;">Service (%)</th>
                 <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Cost (%)</th>
-                <th style="width:11%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
+                <th style="width:12%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
             </tr>
                 
         </thead>
@@ -406,13 +406,13 @@ $data = array(
                                 <?php echo custom_nl2br($item->description ?? ""); ?>
                             </span>
                         </td>
-                        <td style="width:8%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->days ?: ""; ?></td>
+                        <td style="width:7%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->days ?: ""; ?></td>
                         <td style="width:6%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->quantity; ?></td>
                         <td style="width:8%; text-align:right; padding:10px; white-space:nowrap;"><?php echo $item->rate; ?></td>
                         <td style="width:14%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
                         <td style="width:9%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
                         <td style="width:11%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->service_cost ?: '0'; ?></td>
-                        <td style="width:11%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                        <td style="width:12%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
                                 
                     </tr>
                 <?php
