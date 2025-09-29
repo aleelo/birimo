@@ -9139,7 +9139,7 @@ class Accounting_model extends Crud_model {
                     $node = [];
                     $node['itemable_id'] = $value->id;
                     $node['split'] = $item_automatic->income_account;
-                    $node['account'] = $payment_account;
+                    $node['account'] = 468;
                     $node['item'] = $item_id;
                     $node['date'] = $invoice->bill_date;
                     $node['paid'] = $paid;
