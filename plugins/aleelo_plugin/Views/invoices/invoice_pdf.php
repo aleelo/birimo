@@ -353,7 +353,7 @@ $data = array(
 
             <tr style="background-color:<?php echo $color ?>;">
                 <th style="width: <?php echo $show_taxable ? '30%' : '30%'; ?>;">Item</th>
-                <th style="width:8%"> Day</th>
+                <th style="width:8%"> Days</th>
                 <th style="width:8%"> Qty</th>
                 <th style="width:8%">Price</th>
                 <th>Total</th>

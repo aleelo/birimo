@@ -1,18 +1,22 @@
 <?php
 
 namespace aleelo_plugin\Models;
+
 use App\Models\Crud_model;
 
-class Items_model extends Crud_model {
+class Items_model extends Crud_model
+{
 
     protected $table = null;
 
-    function __construct() {
+    function __construct()
+    {
         $this->table = 'items';
         parent::__construct($this->table);
     }
 
-    function get_details($options = array()) {
+    function get_details($options = array())
+    {
         $items_table = $this->db->prefixTable('items');
         $order_items_table = $this->db->prefixTable('order_items');
         $item_categories_table = $this->db->prefixTable('item_categories');
@@ -22,20 +26,19 @@ class Items_model extends Crud_model {
 
         $join_accounts = "";
         $select_accounts = "";
-    
+
         // ✅ Check if acc_accounts table exists
         if ($this->db->tableExists('acc_accounts')) {
             $accounts_table = $this->db->prefixTable('acc_accounts');
             $join_accounts = "LEFT JOIN $accounts_table ON $accounts_table.id = $items_table.account_id";
             $select_accounts = ", $accounts_table.key_name as key_name, $accounts_table.name as account_name";
-
         }
         $where = "";
         $id = $this->_get_clean_value($options, "id");
         if ($id) {
             $where .= " AND $items_table.id=$id";
         }
- 
+
         $company_id = $this->_get_clean_value($options, "company_id");
         if ($company_id) {
             $where .= " AND $items_table.company_id=$company_id";
@@ -95,4 +98,27 @@ class Items_model extends Crud_model {
         return $this->db->query($sql);
     }
 
+    public function delete_account($id)
+    {
+        $db_builder = $this->db->table(get_db_prefix() . 'acc_account_history');
+        $db_builder->where('(account = ' . $id . ' or split = ' . $id . ')');
+        $count = $db_builder->countAllResults();
+
+        if ($count > 0) {
+            return 'have_transaction';
+        }
+
+        $db_builder = $this->db->table(get_db_prefix() . 'acc_accounts');
+        $db_builder->where('id', $id);
+        $db_builder->where('default_account', 0);
+        $db_builder->delete();
+        if ($this->db->affectedRows() > 0) {
+            $db_builder = $this->db->table(get_db_prefix() . 'acc_account_history');
+            $db_builder->where('account', $id);
+            $db_builder->delete();
+
+            return true;
+        }
+        return false;
+    }
 }

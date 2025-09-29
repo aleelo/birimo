@@ -29,7 +29,7 @@
             source: '<?php echo_uri("payment_methods/list_data") ?>',
             columns: [
                 {visible: false, searchable: false},
-                {title: '<?php echo app_lang("title"); ?>', sortable: false},
+                {title: '<?php echo app_lang("title"); ?>',  "class": "w25p", sortable: false},
                 {title: '<?php echo app_lang("description"); ?>', sortable: false},
                 {title: '<?php echo app_lang("available_on_invoice"); ?>', sortable: false},
                 {title: '<?php echo app_lang("minimum_payment_amount"); ?>', sortable: false},

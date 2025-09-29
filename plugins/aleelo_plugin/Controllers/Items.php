@@ -1,28 +1,33 @@
 <?php
+
 namespace aleelo_plugin\Controllers;
+
 use Accounting\Models\Accounting_model;
 
 use aleelo_plugin\Controllers\Security_Controller_Plugin;
 
-class Items extends Security_Controller_Plugin {
+class Items extends Security_Controller_Plugin
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->init_permission_checker("order");
     }
 
-    protected function validate_access_to_items() {
+    protected function validate_access_to_items()
+    {
         $access_invoice = $this->get_access_info("invoice");
         $access_estimate = $this->get_access_info("estimate");
 
         //don't show the items if invoice/estimate module is not enabled
-        if (!(get_setting("module_invoice") == "1" || get_setting("module_estimate") == "1" )) {
+        if (!(get_setting("module_invoice") == "1" || get_setting("module_estimate") == "1")) {
             app_redirect("forbidden");
         }
 
         if ($this->login_user->is_admin) {
             return true;
-        } else if ($access_invoice->access_type === "all" ||$access_invoice->access_type === "own_invoice" || $access_estimate->access_type === "all") {
+        } else if ($access_invoice->access_type === "all" || $access_invoice->access_type === "own_invoice" || $access_estimate->access_type === "all") {
             return true;
         } else {
             app_redirect("forbidden");
@@ -30,9 +35,10 @@ class Items extends Security_Controller_Plugin {
     }
 
     //load items list view
-    function index() {
-      
-     if(!$this->can_view_items()) {
+    function index()
+    {
+
+        if (!$this->can_view_items()) {
             app_redirect("forbidden");
         }
         $view_data['categories_dropdown'] = $this->_get_categories_dropdown();
@@ -41,7 +47,8 @@ class Items extends Security_Controller_Plugin {
     }
 
     //get categories dropdown
-     function _get_categories_dropdown() {
+    function _get_categories_dropdown()
+    {
         $categories = $this->Item_categories_model->get_all_where(array("deleted" => 0), 0, 0, "title")->getResult();
 
         $categories_dropdown = array(array("id" => "", "text" => "- " . app_lang("category") . " -"));
@@ -53,17 +60,18 @@ class Items extends Security_Controller_Plugin {
     }
 
     /* load item modal */
-    function modal_form() {
-       //  $this->validate_access_to_items();
+    function modal_form()
+    {
+        //  $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
             "id" => "numeric"
         ));
 
-    $view_data['companies_dropdown'] =  array("0" => "choose company") +$this->Company_model->get_dropdown_list(array("name"));
-    $view_data['has_all_permission'] =
-        ($this->login_user->user_type === "staff" &&  $this->login_user->company_access ==="all" && $this->login_user->department ==0);
-       
+        $view_data['companies_dropdown'] =  array("0" => "choose company") + $this->Company_model->get_dropdown_list(array("name"));
+        $view_data['has_all_permission'] =
+            ($this->login_user->user_type === "staff" &&  $this->login_user->company_access === "all" && $this->login_user->department == 0);
+
         $view_data['model_info'] = $this->Items_model->get_one($this->request->getPost('id'));
         $view_data['categories_dropdown'] = $this->Item_categories_model->get_dropdown_list(array("title"));
 
@@ -72,12 +80,60 @@ class Items extends Security_Controller_Plugin {
 
     /* add or edit an item */
 
-    function save() {
-       //  $this->validate_access_to_items();
+    // function save() {
+    //    //  $this->validate_access_to_items();
+
+    //     $this->validate_submitted_data(array(
+    //         "id" => "numeric",
+    //         "category_id" => "required", 
+    //         "company_id" => "required",
+    //     ));
+
+    //     $id = $this->request->getPost('id');
+
+    //     $item_data = array(
+    //         "title" => $this->request->getPost('title'),
+    //         "description" => $this->request->getPost('description'),
+    //         "category_id" => $this->request->getPost('category_id'),
+    //         "unit_type" => $this->request->getPost('unit_type'),
+    //         // "account_id" => $this->request->getPost('account_id'),
+    //         "rate" => unformat_currency($this->request->getPost('item_rate')),
+    //         "show_in_client_portal" => $this->request->getPost('show_in_client_portal') ? $this->request->getPost('show_in_client_portal') : "",
+    //         "taxable" => "",
+    //         "company_id" => $this->request->getPost('company_id'),
+
+    //     );
+
+    //     $target_path = get_setting("timeline_file_path");
+    //     $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "item");
+    //     $new_files = unserialize($files_data);
+
+    //     if ($id) {
+    //         $item_info = $this->Items_model->get_one($id);
+    //         $timeline_file_path = get_setting("timeline_file_path");
+
+    //         $new_files = update_saved_files($timeline_file_path, $item_info->files, $new_files);
+    //     }
+
+    //     $item_data["files"] = serialize($new_files);
+
+    //     $item_id = $this->Items_model->ci_save($item_data, $id);
+    //     if ($item_id) {
+    //         $options = array("id" => $item_id);
+    //         $item_info = $this->Items_model->get_details($options)->getRow();
+    //         echo json_encode(array("success" => true, "id" => $item_info->id, "data" => $this->_make_item_row($item_info), 'message' => app_lang('record_saved')));
+    //     } else {
+    //         echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+    //     }
+    // }
+
+    function save()
+    {
+        // $this->validate_access_to_items();
 
         $this->validate_submitted_data(array(
             "id" => "numeric",
-            "category_id" => "required", 
+            "category_id" => "required",
             "company_id" => "required",
         ));
 
@@ -93,7 +149,6 @@ class Items extends Security_Controller_Plugin {
             "show_in_client_portal" => $this->request->getPost('show_in_client_portal') ? $this->request->getPost('show_in_client_portal') : "",
             "taxable" => "",
             "company_id" => $this->request->getPost('company_id'),
-
         );
 
         $target_path = get_setting("timeline_file_path");
@@ -111,52 +166,236 @@ class Items extends Security_Controller_Plugin {
 
         $item_id = $this->Items_model->ci_save($item_data, $id);
         if ($item_id) {
+            // ====== NEW: ensure income account + map item ======
+            $title = trim($item_data['title']);
+
+            // expected fixed types
+            $INCOME_TYPE_ID = 11;
+            $INCOME_DETAIL_ID = 83;
+
+            $incomeName = $title . ' - income';
+
+            // create income account only
+            $incomeAccountId = $this->_ensure_chart_account($item_id, $incomeName, $INCOME_TYPE_ID, $INCOME_DETAIL_ID);
+
+            // update mapping table with income account only
+            $mapTable = $this->db->table(get_db_prefix() . 'acc_item_automatics');
+            $exists = $mapTable->where('item_id', $item_id)->countAllResults();
+            if ($exists) {
+                $mapTable->where('item_id', $item_id)->update([
+                    'income_account' => $incomeAccountId,
+                    // 'expense_account' => null,  // optionally clear if previously set
+                ]);
+            } else {
+                $mapTable->insert([
+                    'item_id'        => $item_id,
+                    'income_account' => $incomeAccountId,
+                    // 'expense_account'=> null,   // no cost of sales account now
+                ]);
+            }
+            // ====== /NEW ======
+
             $options = array("id" => $item_id);
             $item_info = $this->Items_model->get_details($options)->getRow();
+
             echo json_encode(array("success" => true, "id" => $item_info->id, "data" => $this->_make_item_row($item_info), 'message' => app_lang('record_saved')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
 
+
+
+    // inside class Items extends Security_Controller { ... }
+
+    private function _to_key_name(string $name): string
+    {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9]+/i', '_', $slug);
+        $slug = trim($slug, '_');
+        return 'acc_' . $slug;
+    }
+
+    private function _ensure_chart_account(int $itemId, string $desiredName, int $typeId, int $detailId): int
+    {
+        $tbl = $this->db->table(get_db_prefix() . 'acc_accounts');
+
+        // 1) Prefer exact match by item scope (prevents duplicates on edits)
+        $scoped = $tbl->select('id, name')
+            ->where('item_id', $itemId)
+            ->where('account_type_id', $typeId)
+            ->where('account_detail_type_id', $detailId)
+            ->get()->getRow();
+
+        if ($scoped && isset($scoped->id)) {
+            // rename if title changed → keep one row only
+            if ($scoped->name !== $desiredName) {
+                $tbl->where('id', $scoped->id)->update([
+                    'name'     => $desiredName,
+                    'key_name' => $this->_to_key_name($desiredName),
+                    'active'   => 1
+                ]);
+            } else {
+                $tbl->where('id', $scoped->id)->update(['active' => 1]);
+            }
+            return (int)$scoped->id;
+        }
+
+        // 2) If a legacy row exists by (name,type,detail) but without item_id,
+        //    adopt it by attaching item_id (avoids creating another row).
+        $legacy = $tbl->select('id, item_id')
+            ->where('name', $desiredName)
+            ->where('account_type_id', $typeId)
+            ->where('account_detail_type_id', $detailId)
+            ->get()->getRow();
+
+        if ($legacy && isset($legacy->id)) {
+            $tbl->where('id', $legacy->id)->update([
+                'item_id'  => $itemId,
+                'active'   => 1
+            ]);
+            return (int)$legacy->id;
+        }
+
+        // 3) Otherwise, create the scoped account (unique index guarantees no dup)
+        $tbl->insert([
+            'name'                   => $desiredName,
+            'key_name'               => $this->_to_key_name($desiredName),
+            'account_type_id'        => $typeId,
+            'account_detail_type_id' => $detailId,
+            'item_id'                => $itemId,
+            'active'                 => 1,
+        ]);
+
+        return (int)$this->db->insertID();
+    }
+
+
+
+    private function _cleanup_item_accounts_and_mapping(int $itemId): void
+    {
+        $prefix = get_db_prefix();
+        $accTbl = $this->db->table($prefix . 'acc_accounts');
+        $mapTbl = $this->db->table($prefix . 'acc_item_automatics');
+
+        // 1) fetch accounts linked to this item
+        $accounts = $accTbl->select('id')
+            ->where('item_id', $itemId)
+            ->get()->getResultArray();
+
+        // 2) attempt to delete each account via Accounting_model->delete_account
+        foreach ($accounts as $row) {
+            $accId = (int)$row['id'];
+            // delete_account respects transactions; returns 'have_transaction' when history exists
+            $result = $this->Items_model->delete_account($accId);
+
+            if ($result === 'have_transaction') {
+                // can’t delete: deactivate instead (keeps the ledger clean)
+                $accTbl->where('id', $accId)->update(['active' => 0]);
+            }
+        }
+
+        // 3) remove item mapping rows (safe to hard delete)
+        $mapTbl->where('item_id', $itemId)->delete();
+    }
+
     /* delete or undo an item */
 
-    function delete() {
-       //  $this->validate_access_to_items();
+    // function delete()
+    // {
+    //     //  $this->validate_access_to_items();
 
-        $this->validate_submitted_data(array(
+    //     $this->validate_submitted_data(array(
+    //         "id" => "required|numeric"
+    //     ));
+
+    //     $id = $this->request->getPost('id');
+    //     if ($this->request->getPost('undo')) {
+    //         if ($this->Items_model->delete($id, true)) {
+    //             $options = array("id" => $id);
+    //             $item_info = $this->Items_model->get_details($options)->getRow();
+    //             echo json_encode(array("success" => true, "id" => $item_info->id, "data" => $this->_make_item_row($item_info), "message" => app_lang('record_undone')));
+    //         } else {
+    //             echo json_encode(array("success" => false, app_lang('error_occurred')));
+    //         }
+    //     } else {
+    //         if ($this->Items_model->delete($id)) {
+    //             $item_info = $this->Items_model->get_one($id);
+    //             echo json_encode(array("success" => true, "id" => $item_info->id, 'message' => app_lang('record_deleted')));
+    //         } else {
+    //             echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
+    //         }
+    //     }
+    // }
+
+    function delete()
+    {
+        $this->access_only_team_members();
+
+        
+
+        $this->validate_submitted_data([
             "id" => "required|numeric"
-        ));
+        ]);
 
-        $id = $this->request->getPost('id');
-        if ($this->request->getPost('undo')) {
-            if ($this->Items_model->delete($id, true)) {
-                $options = array("id" => $id);
-                $item_info = $this->Items_model->get_details($options)->getRow();
-                echo json_encode(array("success" => true, "id" => $item_info->id, "data" => $this->_make_item_row($item_info), "message" => app_lang('record_undone')));
-            } else {
-                echo json_encode(array("success" => false, app_lang('error_occurred')));
+        $id = (int)$this->request->getPost('id');
+
+        // Get the account tied to this item
+        $prefix = get_db_prefix();
+        $accRow = $this->db->table($prefix . 'acc_accounts')
+            ->select('id')
+            ->where('item_id', $id)
+            ->get()
+            ->getRow();
+
+        if ($accRow) {
+            $accountId = (int)$accRow->id;
+
+            // Check if account history exists for this account
+            $hist = $this->db->table($prefix . 'acc_account_history')
+                ->where('account', $accountId)
+                ->countAllResults();
+
+            if ($hist > 0) {
+                // Cannot delete if transactions exist for this account
+                echo json_encode([
+                    "success" => false,
+                    "message" => app_lang('cannot_delete_transaction_already_exists')
+                ]);
+                return;
             }
+        }
+
+        // No transaction history → safe to delete item
+        if ($this->Items_model->delete($id)) {
+            // Cleanup related accounts and mapping for this item
+            $this->_cleanup_item_accounts_and_mapping($id);
+
+            echo json_encode([
+                "success" => true,
+                "id"      => $id,
+                "message" => app_lang('record_deleted')
+            ]);
         } else {
-            if ($this->Items_model->delete($id)) {
-                $item_info = $this->Items_model->get_one($id);
-                echo json_encode(array("success" => true, "id" => $item_info->id, 'message' => app_lang('record_deleted')));
-            } else {
-                echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
-            }
+            echo json_encode([
+                "success" => false,
+                "message" => app_lang('record_cannot_be_deleted')
+            ]);
         }
     }
 
+
     /* list of items, prepared for datatable  */
 
-    function list_data() {
-       //  $this->validate_access_to_items();
+    function list_data()
+    {
+        //  $this->validate_access_to_items();
 
         $category_id = $this->request->getPost('category_id');
         $options = array(
             "category_id" => $category_id,
             "company_id" => $this->login_user->department,
-    );
+        );
 
         $list_data = $this->Items_model->get_details($options)->getResult();
         $result = array();
@@ -168,31 +407,33 @@ class Items extends Security_Controller_Plugin {
 
     /* prepare a row of item list table */
 
-    private function _make_item_row($data) {
+    private function _make_item_row($data)
+    {
         $type = $data->unit_type ? $data->unit_type : "";
 
         $show_in_client_portal_icon = "";
         if ($data->show_in_client_portal && get_setting("module_order")) {
             $show_in_client_portal_icon = "<span title='" . app_lang("showing_in_client_portal") . "'><i data-feather='shopping-bag' class='icon-16'></i></span> ";
-           
         }
         $account = "-";
-        if (class_exists('\Accounting\Models\Accounting_model')){
-          $account= $data->account_name? $data->account_name: ($data->key_name? app_lang($data->key_name): "-");}
+        if (class_exists('\Accounting\Models\Accounting_model')) {
+            $account = $data->account_name ? $data->account_name : ($data->key_name ? app_lang($data->key_name) : "-");
+        }
         return array(
             $data->company_name ? $data->company_name : "-",
             modal_anchor(get_uri("items/view"), $show_in_client_portal_icon . $data->title, array("title" => app_lang("item_details"), "data-post-id" => $data->id)),
             custom_nl2br($data->description ? $data->description : ""),
             $data->category_title ? $data->category_title : "-",
-           $account,
+            $account,
             $type,
             to_decimal_format($data->rate),
             modal_anchor(get_uri("items/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_item'), "data-post-id" => $data->id))
-            . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("items/delete"), "data-action" => "delete"))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("items/delete"), "data-action" => "delete"))
         );
     }
 
-    function view() {
+    function view()
+    {
         $this->validate_submitted_data(array(
             "id" => "required|numeric"
         ));
@@ -205,7 +446,8 @@ class Items extends Security_Controller_Plugin {
         return $this->template->view('items/view', $view_data);
     }
 
-    function save_files_sort() {
+    function save_files_sort()
+    {
         $this->access_only_allowed_members();
         $id = $this->request->getPost("id");
         $sort_values = $this->request->getPost("sort_values");
@@ -225,20 +467,23 @@ class Items extends Security_Controller_Plugin {
         }
     }
 
-    function import_items_modal_form() {
-       //  $this->validate_access_to_items();
+    function import_items_modal_form()
+    {
+        //  $this->validate_access_to_items();
 
         return $this->template->view("items/import_items_modal_form");
     }
 
-    function download_sample_excel_file() {
-       //  $this->validate_access_to_items();
+    function download_sample_excel_file()
+    {
+        //  $this->validate_access_to_items();
         return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-items-sample.xlsx"))));
     }
 
 
-    function validate_import_items_file() {
-       //  $this->validate_access_to_items();
+    function validate_import_items_file()
+    {
+        //  $this->validate_access_to_items();
 
         $file_name = $this->request->getPost("file_name");
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -254,8 +499,9 @@ class Items extends Security_Controller_Plugin {
         }
     }
 
-    function save_item_from_excel_file() {
-       //  $this->validate_access_to_items();
+    function save_item_from_excel_file()
+    {
+        //  $this->validate_access_to_items();
 
         if (!$this->validate_import_items_file_data(true)) {
             echo json_encode(array('success' => false, 'message' => app_lang('error_occurred')));
@@ -294,7 +540,8 @@ class Items extends Security_Controller_Plugin {
         echo json_encode(array('success' => true, 'message' => app_lang("record_saved")));
     }
 
-    private function _get_item_category_id($category = "") {
+    private function _get_item_category_id($category = "")
+    {
         if (!$category) {
             return false;
         }
@@ -310,7 +557,8 @@ class Items extends Security_Controller_Plugin {
         }
     }
 
-    private function _get_allowed_headers() {
+    private function _get_allowed_headers()
+    {
         return array(
             "title", //required
             "description",
@@ -321,7 +569,8 @@ class Items extends Security_Controller_Plugin {
         );
     }
 
-    private function _store_headers_position($headers_row = array()) {
+    private function _store_headers_position($headers_row = array())
+    {
         $allowed_headers = $this->_get_allowed_headers();
 
         //check if all headers are correct and on the right position
@@ -352,8 +601,9 @@ class Items extends Security_Controller_Plugin {
         return $final_headers;
     }
 
-    function validate_import_items_file_data($check_on_submit = false) {
-       //  $this->validate_access_to_items();
+    function validate_import_items_file_data($check_on_submit = false)
+    {
+        //  $this->validate_access_to_items();
 
         $table_data = "";
         $error_message = "";
@@ -472,7 +722,8 @@ class Items extends Security_Controller_Plugin {
         echo json_encode(array("success" => true, 'table_data' => $table_data, 'got_error' => ($got_error_header || $got_error_table_data) ? true : false));
     }
 
-    private function _row_data_validation_and_get_error_message($key, $data) {
+    private function _row_data_validation_and_get_error_message($key, $data)
+    {
         $allowed_headers = $this->_get_allowed_headers();
         $header_value = get_array_value($allowed_headers, $key);
 
@@ -482,7 +733,8 @@ class Items extends Security_Controller_Plugin {
         }
     }
 
-    private function _prepare_item_data($data_row, $allowed_headers) {
+    private function _prepare_item_data($data_row, $allowed_headers)
+    {
         //prepare item data
         $item_data = array();
 
@@ -507,7 +759,6 @@ class Items extends Security_Controller_Plugin {
             "item_data" => $item_data
         );
     }
-
 }
 
 /* End of file items.php */

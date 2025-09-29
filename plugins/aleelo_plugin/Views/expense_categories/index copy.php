@@ -30,6 +30,9 @@
             source: '<?php echo_uri("expense_categories/list_data") ?>',
             columns: [
                 {title: '<?php echo app_lang("title") ?>'},
+                {title: '<?php echo app_lang("expense_type") ?>'},
+                {title: '<?php echo app_lang("account") ?>'},
+                {title: '<?php echo app_lang("company") ?>'},
                 {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
             ]
         });

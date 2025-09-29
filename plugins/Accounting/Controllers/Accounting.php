@@ -566,7 +566,7 @@ class Accounting extends Security_Controller
             }
         }
     }
-        public function emp_payment_table($id = '', $return_ajax = true)
+    public function emp_payment_table($id = '', $return_ajax = true)
     {
         $acc_closing_date = '';
         if (get_setting('acc_close_the_books') == 1) {
@@ -626,7 +626,7 @@ class Accounting extends Security_Controller
 
         if ($from_date != '') {
             array_push($where, 'AND (' . get_db_prefix() . 'expense_payments_emp.payment_date >= "' . $from_date . '")');
-        } 
+        }
 
         if ($id != '') {
             array_push($where, 'AND ' . get_db_prefix() . 'expense_payments_emp.id = "' . $id . '"');
@@ -658,7 +658,7 @@ class Accounting extends Security_Controller
             $expense = $Expenses_model->get_details(['id' => $aRow['expense_id']])->getRow();
             $vendor_expense_payment = $Expenses_payment_model->get_details(['id' => $aRow['id']])->getRow();
 
-            $row[] = to_currency($aRow['amount_paid'] , $currency_symbol);
+            $row[] = to_currency($aRow['amount_paid'], $currency_symbol);
 
 
             $row[] = $aRow['category_name'];
@@ -1435,6 +1435,56 @@ class Accounting extends Security_Controller
      *  @param  integer  $id     The identifier
      *  @return view
      */
+    // public function account()
+    // {
+    //     if (!acc_has_permission('acc_can_edit_account') && !acc_has_permission('acc_can_create_account')) {
+    //         show_404();
+    //     }
+
+    //     if ($this->request->getPost()) {
+    //         $data = $this->request->getPost();
+    //         $menu_type = '';
+    //         if (isset($data['menu_type'])) {
+    //             $menu_type = $data['menu_type'];
+    //             unset($data['menu_type']);
+    //         }
+    //         $message = '';
+    //         if ($data['id'] == '') {
+    //             if (!acc_has_permission('acc_can_create_account')) {
+    //                 app_redirect('forbidden');
+    //             }
+    //             $success = $this->Accounting_model->add_account($data);
+    //             if ($success) {
+    //                 $message = sprintf(app_lang('added_successfully'), app_lang('acc_account'));
+    //                 $this->session->setFlashdata("success_message", $message);
+    //             } else {
+    //                 $message = app_lang('add_failure');
+    //                 $this->session->setFlashdata("error_message", $message);
+    //             }
+    //         } else {
+    //             if (!acc_has_permission('acc_can_edit_account')) {
+    //                 app_redirect('forbidden');
+    //             }
+    //             $id = $data['id'];
+    //             unset($data['id']);
+    //             $success = $this->Accounting_model->update_account($data, $id);
+    //             if ($success) {
+    //                 $message = sprintf(app_lang('updated_successfully'), app_lang('acc_account'));
+    //                 $this->session->setFlashdata("success_message", $message);
+    //             } else {
+    //                 $message = app_lang('updated_fail');
+    //                 $this->session->setFlashdata("error_message", $message);
+    //             }
+    //         }
+
+    //         if ($menu_type != '') {
+    //             app_redirect('accounting/banking?group=bank_accounts');
+    //         }
+
+    //         app_redirect('accounting/chart_of_accounts');
+    //     }
+    // }
+
     public function account()
     {
         if (!acc_has_permission('acc_can_edit_account') && !acc_has_permission('acc_can_create_account')) {
@@ -1449,14 +1499,23 @@ class Accounting extends Security_Controller
                 unset($data['menu_type']);
             }
             $message = '';
+
             if ($data['id'] == '') {
                 if (!acc_has_permission('acc_can_create_account')) {
                     app_redirect('forbidden');
                 }
-                $success = $this->Accounting_model->add_account($data);
+
+                // create (prefer model returns new ID)
+                $newId  = $this->Accounting_model->add_account($data);
+                $success = (bool)$newId;
+
                 if ($success) {
                     $message = sprintf(app_lang('added_successfully'), app_lang('acc_account'));
                     $this->session->setFlashdata("success_message", $message);
+
+                    // ✅ AUTO-LINK HOOK (on Create)
+                    $this->_maybe_link_expense_category((int)$newId);
+                    $this->_sync_category_title_from_account((int)$newId);   // <- add this
                 } else {
                     $message = app_lang('add_failure');
                     $this->session->setFlashdata("error_message", $message);
@@ -1465,12 +1524,20 @@ class Accounting extends Security_Controller
                 if (!acc_has_permission('acc_can_edit_account')) {
                     app_redirect('forbidden');
                 }
-                $id = $data['id'];
+
+                $id = (int)$data['id'];
                 unset($data['id']);
+
+                // update
                 $success = $this->Accounting_model->update_account($data, $id);
+
                 if ($success) {
                     $message = sprintf(app_lang('updated_successfully'), app_lang('acc_account'));
                     $this->session->setFlashdata("success_message", $message);
+
+                    // ✅ AUTO-LINK HOOK (on Update)
+                    $this->_maybe_link_expense_category((int)$id);
+                    $this->_sync_category_title_from_account((int)$id);   // <- add this
                 } else {
                     $message = app_lang('updated_fail');
                     $this->session->setFlashdata("error_message", $message);
@@ -1483,6 +1550,177 @@ class Accounting extends Security_Controller
 
             app_redirect('accounting/chart_of_accounts');
         }
+    }
+
+    /**
+     * If account is Expense (type=14) and has no expense_id, create/attach an Expense Category
+     * and ensure mapping exists. Safe to call after both create and update.
+     */
+    private function _maybe_link_expense_category(int $accountId): void
+    {
+        // read fresh account row
+        $acc = $this->db->table(get_db_prefix() . 'acc_accounts')
+            ->select('id, name, account_type_id, account_detail_type_id, expense_id, active')
+            ->where('id', $accountId)
+            ->get()->getRow();
+
+        if (!$acc) {
+            return;
+        }
+
+        // only for Expense accounts missing a link
+        if ((int)$acc->account_type_id !== 14 || !empty($acc->expense_id)) {
+            return;
+        }
+
+        $this->db->transStart();
+
+        // 1) get/create Expense Category by account name
+        $cat        = $this->_get_or_create_expense_category((string)$acc->name);
+        $categoryId = (int)$cat['id'];
+
+        // 2) NO-INSERT policy: update this SAME account to be the scoped expense account
+        $detailId = (int)($acc->account_detail_type_id ?: 105);
+        $this->_scope_current_account_only((int)$acc->id, $categoryId, (string)$acc->name, 14, $detailId);
+
+        // (also set expense_id here—redundant but explicit)
+        $this->db->table(get_db_prefix() . 'acc_accounts')
+            ->where('id', $acc->id)
+            ->update(['expense_id' => $categoryId, 'active' => 1]);
+
+        // 3) upsert mapping: choose your default bank/cash account id here
+        $defaultPaymentAccountId = 87; // TODO: set to your real Bank/Cash account id
+        $this->_upsert_expense_category_mapping($categoryId, $defaultPaymentAccountId, (int)$acc->id);
+
+        $this->db->transComplete();
+        // Note: if the transaction fails, you can check $this->db->transStatus() and log/flash
+    }
+
+    /** If an account is linked to an expense category, mirror the account name into expense_categories.title */
+private function _sync_category_title_from_account(int $accountId): void
+{
+    // read fresh account
+    $acc = $this->db->table(get_db_prefix().'acc_accounts')
+        ->select('id, name, expense_id, account_type_id, account_detail_type_id, active')
+        ->where('id', $accountId)
+        ->get()->getRow();
+
+    if (!$acc) return;
+
+    // only for Expense accounts that are already linked to a category
+    if ((int)$acc->account_type_id !== 14 || empty($acc->expense_id)) return;
+
+    $newTitle = trim((string)$acc->name);
+    if ($newTitle === '') return;
+
+    // fetch category
+    $cat = $this->db->table(get_db_prefix().'expense_categories')
+        ->select('id, title, deleted')
+        ->where('id', (int)$acc->expense_id)
+        ->get()->getRow();
+
+    if (!$cat || (int)$cat->deleted === 1) return;
+
+    // if already same, nothing to do
+    if ($cat->title === $newTitle) return;
+
+    // optional: avoid colliding with an existing active category title
+    $dup = $this->db->table(get_db_prefix().'expense_categories')
+        ->select('id')
+        ->where('title', $newTitle)
+        ->where('deleted', 0)
+        ->where('id !=', (int)$cat->id)
+        ->get()->getRow();
+
+    if ($dup) {
+        // If your schema enforces unique titles, you can either:
+        //  - skip renaming (do nothing), or
+        //  - append a suffix. Choose one. Here we skip to be safe.
+        return;
+    }
+
+    // update the category title to match account name
+    $this->db->table(get_db_prefix().'expense_categories')
+        ->where('id', (int)$cat->id)
+        ->update(['title' => $newTitle]);
+}
+
+
+    /**
+     * Get or create expense category by title (not deleted).
+     * Returns ['id'=>int,'title'=>string]
+     */
+    private function _get_or_create_expense_category(string $title): array
+    {
+        $title = trim($title);
+        $t = $this->db->table(get_db_prefix() . 'expense_categories');
+
+        $row = $t->select('id, title')
+            ->where('title', $title)
+            ->where('deleted', 0)
+            ->get()->getRowArray();
+
+        if ($row) {
+            return $row;
+        }
+
+        $t->insert(['title' => $title]);
+        return ['id' => (int)$this->db->insertID(), 'title' => $title];
+    }
+
+    /**
+     * NO-INSERT policy:
+     * Update ONLY the current account to be the scoped expense account.
+     * - sets name/key_name if needed
+     * - forces account_type_id/detail_type to Expense(14)/$detailId
+     * - sets expense_id to the category
+     * - marks active=1
+     */
+    private function _scope_current_account_only(int $accountId, int $categoryId, string $title, int $typeId = 14, int $detailId = 105): void
+    {
+        $desiredName = trim($title);
+
+        $payload = [
+            'name'                   => $desiredName,
+            'key_name'               => $this->_to_key_name($desiredName),
+            'account_type_id'        => $typeId,
+            'account_detail_type_id' => $detailId,
+            'expense_id'             => $categoryId,
+            'active'                 => 1,
+        ];
+
+        $this->db->table(get_db_prefix() . 'acc_accounts')
+            ->where('id', $accountId)
+            ->update($payload);
+    }
+
+    /**
+     * Upsert ONE row into rise_acc_expense_category_mappings (no preferred field).
+     * - category_id (FK to expense_categories.id)
+     * - payment_account (bank/cash)
+     * - deposit_to (expense account id)
+     */
+    private function _upsert_expense_category_mapping(int $categoryId, int $paymentAccountId, int $expenseAccountId): void
+    {
+        $t = $this->db->table(get_db_prefix() . 'acc_expense_category_mappings');
+        $payload = [
+            'category_id'     => $categoryId,
+            'payment_account' => $paymentAccountId,
+            'deposit_to'      => $expenseAccountId,
+        ];
+        $exists = $t->where('category_id', $categoryId)->countAllResults();
+        if ($exists) {
+            $t->where('category_id', $categoryId)->update($payload);
+        } else {
+            $t->insert($payload);
+        }
+    }
+
+    private function _to_key_name(string $name): string
+    {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9]+/i', '_', $slug);
+        return 'acc_' . trim($slug, '_');
     }
 
     /**
@@ -1934,7 +2172,7 @@ class Accounting extends Security_Controller
                         </div>
                     </div>
                 </div>';
-        }elseif ($type == 'banking') {
+        } elseif ($type == 'banking') {
             $banking = $this->Accounting_model->get_transaction_banking($id);
             $html = '<table class="table border table-striped no-margin">
                       <tbody>
@@ -4714,10 +4952,10 @@ class Accounting extends Security_Controller
                 break;
             case 'expense_emp':
                 $group = 'expense_emp';
-                break;     
+                break;
             case 'emp_expense_payment':
                 $group = 'expense_emp';
-                break;   
+                break;
             case 'purchase_order':
                 $group = 'purchase';
                 break;
@@ -5568,7 +5806,7 @@ class Accounting extends Security_Controller
                             }
                         }
                     }
-                }  elseif ($type == 'expense_emp') {
+                } elseif ($type == 'expense_emp') {
                     foreach ($ids as $id) {
                         if ($this->request->getPost('mass_convert') === 'true') {
                             if (acc_has_permission('acc_can_create_transaction')) {
@@ -5600,7 +5838,7 @@ class Accounting extends Security_Controller
                             }
                         }
                     }
-                }elseif ($type == 'banking') {
+                } elseif ($type == 'banking') {
                     foreach ($ids as $id) {
                         if ($this->request->getPost('mass_delete') === 'true') {
                             if (acc_has_permission('acc_can_create_transaction')) {
@@ -8402,7 +8640,8 @@ class Accounting extends Security_Controller
         $data['company_dropdown'] = $this->get_company_dropdown_array();
         return $this->template->rander('Accounting\Views\report/includes/accounts_receivable_ageing_supplier_detail', $data);
     }
-    function get_company_dropdown_array(){
+    function get_company_dropdown_array()
+    {
         $companyes = $this->Company_model->get_details(array("deleted" => 0))->getResult();
 
         $company_dropdown = array("" => "- " . app_lang("company") . " -");
@@ -9460,7 +9699,8 @@ class Accounting extends Security_Controller
 
         $view_data  = [];
         return $this->template->view('Accounting\Views\transaction\payment_emp', $view_data);
-    }    function transaction_expense_payment_list()
+    }
+    function transaction_expense_payment_list()
     {
 
         $view_data  = [];
