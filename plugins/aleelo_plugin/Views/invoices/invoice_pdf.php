@@ -356,9 +356,9 @@ $data = array(
                 <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
                 <th style="width:6%; text-align:center; padding:10px; white-space:nowrap;">Qty</th>
                 <th style="width:8%; text-align:right; padding:10px; white-space:nowrap;">Price</th>
-                <th style="width:14%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
+                <th style="width:14%; text-align:right; padding:10px; white-space:nowrap;">Cost</th>
                 <th style="width:9%; text-align:center; padding:10px; white-space:nowrap;">Svc %</th>
-                <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Cost %</th>
+                <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Service</th>
                 <th style="width:12%; text-align:right; padding:10px; white-space:nowrap;">Total</th>
             </tr>
                 
