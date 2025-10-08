@@ -356,7 +356,7 @@ $data = array(
                 <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
                 <th style="width:6%; text-align:center; padding:10px; white-space:nowrap;">Unit</th>
                 <th style="width:8%; text-align:right; padding:10px; white-space:nowrap;">Price</th>
-                <th style="width:14%; text-align:right; padding:10px; white-space:nowrap;">Cost</th>
+                <th style="width:14%; text-align:center; padding:10px; white-space:nowrap;">Cost</th>
                 <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Svc %</th>
                 <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Svc % Amt</th>
                 <th style="width:16%; text-align:right; padding:10px; white-space:nowrap;">Tot Cost+Svc % </th>
@@ -420,7 +420,7 @@ $data = array(
             }
 
             // Final section subtotal at the end
-            if ($current_section !== null) {
+            if ($current_section == null) {
                 $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
                 $counter++;           ?>
                 <tr style="background-color:<?php echo $row_color; ?>;">
