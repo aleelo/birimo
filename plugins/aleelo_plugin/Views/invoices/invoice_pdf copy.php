@@ -1,246 +1,554 @@
-<div style=" margin: auto;">
-    <?php
-    $colspan = 3;
+<!DOCTYPE html>
+<html lang="en">
+<?php $color = $company_info->invoice_color ?: "#2AA384";
+$colspan = 3;
+$show_taxable = false;
+if (get_setting('taxable_column') == "always_show") {
+    $show_taxable = true;
+    $colspan = 4;
+} else if (get_setting('taxable_column') == "never_show") {
     $show_taxable = false;
-    if (get_setting('taxable_column') == "always_show") {
+} else {
+    $taxable_fields = array();
+    foreach ($invoice_items as $item) {
+        $taxable_fields[] = $item->taxable;
+    }
+    if ($invoice_info->tax_id) {
         $show_taxable = true;
         $colspan = 4;
-    } else if (get_setting('taxable_column') == "never_show") {
-        $show_taxable = false;
-    } else {
-        $taxable_fields = array();
-        foreach ($invoice_items as $item) {
-            $taxable_fields[] = $item->taxable;
-        }
-        if (count(array_unique($taxable_fields)) == 2) {
-            $show_taxable = true;
-            $colspan = 4;
-        }
     }
+}
+?>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice INV/2025/000104</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: url('c3bece10-74f0-47fe-a29b-a3cf3641e1cc.png') no-repeat center top;
+            background-size: cover;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffffdd;
+            padding: 40px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #d8d8d8;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 14px;
+            color: #444;
+        }
+
+        * {
+            outline: 1px dashed red;
+        }
+
+        .company-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: <?php echo $color ?>;
+            margin: 0 0 5px 0;
+            line-height: 0;
+        }
+
+        .company-address {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .header-divider {
+            border: none;
+            border-top: 2px solid #ccc;
+            margin: 10px 0 20px 0;
+            line-height: 11;
+        }
 
 
-    $color = $company_info->invoice_color ?: "#2AA384";
+        .logo {
+            height: 60px;
+        }
 
-    $invoice_style = get_setting("invoice_style");
-    $data = array(
-        "client_info" => $client_info,
-        "color" => $company_info->invoice_color,
-        "invoice_info" => $invoice_info,
-        "company_info" => $company_info,
-        "users_info" => $users_info,
-    );
+        .invoice-section {
+            margin-top: 30px;
+        }
 
-    if ($invoice_style === "style_3") {
-        echo view('aleelo_plugin\Views/invoices/invoice_parts/header_style_3.php', $data);
-    } else if ($invoice_style === "style_2") {
-        echo view('aleelo_plugin\Views/invoices/invoice_parts/header_style_2.php', $data);
-    } else {
-        echo view('aleelo_plugin\Views/invoices/invoice_parts/header_style_1_pdf.php', $data);
-    }
+        .invoice-section h3 {
+            color: #a65f00;
+            margin-bottom: 33px;
+        }
 
-    $item_background = $company_info->invoice_item_list_background;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: white;
+        }
 
-    $discount_row = '<tr>
-        <td style=" width: 64%;"></td>
+        thead {
+            background-color: #a65f00;
+            color: #fff;
+        }
 
-                        <td colspan="' . $colspan . '" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . app_lang("discount") . '</td>
-                        <td style="text-align: right; width: 12%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
-                    </tr>';
+        th {
+            width: 12%;
+            color: white;
+            font-weight: bold;
 
-    $total_after_discount_row = '<tr>
-        <td style=" width: 64%;"></td>
+            text-align: left;
 
-            <td colspan="' . $colspan . '" style="text-align: right;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997;background-color: ' . $item_background . ';">' . app_lang("total_after_discount") . '</td>
-            <td style="text-align: right; width: 19%; border-right: 1px solid #9B9997;border-top: 1px solid #fff; border-left: 1px solid #9B9997;border-right: 1px solid #9B9997; background-color: ' . $item_background . ';">' . to_currency($invoice_total_summary->invoice_subtotal - $invoice_total_summary->discount_total, $invoice_total_summary->currency_symbol) . '</td>
-        </tr>';
-    ?>
-</div>
+        }
 
-<br />
+        td {
+            text-align: left;
+            width: 12%;
 
-<table class="table-responsive" style="width: 100%; border-collapse: collapse;">
-    <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;">
-        <th style="width: 50%; border-right: 1px solid #9B9997;"><?php echo app_lang("item"); ?></th>
-        <th style="width: 12.5%; border-right: 1px solid #9B9997;"><?php echo app_lang("days"); ?></th>
-        <th style="width: 12.5%; text-align: center; border-right: 1px solid #9B9997;"><?php echo app_lang("quantity"); ?></th>
-        <th style="width: 12.5%; text-align: right; border-right: 1px solid #9B9997;"><?php echo app_lang("rate"); ?></th>
-        <th style="width: 12.5%; text-align: right;"><?php echo app_lang("total"); ?></th>
-    </tr>
+        }
 
-    <?php foreach ($invoice_items as $item) { ?>
-        <?php if ($item->is_section) { ?>
-            <tr style="background-color: <?php echo $color; ?>; color: #fff; font-weight: bold;">
-                <td colspan="5" style="padding: 6px;"><?php echo $item->title; ?></td>
-            </tr>
-        <?php } else { ?>
-            <tr style="background-color: <?php echo $company_info->invoice_item_list_background; ?>;">
-                <td style="padding: 6px; border-top: 1px solid #fff; border-bottom: 1px solid #fff; border-right: 1px solid #9B9997;">
-                    <?php echo $item->title; ?>
-                    <br />
-                    <span style="color: #888; font-size: 90%;"><?php echo custom_nl2br($item->description ?: ""); ?></span>
-                </td>
-                <td style="text-align: center; padding: 6px; border-top: 1px solid #fff; border-bottom: 1px solid #fff; border-right: 1px solid #9B9997;"><?php echo $item->days; ?></td>
-                <td style="text-align: center; padding: 6px; border-top: 1px solid #fff; border-bottom: 1px solid #fff; border-right: 1px solid #9B9997;"><?php echo $item->quantity . " " . $item->unit_type; ?></td>
-                <td style="text-align: right; padding: 6px; border-top: 1px solid #fff; border-bottom: 1px solid #fff; border-right: 1px solid #9B9997;"><?php echo to_currency($item->rate, $item->currency_symbol); ?></td>
-                <td style="text-align: right; padding: 6px; border-top: 1px solid #fff; border-bottom: 1px solid #fff;"><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
-            </tr>
-        <?php } ?>
-    <?php } ?>
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-    <!-- Subtotal -->
-    <tr>
-        <td colspan="3"></td>
-        <td style="text-align: right; padding: 6px; border-top: 1px solid #fff; background-color: <?php echo $item_background; ?>; border-right: 1px solid #9B9997;"><?php echo app_lang("sub_total"); ?></td>
-        <td style="text-align: right; padding: 6px; border-top: 1px solid #fff; background-color: <?php echo $item_background; ?>;"><?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?></td>
-    </tr>
+        tbody tr:nth-child(odd) {
+            background-color: #f1f1f1;
+            color: #222;
+        }
 
-    <!-- Discounts Before Tax -->
-    <?php if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "before_tax") {
-        echo $discount_row . $total_after_discount_row;
-    } ?>
+        .even-row {
+            background-color: <?php echo $company_info->invoice_item_list_background ?>;
+            color: black;
+        }
 
-    <!-- Tax 1 -->
-    <?php if ($invoice_total_summary->tax) { ?>
+        .odd-row {
+            background-color: red;
+            color: black;
+        }
+
+        tfoot td {
+            font-weight: bold;
+            font-size: 16px;
+            border-top: 2px solid #ccc;
+            color: #222;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .payment-details {
+            flex: 1;
+        }
+
+
+        
+
+        h1,
+        h3,
+        h6 {
+            margin: 0;
+            padding: 0;
+            line-height: 0;
+            font-size: 14px;
+            font-weight: normal !important;
+            box-sizing: border-box;
+            outline: none !important;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            margin: 0;
+            padding: 0;
+            line-height: -2;
+            font-size: 14px;
+            font-weight: normal !important;
+            box-sizing: border-box;
+            outline: none !important;
+            margin-bottom: 6px;
+        }
+
+        h4 {
+            margin: 0;
+            padding: 0;
+            line-height: -2;
+            font-size: 14px;
+            font-weight: normal !important;
+            box-sizing: border-box;
+            outline: none !important;
+            margin-bottom: 6px;
+        }
+
+        h5 {
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            font-weight: normal !important;
+            box-sizing: border-box;
+            outline: none !important;
+            margin-bottom: 6px;
+        }
+
+        .invoice-title {
+            line-height: -1;
+
+
+        }
+
+        hr {
+            margin: 10px 0;
+            border: none;
+            border-top: 1px solid #ccc;
+            height: 1px;
+            line-height: -13;
+
+        }
+
+        .signature-block {
+            text-align: center;
+            flex: 1;
+        }
+
+        .signature-block img {
+            max-width: 200px;
+        }
+
+        .signature-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #a65f00;
+            font-size: 20px;
+            line-height: 0;
+
+        }
+
+        .signature-title {
+            font-size: 13px;
+            color: #444;
+            line-height: 0;
+
+        }
+
+        .custom-f {
+            display: block;
+            font-size: 14px;
+            padding: 5px 0;
+            color: #333;
+        }
+
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            color: #888;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 40px;
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        @media print {
+            body {
+                background: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .container {
+                box-shadow: none;
+                background: #fff;
+
+            }
+
+
+            .footer {
+                page-break-after: avoid;
+            }
+
+            .details {
+                color: #444;
+                line-height: 14px;
+            }
+
+            .total {
+                line-height: 0.2;
+
+            }
+
+        }
+    </style>
+</head>
+<?php
+$invoice_style = get_setting("invoice_style");
+$data = array(
+    "client_info" => $client_info,
+    "color" => $company_info->invoice_color,
+    "invoice_info" => $invoice_info,
+    "company_info" => $company_info,
+    "users_info" => $users_info,
+);
+?>
+
+<body>
+    <table style="width: 100%; margin-bottom: 10px;">
         <tr>
-            <td colspan="3"></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>; border-right: 1px solid #9B9997;"><?php echo $invoice_total_summary->tax_name; ?></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>;"><?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?></td>
-        </tr>
-    <?php } ?>
-
-    <!-- Tax 2 -->
-    <?php if ($invoice_total_summary->tax2) { ?>
-        <tr>
-            <td colspan="3"></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>; border-right: 1px solid #9B9997;"><?php echo $invoice_total_summary->tax_name2; ?></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>;"><?php echo to_currency($invoice_total_summary->tax2, $invoice_total_summary->currency_symbol); ?></td>
-        </tr>
-    <?php } ?>
-
-    <!-- Tax 3 -->
-    <?php if ($invoice_total_summary->tax3) { ?>
-        <tr>
-            <td colspan="3"></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>; border-right: 1px solid #9B9997;"><?php echo $invoice_total_summary->tax_name3; ?></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>;"><?php echo to_currency($invoice_total_summary->tax3, $invoice_total_summary->currency_symbol); ?></td>
-        </tr>
-    <?php } ?>
-
-    <!-- Discounts After Tax -->
-    <?php if ($invoice_total_summary->discount_total && $invoice_total_summary->discount_type == "after_tax") {
-        echo $discount_row;
-    } ?>
-
-    <!-- Paid -->
-    <?php if ($invoice_total_summary->total_paid) { ?>
-        <tr>
-            <td colspan="3"></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>; border-top: 1px solid #fff; border-right: 1px solid #9B9997;"><?php echo app_lang("paid"); ?></td>
-            <td style="text-align: right; padding: 6px; background-color: <?php echo $item_background; ?>; border-top: 1px solid #fff;"><?php echo to_currency($invoice_total_summary->total_paid, $invoice_total_summary->currency_symbol); ?></td>
-        </tr>
-    <?php } ?>
-
-    <!-- Balance Due -->
-    <tr>
-        <td colspan="3"></td>
-        <td style="text-align: right; padding: 6px; background-color: <?php echo $color; ?>; color: white; border-right: 1px solid #9B9997;"><?php echo app_lang("balance_due"); ?></td>
-        <td style="text-align: right; padding: 6px; background-color: <?php echo $color; ?>; color: white;"><?php echo to_currency($invoice_total_summary->balance_due, $invoice_total_summary->currency_symbol); ?></td>
-    </tr>
-</table>
-
-
-<?php if ($invoice_info->note) { ?>
-    <br />
-    <br />
-    <div style="border-top: 1px solid #f2f4f6; color:#444; padding:0 0 20px 0;"><br /><?php echo custom_nl2br(process_images_from_content($invoice_info->note)); ?></div>
-<?php } else { ?> <!-- use table to avoid extra spaces -->
-    <br /><br />
-    <br /><br />
-<?php } ?>
-<span style="color:#444; line-height: 14px;">
-
-    <table>
-
-        <tr>
-            <td style="width: 50%;  vertical-align: top; padding: 0px;">
+            <td style="width: 12%;">
                 <?php
-                echo $company_info->invoice_footer;
 
-
-                ?>
+                echo get_company_icon($client_info->company_id, "");
+                ?> </td>
+            <td style="width: 50%;">
+                <h4 class="company-name"><?php echo $company_info->name; ?></h4>
+                <h4 class="company-address"><?php echo nl2br($company_info->address); ?></h4>
             </td>
-            <td style="width: 15%;"></td>
-            <td style="width: 40%; vertical-align: top; padding: 0px;">
+        </tr>
 
-                <?php if ($company_info->finance_manager_id) { ?>
-                    <br />
-                    <?php if (!empty($finance_manager_info->job_title_en)) { ?>
+        <tr>
+            <td style="width: 100%; line-height:-33px;   border: none; border-top: 2px solid #ccc; margin: 10px 0 20px 0; line-height: 3;">
+
+            </td>
+        </tr>
+    </table>
+
+
+
+
+    <h3 class="invoice-title" style=" color:<?php echo $color ?>"><strong>Invoice To:</strong></h3>
+    <h6><strong><?php echo $client_info->company_name; ?></strong></h6>
+    <h2><?php echo $client_info->address; ?></h2>
+    <h6><strong>Invoice:</strong> <?php echo $invoice_info->display_id; ?></h6>
+    <h6><strong>Date:</strong> <?php echo $invoice_info->bill_date ?></h6>
+    <?php if ($invoice_info->description) { ?>
+        <h6><strong>Event:</strong> <?php echo $invoice_info->description ?></h6>
+    <?php } ?>
+    </div>
+
+
+    <table style="width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed;">
+        <thead>
+            <tr style="background-color:<?php echo $color ?>; color:#fff;">
+                <th style="width:31%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Item</th>
+                <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
+                <th style="width:6%; text-align:center; padding:10px; white-space:nowrap;">Unit</th>
+                <th style="width:8%; text-align:right; padding:10px; white-space:nowrap;">Price</th>
+                <th style="width:14%; text-align:center; padding:10px; white-space:nowrap;">Cost</th>
+                <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Svc %</th>
+                <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Svc % Amt</th>
+                <th style="width:16%; text-align:right; padding:10px; white-space:nowrap;">Tot Cost+Svc % </th>
+            </tr>
+                
+        </thead>
+        <tbody>
+            <?php
+            $current_section = null;
+            $section_total = 0;
+            $counter = 0;
+
+            foreach ($invoice_items as $item) {
+
+                if ($item->is_section) {
+                    if ($current_section !== null) {
+                        $row_class = ($counter % 2 === 0) ? '#f9f9f9' : '#f1f1f1';
+                        $counter++;            ?>
+                        <tr style="background-color: <?php echo $row_class; ?>">
+                            <td style="width: <?php echo $show_taxable ? '88%' : '88%'; ?>"></td>
+                            <td style=" width:12% text-align: left;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
+                        </tr>
                     <?php
+                        $section_total = 0; // Reset for next section
+                    }
+
+                    // Display the new section title
+                    $current_section = $item->title;
+                    ?>
+                    <tr style="font-weight: bold; background-color: <?php echo $company_info->section_background; ?>;">
+                        <td style=" width:100% text-align: right;"><?php echo $item->title; ?></td>
+                    </tr>
+                <?php
+                } else {
+                    $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
+                    $counter++;
+                    // Determine row styling
 
 
-                        // Try the first method
-                        if (!empty($finance_manager_info->signature)) {
-                            $signature_data = @unserialize($finance_manager_info->signature);
-
-                            if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
-                                // Handle serialized signature data
-                                $signature_file_name = $signature_data[0]['file_name'];
-                            } else {
-                                // Handle direct file path
-                                $signature_file_name = $finance_manager_info->signature;
-                            }
-
-                            // Construct the full path to the signature file
-                            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
-
-                            // Check if the file exists
-                            if (file_exists($signature_path)) {
-                                // Display the signature image
-                                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
-                            } else {
-                                // File not found, try the second method
-                                $signature_data = @unserialize($finance_manager_info->signature);
-
-                                if (!empty($signature_data['file_name'])) {
-                                    $signature_file_name = $signature_data['file_name'];
-
-                                    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
-
-                                    if (file_exists($signature_path)) {
-                                        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
-                                    } else {
-                                        echo '<p>Signature file not found.</p>';
-                                    }
-                                } else {
-                                    echo '<p>Signature file not found.</p>';
-                                }
-                            }
-                        } else {
-                            echo '<p>No signature available.</p>';
-                        }
-                    } ?>
-                    <br />
-                    <br />
-                    <strong style="font-size:150%; color: <?php echo $color; ?>;"><?php echo $users_info->first_name, " ", $users_info->last_name ?></strong> <br />
-                    <br />
-
-                    <?php if (!empty($users_info->job_title_en)) { ?>
-                        <?php echo $users_info->job_title_en; ?>
-                    <?php } ?>
-                    <br />
+                    // Add to section total
+                    $section_total += $item->alltotal;
+                ?>
+                    <tr style="background-color:<?php echo $row_color; ?>;">
+                        <td style="width:31%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <?php echo $item->title; ?><br />
+                            <span style="color:#888; font-size:90%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; max-width:95%;">
+                                <?php echo custom_nl2br($item->description ?? ""); ?>
+                            </span>
+                        </td>
+                        <td style="width:7%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->days ?: ""; ?></td>
+                        <td style="width:6%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->quantity; ?></td>
+                        <td style="width:8%; text-align:right; padding:10px; white-space:nowrap;"><?php echo $item->rate; ?></td>
+                        <td style="width:14%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->total, $item->currency_symbol); ?></td>
+                        <td style="width:7%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->services ? $item->services . '%' : '0%'; ?></td>
+                        <td style="width:11%; text-align:center; padding:10px; white-space:nowrap;"><?php echo $item->service_cost ?: '0'; ?></td>
+                        <td style="width:16%; text-align:right; padding:10px; white-space:nowrap;"><?php echo to_currency($item->alltotal, $item->currency_symbol); ?></td>
+                                
+                    </tr>
                 <?php
                 }
-                ?>
+            }
+
+            // Final section subtotal at the end
+            if ($current_section == null) {
+                $row_color = ($counter % 2 == 0) ? '#f9f9f9' : '#f1f1f1'; // alternate row colors
+                $counter++;           ?>
+                <tr style="background-color:<?php echo $row_color; ?>;">
+                    <td style="width: 84%;"></td>
+                    <td style="width: 16%;font-weight: bold; text-align: right;"><?php echo to_currency($section_total, $invoice_total_summary->currency_symbol); ?></td>
+                </tr>
+            <?php
+            }
+            ?>
+
+        </tbody>
+        <tfoot>
+    <?php
+    // Keep alternating background for consistency
+        $tfoot_counter = $counter;
+        $tfoot_color = function($i) {
+            return ($i % 2 == 0) ? '#f9f9f9' : '#f1f1f1';
+        };
+        ?>
+
+        <!-- Sub Total -->
+        <tr style="background-color:<?php echo $tfoot_color(++$tfoot_counter); ?>;">
+            <td colspan="6" style="border-top:1px solid #ddd;"></td>
+            <td style="text-align:right; padding:10px; font-weight:normal; border-top:1px solid #ddd;">
+                <?php echo app_lang("sub_total"); ?>
             </td>
-
-
-
-
-
-
+            <td style="text-align:right; padding:10px; font-weight:normal; border-top:1px solid #ddd;">
+                <?php echo to_currency($invoice_total_summary->invoice_subtotal, $invoice_total_summary->currency_symbol); ?>
+            </td>
         </tr>
 
+        <!-- Tax -->
+        <?php if ($invoice_total_summary->tax) { ?>
+            <tr style="background-color:<?php echo $tfoot_color(++$tfoot_counter); ?>;">
+                <td colspan="6" style="border-top:1px solid #ddd;"></td>
+                <td style="text-align:right; padding:10px; font-weight:normal; border-top:1px solid #ddd;">
+                    <?php echo $invoice_total_summary->tax_name; ?>
+                </td>
+                <td style="text-align:right; padding:10px; font-weight:normal; border-top:1px solid #ddd;">
+                    <?php echo to_currency($invoice_total_summary->tax, $invoice_total_summary->currency_symbol); ?>
+                </td>
+            </tr>
+        <?php } ?>
+
+        <!-- Total -->
+        <tr style="background-color:<?php echo $tfoot_color(++$tfoot_counter); ?>;">
+            <td colspan="6" style="border-top:2px solid #000;"></td>
+            <td style="text-align:right; padding:10px; font-weight:bold; border-top:2px solid #000;">
+                Total
+            </td>
+            <td style="text-align:right; padding:10px; font-weight:bold; border-top:2px solid #000;">
+                <?php echo to_currency($invoice_total_summary->invoice_total, $invoice_total_summary->currency_symbol); ?>
+            </td>
+        </tr>
+    </tfoot>
+
     </table>
-    <?php //echo get_setting("invoice_footer"); 
-    ?>
-</span>
+    <?php if ($invoice_info->terms) { ?>
+        <h6><strong>Payment terms:</strong> <?php echo $invoice_info->terms; ?></h6>
+    <?php } ?>
+    <?php if ($invoice_info->display_id) { ?>
+        <h6><strong>Payment Communication:</strong> <?php echo $invoice_info->display_id; ?></h6>
+    <?php } ?>
+    <table>
+        <tr>
+            <td style="width:60%;">
+                <h6> <?php echo $company_info->invoice_footer; ?> </h6>
+
+            </td>
+            <td style="width:30%; ">
+
+                <?php echo $signature;
+                if (!empty($finance_manager_info->signature)) {
+                    $signature_data = @unserialize($finance_manager_info->signature);
+
+                    if ($signature_data !== false && !empty($signature_data[0]['file_name'])) {
+                        // Handle serialized signature data
+                        $signature_file_name = $signature_data[0]['file_name'];
+                    } else {
+                        // Handle direct file path
+                        $signature_file_name = $finance_manager_info->signature;
+                    }
+
+                    // Construct the full path to the signature file
+                    $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+                    // Check if the file exists
+                    if (file_exists($signature_path)) {
+                        // Display the signature image
+                        echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+                    } else {
+                        // File not found, try the second method
+                        $signature_data = @unserialize($finance_manager_info->signature);
+
+                        if (!empty($signature_data['file_name'])) {
+                            $signature_file_name = $signature_data['file_name'];
+
+                            $signature_path = FCPATH . 'files/signature/' . $signature_file_name;
+
+                            if (file_exists($signature_path)) {
+                                echo '<img src="' . base_url('files/signature/' . $signature_file_name) . '" alt="Signature" style=" width:250px; height: auto; max-height: 150px;">';
+                            } else {
+                                echo '<p>Signature file not found.</p>';
+                            }
+                        } else {
+                            echo '<p>Signature file not found.</p>';
+                        }
+                    }
+                } else {
+                    echo '<p>No signature available.</p>';
+                } ?>
+
+                <div class="signature-block">
+                    <?php if ($users_info->first_name) { ?>
+                        <h5 class="signature-name" style=" color:<?php echo $color ?>"><?php echo $users_info->first_name . " " . $users_info->last_name; ?></h5>
+                    <?php }
+                    if (!empty($finance_manager_info->job_title_en)) { ?>
+                        <h5 class="signature-title"><?php echo $finance_manager_info->job_title_en; ?></h5>
+                    <?php } ?>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    </div>
+</body>
+
+</html>

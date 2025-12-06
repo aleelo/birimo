@@ -106,6 +106,7 @@ if (get_setting('taxable_column') == "always_show") {
         thead {
             background-color: #a65f00;
             color: #fff;
+            display: table-row-group;
         }
 
         th {
@@ -165,6 +166,9 @@ if (get_setting('taxable_column') == "always_show") {
         .payment-details {
             flex: 1;
         }
+
+
+
 
         h1,
         h3,
@@ -285,6 +289,14 @@ if (get_setting('taxable_column') == "always_show") {
 
             }
 
+            /* Prevent thead from repeating on subsequent pages */
+            thead {
+                display: table-row-group !important;
+            }
+
+            table thead {
+                display: table-row-group !important;
+            }
 
             .footer {
                 page-break-after: avoid;
@@ -350,7 +362,8 @@ $data = array(
 
 
     <table style="width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed;">
-        <thead>
+        <tbody>
+            <!-- Header row moved to tbody to prevent repetition on multiple pages -->
             <tr style="background-color:<?php echo $color ?>; color:#fff;">
                 <th style="width:31%; text-align:left; padding:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Item</th>
                 <th style="width:7%; text-align:center; padding:10px; white-space:nowrap;">Days</th>
@@ -361,9 +374,6 @@ $data = array(
                 <th style="width:11%; text-align:center; padding:10px; white-space:nowrap;">Svc % Amt</th>
                 <th style="width:16%; text-align:right; padding:10px; white-space:nowrap;">Tot Cost+Svc % </th>
             </tr>
-                
-        </thead>
-        <tbody>
             <?php
             $current_section = null;
             $section_total = 0;
