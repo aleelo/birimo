@@ -46,7 +46,7 @@ $routes->get("Updates/(:any)", "Updates::$1");
 $routes->post("Updates/(:any)", "Updates::$1");
 $routes->post('expense_payments/save', '\aleelo_plugin\Controllers\Expense_payments::save');
 $routes->post('expense_payments/getExpensesByVendorDropdown', '\aleelo_plugin\Controllers\Expense_payments::getExpensesByVendorDropdown');
-$routes->match(['get', 'post'], 'expense_payments/datatable/(:num)', '\aleelo_plugin\Controllers\Expense_payments::datatable/$1');
+$routes->match(['GET', 'POST'], 'expense_payments/datatable/(:num)', '\aleelo_plugin\Controllers\Expense_payments::datatable/$1');
 
 /*
  * --------------------------------------------------------------------

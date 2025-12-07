@@ -1,0 +1,292 @@
+:root {
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e0e0e0;
+  --color-text-primary: #212121;
+  --color-text-secondary: #616161;
+  --color-primary: #1976d2;
+  --color-primary-rgb: 25, 118, 210;
+  --color-error: #d32f2f;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+  --shadow-default: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --font-base: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Base */
+body {
+  font-family: var(--font-base);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Card */
+#page-content .card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-default);
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  transition: box-shadow 0.2s ease;
+}
+
+#page-content .card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+#page-content .card .clearfix > h4 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#page-content .card .clearfix hr {
+  border-color: var(--color-border);
+  margin: 1rem 0;
+}
+
+/* Form Controls */
+#vendor-bill-form .form-control {
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  padding: 0 1rem;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+#vendor-bill-form .form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.3);
+  outline: none;
+}
+
+/* Select2 Styling */
+.select2-container--default .select2-selection--single {
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.select2-selection__rendered {
+  line-height: 44px;
+  padding-left: 1rem;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.select2-selection__arrow {
+  height: 44px;
+  right: 10px;
+}
+
+/* Dropdown input */
+.select2-search__field {
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  padding: 0.4rem 0.75rem;
+}
+
+/* Z-index for widgets */
+.datepicker,
+.datepicker-dropdown,
+.bootstrap-datetimepicker-widget,
+.ui-datepicker {
+  z-index: 4000 !important;
+}
+
+.select2-container {
+  z-index: 1001;
+}
+
+.select2-dropdown {
+  z-index: 1002;
+}
+
+.modal .select2-container {
+  z-index: 2050 !important;
+}
+
+.modal .select2-dropdown {
+  z-index: 2051 !important;
+}
+
+/* Table */
+#bill-lines {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+#bill-lines thead th {
+  background: #eeeeee;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  padding: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#bill-lines tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+#bill-lines tbody tr:hover {
+  background: #e3f2fd;
+  transition: background 0.15s ease;
+}
+
+#bill-lines td,
+#bill-lines th {
+  padding: 1rem;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+#bill-lines td .form-control {
+  min-width: 120px;
+}
+
+#bill-lines td.text-right,
+#bill-lines th.text-right {
+  text-align: right;
+}
+
+#subtotal_cell,
+#total_cell {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+#bill-lines tfoot td {
+  background: #eeeeee;
+  border-top: 2px solid var(--color-border);
+  font-weight: 700;
+}
+
+/* Sticky headers & footers */
+@supports (position: sticky) {
+  #bill-lines thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  #bill-lines tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+  }
+}
+
+#bill-lines tfoot,
+#bill-lines tfoot * {
+  pointer-events: none;
+}
+
+/* Add Line Button */
+#add-line {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#add-line:hover {
+  border-color: var(--color-primary);
+  background: #e3f2fd;
+  color: var(--color-primary);
+}
+
+/* Primary Button */
+#vendor-bill-form .btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+  transition: box-shadow 0.25s ease, transform 0.15s ease;
+}
+
+#vendor-bill-form .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.45);
+  transform: translateY(-3px);
+}
+
+/* Small Default Buttons */
+#vendor-bill-form .btn.btn-default.btn-sm {
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition: background-color 0.2s ease;
+}
+
+#vendor-bill-form .btn.btn-default.btn-sm:hover {
+  background: #e3f2fd;
+  color: var(--color-primary);
+}
+
+/* Field Error */
+.field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(211, 47, 47, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(211, 47, 47, 0.3);
+}
+
+/* Error input highlight */
+.is-invalid {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 0.18rem rgba(211, 47, 47, 0.3);
+}
+
+/* Label color on error */
+.form-group.has-error > label {
+  color: var(--color-error);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #vendor-bill-form .form-control {
+    height: 46px;
+  }
+
+  #bill-lines td .form-control {
+    min-width: 90px;
+  }
+
+  #page-content .card {
+    padding: 1.25rem;
+  }
+}

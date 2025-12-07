@@ -19,9 +19,9 @@ $routes->get('expense_payments/modal_form', 'Expense_payments::modal_form/$1');
 $routes->post('expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1'); // optional, badanaa GET ayaa fura modals
 $routes->post('expense_payments/save', 'Expense_payments::save');
 $routes->get('expense_payments/index/(:num)', 'Expense_payments::index/$1');
-$routes->match(['get', 'post'], 'expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1');
+$routes->match(['GET', 'POST'], 'expense_payments/modal_form/(:num)', 'Expense_payments::modal_form/$1');
 $routes->post('expense_payments/save', 'Expense_payments::save', ['namespace' => 'aleelo_plugin\Controllers']);
-$routes->match(['get', 'post'], 'expense_payments/modal_form', 'Expense_payments::modal_form', ['namespace' => 'aleelo_plugin\Controllers']);
+$routes->match(['GET', 'POST'], 'expense_payments/modal_form', 'Expense_payments::modal_form', ['namespace' => 'aleelo_plugin\Controllers']);
 
 
 $routes->get('items_list', 'Items_list::index', ['namespace' => 'aleelo_plugin\Controllers']);

@@ -1,0 +1,274 @@
+/* Light Mode Variables (default theme) */
+:root {
+  --color-bg: #f3f4f6;
+  --color-surface: rgba(255, 255, 255, 0.75);
+  --color-surface-2: rgba(255, 255, 255, 0.5);
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-text: #1e293b;
+  --color-muted: #64748b;
+  --color-primary: #6366f1;
+  --color-primary-rgb: 99, 102, 241;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --focus-ring: 0 0 0 0.25rem rgba(var(--color-primary-rgb), 0.2);
+  --font-base: 'Inter', 'Segoe UI', sans-serif;
+  --backdrop-blur: blur(12px);
+}
+
+/* Base Styles */
+body {
+  font-family: var(--font-base);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+/* Card with Glassmorphism */
+#page-content .card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: var(--backdrop-blur);
+  transition: all 0.2s ease-in-out;
+}
+
+#page-content .card .clearfix > h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+}
+
+#page-content .card .clearfix hr {
+  border-color: var(--color-border);
+  margin: 1rem 0;
+}
+
+/* Form Control */
+#vendor-bill-form .form-control {
+  height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--color-text);
+  transition: all 0.2s ease;
+}
+
+#vendor-bill-form .form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+  backdrop-filter: blur(10px);
+}
+
+/* Select2 Styles */
+.select2-container--default .select2-selection--single {
+  height: 44px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.select2-selection__rendered {
+  line-height: 44px;
+  padding-left: 0.75rem;
+  color: var(--color-text);
+}
+
+.select2-selection__arrow {
+  height: 44px;
+}
+
+/* Dropdown input */
+.select2-search__field {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* Table */
+#bill-lines {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  backdrop-filter: var(--backdrop-blur);
+}
+
+#bill-lines thead th {
+  background: rgba(243, 244, 246, 0.9);
+  color: var(--color-muted);
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+#bill-lines tbody tr:nth-child(even) {
+  background: rgba(249, 250, 251, 0.85);
+}
+
+#bill-lines tbody tr:hover {
+  background: rgba(236, 243, 255, 0.9);
+}
+
+#bill-lines td,
+#bill-lines th {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+#bill-lines td .form-control {
+  min-width: 100px;
+}
+
+#bill-lines td.text-right,
+#bill-lines th.text-right {
+  text-align: right;
+}
+
+#subtotal_cell,
+#total_cell {
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+#bill-lines tfoot td {
+  background: rgba(243, 244, 246, 0.85);
+  border-top: 2px solid var(--color-border);
+  font-weight: 600;
+}
+
+@supports (position: sticky) {
+  #bill-lines thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  #bill-lines tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+}
+
+#bill-lines tfoot,
+#bill-lines tfoot * {
+  pointer-events: none;
+}
+
+/* Add Line Button */
+#add-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px dashed #cbd5e1;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--color-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#add-line:hover {
+  background: rgba(243, 244, 246, 0.8);
+  border-color: #94a3b8;
+}
+
+/* Primary Button */
+#vendor-bill-form .btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 1.4rem;
+  box-shadow: 0 10px 20px rgba(var(--color-primary-rgb), 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+#vendor-bill-form .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(var(--color-primary-rgb), 0.25);
+}
+
+/* Error Display */
+.field-error {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  border-radius: var(--radius-sm);
+  color: rgb(var(--color-primary-rgb));
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.is-invalid {
+  border-color: rgb(var(--color-primary-rgb)) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Label Error */
+.form-group.has-error > label {
+  color: rgb(var(--color-primary-rgb));
+}
+
+/* Small Default Buttons */
+#vendor-bill-form .btn.btn-default.btn-sm {
+  border-radius: var(--radius-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #vendor-bill-form .form-control {
+    height: 46px;
+  }
+
+  #bill-lines td .form-control {
+    min-width: 90px;
+  }
+
+  #page-content .card {
+    padding: 1.2rem;
+  }
+}
+
+/* Dark Mode Variables */
+:root[data-theme='dark'] {
+  --color-bg: #121212;
+  --color-surface: rgba(255, 255, 255, 0.1);
+  --color-surface-2: rgba(255, 255, 255, 0.2);
+  --color-border: rgba(255, 255, 255, 0.2);
+  --color-text: #e0e0e0;
+  --color-muted: #9e9e9e;
+  --color-primary: #6366f1;
+  --color-primary-rgb: 99, 102, 241;
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --focus-ring: 0 0 0 0.25rem rgba(var(--color-primary-rgb), 0.5);
+}
+
+/* Apply dark mode styles to elements */
+:root[data-theme='dark'] body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] #page-content .card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: var(--backdrop-blur);
+}

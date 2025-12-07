@@ -1,0 +1,279 @@
+/* ===== Vendor Bills — modern glass theme, responsive ===== */
+:root {
+  /* brand + surface */
+  --bg: #f5f7fb;
+  --surface: rgba(255, 255, 255, 0.8);
+  --border: rgba(15, 23, 42, 0.08);
+
+  /* text */
+  --txt: #0f172a;
+  --muted: #64748b;
+
+  /* primary */
+  --primary: #6366f1;
+  --primary-rgb: 99, 102, 241;
+
+  /* radii + effects */
+  --r-xl: 22px;
+  --r-lg: 16px;
+  --r-md: 12px;
+  --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+  --ring: 0 0 0 .25rem rgba(var(--primary-rgb), .2);
+
+  /* sizing */
+  --ctl-h: 44px;
+  --space-1: .5rem;
+  --space-2: .75rem;
+  --space-3: 1rem;
+  --space-4: 1.25rem;
+  --space-5: 1.75rem;
+
+  /* tables */
+  --thead: rgba(248, 250, 252, 0.95);
+  --row: rgba(255, 255, 255, 0.7);
+  --row-hover: rgba(255, 255, 255, 0.95);
+  --accent: rgba(99, 102, 241, 0.08);
+
+  /* fonts */
+  --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+
+
+/* Page & card */
+body {
+  font-family: var(--font);
+  background: radial-gradient(1200px 800px at 10% -10%, rgba(99,102,241,.12), transparent 40%),
+              radial-gradient(900px 700px at 110% 10%, rgba(56,189,248,.1), transparent 40%),
+              var(--bg);
+  color: var(--txt);
+}
+#page-content .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(120%);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+}
+#page-content .card .clearfix > h4 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: var(--txt);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0 0 var(--space-3);
+}
+#page-content .card hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+/* Form controls */
+#vendor-bill-form .form-group label {
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: .35rem;
+}
+#vendor-bill-form .form-control {
+  height: var(--ctl-h);
+  padding: 0 .95rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .65);
+  color: var(--txt);
+  transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+#vendor-bill-form .form-control:focus {
+  border-color: var(--primary);
+  box-shadow: var(--ring);
+  outline: none;
+}
+#vendor-bill-form .text-end { text-align: end; }
+
+/* Select2 harmony */
+.select2-container { width: 100% !important; }
+.select2-container--default .select2-selection--single {
+  height: var(--ctl-h);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .65);
+  transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: var(--ctl-h);
+  padding: 0 .85rem;
+  color: var(--txt);
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: var(--ctl-h);
+}
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single:has(:focus) {
+  border-color: var(--primary) !important;
+  box-shadow: var(--ring);
+}
+
+/* Table wrapper */
+#bill-lines {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--row);
+  backdrop-filter: blur(10px);
+}
+#bill-lines thead th {
+  background: var(--thead);
+  color: var(--muted);
+  font-weight: 700;
+  padding: .8rem .75rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+#bill-lines tbody tr {
+  transition: background .2s ease, transform .06s ease;
+}
+#bill-lines tbody tr:hover {
+  background: var(--row-hover);
+}
+#bill-lines td, #bill-lines th {
+  padding: .7rem .6rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+#bill-lines tfoot td {
+  background: linear-gradient(180deg, var(--row), transparent);
+}
+#subtotal_cell, #total_cell {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+#total_cell {
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius: 8px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: .75rem 1.3rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .2px;
+  box-shadow: 0 6px 16px rgba(var(--primary-rgb), .25);
+  transition: transform .06s ease, box-shadow .2s ease;
+}
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(var(--primary-rgb), .22); }
+
+#add-line.btn { 
+  border-radius: 999px;
+  border: 1px dashed var(--border);
+  background: transparent;
+  font-weight: 600;
+  padding: .6rem 1rem;
+}
+#add-line.btn:hover {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), .06);
+}
+
+/* Inline alerts + invalid */
+.field-error {
+  margin-top: .4rem;
+  font-size: .86rem;
+  font-weight: 700;
+  padding: .45rem .7rem;
+  border: 1px solid rgba(var(--primary-rgb), .35);
+  background: rgba(var(--primary-rgb), .12);
+  border-radius: 10px;
+  color: rgb(var(--primary-rgb));
+}
+.is-invalid {
+  border-color: rgb(var(--primary-rgb)) !important;
+  box-shadow: 0 0 0 .18rem rgba(var(--primary-rgb), .25) !important;
+}
+
+/* Feather icons alignment */
+.icon-16 { width: 18px; height: 18px; vertical-align: -3px; }
+
+/* ===== Responsive table → cards on small screens ===== */
+@media (max-width: 900px) {
+  #bill-lines thead { display: none; }
+  #bill-lines tbody, #bill-lines tr, #bill-lines td { display: block; width: 100%; }
+  #bill-lines tbody tr {
+    background: var(--row);
+    margin: .75rem 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: .25rem .25rem .1rem;
+  }
+  #bill-lines tbody tr:hover { transform: none; }
+  #bill-lines tbody tr > td {
+    border: none;
+    padding: .55rem .9rem;
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    align-items: center;
+    gap: .25rem .75rem;
+  }
+  /* label each cell using data-label (set via JS or nth-child fallback) */
+  #bill-lines td::before {
+    content: attr(data-label);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  /* numbers to right */
+  #bill-lines td .text-right,
+  #bill-lines td span.line-amount { justify-self: end; }
+  /* action cell */
+  #bill-lines tbody tr td:last-child {
+    display: flex; justify-content: flex-end; padding-top: .25rem;
+  }
+}
+
+/* Add data-labels on the fly (safe fallback if you can’t set via JS) */
+@media (max-width: 900px) {
+  #bill-lines tbody tr td:nth-child(1)::before { content: "#"; }
+  #bill-lines tbody tr td:nth-child(2)::before { content: "Item"; }
+  #bill-lines tbody tr td:nth-child(3)::before { content: "Account"; }
+  #bill-lines tbody tr td:nth-child(4)::before { content: "Description"; }
+  #bill-lines tbody tr td:nth-child(5)::before { content: "Quantity"; }
+  #bill-lines tbody tr td:nth-child(6)::before { content: "Unit Price"; }
+  #bill-lines tbody tr td:nth-child(7)::before { content: "Amount"; }
+  #bill-lines tbody tr td:nth-child(8)::before { content: "Project"; }
+  #bill-lines tbody tr td:nth-child(9)::before { content: "Phase"; }
+}
+
+/* Inputs inside table cells */
+#bill-lines input.form-control,
+#bill-lines .select2-container--default .select2-selection--single {
+  height: 40px;
+  border-radius: 10px;
+}
+#bill-lines .text-right { text-align: right; }
+
+/* Utility spacing overrides for bootstrap-ish grids */
+.form-group { margin-bottom: 1rem; }
+.row { row-gap: .5rem; }
+
+/* Print-friendly */
+@media print {
+  body { background: #fff; }
+  #page-content .card { box-shadow: none; border: none; }
+  #add-line, .btn-primary, .del-line, .select2-container { display: none !important; }
+  #bill-lines { border: 1px solid #999; }
+  #bill-lines thead { display: table-header-group; }
+  #bill-lines tbody tr { page-break-inside: avoid; }
+}
