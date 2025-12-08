@@ -22,7 +22,7 @@ class Vendor_bill_items_model extends Crud_model
     {
         $bill_items_table   = $this->db->prefixTable('vendor_bill_items'); // rise_vendor_bill_items
         $bills_table        = $this->db->prefixTable('vendor_bills');      // rise_vendor_bills
-        $suppliers_table    = $this->db->prefixTable('vendor');          // your vendors master
+        $suppliers_table    = $this->db->prefixTable('supplier');          // use suppliers master
 
         $where = "";
 
@@ -40,7 +40,7 @@ class Vendor_bill_items_model extends Crud_model
         $sql = "SELECT 
                     $bill_items_table.*,
                     '' AS currency_symbol,
-                    $suppliers_table.vendor_name AS supplier_name
+                    $suppliers_table.supplier_name AS supplier_name
                 FROM $bill_items_table
                 LEFT JOIN $bills_table     ON $bills_table.id = $bill_items_table.vendor_bill_id
                 LEFT JOIN $suppliers_table ON $suppliers_table.id = $bill_items_table.supplier_id
@@ -61,7 +61,7 @@ class Vendor_bill_items_model extends Crud_model
         $bill_items_table    = $this->db->prefixTable('vendor_bill_items');   // rise_vendor_bill_items
         $sections_table      = $this->db->prefixTable('items_section');       // CHANGE to 'vendor_items_section' if you have one
         $bills_table         = $this->db->prefixTable('vendor_bills');        // rise_vendor_bills
-        $suppliers_table     = $this->db->prefixTable('vendor');
+        $suppliers_table     = $this->db->prefixTable('supplier');
 
         $where = "";
         $vendor_bill_id = $this->_get_clean_value($options, "vendor_bill_id");
@@ -103,7 +103,7 @@ class Vendor_bill_items_model extends Crud_model
                 $bill_items_table.unit_type,
                 $bill_items_table.taxable,
                 0 AS is_section,
-                $suppliers_table.vendor_name AS supplier_name,
+                $suppliers_table.supplier_name AS supplier_name,
                 '' AS currency_symbol
             FROM $bill_items_table
             LEFT JOIN $bills_table     ON $bills_table.id = $bill_items_table.vendor_bill_id
@@ -201,9 +201,9 @@ class Vendor_bill_items_model extends Crud_model
                     $to   = $new_value;
 
                     if ($field === "supplier_id") {
-                        $suppliers_model = model("Vendors\Models\Vendor_model");
-                        $from = $from ? $suppliers_model->get_one($from)->vendor_name : "N/A";
-                        $to   = $to ? $suppliers_model->get_one($to)->vendor_name : "N/A";
+                        $suppliers_model = model("aleelo_plugin\Models\Supplier_model");
+                        $from = $from ? $suppliers_model->get_one($from)->supplier_name : "N/A";
+                        $to   = $to ? $suppliers_model->get_one($to)->supplier_name : "N/A";
                     }
                     $pretty_key = preg_replace('/_id\d*$/', '', $field);
                     $fields_changed[$pretty_key] = ["from" => $from, "to" => $to];

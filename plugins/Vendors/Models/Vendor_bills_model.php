@@ -100,7 +100,7 @@ class Vendor_bills_model extends Crud_model
     {
         $bills_table    = $this->db->prefixTable('vendor_bills');          // rise_vendor_bills
         $payments_table = $this->db->prefixTable('vendor_bill_payments');  // rise_vendor_bill_payments
-        $vendor_table   = $this->db->prefixTable('vendor');                // rise_vendor
+        $vendor_table   = $this->db->prefixTable('supplier');              // use suppliers instead of rise_vendor
         $projects_table = $this->db->prefixTable('projects');              // rise_projects
         // Branch functionality removed - not needed in vendors plugin
         // $branch_table   = $this->db->prefixTable('branch');                // rise_branch
@@ -238,7 +238,7 @@ class Vendor_bills_model extends Crud_model
                     b.*,
                     b.invoice_total AS bill_value,
                     v.id   AS vendor_id,
-                    v.vendor_name,
+                    v.supplier_name AS vendor_name,
                     IFNULL(pay.payment_received, 0) AS payment_received,
                     (COALESCE(b.invoice_total,0) - COALESCE(pay.payment_received,0)) AS due_amount
                     $labels_select

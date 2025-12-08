@@ -16,6 +16,7 @@ class Security_Controller_Plugin_vendor extends Security_Controller
     public $Vendor_bill_payments_model;
     public $Vendor_bill_items_model;
     public $Payment_methods_model;
+    public $Supplier_model;
 
     // public $Branch_model;
     // public $Company_model;
@@ -39,6 +40,7 @@ class Security_Controller_Plugin_vendor extends Security_Controller
         $this->Vendor_items_model = new \Vendors\Models\Vendor_items_model();
         $this->Vendor_bill_payments_model = new \Vendors\Models\Vendor_bill_payments_model();
         $this->Vendor_bill_items_model = new \Vendors\Models\Vendor_bill_items_model();
+        $this->Supplier_model = new \aleelo_plugin\Models\Supplier_model();
 
         // Initialize Payment_methods_model - try App\Models first, fallback to aleelo_plugin
         if (class_exists('\App\Models\Payment_methods_model')) {
@@ -245,9 +247,9 @@ class Security_Controller_Plugin_vendor extends Security_Controller
     // Vendors (branch filtering removed - not needed in vendors plugin)
     public function _vendors_map(?int $branch_id = null): array
     {
-        // $m = new \Vendors\Models\Vendor_model();
-        $m = $this->Vendor_model;
-        return $m->dropdown(null, ''); // returns id=>name (branch_id removed)
+        // Use suppliers instead of rise_vendor for vendor bill workflows
+        $suppliers = $this->Supplier_model->get_dropdown_list(["supplier_name"], "id", ["deleted" => 0]);
+        return is_array($suppliers) ? $suppliers : [];
     }
 
     // Projects - removed Projects_model dependency

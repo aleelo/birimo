@@ -36,7 +36,7 @@ class Vendors extends Security_Controller_Plugin_vendor
         // Branch, Company, Country, Region functionality removed - not needed in vendors plugin
         // All branch/company/country/region dropdowns removed
 
-        // Pass permission results to the view for conditional rendering of buttons
+        // Pass permission results to the view for conditdddional rendering of buttons
         $view_data['can_add_new_vendor'] = $this->can_add_new_vendor();
 
         return $this->template->rander("Vendors\Views/vendor/index", $view_data);
