@@ -264,8 +264,8 @@ class Security_Controller_Plugin_vendor extends Security_Controller
     // Vendor Items
     public function _vendor_items_map(): array
     {
-        // table: rise_vendor_items (id, title, deleted)
-        return $this->_map_from_table('vendor_items', 'id', 'title');
+        // Use global items table instead of vendor_items
+        return $this->_map_from_table('items', 'id', 'title');
     }
 
     // Phases (if your table is named differently, change here)
@@ -287,10 +287,16 @@ class Security_Controller_Plugin_vendor extends Security_Controller
             return [];
         }
 
-        $invoices = $this->db->table($this->db->prefixTable('invoices'))
-            ->select('id, display_id, invoice_total')
-            ->where('deleted', 0)
-            ->orderBy('id', 'DESC')
+        $inv = $this->db->prefixTable('invoices');
+        $proj = $this->db->prefixTable('projects');
+        $cli = $this->db->prefixTable('clients');
+
+        $invoices = $this->db->table($inv)
+            ->select("$inv.id, $inv.display_id, $inv.invoice_total, $inv.project_id, $inv.client_id, $proj.title AS project_title, $cli.company_name AS client_name")
+            ->join($proj, "$proj.id = $inv.project_id", 'left')
+            ->join($cli, "$cli.id = $inv.client_id", 'left')
+            ->where("$inv.deleted", 0)
+            ->orderBy("$inv.id", 'DESC')
             ->limit(1000) // Limit to prevent performance issues
             ->get()
             ->getResult();
@@ -305,8 +311,21 @@ class Security_Controller_Plugin_vendor extends Security_Controller
                 ? number_format((float)$inv->invoice_total, 2, '.', '')
                 : '0.00';
 
-            // Format: "BRM/2025/000144 - 720.00"
-            $display_with_total = $display . ' - ' . $total;
+            // Prefer project title; fallback to client name
+            $who = '';
+            if (!empty($inv->project_title)) {
+                $who = $inv->project_title;
+            } elseif (!empty($inv->client_name)) {
+                $who = $inv->client_name;
+            }
+
+            // Format: "INV-123 • Project/Client • 720.00"
+            $parts = [$display];
+            if ($who !== '') {
+                $parts[] = $who;
+            }
+            $parts[] = $total;
+            $display_with_total = implode(' • ', $parts);
 
             $map[(string)$inv->id] = $display_with_total;
         }

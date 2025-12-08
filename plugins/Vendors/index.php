@@ -29,16 +29,16 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
         ];
     }
 
-    // Top-level Vendors entry (clickable)
-    if ($c2->can_manage_vendors() && $c2->can_hide_vendors()) {
-        $sidebar_menu["vendors"] = [
-            "name"     => "vendors",
-            "class"    => "circle",
-            "position" => 3,
-            "url"      => "vendors",
-            "icon"     => "fa fa-shopping-cart",
-        ];
-    }
+    // Top-level Vendors entry (hidden per request)
+    // if ($c2->can_manage_vendors() && $c2->can_hide_vendors()) {
+    //     $sidebar_menu["vendors"] = [
+    //         "name"     => "vendors",
+    //         "class"    => "circle",
+    //         "position" => 3,
+    //         "url"      => "vendors",
+    //         "icon"     => "fa fa-shopping-cart",
+    //     ];
+    // }
 
     // Vendor Bills
     if ($c2->can_manage_vendors() && $c2->can_hide_vendor_bills()) {
@@ -51,16 +51,16 @@ app_hooks()->add_filter('app_filter_staff_left_menu', function ($sidebar_menu) {
         ];
     }
 
-    // Vendor Items
-    if ($c2->can_manage_vendors() && $c2->can_hide_vendor_items()) {
-        $sidebar_menu["vendor_items"] = [
-            "name"     => "vendor_items",
-            "class"    => "circle",
-            "position" => 3,
-            "url"      => "vendor_items",
-            "icon"     => "fa fa-box",
-        ];
-    }
+    // Vendor Items (hidden per request)
+    // if ($c2->can_manage_vendors() && $c2->can_hide_vendor_items()) {
+    //     $sidebar_menu["vendor_items"] = [
+    //         "name"     => "vendor_items",
+    //         "class"    => "circle",
+    //         "position" => 3,
+    //         "url"      => "vendor_items",
+    //         "icon"     => "fa fa-box",
+    //     ];
+    // }
 
     // Vendor Bill Payments
     if ($c2->can_manage_vendors() && $c2->can_hide_vendor_bill_payments()) {

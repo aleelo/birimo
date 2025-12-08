@@ -2,7 +2,7 @@
 
 $lang["vendors"]               = "Vendors";
 $lang["vendor_bills"]          = "Vendor Bills";
-$lang["vendor_items"]          = "Vendor Items";
+$lang["vendor_items"]          = "Items";
 $lang["vendor_bill_payment"]   = "Vendor Bill Payments";
 $lang["vendor_bill_payment_recieved"]   = "Vendor Bill Payments Recieved";
 $lang["add_vendor_bill"]       = "Add Vendor Bill";

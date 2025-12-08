@@ -795,7 +795,8 @@ class Vendor_bills extends Security_Controller_Plugin_vendor
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid item']);
         }
 
-        $t  = $this->db->prefixTable('vendor_items');
+        // Use main items table (not vendor_items)
+        $t  = $this->db->prefixTable('items');
         $qb = $this->db->table($t)
             ->select('id, title, description, unit_type, rate, days, taxable')
             ->where('id', $item_id);
