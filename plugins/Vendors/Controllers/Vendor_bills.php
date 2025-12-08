@@ -600,11 +600,17 @@ class Vendor_bills extends Security_Controller_Plugin_vendor
         $itemIds   = array_values(array_unique(array_filter($itemIds)));
         $itemsMeta = [];
         if ($itemIds) {
-            $it = $this->db->table($this->db->prefixTable('vendor_items'))
+            // Use main items table (not vendor_items)
+            $it = $this->db->table($this->db->prefixTable('items'))
                 ->select('id, title, unit_type, taxable, days')
                 ->whereIn('id', $itemIds)
                 ->get()->getResult();
             foreach ($it as $row) {
+                // Ensure sensible defaults to avoid nulls
+                $row->title     = $row->title     ?? '';
+                $row->unit_type = $row->unit_type ?? '';
+                $row->taxable   = $row->taxable   ?? 0;
+                $row->days      = $row->days      ?? 1;
                 $itemsMeta[(int)$row->id] = $row;
             }
         }
@@ -675,13 +681,16 @@ class Vendor_bills extends Security_Controller_Plugin_vendor
             $desc    = $r['description'] ?? null;
 
             $meta = $item_id && isset($itemsMeta[$item_id]) ? $itemsMeta[$item_id] : null;
+            $title = $meta->title ?? ($desc ?? 'Item');
+            $unitType = $meta->unit_type ?? null;
+            $taxable = (int)($meta->taxable ?? 0);
 
             $payload = [
                 "vendor_bill_id" => $bill_id,
-                "title"          => $meta->title      ?? null,
+                "title"          => $title,
                 "description"    => $desc,
                 "quantity"       => $qty,
-                "unit_type"      => $meta->unit_type  ?? null,
+                "unit_type"      => $unitType,
                 "rate"           => $rate,                                // DB column = rate
                 "account_id"     => empty($r['account_id']) ? null : (int)$r['account_id'],
                 // Invoice removed from line items - now at bill level
@@ -689,7 +698,7 @@ class Vendor_bills extends Security_Controller_Plugin_vendor
                 "sort"           => $sort++,
                 "item_id"        => $item_id,
                 "days"           => $days,
-                "taxable"        => (int)($meta->taxable ?? 0),
+                "taxable"        => $taxable,
                 "is_section"     => 0,
                 "deleted"        => 0,
             ];
