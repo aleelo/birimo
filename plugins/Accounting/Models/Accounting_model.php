@@ -5267,6 +5267,8 @@ class Accounting_model extends Crud_model
             $to_date = to_sql_date($data_filter['to_date']);
         }
 
+push         $invoice_id = isset($data_filter['invoice_id']) && $data_filter['invoice_id'] != '' ? (int)$data_filter['invoice_id'] : null;
+
         $accounts = $this->get_accounts();
 
         $account_name = [];
@@ -5321,6 +5323,14 @@ class Accounting_model extends Crud_model
                         $db_builder->where('((rel_type = "invoice" and paid = 1) or rel_type != "invoice")');
                     }
                     $db_builder->where('(date >= "' . $from_date . '" and date <= "' . $to_date . '")');
+
+                    // Filter by invoice_id if provided - show transactions related to this invoice
+                    // For invoices: rel_type = "invoice" and rel_id = invoice_id
+                    // For vendor_bills: rel_type = "vendor_bills" and invoice_id = invoice_id
+                    if ($invoice_id !== null) {
+                        $db_builder->where('((rel_type = "invoice" and rel_id = ' . $invoice_id . ') or (rel_type = "vendor_bills" and invoice_id = ' . $invoice_id . '))');
+                    }
+
                     $db_builder->orderBy('date', 'asc');
                     $account_history = $db_builder->get()->getResultArray();
                     $node = [];

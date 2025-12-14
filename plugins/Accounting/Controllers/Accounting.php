@@ -1597,53 +1597,53 @@ class Accounting extends Security_Controller
     }
 
     /** If an account is linked to an expense category, mirror the account name into expense_categories.title */
-private function _sync_category_title_from_account(int $accountId): void
-{
-    // read fresh account
-    $acc = $this->db->table(get_db_prefix().'acc_accounts')
-        ->select('id, name, expense_id, account_type_id, account_detail_type_id, active')
-        ->where('id', $accountId)
-        ->get()->getRow();
+    private function _sync_category_title_from_account(int $accountId): void
+    {
+        // read fresh account
+        $acc = $this->db->table(get_db_prefix() . 'acc_accounts')
+            ->select('id, name, expense_id, account_type_id, account_detail_type_id, active')
+            ->where('id', $accountId)
+            ->get()->getRow();
 
-    if (!$acc) return;
+        if (!$acc) return;
 
-    // only for Expense accounts that are already linked to a category
-    if ((int)$acc->account_type_id !== 14 || empty($acc->expense_id)) return;
+        // only for Expense accounts that are already linked to a category
+        if ((int)$acc->account_type_id !== 14 || empty($acc->expense_id)) return;
 
-    $newTitle = trim((string)$acc->name);
-    if ($newTitle === '') return;
+        $newTitle = trim((string)$acc->name);
+        if ($newTitle === '') return;
 
-    // fetch category
-    $cat = $this->db->table(get_db_prefix().'expense_categories')
-        ->select('id, title, deleted')
-        ->where('id', (int)$acc->expense_id)
-        ->get()->getRow();
+        // fetch category
+        $cat = $this->db->table(get_db_prefix() . 'expense_categories')
+            ->select('id, title, deleted')
+            ->where('id', (int)$acc->expense_id)
+            ->get()->getRow();
 
-    if (!$cat || (int)$cat->deleted === 1) return;
+        if (!$cat || (int)$cat->deleted === 1) return;
 
-    // if already same, nothing to do
-    if ($cat->title === $newTitle) return;
+        // if already same, nothing to do
+        if ($cat->title === $newTitle) return;
 
-    // optional: avoid colliding with an existing active category title
-    $dup = $this->db->table(get_db_prefix().'expense_categories')
-        ->select('id')
-        ->where('title', $newTitle)
-        ->where('deleted', 0)
-        ->where('id !=', (int)$cat->id)
-        ->get()->getRow();
+        // optional: avoid colliding with an existing active category title
+        $dup = $this->db->table(get_db_prefix() . 'expense_categories')
+            ->select('id')
+            ->where('title', $newTitle)
+            ->where('deleted', 0)
+            ->where('id !=', (int)$cat->id)
+            ->get()->getRow();
 
-    if ($dup) {
-        // If your schema enforces unique titles, you can either:
-        //  - skip renaming (do nothing), or
-        //  - append a suffix. Choose one. Here we skip to be safe.
-        return;
+        if ($dup) {
+            // If your schema enforces unique titles, you can either:
+            //  - skip renaming (do nothing), or
+            //  - append a suffix. Choose one. Here we skip to be safe.
+            return;
+        }
+
+        // update the category title to match account name
+        $this->db->table(get_db_prefix() . 'expense_categories')
+            ->where('id', (int)$cat->id)
+            ->update(['title' => $newTitle]);
     }
-
-    // update the category title to match account name
-    $this->db->table(get_db_prefix().'expense_categories')
-        ->where('id', (int)$cat->id)
-        ->update(['title' => $newTitle]);
-}
 
 
     /**
@@ -4280,6 +4280,51 @@ private function _sync_category_title_from_account(int $accountId): void
         $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_setting('acc_accounting_method');
+        $data['invoice_id'] = $this->request->getGet('invoice_id');
+
+        // Load invoices for dropdown
+        $invoices_dropdown = ['' => '- ' . app_lang('invoice') . ' -'];
+        try {
+            if (class_exists('\aleelo_plugin\Models\Invoices_model')) {
+                $Invoices_model = model('aleelo_plugin\Models\Invoices_model');
+            } else {
+                $Invoices_model = model('Invoices_model');
+            }
+
+            $options = ['deleted' => 0];
+            // Add department filter if applicable
+            if (isset($this->login_user->department) && $this->login_user->department != 0) {
+                $options['company_id'] = $this->login_user->department;
+            }
+
+            $invoices = $Invoices_model->get_details($options)->getResult();
+            foreach ($invoices as $invoice) {
+                $invoice_id_display = isset($invoice->display_id) ? $invoice->display_id : get_invoice_id($invoice->id);
+
+                // Get client/project name - prefer project if available, otherwise client
+                $client_project_name = '';
+                if (!empty($invoice->project_title)) {
+                    $client_project_name = $invoice->project_title;
+                } elseif (!empty($invoice->company_name)) {
+                    $client_project_name = $invoice->company_name;
+                } else {
+                    $client_project_name = '-';
+                }
+
+                // Get invoice total
+                $invoice_total = isset($invoice->invoice_total) ? $invoice->invoice_total : (isset($invoice->invoice_value) ? $invoice->invoice_value : 0);
+                $currency_symbol = isset($invoice->currency_symbol) ? $invoice->currency_symbol : get_setting("currency_symbol");
+
+                // Format: Invoice ID • Client/Project • Invoice Total
+                $invoice_display = $invoice_id_display . ' • ' . $client_project_name . ' • ' . to_currency($invoice_total, $currency_symbol);
+                $invoices_dropdown[$invoice->id] = $invoice_display;
+            }
+        } catch (\Exception $e) {
+            // If model doesn't exist or error occurs, use empty dropdown
+        }
+
+        $data['invoices_dropdown'] = $invoices_dropdown;
+
         return $this->template->rander('Accounting\Views\report/includes/profit_and_loss_detail', $data);
     }
 
