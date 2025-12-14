@@ -5267,7 +5267,7 @@ class Accounting_model extends Crud_model
             $to_date = to_sql_date($data_filter['to_date']);
         }
 
-push         $invoice_id = isset($data_filter['invoice_id']) && $data_filter['invoice_id'] != '' ? (int)$data_filter['invoice_id'] : null;
+        $invoice_id = isset($data_filter['invoice_id']) && $data_filter['invoice_id'] != '' ? (int)$data_filter['invoice_id'] : null;
 
         $accounts = $this->get_accounts();
 
