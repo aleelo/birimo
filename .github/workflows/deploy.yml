@@ -1,30 +1,30 @@
-name: 'Deploy to cloudways'
+name: "Deploy to cloudways"
 on:
   push:
-    branches: [ staging ]
+    branches: [staging]
   pull_request:
-    branches: [ staging ]
+    branches: [staging]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: staging
-#     - name: set up php
-#       uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-#       with:
-#         php-version: '7.4.2'
-#     - name: update Dependencies
-#       run: composer update  -q --no-ansi  --no-interaction --no-scripts --prefer-dist
-    - name: "Deploy"
-      uses: milanmk/actions-file-deployer@master
-      with:
-        remote-protocol: "sftp"
-        remote-host: ${{ secrets.HOST }}
-        remote-user: ${{ secrets.USERNAME_STAGING }}
-        remote-password: ${{ secrets.PASSWORD_STAGING }}
-        remote-port: 22
-        # sync: "full"
-        remote-path: "/public_html"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: staging
+      #     - name: set up php
+      #       uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      #       with:
+      #         php-version: '7.4.2'
+      #     - name: update Dependencies
+      #       run: composer update  -q --no-ansi  --no-interaction --no-scripts --prefer-dist
+      - name: "Deploy"
+        uses: milanmk/actions-file-deployer@master
+        with:
+          remote-protocol: "sftp"
+          remote-host: ${{ secrets.HOST }}
+          remote-user: ${{ secrets.USERNAME_STAGING }}
+          remote-password: ${{ secrets.PASSWORD_STAGING }}
+          remote-port: 22
+          sync: "full"
+          remote-path: "/public_html"
